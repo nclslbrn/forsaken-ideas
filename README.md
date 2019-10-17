@@ -4,7 +4,7 @@ A tool that allows you to design several sketches with the same webpack script a
 Usefull for offline prototyping and online showcasing.
 
 ## Scripting sketch
-To start you have to create folder into sketch and place an index.js in it.
+To start you have to create a folder for your sketch and start writing an index.js file where you can include every dependencies you need.
 You can work on it with live reload with wepack webserver by using:
 `npm run watch -- -- the-name-of-the-folder-of-your-script`
 
