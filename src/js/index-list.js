@@ -1,0 +1,1 @@
+import style from './../sass/projects-list.scss'

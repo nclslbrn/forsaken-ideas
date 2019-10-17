@@ -1,0 +1,45 @@
+{
+  "name": "quick-js-projects",
+  "version": "1.0.0",
+  "description": "A workflow to build multiple js sketc/project with",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack-dev-server",
+    "export": "webpack -p",
+    "watch-index": "webpack-dev-server --config webpack.list-projects.js",
+    "index": "webpack -p --config webpack.list-projects.js"
+  },
+  "keywords": [
+    "p5js",
+    "webpack",
+    "boilerplate"
+  ],
+  "author": "Nicolas Lebrun <nclslbrn@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "p5": "^0.10.2",
+    "postcss-loader": "^3.0.0",
+    "pug-loader": "^2.4.0",
+    "sass": "^1.23.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "autoprefixer": "^9.6.5",
+    "babel-loader": "^8.0.6",
+    "babel-preset-env": "^1.7.0",
+    "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
+    "cssnano": "^4.1.10",
+    "expose-loader": "^0.7.5",
+    "html-webpack-plugin": "^3.2.0",
+    "pug": "^2.0.4",
+    "sass-loader": "^8.0.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  }
+}

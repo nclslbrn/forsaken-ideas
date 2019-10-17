@@ -1,0 +1,39 @@
+//+------------------------------+
+//|  ARTEMG.COM ..................|
+//|  Author: Nicolas Lebrun ......|
+//|  License: MIT License ........|
+//+------------------------------+
+- const projectCount = projects.length;
+- const totalCol = 4;
+- const projectPerCol = Math.ceil( projectCount / totalCol);
+- var columns = [];
+- for( var col = 0; col < totalCol; col++ ) {
+  - columns.push(projects.slice(projectPerCol * col, projectPerCol * (col + 1 ) ) ); 
+- }
+
+html(lang="en")
+  include parts/head.pug
+
+  body
+    
+    header.headimg
+    
+    main
+      
+      aside.info
+        h3 Js Quick project
+        p This website showcases various experiments with P5.js and HTML5 canvas API,   
+        a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
+        a(href="https://github.com/nclslbrn") Github
+        a(href="https://www.instagram.com/nclslbrn/") Instagram
+        p - Nicolas Lebrun 
+
+      section.projects
+
+        each col in columns
+
+          div.column
+            
+            each project in col
+
+              a(href="./sketches/" + project ) #{project}
