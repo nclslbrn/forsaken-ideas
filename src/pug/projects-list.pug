@@ -4,7 +4,7 @@
 //|  License: MIT License ........|
 //+------------------------------+
 - const projectCount = projects.length;
-- const totalCol = 4;
+- const totalCol = 3;
 - const projectPerCol = Math.ceil( projectCount / totalCol);
 - var columns = [];
 - for( var col = 0; col < totalCol; col++ ) {
@@ -20,12 +20,18 @@ html(lang="en")
     
     main
       
-      aside.info
-        h3 Js Quick project
-        p This website showcases various experiments with P5.js and HTML5 canvas API,   
-        a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
-        a(href="https://github.com/nclslbrn") Github
-        a(href="https://www.instagram.com/nclslbrn/") Instagram
+      aside.column
+        h3 XYZ - Generative experiment
+        p This website showcases various experiments with P5.js and HTML5 canvas API
+        ul
+          li  
+            a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
+          
+          li
+            a(href="https://github.com/nclslbrn") Github
+          
+          li  
+            a(href="https://www.instagram.com/nclslbrn/") Instagram
         p - Nicolas Lebrun 
 
       section.projects
@@ -33,7 +39,7 @@ html(lang="en")
         each col in columns
 
           div.column
-            
-            each project in col
-
-              a(href="./sketches/" + project ) #{project}
+            ul
+              each project in col
+                li
+                  a(href="./sketch/" + project ) #{project}
