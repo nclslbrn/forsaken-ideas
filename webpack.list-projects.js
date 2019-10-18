@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const publicFolder = './public/sketches/'
+const publicFolder = './public/sketch/'
 
 function fileList(dir) {
     return fs.readdirSync(dir).reduce(function(list, file) {
