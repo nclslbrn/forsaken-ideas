@@ -1,0 +1,3 @@
+[submodule "tools/chromotone"]
+	path = tools/chromotone
+	url = git@github.com:kgolid/chromotome.git
