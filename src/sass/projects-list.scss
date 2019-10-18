@@ -1,1 +1,42 @@
 @import "commons";
+
+header.headimg {
+  padding-bottom: 30%;
+  background: #355545;
+}
+main {
+  padding: 1em 3em;
+}
+aside,
+section.projects {
+  ul {
+    padding: 0;
+    list-style-type: none;
+
+    a {
+      text-decoration: none;
+      color: #333;
+    }
+  }
+}
+aside {
+  margin-right: 2em;
+
+  p {
+    max-width: 300px;
+  }
+}
+section.projects {
+  padding-top: 0.5em;
+}
+section.projects ul li {
+  padding-bottom: 1em;
+}
+section.projects ul li a {
+  text-transform: uppercase;
+}
+.column {
+  display: block;
+  width: 20%;
+  float: left;
+}
