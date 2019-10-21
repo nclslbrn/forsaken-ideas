@@ -1,11 +1,16 @@
 import p5 from "p5"
 import style from '../src/sass/project.scss'
-import colourscafe from '../tools/chromotone/palettes/colourscafe'
+
+const containerElement = document.body
+const loader = document.getElementById('p5_loading')
+
+////////////////////////////////////////////////////////////
+
+import colourscafe from '../tools/chromotome/palettes/colourscafe'
 
 const pallette_id = Math.floor(Math.random() * 7)
 const pallette = colourscafe[pallette_id].colors
-const containerElement = document.body
-const loader = document.getElementById('p5_loading')
+
 
 const sketch = (p5) => {
 
@@ -51,7 +56,9 @@ const sketch = (p5) => {
                     "x": center.x + radius * p5.cos(r + _a),
                     "y": center.y + radius * p5.sin(r + _b),
                 }
-                p5.stroke(pallette[color_id])
+                let strokeColor = p5.color(pallette[color_id])
+                strokeColor.setAlpha(75)
+                p5.stroke(strokeColor)
                 p5.beginShape()
                 for (let a = 0; a <= arcPerCircle; a++) {
                     p5.vertex(

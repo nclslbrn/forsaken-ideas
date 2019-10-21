@@ -11,6 +11,7 @@ module.exports = (env, argv) => {
 
     const project = argv._[0]
     const entry = './' + project + '/index.js'
+    const ext_libs = require('./' + project + '/ext_libs.json')
     const mode = argv.mode == 'production' ? 'production' : 'development'
 
     if (mode && project) {
@@ -68,8 +69,8 @@ module.exports = (env, argv) => {
                     ],
                     include: [
                         path.resolve(__dirname, 'node_modules'),
-                        path.resolve(__dirname, './'),
-                        path.resolve(__dirname, './tools')
+                        path.resolve(__dirname, './tools'),
+                        path.resolve(__dirname, './')
                     ]
                 }]
             },
@@ -92,6 +93,7 @@ module.exports = (env, argv) => {
                 new HtmlWebpackPlugin({
                     templateParameters: {
                         'project': project,
+                        'ext_libs': ext_libs,
                         'srcPath': '../../'
                     },
                     filename: './index.html',
@@ -118,7 +120,8 @@ module.exports = (env, argv) => {
                 ]
             },
             externals: {
-                p5: 'p5'
+                p5: 'p5',
+                three: 'THREE'
             },
             devtool: mode == "development" ? 'source-map' : ''
         }

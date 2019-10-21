@@ -3,6 +3,7 @@
 //|  Author: Nicolas Lebrun ......|
 //|  License: MIT License ........|
 //+------------------------------+
+- const libs = ext_libs.libs
 html(lang="en")
   include parts/head.pug
 body
@@ -13,6 +14,15 @@ body
       .double-bounce1
       .double-bounce2
 
-  script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js")
-  script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js")
-  script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js")
+  if libs.includes('p5')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js")
+  
+  else if libs.includes("p5-dom")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js")
+  
+  else if libs.includes("p5-sound")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js")
+
+  else if libs.includes('three')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.js")
+  
