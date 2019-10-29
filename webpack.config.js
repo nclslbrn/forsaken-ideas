@@ -121,7 +121,8 @@ module.exports = (env, argv) => {
             },
             externals: {
                 p5: 'p5',
-                three: 'THREE'
+                three: 'THREE',
+                p5Collide2D: 'p5.collide2D'
             },
             devtool: mode == "development" ? 'source-map' : ''
         }
