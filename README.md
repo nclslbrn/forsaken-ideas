@@ -1,4 +1,4 @@
-# XYZ
+# Make
 
 A tool that allows you to design several sketches with the same webpack script and list every sketch into an index.
 Usefull for offline prototyping and online showcasing.
