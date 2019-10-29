@@ -1,16 +1,12 @@
+'use strict'
 import p5 from "p5"
 import style from '../src/sass/project.scss'
 
 const containerElement = document.body
 const loader = document.getElementById('p5_loading')
-
 ////////////////////////////////////////////////////////////
-
-import colourscafe from '../tools/chromotome/palettes/colourscafe'
-
-const pallette_id = Math.floor(Math.random() * 7)
-const pallette = colourscafe[pallette_id].colors
-
+import * as tome from 'chromotome';
+let palette = tome.getRandom();
 
 const sketch = (p5) => {
 
@@ -32,7 +28,7 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
 
-        p5.background(colourscafe[pallette_id].background)
+        p5.background(colourscafe.background)
 
         let t = 1 * (
             p5.frameCount < numFrame ?
@@ -50,13 +46,13 @@ const sketch = (p5) => {
 
             for (let a = 0; a < arcPerCircle; a++) {
 
-                const color_id = r + a < pallette.length ? r + a : (r + a) % pallette.length
+                const color_id = r + a < palette.colors.length ? r + a : (r + a) % palette.colors.length
                 const radius = r * arcWidth;
                 const position = {
                     "x": center.x + radius * p5.cos(r + _a),
                     "y": center.y + radius * p5.sin(r + _b),
                 }
-                let strokeColor = p5.color(pallette[color_id])
+                let strokeColor = p5.color(palette[color_id])
                 strokeColor.setAlpha(75)
                 p5.stroke(strokeColor)
                 p5.beginShape()
