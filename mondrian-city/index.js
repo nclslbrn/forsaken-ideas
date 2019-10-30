@@ -2,6 +2,7 @@
 
 import style from '../src/sass/project.scss'
 import p5 from 'p5'
+
 import p5Collide2D from '../tools/p5.collide2D/p5.collide2d.min'
 import * as tome from 'chromotome';
 const palette = tome.get('tundra2');
@@ -14,10 +15,10 @@ const sketch = (p5) => {
 
     const roads = []
     const builds = []
-    const maxRoad = 32;
+    const maxRoad = 32
     const blockProperty = (minWidth, maxWidth, minHeight, maxHeight) => {
         const property = {
-            "x": Math.random() * window.innerHeight,
+            "x": Math.random() * window.innerWidth,
             "y": Math.random() * window.innerHeight,
             "width": parseInt(p5.random(minWidth, maxWidth)),
             "height": parseInt(p5.random(minHeight, maxHeight)),
@@ -27,7 +28,14 @@ const sketch = (p5) => {
     }
 
     const blockPoints = (p) => {
-        const poly = []
+        let poly = []
+        let centerPoly = []
+        let rotatePoly = []
+
+
+        const radius = p5.sqrt(p5.sq(p.width / 2) + p5.sq(p.height / 2))
+        //console.log(p.width / 2 + " + " + p.height / 2 + " = " + radius)
+
         poly[0] = p5.createVector(
             p.x,
             p.y
@@ -45,11 +53,31 @@ const sketch = (p5) => {
             p.orientation ? p.y + p.height : p.y + p.width
         )
 
-        return poly
+        for (let polyId = 0; polyId < poly.length; polyId++) {
+            //center rect
+
+            const xRot = 0
+            const yRot = 0
+
+            if (polyId <= 1) {
+                xRot = p.orientation ? p5.cos(p5.QUARTER_PI) : p5.cos(-p5.QUARTER_PI)
+                yRot = p.orientation ? p5.sin(p5.QUATER_PI) : p5.sin(-p5.QUARTER_PI)
+
+            } else {
+                xRot = p.orientation ? p5.cos(p5.TWO_PI + p5.QUARTER_PI) : p5.cos(p5.TWO_PI - p5.QUARTER_PI)
+                yRot = p.orientation ? p5.sin(p5.TWO_PI + p5.QUATER_PI) : p5.sin(p5.TWO_PI - p5.QUARTER_PI)
+            }
+            rotatePoly[polyId] = p5.createVector(
+                (p.direction ? poly[polyId].x - p.width / 2 : poly[polyId].x - p.height / 2) + radius * xRot,
+                (p.direction ? poly[polyId].y - p.height / 2 : poly[polyId].y - p.width / 2) + radius * yRot
+            )
+        }
+        return rotatePoly
     }
 
     p5.setup = () => {
         p5.createCanvas(window.innerWidth, window.innerHeight)
+        p5.angleMode(p5.DEGREES)
         p5.background(255)
         p5.collideDebug(true)
 
@@ -59,17 +87,17 @@ const sketch = (p5) => {
     }
 
     p5.draw = () => {
-        p5.push()
-        p5.translate(window.innerWidth / 2, -window.innerHeight / 0.9)
-        p5.rotate(p5.QUARTER_PI)
-        p5.scale(2)
+        //p5.push()
+        //p5.translate(window.innerWidth / 2, -window.innerHeight / 0.9)
+        //p5.rotate(p5.QUARTER_PI)
+        //p5.scale(2)
         if (roads.length < maxRoad) {
             p5.computeRoad()
         }
         if (roads.length == maxRoad) {
             p5.computeBuilding()
         }
-        p5.pop()
+        //p5.pop()
     }
 
     p5.computeRoad = () => {

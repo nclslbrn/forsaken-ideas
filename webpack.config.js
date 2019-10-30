@@ -26,7 +26,7 @@ module.exports = (env, argv) => {
             module: {
                 rules: [{ // js
                     test: /\.m?js$/,
-                    exclude: /(node_modules|bower_components)/,
+                    //exclude: /(node_modules|bower_components)/,
                     use: {
                         loader: 'babel-loader',
                         options: {
@@ -102,6 +102,9 @@ module.exports = (env, argv) => {
                 }),
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
+                }),
+                new UglifyJSPlugin({
+                    sourceMap: mode == 'production' ? false : true,
                 })
                 /*
                 new CopyWebpackPlugin([{
@@ -110,15 +113,6 @@ module.exports = (env, argv) => {
                 }])
                 */
             ],
-
-            optimization: {
-                runtimeChunk: "single", // enable "runtime" chunk
-                minimizer: [
-                    new UglifyJSPlugin({
-                        sourceMap: mode == 'production' ? false : true,
-                    })
-                ]
-            },
             externals: {
                 p5: 'p5',
                 three: 'THREE',
