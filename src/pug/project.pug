@@ -7,9 +7,10 @@
 html(lang="en")
   include parts/head.pug
 body
+  include parts/svg-defs.pug
   include parts/back.pug
   
-  #p5_loading
+  #loading
     .spinner
       .double-bounce1
       .double-bounce2
@@ -25,6 +26,12 @@ body
 
   else if libs.includes("p5.collide2D")
     script(src="https://cdn.JsDelivr.net/gh/bmoren/p5.collide2D/p5.collide2d.min.js")
+  
+  else if libs.includes("p5.js-svg")
+    script(src="https://cdn.JsDelivr.net/gh/zenozeng/p5.js-svg/dist/p5.svg.js")
 
   else if libs.includes('three')
     script(src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.js")
+  
+  else if libs.includes('paper')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.2/paper-full.min.js")

@@ -15,14 +15,20 @@ html(lang="en")
   include parts/head.pug
 
   body
-    
+  
+    include parts/svg-defs.pug
     header.headimg
     
     main
       
       aside.column
-        h3 XYZ - Generative experiment
-        p This website showcases various experiments with P5.js and HTML5 canvas API
+        h3 Generative experiment
+        p 
+          | This website showcases various experiments with 
+          | #[a(href="https://p5js.org") P5.js], 
+          | #[a(href="http://paperjs.org/") paper.js]
+          | and HTML5 canvas API
+        
         ul
           li  
             a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
