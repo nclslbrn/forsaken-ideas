@@ -24,7 +24,12 @@ module.exports = (env, argv) => {
                 filename: '[name]-bundle.js'
             },
             module: {
-                rules: [{ // js
+                rules: [{
+                    test: /\.paper.js$/,
+                    use: {
+                        loader: 'paper-loader'
+                    }
+                }, { // js
                     test: /\.m?js$/,
                     //exclude: /(node_modules|bower_components)/,
                     use: {
@@ -116,7 +121,8 @@ module.exports = (env, argv) => {
             externals: {
                 p5: 'p5',
                 three: 'THREE',
-                p5Collide2D: 'p5.collide2D'
+                Collide2D: 'p5Collide2D',
+                'js-svg': 'p5jsSVG'
             },
             devtool: mode == "development" ? 'source-map' : ''
         }
