@@ -1,6 +1,8 @@
 {
     "libs": [
         "p5",
-        "p5.collide2D"
+        "p5.collide2D",
+        "p5.js-svg",
+        "paper"
     ]
 }
