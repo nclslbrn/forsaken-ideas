@@ -77,7 +77,7 @@ module.exports = (env, argv) => {
 
             resolve: {
                 extensions: [
-                    '.js'
+                    '.js', '.pug', 'json'
                 ]
             },
 
@@ -114,11 +114,13 @@ module.exports = (env, argv) => {
                 */
             ],
             externals: {
-                p5: 'p5',
-                three: 'THREE',
-                Collide2D: 'p5Collide2D',
-                'js-svg': 'p5jsSVG',
-                paper: 'paper'
+                'p5': 'p5',
+                'three': 'THREE',
+                'p5.Collide2D': 'p5.Collide2D',
+                'p5.js-svg': 'p5.jsSVG',
+                'p5.dom': 'p5.dom',
+                'p5.sound': 'p5.sound',
+                'svg': '@svgdotjs/svg.js'
             },
             devtool: mode == "development" ? 'source-map' : ''
         }
