@@ -6,7 +6,7 @@ const computeSVG = (roads, builds, palette, bgColor, svgContainerId) => {
     svgContainer.id = svgContainerId
     svgContainer.setAttribute(
         'style',
-        'display: block; width: ' + window.innerWidth + 'px; height: ' + window.innerHeight + 'px;'
+        'display: none; width: ' + window.innerWidth + 'px; height: ' + window.innerHeight + 'px;'
     )
     if (document.getElementById(svgContainerId) == null) {
         document.body.appendChild(svgContainer)
@@ -14,12 +14,12 @@ const computeSVG = (roads, builds, palette, bgColor, svgContainerId) => {
         document.getElementById(svgContainerId).innerHTML = '';
     }
 
-    const draw = SVG(svgContainerId).size('100%', '100%')
+    const draw = SVG(svgContainerId).size(window.innerWidth + 'px', window.innerHeight + 'px')
 
-    //hide the canvas
+    /*  hide the canvas
     if (document.getElementsByClassName('p5Canvas')[0]) {
         document.getElementsByClassName('p5Canvas')[0].style.display = 'none';
-    }
+    }*/
     let background = draw.rect(window.innerWidth, window.innerHeight)
     background.x(0)
     background.y(0)

@@ -72,7 +72,7 @@ const sketch = (p5) => {
             } else {
                 rotatePoly[polyId].rotate(-45)
             }
-            rotatePoly[polyId].y += window.innerHeight * 0.75 // <- why ?
+            rotatePoly[polyId].y += window.innerHeight * 0.85 // <- why ?
         }
         return rotatePoly
 
