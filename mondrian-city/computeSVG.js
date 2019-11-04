@@ -1,20 +1,20 @@
 import * as SVG from 'svg.js'
 
-const computeSVG = (roads, builds, palette, bgColor) => {
+const computeSVG = (roads, builds, palette, bgColor, svgContainerId) => {
 
     const svgContainer = document.createElement('div')
-    svgContainer.id = 'exported-svg'
+    svgContainer.id = svgContainerId
     svgContainer.setAttribute(
         'style',
         'display: block; width: ' + window.innerWidth + 'px; height: ' + window.innerHeight + 'px;'
     )
-    if (document.getElementById('exported-svg') == null) {
+    if (document.getElementById(svgContainerId) == null) {
         document.body.appendChild(svgContainer)
     } else {
-        document.getElementById('exported-svg').innerHTML = '';
+        document.getElementById(svgContainerId).innerHTML = '';
     }
 
-    const draw = SVG('exported-svg').size('100%', '100%')
+    const draw = SVG(svgContainerId).size('100%', '100%')
 
     //hide the canvas
     if (document.getElementsByClassName('p5Canvas')[0]) {

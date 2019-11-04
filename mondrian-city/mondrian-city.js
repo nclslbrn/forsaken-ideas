@@ -1,33 +1,29 @@
-"use strict"
+import computeSVG from './computeSVG'
+import exportSVG from './exportSVG'
 
-import style from '../src/sass/project.scss'
-import p5 from 'p5'
-import p5Collide2D from '../tools/p5.collide2D/p5.collide2d.min'
-
-/*
-import * as tome from 'chromotome';
-const palette = tome.get('tsu_arcade');
-*/
 const palette = {
     colors: ['#F60201', '#FDED01', '#1F7FC9'],
     background: '#999999'
 }
-
 let isSaving = false
 let roads = []
 let builds = []
-////////////////////////////////////////////////////
-const containerElement = document.body
-const loader = document.getElementById('p5_loading')
-////////////////////////////////////////////////////
+let margin = 0.25
+const svgContainerId = 'svg-clipboard'
+
 const sketch = (p5) => {
 
+    const maxRoad = 32
+    const paperColor = p5.color(255, 248, 250)
 
-    const maxRoad = 52
     const blockProperty = (minWidth, maxWidth, minHeight, maxHeight) => {
+        // global
+        const halfWidth = window.innerWidth / 2
+        const halfHeight = window.innerHeight / 2
+
         const property = {
-            "x": p5.random(2) * window.innerHeight,
-            "y": p5.random(2) * window.innerHeight,
+            "x": halfWidth + (p5.random(-0.25, 0.25) * window.innerWidth),
+            "y": halfHeight + (p5.random(-0.25, 0.25) * window.innerWidth),
             "width": parseInt(p5.random(minWidth, maxWidth)),
             "height": parseInt(p5.random(minHeight, maxHeight)),
             "orientation": Math.random() < 0.5
@@ -37,52 +33,57 @@ const sketch = (p5) => {
 
     const blockPoints = (p) => {
         let poly = []
-        let centerPoly = []
         let rotatePoly = []
-
-
-        const radius = p5.sqrt(p5.sq(p.width) + p5.sq(p.height))
+        let clockwise = true
+        // local
+        const halfWidth = p.width / 2
+        const halfHeight = p.height / 2
 
         poly[0] = p5.createVector(
-            p.x,
-            p.y
+            p.x - (p.orientation ? halfWidth : halfHeight),
+            p.y - (p.orientation ? halfHeight : halfWidth)
         )
         poly[1] = p5.createVector(
-            p.orientation ? p.x + p.width : p.x + p.height,
-            p.y
+            p.x + (p.orientation ? halfWidth : halfHeight),
+            p.y - (p.orientation ? halfHeight : halfWidth)
         )
         poly[2] = p5.createVector(
-            p.orientation ? p.x + p.width : p.x + p.height,
-            p.orientation ? p.y + p.height : p.y + p.width
+            p.x + (p.orientation ? halfWidth : halfHeight),
+            p.y + (p.orientation ? halfHeight : halfWidth)
         )
         poly[3] = p5.createVector(
-            p.x,
-            p.orientation ? p.y + p.height : p.y + p.width
+            p.x - (p.orientation ? halfWidth : halfHeight),
+            p.y + (p.orientation ? halfHeight : halfWidth)
         )
 
-        for (let polyId = 0; polyId < poly.length; polyId++) {
+        if (
+            (p.x > window.innerWidth * margin && p.x < window.innerWidth * (1 - margin)) ||
+            (p.y > window.innerHeight * margin && p.y < window.innerHeight * (1 - margin))
+        ) {
+            clockwise = false
+        }
 
-            rotatePoly[polyId] = p5.createVector(
-                poly[polyId].x - (p.direction ? p.width / 2 : p.height / 2),
-                poly[polyId].y - (p.direction ? -p.height / 2 : p.width / 2)
-            )
+        rotatePoly = poly
+
+        for (let polyId = 0; polyId < poly.length; polyId++) {
 
             if (p.orientation) {
                 rotatePoly[polyId].rotate(315)
             } else {
                 rotatePoly[polyId].rotate(-45)
             }
-
+            rotatePoly[polyId].y += window.innerHeight * 0.75 // <- why ?
         }
         return rotatePoly
+
     }
 
     p5.setup = () => {
         p5.createCanvas(window.innerWidth, window.innerHeight)
         p5.angleMode(p5.DEGREES)
-        p5.background(255, 248, 250)
+        p5.background(paperColor)
         p5.noStroke()
-        p5.collideDebug(true)
+        p5.collideDebug(false)
 
         for (let c = 0; c < palette.colors.length; c++) {
             builds[c] = []
@@ -90,10 +91,9 @@ const sketch = (p5) => {
     }
 
     p5.draw = () => {
-        //p5.push()
-        p5.translate(-window.innerHeight * 0.5, window.innerHeight * 0.5)
-        //p5.scale(0.5)
+        p5.push()
         if (!isSaving) { //&& p5.frameCount % 8 == 0) {
+
             if (roads.length < maxRoad) {
                 p5.computeRoad()
             }
@@ -103,14 +103,14 @@ const sketch = (p5) => {
         }
 
 
-        //p5.pop()
+        p5.pop()
     }
 
     p5.computeRoad = () => {
         p5.fill(palette.background)
         const roadProperty = blockProperty(
             window.innerHeight,
-            window.innerHeight / 2,
+            window.innerHeight,
             2,
             6
         )
@@ -158,35 +158,21 @@ const sketch = (p5) => {
     }
 
     p5.mousePressed = () => {
-        /* TODO: compute from builds and roads as SVG with paper.js or d3.js
-        //if (window.confirm('Would you like to download this drawing as SVG files ?')) {
-        isSaving = true
-        const date = new Date;
-        const fileName = 'Mondrian-City.' + date.getFullYear() + '-' + date.getMonth() + '-' +
-            date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
-            date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        isSaving = false
-        //}
-        */
-        //console.table(roads, Object.keys(roads))
-        // roads.map(road => console.table(road, ["x", "y"]))
 
+        if (window.confirm('Would you like to download this drawing as SVG file ?')) {
 
-        //        console.log(JSON.stringify(roads))
-        //        console.log(JSON.stringify(builds))
+            isSaving = true
+            const date = new Date;
+            const filename = 'Mondrian-City.' + date.getFullYear() + '-' + date.getMonth() + '-' +
+                date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
+                date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0.svg'
+
+            computeSVG(roads, builds, palette, paperColor, svgContainerId)
+            exportSVG(svgContainerId, filename)
+            isSaving = false
+        }
+
     }
 
 }
-////////////////////////////////////////////////////
-let P5 = new p5(sketch, containerElement)
-document.body.removeChild(loader)
-
-var resizeTimeout;
-window.addEventListener('resize', function(event) {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function() {
-        containerElement.removeChild(containerElement.getElementsByClassName('p5Canvas')[0])
-        let P5 = new p5(sketch, containerElement)
-    }, 500);
-});
-////////////////////////////////////////////////////
+export default sketch

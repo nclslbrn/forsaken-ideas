@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////
 import * as tome from 'chromotome';
 let palette = tome.getRandom();
 
