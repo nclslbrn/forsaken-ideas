@@ -3,6 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const publicFolder = './public/sketch/'
 
 function fileList(dir) {
@@ -85,7 +86,11 @@ module.exports = (env, argv) => {
             }),
             new MiniCssExtractPlugin({
                 filename: 'css/[name].css'
-            })
+            }),
+            new CopyWebpackPlugin([{
+                from: path.resolve(__dirname, 'src/img', ),
+                to: path.resolve(__dirname, 'public/img'),
+            }])
         ],
         devtool: mode == 'production' ? 'nosources-source-map' : 'source-map'
     }

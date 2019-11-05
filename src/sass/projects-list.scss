@@ -2,7 +2,8 @@
 
 header.headimg {
   padding-bottom: 30%;
-  background: #355545;
+  background: center / cover no-repeat
+    url(../img/Mondrian-City.2019-10-2_14.34.29--copyright_Nicolas_Lebrun_CC-by-3.0.svg);
 }
 main {
   padding: 1em 3em;
@@ -20,7 +21,11 @@ section.projects {
   }
 }
 aside {
-  margin-right: 2em;
+  margin-right: 5em;
+  #acronym {
+    text-transform: capitalize;
+    cursor: pointer;
+  }
 
   p {
     max-width: 300px;
