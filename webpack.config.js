@@ -7,13 +7,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin")
 
+
 module.exports = (env, argv) => {
 
     const project = argv._[0]
     const entry = './' + project + '/index.js'
-    const ext_libs = require('./' + project + '/ext_libs.json')
+    const property = require('./' + project + '/property.json')
     const mode = argv.mode == 'production' ? 'production' : 'development'
-
+    const unescapeTitle = (title) => {
+        const addSpace = title.replace(/-/g, ' ')
+        const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
+        return capitalize
+    }
     if (mode && project) {
 
         const config = {
@@ -93,7 +98,8 @@ module.exports = (env, argv) => {
                 new HtmlWebpackPlugin({
                     templateParameters: {
                         'project': project,
-                        'ext_libs': ext_libs,
+                        'title': unescapeTitle(project),
+                        'property': property,
                         'srcPath': '../../'
                     },
                     filename: './index.html',

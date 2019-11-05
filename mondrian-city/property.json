@@ -3,5 +3,6 @@
         "p5",
         "p5Collide2D",
         "svg"
-    ]
+    ],
+    "info": "Pietr Mondrian"
 }

@@ -9,8 +9,8 @@ const makeGrid = (cellWidth) => {
         "cols": cols,
         "rows": rows,
         "cellWidth": cellWidth,
-        "outerXMargin": outerXMargin,
-        "outerY%argin": outerYMargin
+        "outerXMargin": outerXMargin / 2,
+        "outerYMargin": outerYMargin / 2
 
     }
     return grid
