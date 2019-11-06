@@ -1,0 +1,6 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "This animation is building by creating arcs with random angles and interpolate a noise value to make them evolve as waves."
+}
