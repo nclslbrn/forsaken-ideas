@@ -1,6 +1,7 @@
 'use strict'
 import style from '../src/sass/project.scss'
 import sketch from './cyclic-wave'
+import show_hide_info from '../src/js/show-hide-info'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')
@@ -16,3 +17,5 @@ window.addEventListener('resize', function (event) {
         let P5 = new p5(sketch, containerElement)
     }, 500);
 });
+
+show_hide_info();

@@ -1,7 +1,7 @@
 const sketch = (p5) => {
 
     let arcs = []
-    let numFrames = 75
+    let numFrames = 125
     let margin = 12, // margin between circle
         noiseScale = 256,
         noiseRadius = 3,
