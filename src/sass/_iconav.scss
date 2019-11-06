@@ -1,0 +1,56 @@
+nav#iconav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.15rem;
+    width: 3rem;
+    height: 6rem;
+    border: none;
+    z-index: 10;
+}
+
+
+nav#iconav ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: stretch;
+    width: 3rem;
+    list-style-type: none;
+
+    >li {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    >li:first-child {
+        border-top-left-radius: 1.5rem;
+        border-top-right-radius: 1.5rem;
+    }
+
+    >li:last-child {
+        border-bottom-left-radius: 1.5rem;
+        border-bottom-right-radius: 1.5rem;
+    }
+
+    >li:first-child,
+    >li:last-child {
+        overflow: hidden;
+    }
+}
+
+nav#iconav a {
+    display: block;
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    line-height: 1rem;
+    text-align: center;
+    text-decoration: none;
+
+    svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: rgba(255, 255, 255, 0.5);
+    }
+}
