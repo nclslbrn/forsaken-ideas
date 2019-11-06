@@ -21,8 +21,12 @@ body
       .double-bounce2
 
   #info-box
-    h1 #{title}
-    p #{property.info}
+    div
+      svg.close.icon.icon-cross
+        use(xlink:href="#icon-cross")
+
+      h1 #{title}
+      p #{property.info}
 
 
   if property.libs.includes('p5')
