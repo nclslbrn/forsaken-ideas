@@ -2,5 +2,11 @@
     "libs": [
         "p5"
     ],
-    "info": "Barycenter scale/coordinates is used to know if a point is within a triangle. These point give a pencil drawing aspect to this script"
+    "info": "Barycenter scale/coordinates is used to know if a point is within a triangle. These point give a pencil drawing aspect to this script.",
+    "action": [
+        {
+            "name": "exportPNG",
+            "icon": "printer"
+        }
+    ]
 }

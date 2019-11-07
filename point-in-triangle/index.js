@@ -1,6 +1,8 @@
 'use strict'
 import style from '../src/sass/project.scss'
 import sketch from './point-in-triangle'
+import infobox from '../src/js/infobox'
+import handleAction from '../src/js/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')
@@ -14,7 +16,9 @@ window.addEventListener('resize', function (event) {
     resizeTimeout = setTimeout(function () {
         containerElement.removeChild(containerElement.getElementsByClassName('p5Canvas')[0])
         let P5 = new p5(sketch, containerElement)
-    }, 500);
-});
+    }, 500)
+})
 
-containerElement.addEventListener('click', function (event) {})
+window.exportPNG = sketch.exportPNG
+window.infobox = infobox
+handleAction()

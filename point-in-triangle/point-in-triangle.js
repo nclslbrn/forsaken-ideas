@@ -160,6 +160,14 @@ const sketch = (p5) => {
         const c = p5.color(aColor)
         return p5.color('rgba(' + [p5.red(c), p5.green(c), p5.blue(c), alpha].join(',') + ')')
     }
+
+    sketch.exportPNG = () => {
+        const date = new Date;
+        const filename = 'Point-in-triangle.' + date.getFullYear() + '-' + date.getMonth() + '-' +
+            date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
+            date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0'
+        p5.saveCanvas(cacheCanvas, filename, 'png')
+    }
 }
 
 export default sketch
