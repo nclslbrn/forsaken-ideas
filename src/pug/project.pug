@@ -9,43 +9,16 @@
 //| https://github.com/nclslbrn/make |
 //+----------------------------------+
 
+doctype html
 html(lang="en")
-  include parts/head.pug
+    include parts/head.pug
+
 body
-  include parts/svg-defs.pug
-  include parts/nav.pug
-  
-  #loading
-    .spinner
-      .double-bounce1
-      .double-bounce2
-
-  #info-box
-    div
-      svg.close.icon.icon-cross
-        use(xlink:href="#icon-cross")
-
-      h1 #{title}
-      p #{property.info}
-
-
-  if property.libs.includes('p5')
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js")
-  
-  else if property.libs.includes("p5-dom")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js")
-  
-  else if property.libs.includes("p5-sound")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js")
-
-  else if property.libs.includes("p5.collide2D")
-    script(src="https://cdn.JsDelivr.net/gh/bmoren/p5.collide2D/p5.collide2d.min.js")
-  
-  else if property.libs.includes("p5.js-svg")
-    script(src="https://cdn.JsDelivr.net/gh/zenozeng/p5.js-svg/dist/p5.svg.js")
-
-  else if property.libs.includes('three')
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.js")
-  
-  else if property.libs.includes('svg')
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.min.js")
+    include parts/svg-defs.pug
+    include parts/iconav.pug
+    +iconav(property)
+    include parts/spinner.pug
+    include parts/info-box.pug
+    +infobox(property)
+    include parts/libs.pug
+    +libs(property)
