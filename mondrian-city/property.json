@@ -6,6 +6,9 @@
     ],
     "info": "This sketch show us  city from top view which could be imaginated by Pietr Mondrian. It draws random street lines then places building on white space. The library <a href='https://github.com/bmoren/p5.collide2D'>p5Collide2D</a> is used to detect if the random location of a building is hover a street.",
     "action": [
-        "downloadSVG"
+        {
+            "name": "downloadSVG",
+            "icon": "printer"
+        }
     ]
 }

@@ -1,6 +1,3 @@
-import computeSVG from './computeSVG'
-import exportSVG from './exportSVG'
-
 const palette = {
     colors: ['#F60201', '#FDED01', '#1F7FC9'],
     background: '#999999'
@@ -9,7 +6,6 @@ let isSaving = false
 let roads = []
 let builds = []
 let margin = 0.25
-const svgContainerId = 'svg-clipboard'
 
 const sketch = (p5) => {
 
@@ -156,22 +152,13 @@ const sketch = (p5) => {
             p5.endShape(p5.CLOSE)
         }
     }
-
-    p5.mousePressed = () => {
-
-        if (window.confirm('Would you like to download this drawing as SVG file ?')) {
-
-            isSaving = true
-            const date = new Date;
-            const filename = 'Mondrian-City.' + date.getFullYear() + '-' + date.getMonth() + '-' +
-                date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
-                date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0.svg'
-
-            computeSVG(roads, builds, palette, paperColor, svgContainerId)
-            exportSVG(svgContainerId, filename)
-            isSaving = false
+    sketch.getCityData = () => {
+        return {
+            "roads": roads,
+            "builds": builds,
+            "palette": palette,
+            "paperColor": paperColor,
         }
-
     }
 
 }
