@@ -1,11 +1,9 @@
 const palette = {
     colors: ['#F60201', '#FDED01', '#1F7FC9'],
-    background: '#999999'
+    background: '#333333'
 }
-let isSaving = false
 let roads = []
 let builds = []
-let margin = 0.25
 
 const sketch = (p5) => {
 
@@ -52,13 +50,6 @@ const sketch = (p5) => {
             p.y + (p.orientation ? halfHeight : halfWidth)
         )
 
-        if (
-            (p.x > window.innerWidth * margin && p.x < window.innerWidth * (1 - margin)) ||
-            (p.y > window.innerHeight * margin && p.y < window.innerHeight * (1 - margin))
-        ) {
-            clockwise = false
-        }
-
         rotatePoly = poly
 
         for (let polyId = 0; polyId < poly.length; polyId++) {
@@ -73,32 +64,35 @@ const sketch = (p5) => {
         return rotatePoly
 
     }
+    const init = () => {
 
-    p5.setup = () => {
-        p5.createCanvas(window.innerWidth, window.innerHeight)
-        p5.angleMode(p5.DEGREES)
         p5.background(paperColor)
-        p5.noStroke()
-        p5.collideDebug(false)
+
+        roads.length = 0
+        builds.length = 0
 
         for (let c = 0; c < palette.colors.length; c++) {
             builds[c] = []
         }
     }
 
+    p5.setup = () => {
+        p5.createCanvas(window.innerWidth, window.innerHeight)
+        p5.angleMode(p5.DEGREES)
+        p5.noStroke()
+        p5.collideDebug(false)
+        init();
+    }
+
     p5.draw = () => {
         p5.push()
-        if (!isSaving) { //&& p5.frameCount % 8 == 0) {
 
-            if (roads.length < maxRoad) {
-                p5.computeRoad()
-            }
-            if (roads.length == maxRoad) {
-                p5.computeBuilding()
-            }
+        if (roads.length < maxRoad) {
+            p5.computeRoad()
         }
-
-
+        if (roads.length == maxRoad) {
+            p5.computeBuilding()
+        }
         p5.pop()
     }
 
@@ -152,6 +146,7 @@ const sketch = (p5) => {
             p5.endShape(p5.CLOSE)
         }
     }
+    sketch.init = init
     sketch.getCityData = () => {
         return {
             "roads": roads,

@@ -26,7 +26,7 @@ window.addEventListener('resize', function (event) {
 
 const downloadSVG = () => {
 
-    if (window.confirm('Would you like to download this drawing as SVG file ?')) {
+    if (window.confirm('Would you like to download the actual sketch as SVG file ?')) {
 
         const svgContainerId = 'svg-clipboard'
         const {
@@ -47,5 +47,6 @@ const downloadSVG = () => {
 }
 
 window.downloadSVG = downloadSVG
+window.init = sketch.init
 window.infobox = infobox
 handleAction()
