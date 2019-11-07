@@ -19,4 +19,5 @@ window.addEventListener('resize', function (event) {
     }, 500);
 });
 
-show_hide_info();
+window.infobox = infobox
+handleAction()
