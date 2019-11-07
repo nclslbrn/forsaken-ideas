@@ -1,23 +1,27 @@
 mixin iconav(property)
-	nav#iconav
-		ul
-			li
-				a(href="../../") 
-					span.screen-reader-text Back
-					svg.icon.icon-forward
-						use(xlink:href="#icon-home")
-			li
-				a(data-target="info-box" href="#")
-					span.screen-reader-text Info
-					svg.icon.icon-forward
-						use(xlink:href="#icon-book")
+    nav#iconav
+        ul
+            li
+                a(href="../../") 
+                    span.screen-reader-text Back
+                    svg.icon.icon-forward
+                        use(xlink:href="#icon-home")
+            li
+                a(href="#" data-action="infobox")
+                    span.screen-reader-text Info
+                    svg.icon.icon-forward
+                        use(xlink:href="#icon-book")
 
 
 
-			if property.action != null
-				each action in property.action
-					li
-						a(data-target=action href="#")
-							span.screen-reader-text action
-							svg.icon.icon-cog
-								use(xlink:href="#icon-cog")
+            if property.action != null
+                each action in property.action
+                    if action.name != null
+                        li
+                            a(data-action=action.name href="#")
+                                span.screen-reader-text action.name
+                                svg.icon.icon-cog
+                                    if action.icon != null
+                                        use(xlink:href="#icon-"+ action.icon)
+                                    else
+                                        use(xlink:href="#icon-cog")

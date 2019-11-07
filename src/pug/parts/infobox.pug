@@ -1,0 +1,9 @@
+mixin infobox(title, property)
+    #infobox
+        div
+            a(href="#" data-action="infobox")
+                svg.close.icon.icon-cross
+                    use(xlink:href="#icon-cross")
+
+            h1 #{title}
+            p #{property.info}

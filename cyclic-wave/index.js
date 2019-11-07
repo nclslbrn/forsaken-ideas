@@ -1,7 +1,8 @@
 'use strict'
 import style from '../src/sass/project.scss'
 import sketch from './cyclic-wave'
-import show_hide_info from '../src/js/show-hide-info'
+import infobox from '../src/js/infobox'
+import handleAction from '../src/js/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')
@@ -16,6 +17,6 @@ window.addEventListener('resize', function (event) {
         containerElement.removeChild(containerElement.getElementsByClassName('p5Canvas')[0])
         let P5 = new p5(sketch, containerElement)
     }, 500);
-});
-
-show_hide_info();
+})
+window.infobox = infobox
+handleAction()

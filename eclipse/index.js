@@ -1,7 +1,8 @@
 'use strict'
 import style from '../src/sass/project.scss'
 import sketch from './eclipse'
-import show_hide_info from '../src/js/show-hide-info'
+import infobox from '../src/js/infobox'
+import handleAction from '../src/js/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')
