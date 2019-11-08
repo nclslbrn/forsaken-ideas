@@ -2,12 +2,12 @@ mixin iconav(property)
     nav#iconav
         ul
             li
-                a(href="../../") 
+                a(href="../../" title="Home") 
                     span.screen-reader-text Back
                     svg.icon.icon-forward
                         use(xlink:href="#icon-home")
             li
-                a(href="#" data-action="infobox")
+                a(href="#" data-action="infobox" title="Information")
                     span.screen-reader-text Info
                     svg.icon.icon-bubble
                         use(xlink:href="#icon-bubble")
@@ -18,7 +18,7 @@ mixin iconav(property)
                 each action in property.action
                     if action.name != null
                         li
-                            a(data-action=action.name href="#")
+                            a(data-action=action.name href="#" title=action.name)
                                 span.screen-reader-text action.name
                                 svg.icon.icon-cog
                                     if action.icon != null
@@ -28,7 +28,7 @@ mixin iconav(property)
 
 
             li
-                a(href="https://github.com/nclslbrn/make/tree/master/"+ project)
+                a(href="https://github.com/nclslbrn/make/tree/master/"+ project title="code")
                     span.screen-reader-text Info
                     svg.icon.icon-forward
                         use(xlink:href="#icon-book")
