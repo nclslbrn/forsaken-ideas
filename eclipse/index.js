@@ -1,6 +1,6 @@
 'use strict'
 import style from '../src/sass/project.scss'
-import fullCanvas from '../src/sass/modules/fullCanvas'
+import fullCanvas from '../src/sass/full-canvas.scss'
 import sketch from './eclipse'
 import infobox from '../src/js/infobox'
 import handleAction from '../src/js/handle-action'

@@ -1,6 +1,6 @@
 'use strict'
 import style from '../src/sass/project.scss'
-import fullCanvas from '../src/sass/modules/fullCanvas'
+import fullCanvas from '../src/sass/full-canvas.scss'
 import dedicated_style from './mondrian-city.scss'
 import p5 from 'p5'
 import p5Collide2D from '../tools/p5.collide2D/p5.collide2d.min'
