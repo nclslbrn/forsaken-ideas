@@ -39,6 +39,7 @@ const sketch = (p5) => {
 
             points[p].x += points[p].vx
             points[p].y += points[p].vy
+            // TODO: Save for each point every positon to be exported as path(d="...") by svg.js
 
             points[p].vx *= 0.99
             points[p].vy *= 0.99
