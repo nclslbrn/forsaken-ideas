@@ -1,4 +1,10 @@
 aside {
+  @include breakpoint(md) {
+    * {
+      padding-right: 4rem;
+    }
+  }
+
   #acronym {
     text-transform: capitalize;
     cursor: pointer;

@@ -6,7 +6,7 @@
     "scripts": {
         "watch": "webpack-dev-server",
         "export": "webpack -p",
-        "export-all": "rm -r public/sketch/* && webpack --config webpack.export-all.js",
+        "export-all": "rm -r public/sketch/* && webpack --config webpack.export-all.js && webpack -p --config webpack.list-projects.js",
         "watch-index": "webpack-dev-server --config webpack.list-projects.js",
         "index": "webpack -p --config webpack.list-projects.js"
     },

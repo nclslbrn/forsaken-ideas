@@ -1,0 +1,12 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "Sketch based on a tutorial by <a href='https://github.com/bit101'>Keith Peters</a> explaining how use Clifford Attractors.",
+    "action": [
+        {
+            "name": "init",
+            "icon": "refresh"
+        }
+    ]
+}
