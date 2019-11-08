@@ -1,3 +1,5 @@
+@import "variables";
+@import "mixins";
 @import "commons";
 
 header.headimg {
@@ -6,11 +8,17 @@ header.headimg {
     url(../img/Mondrian-City.2019-10-2_14.34.29--copyright_Nicolas_Lebrun_CC-by-3.0.svg);
 }
 main {
+  display: block;
   padding: 1em 3em;
 }
+
+@import "modules/aside";
+@import "modules/project-section";
+
 aside,
-section.projects {
+section.project {
   ul {
+    margin-left: 0;
     padding: 0;
     list-style-type: none;
 
@@ -20,28 +28,42 @@ section.projects {
     }
   }
 }
-aside {
-  margin-right: 5em;
-  #acronym {
-    text-transform: capitalize;
-    cursor: pointer;
-  }
+@import "modules/columns";
 
-  p {
-    max-width: 300px;
+section.project {
+  display: block;
+  float: right;
+  @include breakpoint(xs) {
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+  @include breakpoint(sm) {
+    width: 50%;
+  }
+  @include breakpoint(md) {
+    margin-top: 4.5rem;
+    width: 66%;
+  }
+  @include breakpoint(lg) {
+    width: 70%;
+  }
+  @include breakpoint(xl) {
+    width: 80%;
+  }
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    float: none;
   }
 }
-section.projects {
-  padding-top: 0.5em;
-}
-section.projects ul li {
-  padding-bottom: 1em;
-}
-section.projects ul li a {
-  text-transform: uppercase;
-}
-.column {
-  display: block;
-  width: 20%;
-  float: left;
+aside.column.about {
+  clear: both;
+  float: none;
+  @include breakpoint(xs) {
+    border-top: 1px solid #333;
+  }
+  @include breakpoint(sm) {
+    border-top: none;
+  }
 }

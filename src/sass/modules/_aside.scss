@@ -1,0 +1,16 @@
+aside {
+  #acronym {
+    text-transform: capitalize;
+    cursor: pointer;
+  }
+
+  p {
+    max-width: 300px;
+  }
+  ul {
+    margin-top: 0.5rem;
+  }
+  ul li {
+    margin-bottom: 0.5rem;
+  }
+}

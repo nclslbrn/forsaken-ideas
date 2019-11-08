@@ -21,14 +21,24 @@ html(lang="en")
     
     main
       
-      aside.column
+      aside.column.info
         h1 A.R.T.E.M.G
         h3#acronym
         p 
           | This website showcases various experiments with 
           | great JavaScript libraries and HTML5 canvas API.
-          | 
-        
+
+      section.project
+
+        each col in columns
+
+          div.column
+            ul
+              each project in col
+                li
+                  a(href="./sketch/" + project ) #{unescapeTitle(project)}
+
+      aside.column.about
         ul
           li  
             a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
@@ -39,13 +49,3 @@ html(lang="en")
           li  
             a(href="https://www.instagram.com/nclslbrn/") Instagram
         p - Nicolas Lebrun 
-
-      section.projects
-
-        each col in columns
-
-          div.column
-            ul
-              each project in col
-                li
-                  a(href="./sketch/" + project ) #{project}

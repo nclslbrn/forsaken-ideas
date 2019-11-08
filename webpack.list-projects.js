@@ -13,6 +13,11 @@ function fileList(dir) {
         return list.concat(isDir ? [file] : null);
     }, []);
 }
+const unescapeTitle = (title) => {
+    const addSpace = title.replace(/-/g, ' ')
+    const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
+    return capitalize
+}
 
 module.exports = (env, argv) => {
 
@@ -78,7 +83,8 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 templateParameters: {
                     'projects': projects,
-                    'srcPath': './'
+                    'srcPath': './',
+                    'unescapeTitle': unescapeTitle
                 },
                 filename: './index.html',
                 template: './src/pug/projects-list.pug',

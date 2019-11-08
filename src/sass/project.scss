@@ -1,19 +1,4 @@
 @import "commons";
-
-body {
-  padding: 0;
-  margin: 0;
-  background: #333;
-}
-
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-}
-
-@import "spinner";
-@import "iconav";
-@import "infobox"
+@import "modules/spinner";
+@import "modules/iconav";
+@import "modules/infobox";

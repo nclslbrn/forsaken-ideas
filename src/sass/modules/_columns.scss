@@ -1,0 +1,29 @@
+aside.column {
+  @include breakpoint(sm) {
+    display: block;
+    width: 40%;
+    float: left;
+  }
+  @include breakpoint(md) {
+    display: block;
+    width: 33%;
+    float: left;
+  }
+  @include breakpoint(lg) {
+    display: block;
+    width: 20%;
+    float: left;
+  }
+  @include breakpoint(xl) {
+    display: block;
+    width: 20%;
+    float: left;
+  }
+}
+section.project > .column {
+  @include breakpoint(md) {
+    display: block;
+    width: 33%;
+    float: left;
+  }
+}
