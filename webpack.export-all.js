@@ -4,9 +4,6 @@ const fs = require('fs')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const {
-    CleanWebpackPlugin
-} = require('clean-webpack-plugin');
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin")
 const publicFolder = './public/sketch/'
 
@@ -85,7 +82,6 @@ const commonsConfig = (project, entry, title, property) => {
         },
 
         plugins: [
-            new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 templateParameters: {
                     'project': project,
@@ -140,6 +136,8 @@ const unescapeTitle = (title) => {
     const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
     return capitalize
 }
+
+
 const projects = fileList('./')
 const projectsConfig = []
 
