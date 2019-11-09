@@ -20,5 +20,8 @@ window.addEventListener('resize', function(event) {
     }, 500)
 })
 window.init = sketch.init
+window.getLineData = sketch.getLineData
+// test before implement SVG built
+window.downloadSVG = sketch.getLineData
 window.infobox = infobox
 handleAction()

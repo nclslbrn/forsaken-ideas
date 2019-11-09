@@ -9,6 +9,9 @@ const sketch = (p5) => {
 
     const initPoints = []
     let points = []
+    let pointsHistory = []
+    let newLineCrossRef = []
+
     const width = window.innerWidth * 0.75
     const height = window.innerHeight * 0.75
 
@@ -23,6 +26,7 @@ const sketch = (p5) => {
                 "vx": 0,
                 "vy": 0
             })
+            pointsHistory.push([])
         }
         sketch.init()
     }
@@ -39,15 +43,38 @@ const sketch = (p5) => {
 
             points[p].x += points[p].vx
             points[p].y += points[p].vy
-            // TODO: Save for each point every positon to be exported as path(d="...") by svg.js
+
+            if (newLineCrossRef.includes(p)) {
+                pointsHistory[newLineCrossRef[p]].push({
+                    'x': points[p].x,
+                    'y': points[p].y
+                })
+            } else {
+                pointsHistory[p].push({
+                    'x': points[p].x,
+                    'y': points[p].y
+                })
+            }
+
 
             points[p].vx *= 0.99
             points[p].vy *= 0.99
 
-            if (points[p].x > width) points[p].x = 0;
-            if (points[p].y > height) points[p].y = 0;
-            if (points[p].x < 0) points[p].x = width;
-            if (points[p].y < 0) points[p].y = height;
+            if (points[p].x > width) points[p].x = 0
+            if (points[p].y > height) points[p].y = 0
+            if (points[p].x < 0) points[p].x = width
+            if (points[p].y < 0) points[p].y = height
+
+            if (
+                points[p].x > width ||
+                points[p].y > height ||
+                points[p].x < 0 ||
+                points[p].y < 0
+            ) {
+                newLineCrossRef[p] = pointsHistory.length
+                pointsHistory.push([])
+            }
+
         }
     }
     sketch.init = () => {
@@ -59,8 +86,12 @@ const sketch = (p5) => {
         points = initPoints.map(p => ({
             ...p
         }))
-        p5.background(255)
+        p5.background(255, 250, 245)
+    }
+    sketch.getLineData = () => {
 
+        console.log('initial line count: ' + points.length + ' svg line count: ' + pointsHistory.length);
+        return pointsHistory
     }
 
     const cliffordAttractor = (x, y) => {
