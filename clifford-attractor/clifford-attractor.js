@@ -60,20 +60,23 @@ const sketch = (p5) => {
             points[p].vx *= 0.99
             points[p].vy *= 0.99
 
-            if (points[p].x > width) points[p].x = 0
-            if (points[p].y > height) points[p].y = 0
-            if (points[p].x < 0) points[p].x = width
-            if (points[p].y < 0) points[p].y = height
-
             if (
                 points[p].x > width ||
                 points[p].y > height ||
                 points[p].x < 0 ||
                 points[p].y < 0
             ) {
+                // create a new entry on points history and a new ref
                 newLineCrossRef[p] = pointsHistory.length
                 pointsHistory.push([])
             }
+
+            if (points[p].x > width) points[p].x = 0
+            if (points[p].y > height) points[p].y = 0
+            if (points[p].x < 0) points[p].x = width
+            if (points[p].y < 0) points[p].y = height
+
+
 
         }
     }
@@ -90,7 +93,6 @@ const sketch = (p5) => {
     }
     sketch.getLineData = () => {
 
-        console.log('initial line count: ' + points.length + ' svg line count: ' + pointsHistory.length);
         return pointsHistory
     }
 

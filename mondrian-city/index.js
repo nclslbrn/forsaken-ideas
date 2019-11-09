@@ -6,7 +6,7 @@ import p5 from 'p5'
 import p5Collide2D from '../tools/p5.collide2D/p5.collide2d.min'
 import sketch from './mondrian-city'
 import computeSVG from './computeSVG'
-import exportSVG from './exportSVG'
+import exportSVG from '../tools/exportSVG'
 import infobox from '../src/js/infobox'
 import handleAction from '../src/js/handle-action'
 
@@ -17,9 +17,9 @@ const P5 = new p5(sketch, containerElement)
 document.body.removeChild(loader)
 
 var resizeTimeout;
-window.addEventListener('resize', function(event) {
+window.addEventListener('resize', function (event) {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function() {
+    resizeTimeout = setTimeout(function () {
         containerElement.removeChild(containerElement.getElementsByClassName('p5Canvas')[0])
         let P5 = new p5(sketch, containerElement)
     }, 500)
