@@ -1,12 +1,12 @@
 import * as SVG from 'svg.js'
 
-const computeSVG = (points, color, svgContainerId) => {
+const computeSVG = (points, color, svgContainerId, width, height) => {
 
     const svgContainer = document.createElement('div')
     svgContainer.id = svgContainerId
     svgContainer.setAttribute(
         'style',
-        'display: block; width: ' + window.innerWidth + 'px; height: ' + window.innerHeight + 'px;'
+        'display: block; width: ' + width + 'px; height: ' + height + 'px;'
     )
     if (document.getElementById(svgContainerId) == null) {
         document.body.appendChild(svgContainer)
@@ -14,7 +14,7 @@ const computeSVG = (points, color, svgContainerId) => {
         document.getElementById(svgContainerId).innerHTML = '';
     }
 
-    const draw = SVG(svgContainerId).size(window.innerWidth + 'px', window.innerHeight + 'px')
+    const draw = SVG(svgContainerId).size(width + 'px', height + 'px')
 
     /* debug  hide the canvas */
     if (document.getElementsByClassName('p5Canvas')[0]) {
@@ -22,22 +22,21 @@ const computeSVG = (points, color, svgContainerId) => {
     }
 
     for (let curve = 0; curve < points.length; curve++) {
+
         if (points[curve].length > 0) {
 
-            let curvePoints = points[curve].map(p => p.x + ' ' + p.y).flat()
-            console.log(curvePoints)
+            let pathArray = []
+            pathArray.push(['M', points[curve][0].x, points[curve][0].y])
 
+            for (let pos = 1; pos < points[curve].length; pos++) {
+                pathArray.push(['L', points[curve][pos].x, points[curve][pos].y])
+            }
+            pathArray.push(['Z'])
+
+            let path = draw.path(new SVG.PathArray(pathArray))
+            path.stroke(color)
+            path.fill('rgba(0, 0, 0, 0)')
         }
-
-        /*
-                let curvePoints = ''
-                console.log(points[curve])
-                for (let p = 0; p < points[curve].length; p++) {
-                    curvePoints += points[curve][p].x + ' ' + points[curve][p].y + ' '
-                }
-                const curve = draw.path(curvePoints)
-                curve.stroke(color)
-        */
     }
 
 }

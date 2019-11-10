@@ -28,13 +28,13 @@ const downloadSVG = () => {
     // if (window.confirm('Would you like to download the actual sketch as SVG file ?')) {
 
     const svgContainerId = 'svg-clipboard'
-    const points = sketch.getLineData()
+    const { points, width, height } = sketch.getSketchProperties()
     const date = new Date;
-    const filename = 'Mondrian-City.' + date.getFullYear() + '-' + date.getMonth() + '-' +
+    const filename = 'Clifford-Attractor.' + date.getFullYear() + '-' + date.getMonth() + '-' +
         date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
         date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0.svg'
 
-    computeSVG(points, '#333', svgContainerId)
+    computeSVG(points, '#333', svgContainerId, width, height)
     //exportSVG(svgContainerId, filename)
 
     // }

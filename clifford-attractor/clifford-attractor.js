@@ -2,10 +2,7 @@ const sketch = (p5) => {
 
     const res = 5
 
-    let a = Math.random() * 4 - 2,
-        b = Math.random() * 4 - 2,
-        c = Math.random() * 4 - 2,
-        d = Math.random() * 4 - 2
+    let a, b, c, d = 0
 
     const initPoints = []
     let points = []
@@ -91,9 +88,13 @@ const sketch = (p5) => {
         }))
         p5.background(255, 250, 245)
     }
-    sketch.getLineData = () => {
+    sketch.getSketchProperties = () => {
 
-        return pointsHistory
+        return {
+            'points': pointsHistory,
+            'width': width,
+            'height': height
+        }
     }
 
     const cliffordAttractor = (x, y) => {
