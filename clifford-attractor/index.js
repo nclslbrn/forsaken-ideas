@@ -32,7 +32,7 @@ const downloadSVG = () => {
     const date = new Date;
     const filename = 'Clifford-Attractor.' + date.getFullYear() + '-' + date.getMonth() + '-' +
         date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
-        date.getSeconds() + '--copyright_Nicolas_Lebrun_CC-by-3.0.svg'
+        date.getSeconds() + '--Nicolas_Lebrun.svg'
 
     computeSVG(points, '#333', svgContainerId, width, height)
     //exportSVG(svgContainerId, filename)

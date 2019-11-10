@@ -31,7 +31,7 @@ const computeSVG = (points, color, svgContainerId, width, height) => {
             for (let pos = 1; pos < points[curve].length; pos++) {
                 pathArray.push(['L', points[curve][pos].x, points[curve][pos].y])
             }
-            pathArray.push(['Z'])
+            //don't close path pathArray.push(['Z'])
 
             let path = draw.path(new SVG.PathArray(pathArray))
             path.stroke(color)
