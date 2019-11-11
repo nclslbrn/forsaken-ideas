@@ -14,9 +14,9 @@ const P5 = new p5(sketch, containerElement)
 document.body.removeChild(loader)
 
 var resizeTimeout;
-window.addEventListener('resize', function (event) {
+window.addEventListener('resize', function(event) {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function () {
+    resizeTimeout = setTimeout(function() {
         containerElement.removeChild(containerElement.getElementsByClassName('p5Canvas')[0])
         let P5 = new p5(sketch, containerElement)
     }, 500)
@@ -28,13 +28,17 @@ const downloadSVG = () => {
     // if (window.confirm('Would you like to download the actual sketch as SVG file ?')) {
 
     const svgContainerId = 'svg-clipboard'
-    const { points, width, height } = sketch.getSketchProperties()
+    const {
+        points,
+        width,
+        height
+    } = sketch.getSketchProperties()
     const date = new Date;
     const filename = 'Clifford-Attractor.' + date.getFullYear() + '-' + date.getMonth() + '-' +
         date.getDay() + '_' + date.getHours() + '.' + date.getMinutes() + '.' +
         date.getSeconds() + '--Nicolas_Lebrun.svg'
 
-    computeSVG(points, '#333', svgContainerId, width, height)
+    computeSVG(points, 'rgba(0,0,0,0.1)', svgContainerId, width, height)
     //exportSVG(svgContainerId, filename)
 
     // }
