@@ -42,24 +42,18 @@ const sketch = (p5) => {
 
             p5.line(points[p].x, points[p].y, points[p].x + points[p].vx, points[p].y + points[p].vy)
 
+
             if (
-                points[p].x + points[p].vx > width ||
-                points[p].y + points[p].vy > height ||
-                points[p].x + points[p].vx < 0 ||
-                points[p].y + points[p].vy < 0
+                points[p].x + points[p].vx > width - 1 ||
+                points[p].y + points[p].vy > height - 1 ||
+                points[p].x + points[p].vx < 1 ||
+                points[p].y + points[p].vy < 1
             ) {
                 // create a new entry on points history and a new ref
 
-                if (typeof(newLineCrossRef[p]) != 'undefined') {
-                    newLineCrossRef[p] = 'undefined'
-                    newLineCrossRef[newLineCrossRef[p]] = pointsHistory.length
-
-                } else {
-                    newLineCrossRef[p] = pointsHistory.length
-                }
+                newLineCrossRef[p] = pointsHistory.length
                 pointsHistory[pointsHistory.length] = []
             }
-
 
             points[p].x += points[p].vx
             points[p].y += points[p].vy
@@ -81,14 +75,16 @@ const sketch = (p5) => {
 
             }
 
-            /*
-                        points[p].vx *= 0.99
-                        points[p].vy *= 0.99
-            */
+
+            points[p].vx *= 0.99
+            points[p].vy *= 0.99
+
             if (points[p].x > width) points[p].x = 0
             if (points[p].y > height) points[p].y = 0
-            if (points[p].x < 0) points[p].x = width
-            if (points[p].y < 0) points[p].y = height
+            if (points[p].x < 0) points[p].x = width - 0
+            if (points[p].y < 0) points[p].y = height - 0
+
+
 
         }
     }

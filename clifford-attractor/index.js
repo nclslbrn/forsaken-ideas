@@ -40,8 +40,6 @@ const downloadSVG = () => {
 
     computeSVG(points, 'rgba(0,0,0,0.1)', svgContainerId, width, height)
     //exportSVG(svgContainerId, filename)
-
-    // }
 }
 
 window.downloadSVG = downloadSVG

@@ -16,11 +16,11 @@ const computeSVG = (points, color, svgContainerId, width, height) => {
 
     const draw = SVG(svgContainerId).size(width + 'px', height + 'px')
 
-    /* debug  hide the canvas */
+    /* debug  hide the canvas 
     if (document.getElementsByClassName('p5Canvas')[0]) {
         document.getElementsByClassName('p5Canvas')[0].style.display = 'none';
     }
-
+    */
     for (let curve = 0; curve < points.length; curve++) {
 
         if (points[curve].length > 0) {
@@ -34,8 +34,11 @@ const computeSVG = (points, color, svgContainerId, width, height) => {
             //don't close path pathArray.push(['Z'])
 
             let path = draw.path(new SVG.PathArray(pathArray))
-            path.stroke(color)
-            path.fill('rgba(0, 0, 0, 0)')
+            path.attr({
+                'fill': 'rgba(0, 0, 0, 0)',
+                'stroke': color,
+                'stroke-width': 0.5
+            })
         }
     }
 
