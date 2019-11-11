@@ -1,3 +1,7 @@
+import {
+    newExpression
+} from "babel-types"
+
 const sketch = (p5) => {
 
     const res = 5
@@ -39,13 +43,20 @@ const sketch = (p5) => {
             p5.line(points[p].x, points[p].y, points[p].x + points[p].vx, points[p].y + points[p].vy)
 
             if (
-                points[p].x + points[p].vx > width - 10 ||
-                points[p].y + points[p].vy > height - 10 ||
-                points[p].x + points[p].vx < 10 ||
-                points[p].y + points[p].vy < 10
+                points[p].x + points[p].vx > width ||
+                points[p].y + points[p].vy > height ||
+                points[p].x + points[p].vx < 0 ||
+                points[p].y + points[p].vy < 0
             ) {
                 // create a new entry on points history and a new ref
-                newLineCrossRef[p] = pointsHistory.length
+
+                if (typeof(newLineCrossRef[p]) != 'undefined') {
+                    newLineCrossRef[p] = 'undefined'
+                    newLineCrossRef[newLineCrossRef[p]] = pointsHistory.length
+
+                } else {
+                    newLineCrossRef[p] = pointsHistory.length
+                }
                 pointsHistory[pointsHistory.length] = []
             }
 
@@ -70,10 +81,10 @@ const sketch = (p5) => {
 
             }
 
-
-            points[p].vx *= 0.99
-            points[p].vy *= 0.99
-
+            /*
+                        points[p].vx *= 0.99
+                        points[p].vy *= 0.99
+            */
             if (points[p].x > width) points[p].x = 0
             if (points[p].y > height) points[p].y = 0
             if (points[p].x < 0) points[p].x = width
@@ -95,7 +106,7 @@ const sketch = (p5) => {
     sketch.getSketchProperties = () => {
 
         p5.noLoop()
-
+        console.log(newLineCrossRef)
         return {
             'points': pointsHistory,
             'width': width,
