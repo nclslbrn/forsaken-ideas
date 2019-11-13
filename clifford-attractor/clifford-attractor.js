@@ -90,7 +90,6 @@ const sketch = p5 => {
     }
     sketch.getSketchProperties = () => {
         p5.noLoop()
-        console.log(newLineCrossRef)
         return {
             points: pointsHistory,
             width: width,
@@ -99,7 +98,9 @@ const sketch = p5 => {
     }
 
     const cliffordAttractor = (x, y) => {
-        const scale = 0.006
+        // clifford attractor
+        // http://paulbourke.net/fractals/clifford/
+        const scale = 0.005
         x = (x - width / 2) * scale
         y = (y - height / 2) * scale
         const x1 = Math.sin(a * y) + c * Math.cos(a * x)
