@@ -1,0 +1,14 @@
+{
+    "libs": ["p5", "svg"],
+    "info": "Coming soon.",
+    "action": [
+        {
+            "name": "downloadSVG",
+            "icon": "printer"
+        },
+        {
+            "name": "init",
+            "icon": "refresh"
+        }
+    ]
+}
