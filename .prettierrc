@@ -1,4 +1,5 @@
 {
+    "tabs": true,
     "tabWidth": 4,
     "semi": false
 }
