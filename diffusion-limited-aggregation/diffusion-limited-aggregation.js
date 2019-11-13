@@ -17,10 +17,11 @@ const sketch = p5 => {
     const walkerNum = 5000
     let walkers = []
     let tree = []
+    const margin = sketchSize /24
 
     p5.setup = () => {
         p5.createCanvas(sketchSize, sketchSize)
-        p5.noStroke()
+        p5.fill(0)
         tree[0] = new Walker(sketchSize / 2, sketchSize / 2, true, 0)
 
         for (let w = 0; w < walkerNum; w++) {
@@ -32,7 +33,7 @@ const sketch = p5 => {
 
         for (let w = 0; w < walkerNum; w++) {
             if (walkers[w] != undefined) {
-                for (let move = 0; move < 10; move++) {
+                for (let move = 0; move < 6; move++) {
                     walkers[w].walk()
                 }
             }
@@ -41,7 +42,7 @@ const sketch = p5 => {
                 if (
                     p5.sq(walkers[w].x - tree[branch].x) +
                         p5.sq(walkers[w].y - tree[branch].y) <=
-                    25
+                    6
                 ) {
                     walkers[w].stop = true
                     p5.append(tree, walkers[w])
@@ -59,9 +60,20 @@ const sketch = p5 => {
             }
         }
         for (let branch = 0; branch < tree.length; branch++) {
-            const col = p5.map(branch, 0, tree.length, 0, 255)
-            p5.fill(col)
-            p5.ellipse(tree[branch].x, tree[branch].y, 5)
+
+            // const col = p5.map(branch, 0, tree.length, 0, 255)
+
+            //p5.fill(col)
+            
+            p5.ellipse(tree[branch].x, tree[branch].y, 2)
+            
+            if( tree[branch].x < margin ||
+                tree[branch].y < margin ||
+                tree[branch].x >sketchSize-margin ||
+                tree[branch].y > sketchSize-margin
+            ) {
+                p5.noLoop()
+            }
         }
     }
 
