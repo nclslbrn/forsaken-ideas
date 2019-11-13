@@ -1,8 +1,10 @@
-- const metatitle = typeof(title) == "undefined" ? "N.Lebrun" : title + " | N.Lebrun"
-head
-  title= metatitle
-  meta( charset="utf-8" )
-  meta( http-equiv="x-ua-compatible" content="ie=edge" )
-  meta( name="author" content="Nicolas Lebrun" )
-  meta( name="robots" content="all,follow" )
-  meta( name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" )
+mixin head(title, path) 
+  - const metatitle = typeof(title) == "undefined" ? "N.Lebrun" : title + " | N.Lebrun"
+  head
+    title= metatitle
+    meta( charset="utf-8" )
+    meta( http-equiv="x-ua-compatible" content="ie=edge" )
+    meta( name="author" content="Nicolas Lebrun" )
+    meta( name="robots" content="all,follow" )
+    meta( name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" )
+    link( rel="icon" href= path + "img/favicon.ico")

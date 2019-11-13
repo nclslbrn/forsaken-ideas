@@ -1,0 +1,20 @@
+{
+    // Build tasks for each project, run the tasks from vs code if
+    // 1) The current opened file has the same name than its directory (similar to processing-java)
+    // 2) The project directory contains properties definitions (property.json)
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "watch ${fileBasenameNoExtension}",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "export ${fileBasenameNoExtension}",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

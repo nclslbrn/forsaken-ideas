@@ -2,14 +2,17 @@
 @import "mixins";
 @import "commons";
 
+@include font-face(Inter, "../fonts/Inter-Bold", 500, normal, woff2 woff);
+
 header.headimg {
-  padding-bottom: 30%;
-  background: center / cover no-repeat
-    url(../img/Mondrian-City.2019-10-2_14.34.29--copyright_Nicolas_Lebrun_CC-by-3.0.svg);
+    padding-bottom: 30%;
+    background: center / cover no-repeat
+        url(../img/Mondrian-City.2019-10-2_14.34.29--copyright_Nicolas_Lebrun_CC-by-3.0.svg);
 }
+
 main {
-  display: block;
-  padding: 1em 3em;
+    display: block;
+    padding: 1em 3em;
 }
 
 @import "modules/aside";
@@ -17,53 +20,53 @@ main {
 
 aside,
 section.project {
-  ul {
-    margin-left: 0;
-    padding: 0;
-    list-style-type: none;
+    ul {
+        margin-left: 0;
+        padding: 0;
+        list-style-type: none;
 
-    a {
-      text-decoration: none;
-      color: #333;
+        a {
+            text-decoration: none;
+            color: #333;
+        }
     }
-  }
 }
 @import "modules/columns";
 
 section.project {
-  display: block;
-  float: right;
-  @include breakpoint(xs) {
-    margin-top: 1.5rem;
-    width: 100%;
-  }
-  @include breakpoint(sm) {
-    width: 50%;
-  }
-  @include breakpoint(md) {
-    margin-top: 4.5rem;
-    width: 66%;
-  }
-  @include breakpoint(lg) {
-    width: 70%;
-  }
-  @include breakpoint(xl) {
-    width: 80%;
-  }
-  &::after {
-    content: "";
-    display: table;
-    clear: both;
-    float: none;
-  }
+    display: block;
+    float: right;
+    @include breakpoint(xs) {
+        margin-top: 1.5rem;
+        width: 100%;
+    }
+    @include breakpoint(sm) {
+        width: 50%;
+    }
+    @include breakpoint(md) {
+        margin-top: 4.5rem;
+        width: 66%;
+    }
+    @include breakpoint(lg) {
+        width: 70%;
+    }
+    @include breakpoint(xl) {
+        width: 80%;
+    }
+    &::after {
+        content: "";
+        display: table;
+        clear: both;
+        float: none;
+    }
 }
 aside.column.about {
-  clear: both;
-  float: none;
-  @include breakpoint(xs) {
-    border-top: 1px solid #333;
-  }
-  @include breakpoint(sm) {
-    border-top: none;
-  }
+    clear: both;
+    float: none;
+    @include breakpoint(xs) {
+        border-top: 1px solid #333;
+    }
+    @include breakpoint(sm) {
+        border-top: none;
+    }
 }
