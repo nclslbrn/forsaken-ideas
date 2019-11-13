@@ -45,8 +45,8 @@ const downloadSVG = () => {
         date.getSeconds() +
         "--Nicolas_Lebrun.svg"
 
-    computeSVG(points, "rgba(0,0,0,0.1)", svgContainerId, width, height)
-    //exportSVG(svgContainerId, filename)
+    computeSVG(points, "#000", 0.1, svgContainerId, width, height)
+    exportSVG(svgContainerId, filename)
 }
 
 window.downloadSVG = downloadSVG
