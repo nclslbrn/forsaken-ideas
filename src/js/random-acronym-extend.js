@@ -1,4 +1,4 @@
-const makeAcronym = (acronymElem) => {
+const makeAcronym = acronymElem => {
     const textStock = [
         [
             "each",
@@ -1618,7 +1618,6 @@ const makeAcronym = (acronymElem) => {
             "grandiloquently",
             "grandiosenesses",
             "grandparenthood",
-            "grammaticalness",
             "graphitizations",
             "greensicknesses",
             "gracelessnesses",
@@ -1966,7 +1965,6 @@ const makeAcronym = (acronymElem) => {
             "grandaddies",
             "granadillas",
             "gramicidins",
-            "grammarians",
             "gramophones",
             "graffitiing",
             "graffitists",
@@ -2026,7 +2024,6 @@ const makeAcronym = (acronymElem) => {
             "gelatinous",
             "gluttonous",
             "gastronomy",
-            "grammarian",
             "groupthink",
             "gangbanger",
             "geometrics",
@@ -2694,21 +2691,15 @@ const makeAcronym = (acronymElem) => {
         ]
     ]
 
-
-
-    let randomAcronym = ''
+    let randomAcronym = ""
 
     if (acronymElem) {
-
         textStock.forEach(function(letter, index, textStock) {
-
             let randomWord = letter[Math.floor(Math.random() * letter.length)]
             randomAcronym += randomWord
 
-            if (index !== textStock.length - 1)
-                randomAcronym += ' '
-
-        });
+            if (index !== textStock.length - 1) randomAcronym += " "
+        })
 
         acronymElem.innerHTML = randomAcronym
     }
