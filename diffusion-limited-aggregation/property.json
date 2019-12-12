@@ -3,7 +3,7 @@
     "info": "Coming soon.",
     "action": [
         {
-            "name": "downloadSVG",
+            "name": "exportPNG",
             "icon": "printer"
         },
         {
