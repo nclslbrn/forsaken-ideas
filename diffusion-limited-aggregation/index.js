@@ -52,5 +52,6 @@ const downloadSVG = () => {
 
 //window.downloadSVG = downloadSVG
 window.init = sketch.init
+window.exportPNG = sketch.exportPNG
 window.infobox = infobox
 handleAction()
