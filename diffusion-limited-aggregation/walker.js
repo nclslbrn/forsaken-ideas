@@ -27,4 +27,9 @@ export default class Walker {
             }
         }
     }
+    distance( point ) {
+        const dx = point.x - this.x
+        const dy = point.y - this.y
+        return dx * dx + dy * dy
+    }
 }
