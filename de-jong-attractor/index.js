@@ -13,7 +13,7 @@ const loader = document.getElementById("loading")
 const P5 = new p5(sketch, containerElement)
 document.body.removeChild(loader)
 
-var resizeTimeout
+let resizeTimeout
 window.addEventListener("resize", function(event) {
     clearTimeout(resizeTimeout)
     resizeTimeout = setTimeout(function() {

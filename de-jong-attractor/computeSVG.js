@@ -12,7 +12,7 @@ const computeSVG = (
     svgContainer.id = svgContainerId
     svgContainer.setAttribute(
         "style",
-        "display: block; width: " + width + "px; height: " + height + "px;"
+        "display: none; width: " + width + "px; height: " + height + "px;"
     )
     if (document.getElementById(svgContainerId) == null) {
         document.body.appendChild(svgContainer)
@@ -29,11 +29,7 @@ const computeSVG = (
         "stroke-opacity": strokeOpacity,
         "stroke-width": 0.5
     })
-    /* debug  hide the canvas */
-    if (document.getElementsByClassName("p5Canvas")[0]) {
-        document.getElementsByClassName("p5Canvas")[0].style.display = "none"
-    }
-    /* */
+
     for (let curve = 0; curve < points.length; curve++) {
         if (points[curve].length > 0) {
             let pathArray = []
