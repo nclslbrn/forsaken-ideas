@@ -152,7 +152,7 @@ module.exports = (env, argv) => {
         return config
     } else {
         console.log(
-            "You must specified a project/folder name npm run watch/export -- -- project-name"
+            "You must specified a project/folder name npm run watch/export <project-name>"
         )
         process.exit()
     }
