@@ -1,43 +1,44 @@
 #infobox {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 260px;
-  margin: -400px 0 0 3.5rem;
-  z-index: 99;
-  background: rgba(0, 0, 0, 0.75);
-  transition: all 0.15s ease-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 260px;
+    margin: -100vh 0 0 3.5rem;
+    z-index: 99;
+    background: #f3f3f3;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.15s ease-out;
 
-  > div {
-    position: relative;
-    padding: 0 1rem 1rem 1rem;
-  }
-
-  svg.close {
-    float: right;
-    width: 1.5rem;
-    height: 1.5rem;
-    fill: #fefefe;
-
-    &::after {
-      content: "";
-      display: table;
-      clear: both;
-      float: none;
+    > div {
+        position: relative;
+        padding: 0 1rem 1rem 1rem;
     }
-  }
 
-  h1,
-  p,
-  a {
-    color: #fefefe;
-  }
+    svg.close {
+        float: right;
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: #292929;
 
-  h1 {
-    margin-top: 0.75rem;
-  }
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+            float: none;
+        }
+    }
 
-  &.active {
-    margin: 0 0 0 3.5rem;
-  }
+    h1,
+    p,
+    a {
+        color: #303030;
+    }
+
+    h1 {
+        margin-top: 0.75rem;
+    }
+
+    &.active {
+        margin: 0 0 0 3.5rem;
+    }
 }
