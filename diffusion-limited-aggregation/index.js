@@ -21,31 +21,40 @@ let resizeTimeout = window.addEventListener("resize", function(event) {
 })
 
 const downloadSVG = () => {
-    // if (window.confirm('Would you like to download the actual sketch as SVG file ?')) {
+    if (
+        window.confirm(
+            "Would you like to download the actual sketch as SVG file ?"
+        )
+    ) {
+        const svgContainerId = "svg-clipboard"
+        const {
+            lines,
+            width,
+            height,
+            strokeWidth
+        } = sketch.getSketchProperties()
+        const date = new Date()
+        const filename =
+            "Diffusion-limited-aggregation." +
+            date.getFullYear() +
+            "-" +
+            date.getMonth() +
+            "-" +
+            date.getDay() +
+            "_" +
+            date.getHours() +
+            "." +
+            date.getMinutes() +
+            "." +
+            date.getSeconds() +
+            "--Nicolas_Lebrun.svg"
 
-    const svgContainerId = "svg-clipboard"
-    const { lines, width, height, strokeWidth } = sketch.getSketchProperties()
-    const date = new Date()
-    const filename =
-        "Diffusion-limited-aggregation." +
-        date.getFullYear() +
-        "-" +
-        date.getMonth() +
-        "-" +
-        date.getDay() +
-        "_" +
-        date.getHours() +
-        "." +
-        date.getMinutes() +
-        "." +
-        date.getSeconds() +
-        "--Nicolas_Lebrun.svg"
-
-    computeSVG(lines, "#000", 1, svgContainerId, width, height, strokeWidth)
-    exportSVG(svgContainerId, filename)
+        computeSVG(lines, "#000", 1, svgContainerId, width, height, strokeWidth)
+        exportSVG(svgContainerId, filename)
+    }
 }
 
-window.downloadSVG = downloadSVG
+window.download_SVG = downloadSVG
 window.init = sketch.init
 window.infobox = infobox
 handleAction()

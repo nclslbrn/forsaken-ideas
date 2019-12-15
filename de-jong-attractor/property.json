@@ -3,7 +3,7 @@
     "info": "Sketch based on Peter de Jong attractor. xn+1 = sin(a yn) - cos(b xn) yn+1 = sin(c xn) - cos(d yn).",
     "action": [
         {
-            "name": "downloadSVG",
+            "name": "download_SVG",
             "icon": "printer"
         },
         {

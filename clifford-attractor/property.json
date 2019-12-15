@@ -1,12 +1,9 @@
 {
-    "libs": [
-        "p5",
-        "svg"
-    ],
+    "libs": ["p5", "svg"],
     "info": "Sketch based on a tutorial by <a href='https://github.com/bit101'>Keith Peters</a> explaining how use Clifford Attractors.",
     "action": [
         {
-            "name": "downloadSVG",
+            "name": "download_SVG",
             "icon": "printer"
         },
         {

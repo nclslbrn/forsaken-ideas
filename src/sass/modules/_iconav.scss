@@ -1,23 +1,24 @@
 nav#iconav {
-  position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
-  padding: 0.15rem;
-  width: 3rem;
-  height: 6rem;
-  border: none;
-  z-index: 10;
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    padding: 0.15rem;
+    width: 3rem;
+    height: 6rem;
+    border: none;
+    z-index: 10;
 }
 
 nav#iconav ul {
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: stretch;
-  width: 3rem;
-  list-style-type: none;
-
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: stretch;
+    width: 3rem;
+    list-style-type: none;
+    background: #f3f3f3;
+    /*
   > li {
     background: rgba(0, 0, 0, 0.75);
   }
@@ -31,34 +32,36 @@ nav#iconav ul {
     border-bottom-left-radius: 1.5rem;
     border-bottom-right-radius: 1.5rem;
   }
-
   > li:first-child,
   > li:last-child {
     overflow: hidden;
   }
+  */
 }
 
 nav#iconav a {
-  display: block;
-  padding: 0.5rem;
-  width: 2rem;
-  height: 2rem;
-  line-height: 1rem;
-  text-align: center;
-  text-decoration: none;
+    display: block;
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    line-height: 1rem;
+    text-align: center;
+    text-decoration: none;
 
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    fill: rgba(255, 255, 255, 0.75);
-  }
+    svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: rgb(0, 0, 0);
+        pointer-events: none;
+    }
 }
-
+/*
 nav#iconav a[title]:hover:after {
-  content: attr(title);
-  position: absolute;
-  padding: 0.5rem;
-  left: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  color: rgba(255, 255, 255, 0.75);
+    content: attr(title);
+    position: absolute;
+    padding: 0.5rem;
+    left: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    color: rgba(255, 255, 255, 0.75);
 }
+*/
