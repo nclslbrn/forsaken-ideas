@@ -2,19 +2,19 @@ import { newExpression } from "babel-types"
 import Walker from "./walker"
 
 const sketch = p5 => {
-    const sketchWidth = window.innerWidth * 0.75
-    const sketchHeight = window.innerHeight * 0.75
+    const sketchWidth = window.innerWidth * 0.8
+    const sketchHeight = window.innerHeight * 0.9
 
     let isTreeFinished = false
-    const walkerNum = 200
-    const iteration = 50
-    const stickiness = 0.2
+    const walkerNum = 320
+    const iteration = 12
+    const stickiness = 0.4
     const walkerSpeed = 4
     const strokeWidth = {
         min: 0.5,
-        max: 3
+        max: 5
     }
-    const initBranchSize = 256
+    const initBranchSize = sketchWidth / 64
     let branchSize = initBranchSize
     let initPos = []
     let walkers = []
@@ -28,26 +28,26 @@ const sketch = p5 => {
         switch (randSide) {
             case 0:
                 return {
-                    x: p5.random(xMargin, sketchWidth - xMargin),
+                    x: xMargin + Math.random() * sketchWidth - xMargin,
                     y: yMargin
                 }
                 break
             case 1:
                 return {
-                    x: p5.random(xMargin, sketchWidth - xMargin),
+                    x: xMargin + Math.random() * sketchWidth - xMargin,
                     y: sketchHeight - yMargin
                 }
                 break
             case 2:
                 return {
                     x: xMargin,
-                    y: p5.random(yMargin, sketchWidth - yMargin)
+                    y: yMargin + Math.random() * sketchWidth - yMargin
                 }
                 break
             case 3:
                 return {
                     x: sketchWidth - xMargin,
-                    y: p5.random(yMargin, sketchWidth - yMargin)
+                    y: yMargin + Math.random() * sketchWidth - yMargin
                 }
                 break
         }
@@ -58,6 +58,7 @@ const sketch = p5 => {
             if (walkers[w] != undefined) {
                 for (let move = 0; move < iteration; move++) {
                     walkers[w].walk()
+                    p5.point(walkers[w].x, walkers[w].y) // debug purpose
 
                     if (
                         walkers[w].x < xMargin ||
@@ -69,34 +70,36 @@ const sketch = p5 => {
                         walkers[w].x = randPosition.x
                         walkers[w].y = randPosition.y
                     }
-                }
+                    for (let t = 0; t < tree.length; t++) {
+                        if (
+                            walkers[w].distance(tree[t]) <
+                                Math.pow(branchSize, 2) &&
+                            p5.random(1) > stickiness
+                        ) {
+                            lines.push({
+                                x1: walkers[w].x,
+                                y1: walkers[w].y,
+                                x2: tree[t].x,
+                                y2: tree[t].y
+                            })
 
-                for (let t = 0; t < tree.length; t++) {
-                    if (
-                        walkers[w].distance(tree[t]) <= branchSize &&
-                        p5.random(1) > stickiness
-                    ) {
-                        lines.push({
-                            x1: walkers[w].x,
-                            y1: walkers[w].y,
-                            x2: tree[t].x,
-                            y2: tree[t].y
-                        })
+                            walkers[w].stop = true
+                            p5.append(tree, walkers[w])
+                            walkers.splice(w, 1)
 
-                        walkers[w].stop = true
-                        p5.append(tree, walkers[w])
-                        walkers.splice(w, 1)
-                        if (branchSize > walkerSpeed * 2) {
-                            branchSize -= 0.1
+                            if (branchSize > walkerSpeed * 2) {
+                                branchSize *= 0.995
+                            }
+
+                            const randPosition = randPos()
+                            walkers[walkers.length] = new Walker(
+                                randPosition.x,
+                                randPosition.y,
+                                false,
+                                0,
+                                walkerSpeed
+                            )
                         }
-                        const randPosition = randPos()
-                        walkers[walkers.length] = new Walker(
-                            randPosition.x,
-                            randPosition.y,
-                            false,
-                            0,
-                            walkerSpeed
-                        )
                     }
                 }
             }
@@ -163,7 +166,9 @@ const sketch = p5 => {
                     strokeWidth.max,
                     strokeWidth.min
                 )
-                p5.strokeWeight(strokeWeight)
+                if (lines.length > 12) {
+                    p5.strokeWeight(strokeWeight)
+                }
                 p5.line(lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2)
             }
         }
