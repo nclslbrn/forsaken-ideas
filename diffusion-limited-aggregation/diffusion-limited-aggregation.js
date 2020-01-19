@@ -14,7 +14,7 @@ const sketch = p5 => {
         min: 0.5,
         max: 5
     }
-    const initBranchSize = sketchWidth / 64
+    const initBranchSize = sketchHeight / 48
     let branchSize = initBranchSize
     let initPos = []
     let walkers = []
@@ -58,7 +58,7 @@ const sketch = p5 => {
             if (walkers[w] != undefined) {
                 for (let move = 0; move < iteration; move++) {
                     walkers[w].walk()
-                    p5.point(walkers[w].x, walkers[w].y) // debug purpose
+                    //p5.point(walkers[w].x, walkers[w].y) // debug purpose
 
                     if (
                         walkers[w].x < xMargin ||
