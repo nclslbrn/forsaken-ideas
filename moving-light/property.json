@@ -1,0 +1,10 @@
+{
+    "libs": ["p5"],
+    "info": "A short or long description, why do you do this.",
+    "action": [
+        {
+            "name": "init",
+            "icon": "refresh"
+        }
+    ]
+}
