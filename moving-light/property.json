@@ -1,10 +1,14 @@
 {
     "libs": ["p5"],
-    "info": "A short or long description, why do you do this.",
+    "info": "A simple walker tracing lines.",
     "action": [
         {
             "name": "init",
             "icon": "refresh"
+        },
+        {
+            "name": "export_PNG",
+            "icon": "printer"
         }
     ]
 }

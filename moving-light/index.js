@@ -16,11 +16,13 @@ window.addEventListener('resize', function(event) {
     clearTimeout(resizeTimeout)
     resizeTimeout = setTimeout(function() {
         containerElement.removeChild(
-            containerElement.getElementsByClassName('p5Canvas')[0]
+            containerElement.getElementsByTagName('canvas')[0]
         )
         let P5 = new p5(sketch, containerElement)
     }, 500)
 })
+
 window.init = sketch.init
+window.export_PNG = sketch.exportPNG
 window.infobox = infobox
 handleAction()
