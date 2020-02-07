@@ -1,0 +1,10 @@
+{
+    "libs": ["p5", "p5.dom", "p5.sound"],
+    "info": "An interactive (motion detection) sketch wich draw particle from moving pixel of webcam.",
+    "action": [
+        {
+            "name": "init",
+            "icon": "refresh"
+        }
+    ]
+}
