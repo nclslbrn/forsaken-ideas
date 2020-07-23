@@ -1,6 +1,7 @@
 {
     "libs": ["p5", "svg"],
     "info": "Sketch based on Peter de Jong attractor. xn+1 = sin(a yn) - cos(b xn) yn+1 = sin(c xn) - cos(d yn).",
+    "date": "2019-11-13",
     "action": [
         {
             "name": "download_SVG",

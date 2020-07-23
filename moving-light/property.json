@@ -1,6 +1,7 @@
 {
     "libs": ["p5"],
     "info": "A simple walker tracing lines.",
+    "date": "2020-01-21",
     "action": [
         {
             "name": "init",

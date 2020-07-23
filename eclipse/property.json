@@ -1,6 +1,5 @@
 {
-    "libs": [
-        "p5"
-    ],
-    "info": "Curious animation made by error by mapping 2xPI with a frameCount."
+    "libs": ["p5"],
+    "info": "Curious animation made by error by mapping 2xPI with a frameCount.",
+    "date": "2019-10-18"
 }
