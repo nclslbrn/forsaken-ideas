@@ -1,41 +1,41 @@
-const webpack = require("webpack")
-const path = require("path")
-const fs = require("fs")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
-const publicFolder = "./public/sketch/"
+const webpack = require('webpack')
+const path = require('path')
+const fs = require('fs')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const publicFolder = './public/sketch/'
 
 function fileList(dir) {
-    return fs.readdirSync(dir).reduce(function(list, file) {
+    return fs.readdirSync(dir).reduce(function (list, file) {
         var name = path.join(dir, file)
         var isDir = fs.statSync(name).isDirectory()
         return list.concat(isDir ? [file] : null)
     }, [])
 }
-const unescapeTitle = title => {
-    const addSpace = title.replace(/-/g, " ")
+const unescapeTitle = (title) => {
+    const addSpace = title.replace(/-/g, ' ')
     const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
     return capitalize
 }
 
 module.exports = (env, argv) => {
-    const mode = argv.mode == "production" ? "production" : "development"
+    const mode = argv.mode == 'production' ? 'production' : 'development'
     const projects = fileList(publicFolder)
     console.log(mode)
     return {
         mode: mode,
-        entry: __dirname + "/src/js/index-list.js",
+        entry: __dirname + '/src/js/index-list.js',
         output: {
-            path: path.resolve(__dirname, "public/"),
-            filename: "list-bundle.js"
+            path: path.resolve(__dirname, 'public/'),
+            filename: 'list-bundle.js'
         },
         module: {
             rules: [
                 {
                     test: /\.pug$/,
-                    exclude: ["/node_modules/"],
-                    loader: "pug-loader"
+                    exclude: ['/node_modules/'],
+                    loader: 'pug-loader'
                 },
                 {
                     test: /\.(sa|sc|c)ss$/,
@@ -44,33 +44,33 @@ module.exports = (env, argv) => {
                             loader: MiniCssExtractPlugin.loader
                         },
                         {
-                            loader: "css-loader",
+                            loader: 'css-loader',
                             options: {
                                 url: true,
-                                sourceMap: mode == "production" ? false : true
+                                sourceMap: mode == 'production' ? false : true
                             }
                         },
                         {
-                            loader: "postcss-loader",
+                            loader: 'postcss-loader',
                             options: {
-                                ident: "postcss",
-                                plugins: loader => [
-                                    require("autoprefixer"),
-                                    require("cssnano")
+                                ident: 'postcss',
+                                plugins: (loader) => [
+                                    require('autoprefixer'),
+                                    require('cssnano')
                                 ]
                             }
                         },
                         {
-                            loader: "sass-loader",
+                            loader: 'sass-loader',
                             options: {
-                                implementation: require("sass"),
-                                sourceMap: mode == "production" ? false : true
+                                implementation: require('sass'),
+                                sourceMap: mode == 'production' ? false : true
                             }
                         }
                     ],
                     include: [
-                        path.resolve(__dirname, "node_modules"),
-                        path.resolve(__dirname, "src/sass")
+                        path.resolve(__dirname, 'node_modules'),
+                        path.resolve(__dirname, 'src/sass')
                     ]
                 },
                 {
@@ -78,11 +78,11 @@ module.exports = (env, argv) => {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                     use: [
                         {
-                            loader: "file-loader",
+                            loader: 'file-loader',
                             options: {
-                                name: "./fonts/[name].[ext]",
-                                mimetype: "application/font-woff",
-                                publicPath: "../"
+                                name: './fonts/[name].[ext]',
+                                mimetype: 'application/font-woff',
+                                publicPath: '../'
                             }
                         }
                     ]
@@ -90,37 +90,39 @@ module.exports = (env, argv) => {
             ]
         },
         devServer: {
-            contentBase: path.resolve(__dirname, "public"),
+            contentBase: path.resolve(__dirname, 'public'),
             port: 8080,
             open: true,
-            openPage: "",
-            stats: "errors-only"
+            openPage: '',
+            stats: 'errors-only'
         },
         plugins: [
             new HtmlWebpackPlugin({
                 templateParameters: {
                     projects: projects,
-                    srcPath: "./",
+                    srcPath: './',
                     unescapeTitle: unescapeTitle
                 },
-                filename: "./index.html",
-                template: "./src/pug/projects-list.pug",
+                filename: './index.html',
+                template: './src/pug/projects-list.pug',
                 inject: true
             }),
             new MiniCssExtractPlugin({
-                filename: "css/[name].css"
+                filename: 'css/[name].css'
             }),
-            new CopyWebpackPlugin([
-                {
-                    from: path.resolve(__dirname, "src/img"),
-                    to: path.resolve(__dirname, "public/img")
-                },
-                {
-                    from: path.resolve(__dirname, "src/fonts"),
-                    to: path.resolve(__dirname, "public/fonts")
-                }
-            ])
+            new CopyWebpackPlugin({
+                patterns: [
+                    {
+                        from: path.resolve(__dirname, 'src/img'),
+                        to: path.resolve(__dirname, 'public/img')
+                    },
+                    {
+                        from: path.resolve(__dirname, 'src/fonts'),
+                        to: path.resolve(__dirname, 'public/fonts')
+                    }
+                ]
+            })
         ],
-        devtool: mode == "production" ? "" : "source-map"
+        devtool: mode == 'production' ? '' : 'source-map'
     }
 }
