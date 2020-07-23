@@ -1,12 +1,10 @@
-import { newExpression } from 'babel-types'
-
 const sketch = (p5) => {
     const numFrame = 60
     let p1, v1, center
     const n = 12
     const radius = 100
-    const arcs = 26
-    const arcLenght = 26
+    const arcs = 8
+    const arcLenght = 32
     let pb = []
 
     p5.setup = () => {
@@ -17,7 +15,7 @@ const sketch = (p5) => {
         p5.strokeWeight(1.5)
     }
     p5.draw = () => {
-        p5.background(50)
+        p5.background(30)
 
         const t = (p5.frameCount % numFrame) / numFrame
         const tt = t < 0.5 ? t : 1 - t
