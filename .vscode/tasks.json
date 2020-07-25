@@ -6,13 +6,13 @@
     "tasks": [
         {
             "type": "npm",
-            "script": "watch ${fileBasenameNoExtension}",
+            "script": "watch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
             "type": "npm",
-            "script": "export ${fileBasenameNoExtension}",
+            "script": "export ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         }

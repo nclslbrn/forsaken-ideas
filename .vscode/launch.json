@@ -10,7 +10,7 @@
             "pathMappings": [
                 {
                     "url": "webpack:///${fileBasenameNoExtension}",
-                    "path": "${workspaceFolder}/${fileBasenameNoExtension}"
+                    "path": "src/sketch/${workspaceFolder}/${fileBasenameNoExtension}"
                 },
                 {
                     "url": "http://localhost",

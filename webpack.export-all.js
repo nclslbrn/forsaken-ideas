@@ -1,19 +1,19 @@
-const webpack = require("webpack")
-const path = require("path")
-const fs = require("fs")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin")
-const publicFolder = "./public/sketch/"
+const webpack = require('webpack')
+const path = require('path')
+const fs = require('fs')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const publicFolder = './public/sketch/'
 
 const commonsConfig = (project, entry, title, property) => {
     return {
-        mode: "production",
+        mode: 'production',
         entry: entry,
         output: {
-            path: path.resolve(__dirname, "public/sketch", project),
-            filename: "[name]-bundle.js"
+            path: path.resolve(__dirname, 'public/sketch', project),
+            filename: '[name]-bundle.js'
         },
         module: {
             rules: [
@@ -22,17 +22,17 @@ const commonsConfig = (project, entry, title, property) => {
                     test: /\.m?js$/,
                     //exclude: /(node_modules|bower_components)/,
                     use: {
-                        loader: "babel-loader",
+                        loader: 'babel-loader',
                         options: {
-                            presets: ["@babel/preset-env"]
+                            presets: ['@babel/preset-env']
                         }
                     }
                 },
                 {
                     // pug
                     test: /\.pug$/,
-                    exclude: ["/node_modules/"],
-                    loader: "pug-loader"
+                    exclude: ['/node_modules/'],
+                    loader: 'pug-loader'
                 },
                 {
                     //sasss
@@ -42,49 +42,49 @@ const commonsConfig = (project, entry, title, property) => {
                             loader: MiniCssExtractPlugin.loader
                         },
                         {
-                            loader: "css-loader",
+                            loader: 'css-loader',
                             options: {
                                 url: false,
                                 sourceMap: false
                             }
                         },
                         {
-                            loader: "postcss-loader",
+                            loader: 'postcss-loader',
                             options: {
-                                ident: "postcss",
-                                plugins: loader => [
-                                    require("autoprefixer"),
-                                    require("cssnano")
+                                ident: 'postcss',
+                                plugins: (loader) => [
+                                    require('autoprefixer'),
+                                    require('cssnano')
                                 ]
                             }
                         },
                         {
-                            loader: "sass-loader",
+                            loader: 'sass-loader',
                             options: {
-                                implementation: require("sass"),
+                                implementation: require('sass'),
                                 sourceMap: false
                             }
                         }
                     ],
                     include: [
-                        path.resolve(__dirname, "node_modules"),
-                        path.resolve(__dirname, "./tools"),
-                        path.resolve(__dirname, "./")
+                        path.resolve(__dirname, 'node_modules'),
+                        path.resolve(__dirname, './tools'),
+                        path.resolve(__dirname, './')
                     ]
                 }
             ]
         },
 
         resolve: {
-            extensions: [".js", ".pug", "json"]
+            extensions: ['.js', '.pug', 'json']
         },
 
         devServer: {
-            contentBase: path.resolve(__dirname, "public"),
+            contentBase: path.resolve(__dirname, 'public'),
             port: 8080,
             open: true,
-            openPage: "",
-            stats: "errors-only"
+            openPage: '',
+            stats: 'errors-only'
         },
 
         plugins: [
@@ -93,14 +93,14 @@ const commonsConfig = (project, entry, title, property) => {
                     project: project,
                     title: title,
                     property: property,
-                    srcPath: "../../"
+                    srcPath: '../../'
                 },
-                filename: "./index.html",
-                template: "./src/pug/project.pug",
+                filename: './index.html',
+                template: './src/pug/project.pug',
                 inject: true
             }),
             new MiniCssExtractPlugin({
-                filename: "css/[name].css"
+                filename: 'css/[name].css'
             }),
             new UglifyJSPlugin({
                 sourceMap: false
@@ -113,29 +113,29 @@ const commonsConfig = (project, entry, title, property) => {
             */
         ],
         externals: {
-            p5: "p5",
-            three: "THREE",
-            "p5.Collide2D": "p5.Collide2D",
-            "p5.js-svg": "p5.jsSVG",
-            "p5.dom": "p5.dom",
-            "p5.sound": "p5.sound",
-            svg: "@svgdotjs/svg.js"
+            p5: 'p5',
+            three: 'THREE',
+            'p5.Collide2D': 'p5.Collide2D',
+            'p5.js-svg': 'p5.jsSVG',
+            'p5.dom': 'p5.dom',
+            'p5.sound': 'p5.sound',
+            svg: '@svgdotjs/svg.js'
         },
-        devtool: ""
+        devtool: ''
     }
 }
 
 function fileList(dir) {
-    return fs.readdirSync(dir).reduce(function(projects, file) {
+    return fs.readdirSync(dir).reduce(function (projects, file) {
         let name = path.join(dir, file)
         let isDir = fs.statSync(name).isDirectory()
         const excludeDir = [
-            ".git",
-            ".vscode",
-            "node_modules",
-            "public",
-            "src",
-            "tools"
+            '.git',
+            '.vscode',
+            'node_modules',
+            'public',
+            'src',
+            'tools'
         ]
         if (isDir && !excludeDir.includes(name)) {
             projects.push(file)
@@ -143,18 +143,18 @@ function fileList(dir) {
         return projects
     }, [])
 }
-const unescapeTitle = title => {
-    const addSpace = title.replace(/-/g, " ")
+const unescapeTitle = (title) => {
+    const addSpace = title.replace(/-/g, ' ')
     const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
     return capitalize
 }
 
-const projects = fileList("./")
+const projects = fileList('./sketch/')
 const projectsConfig = []
 
 for (let p = 0; p < projects.length; p++) {
-    const entry = "./" + projects[p] + "/index.js"
-    const property = require("./" + projects[p] + "/property.json")
+    const entry = './sketch/' + projects[p] + '/index.js'
+    const property = require('./sketch/' + projects[p] + '/property.json')
     const title = unescapeTitle(projects[p])
     projectsConfig[p] = commonsConfig(projects[p], entry, title, property)
 }

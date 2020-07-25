@@ -1,29 +1,32 @@
-const webpack = require("webpack")
-const path = require("path")
-const fs = require("fs")
+const webpack = require('webpack')
+const path = require('path')
+const fs = require('fs')
 
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin")
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const { couldStartTrivia } = require('typescript')
 
 module.exports = (env, argv) => {
-    const project = argv._[0]
-    const entry = "./" + project + "/index.js"
-    const property = require("./" + project + "/property.json")
-    const mode = argv.mode == "production" ? "production" : "development"
-    const unescapeTitle = title => {
-        const addSpace = title.replace(/-/g, " ")
+    const pPath = argv._[0]
+    const pName = pPath.replace(/.+\\(.+)\\[^\\]+$/, '$1')
+    const entry = pPath + '/index.js'
+    const property = require(pPath + '/property.json')
+    const mode = argv.mode == 'production' ? 'production' : 'development'
+    const unescapeTitle = (title) => {
+        const addSpace = title.replace(/-/g, ' ')
         const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
         return capitalize
     }
-    if (mode && project) {
+    if (mode && pPath && pName && entry) {
         const config = {
             mode: mode,
+            context: __dirname,
             entry: entry,
             output: {
-                path: path.resolve(__dirname, "public/sketch", project),
-                filename: "[name]-bundle.js"
+                path: pName.replace('sketch/', 'public/sketch/'),
+                filename: '[name]-bundle.js'
             },
             module: {
                 rules: [
@@ -32,17 +35,17 @@ module.exports = (env, argv) => {
                         test: /\.m?js$/,
                         //exclude: /(node_modules|bower_components)/,
                         use: {
-                            loader: "babel-loader",
+                            loader: 'babel-loader',
                             options: {
-                                presets: ["@babel/preset-env"]
+                                presets: ['@babel/preset-env']
                             }
                         }
                     },
                     {
                         // pug
                         test: /\.pug$/,
-                        exclude: ["/node_modules/"],
-                        loader: "pug-loader"
+                        exclude: ['/node_modules/'],
+                        loader: 'pug-loader'
                     },
                     {
                         //sasss
@@ -52,36 +55,37 @@ module.exports = (env, argv) => {
                                 loader: MiniCssExtractPlugin.loader
                             },
                             {
-                                loader: "css-loader",
+                                loader: 'css-loader',
                                 options: {
                                     url: false,
                                     sourceMap:
-                                        mode == "production" ? false : true
+                                        mode == 'production' ? false : true
                                 }
                             },
                             {
-                                loader: "postcss-loader",
+                                loader: 'postcss-loader',
                                 options: {
-                                    ident: "postcss",
-                                    plugins: loader => [
-                                        require("autoprefixer"),
-                                        require("cssnano")
+                                    ident: 'postcss',
+                                    plugins: (loader) => [
+                                        require('autoprefixer'),
+                                        require('cssnano')
                                     ]
                                 }
                             },
                             {
-                                loader: "sass-loader",
+                                loader: 'sass-loader',
                                 options: {
-                                    implementation: require("sass"),
+                                    implementation: require('sass'),
                                     sourceMap:
-                                        mode == "production" ? false : true
+                                        mode == 'production' ? false : true
                                 }
                             }
                         ],
                         include: [
-                            path.resolve(__dirname, "node_modules"),
-                            path.resolve(__dirname, "./tools"),
-                            path.resolve(__dirname, "./")
+                            path.resolve(__dirname, './node_modules'),
+                            path.resolve(__dirname, './tools'),
+                            path.resolve(__dirname, './sketch'),
+                            path.resolve(__dirname, './src')
                         ]
                     },
                     {
@@ -89,11 +93,11 @@ module.exports = (env, argv) => {
                         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                         use: [
                             {
-                                loader: "file-loader",
+                                loader: 'file-loader',
                                 options: {
-                                    name: "./fonts/[name].[ext]",
-                                    mimetype: "application/font-woff",
-                                    publicPath: "../"
+                                    name: './fonts/[name].[ext]',
+                                    mimetype: 'application/font-woff',
+                                    publicPath: '../'
                                 }
                             }
                         ]
@@ -101,34 +105,34 @@ module.exports = (env, argv) => {
                 ]
             },
             resolve: {
-                extensions: [".js", ".pug", "json"]
+                extensions: ['.js', '.pug', 'json']
             },
 
             devServer: {
-                contentBase: path.resolve(__dirname, "public"),
+                contentBase: path.resolve(__dirname, 'public'),
                 port: 8080,
                 open: true,
-                openPage: "",
-                stats: "errors-only"
+                openPage: '',
+                stats: 'errors-only'
             },
 
             plugins: [
                 new HtmlWebpackPlugin({
                     templateParameters: {
-                        project: project,
-                        title: unescapeTitle(project),
+                        project: pName,
+                        title: unescapeTitle(pName),
                         property: property,
-                        srcPath: "../../"
+                        srcPath: '../../'
                     },
-                    filename: "./index.html",
-                    template: "./src/pug/project.pug",
+                    filename: './index.html',
+                    template: './src/pug/project.pug',
                     inject: true
                 }),
                 new MiniCssExtractPlugin({
-                    filename: "css/[name].css"
+                    filename: 'css/[name].css'
                 }),
                 new UglifyJSPlugin({
-                    sourceMap: mode == "production" ? false : true
+                    sourceMap: mode == 'production' ? false : true
                 })
                 /*
                 new CopyWebpackPlugin([{
@@ -138,21 +142,22 @@ module.exports = (env, argv) => {
                 */
             ],
             externals: {
-                p5: "p5",
-                three: "THREE",
-                "p5.Collide2D": "p5.Collide2D",
-                "p5.js-svg": "p5.jsSVG",
-                "p5.dom": "p5.dom",
-                "p5.sound": "p5.sound",
-                svg: "@svgdotjs/svg.js"
+                p5: 'p5',
+                three: 'THREE',
+                'p5.Collide2D': 'p5.Collide2D',
+                'p5.js-svg': 'p5.jsSVG',
+                'p5.dom': 'p5.dom',
+                'p5.sound': 'p5.sound',
+                svg: '@svgdotjs/svg.js'
             },
-            devtool: mode == "development" ? "source-map" : ""
+            devtool: mode == 'development' ? 'source-map' : ''
         }
-        console.log(config.entry)
+        console.log('-->' + config.entry)
+        console.log('<--' + config.output.path + config.output.filename)
         return config
     } else {
         console.log(
-            "You must specified a project/folder name npm run watch/export <project-name>"
+            'You must specified a project/folder name npm run watch/export <project-name>'
         )
         process.exit()
     }

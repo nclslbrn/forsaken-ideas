@@ -5,8 +5,8 @@
     "main": "index.js",
     "scripts": {
         "watch": "webpack-dev-server",
-        "export": "webpack -p",
-        "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js && webpack -p --config webpack.list-projects.js",
+        "export": "webpack -p --display-error-details",
+        "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js --display-error-details && webpack -p --config webpack.list-projects.js --display-error-details",
         "watch-index": "webpack-dev-server --config webpack.list-projects.js",
         "index": "webpack -p --config webpack.list-projects.js"
     },
@@ -30,7 +30,7 @@
         "body-parser": "^1.19.0",
         "chromotome": "^1.18.1",
         "mini-css-extract-plugin": "^0.9.0",
-        "p5": "^1.0.0",
+        "p5": "^1.1.9",
         "p5.js-svg": "^0.5.2",
         "postcss-loader": "^3.0.0",
         "pug-loader": "^2.4.0",
