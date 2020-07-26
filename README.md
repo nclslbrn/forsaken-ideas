@@ -9,7 +9,7 @@ Usefull for offline prototyping and online showcasing.
   - css/
   - fonts/
   - img/
-  - sketch/ where yours sketches are exported
+  - sketch/ where sketches are exported
     - sketch-1
       - css
         - main.css
@@ -19,7 +19,7 @@ Usefull for offline prototyping and online showcasing.
     - ...
   - index.html the home page
   - list-bundle.js js bundle use in homepage
-- sketch/ where you write yours sketches
+- sketch/ where you write sketches
     - sketch-1
       - index.js &ast; 
       - whatever.js
@@ -35,7 +35,7 @@ Usefull for offline prototyping and online showcasing.
 - templates/ empty project copy them in ./sketch to begin a new sketch
 - tools/ some dependencies and commons functions
 
-&ast;: every sketch need an index (entry point for webpack) and a propertyµ.json
+&ast;: every sketch need an index.js (entry point for webpack) and a property.json
 which specifies project informations.
 
 property.json
