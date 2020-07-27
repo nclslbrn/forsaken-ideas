@@ -33,7 +33,7 @@ Usefull for offline prototyping and online showcasing.
   - pug/ HTML template to build homepage and sketch page
   - sass/ style
 - templates/ empty project copy them in ./sketch to begin a new sketch
-- tools/ some dependencies and commons functions
+- tools/ some dependencies and commons functions (git submodule update --init --recursive)
 
 &ast;: every sketch need an index.js (entry point for webpack) and a property.json
 which specifies project informations.

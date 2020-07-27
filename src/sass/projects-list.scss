@@ -1,8 +1,8 @@
-@import "variables";
-@import "mixins";
-@import "commons";
+@import 'variables';
+@import 'mixins';
+@import 'commons';
 
-@include font-face(Inter, "../fonts/Inter-Bold", 500, normal, woff2 woff);
+@include font-face(Inter, '../fonts/Inter-Bold', 500, normal, woff2 woff);
 
 header.headimg {
     padding-bottom: 30%;
@@ -15,8 +15,8 @@ main {
     padding: 1em 3em;
 }
 
-@import "modules/aside";
-@import "modules/project-section";
+@import 'modules/aside';
+@import 'modules/project-section';
 
 aside,
 section.project {
@@ -31,7 +31,7 @@ section.project {
         }
     }
 }
-@import "modules/columns";
+@import 'modules/columns';
 
 section.project {
     display: block;
@@ -44,7 +44,7 @@ section.project {
         width: 50%;
     }
     @include breakpoint(md) {
-        margin-top: 4.5rem;
+        margin-top: 0;
         width: 66%;
     }
     @include breakpoint(lg) {
@@ -54,15 +54,13 @@ section.project {
         width: 80%;
     }
     &::after {
-        content: "";
+        content: '';
         display: table;
         clear: both;
         float: none;
     }
 }
 aside.column.about {
-    clear: both;
-    float: none;
     @include breakpoint(xs) {
         border-top: 1px solid #333;
     }

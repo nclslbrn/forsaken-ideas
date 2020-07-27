@@ -1,12 +1,20 @@
 section.project {
-  padding-top: 0.5em;
+    padding-top: 0.5em;
 }
 section.project ul {
-  margin: 0;
+    margin: 0;
 }
 section.project ul li {
-  padding-bottom: 1em;
+    padding-bottom: 1em;
 }
 section.project ul li a {
-  text-transform: capitalize;
+    text-transform: capitalize;
+
+    h3 {
+        margin-bottom: 0.25em;
+    }
+    &:hover h3 {
+        color: #666;
+        text-decoration: underline;
+    }
 }

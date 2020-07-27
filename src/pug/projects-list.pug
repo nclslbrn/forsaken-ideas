@@ -41,16 +41,33 @@ html(lang="en")
             ul
               each project in col
                 li
-                  a(href="./sketch/" + project ) #{unescapeTitle(project)}
+                  a(href="./sketch/" + project.name ) 
+                    h3 #{unescapeTitle(project.name)}
+                    small #{project.date}
 
       aside.column.about
         ul
           li  
-            a(href="https://twitter.com/Nicolas_Lebrun_") Twitter
+            a(href="https://twitter.com/Nicolas_Lebrun_") 
+              svg.icon.icon-twitter 
+                use(xlink:href="#icon-twitter")
+              span Twitter
           
           li
-            a(href="https://github.com/nclslbrn") Github
-          
+            a(href="https://github.com/nclslbrn") 
+              svg.icon.icon-github
+                use(xlink:href="#icon-github")
+              span Github
+          li
+            a(href="https://nicolas-lebrun.fr")
+              svg.icon.icon-link
+                use(xlink:href="#icon-link")
+              span Site
+
           li  
-            a(href="mailto:nl@artemg.com") Mail
+            a(href="mailto:nl@artemg.com") 
+              svg.icon.icon-mail
+                use(xlink:href="#icon-mail")
+              span Mail
+
         p - Nicolas Lebrun 

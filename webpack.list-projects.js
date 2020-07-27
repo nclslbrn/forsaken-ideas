@@ -22,6 +22,15 @@ const unescapeTitle = (title) => {
 module.exports = (env, argv) => {
     const mode = argv.mode == 'production' ? 'production' : 'development'
     const projects = fileList(publicFolder)
+    let projectWithMeta = []
+
+    projects.forEach((proj) => {
+        projectWithMeta.push({
+            name: proj,
+            ...require(__dirname + '/sketch/' + proj + '/property.json')
+        })
+    })
+
     console.log(mode)
     return {
         mode: mode,
@@ -99,7 +108,7 @@ module.exports = (env, argv) => {
         plugins: [
             new HtmlWebpackPlugin({
                 templateParameters: {
-                    projects: projects,
+                    projects: projectWithMeta,
                     srcPath: './',
                     unescapeTitle: unescapeTitle
                 },
