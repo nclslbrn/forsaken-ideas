@@ -62,9 +62,14 @@ section.project {
 }
 aside.column.about {
     @include breakpoint(xs) {
+        clear: both;
+        float: none;
         border-top: 1px solid #333;
+        padding-top: 4em;
     }
     @include breakpoint(sm) {
+        clear: none;
+        float: unset;
         border-top: none;
     }
 }

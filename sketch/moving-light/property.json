@@ -5,11 +5,11 @@
     "action": [
         {
             "name": "init",
-            "icon": "refresh"
+            "icon": "sync"
         },
         {
             "name": "export_PNG",
-            "icon": "printer"
+            "icon": "desktop-download"
         }
     ]
 }

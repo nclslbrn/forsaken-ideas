@@ -5,7 +5,7 @@
     "action": [
         {
             "name": "export_PNG",
-            "icon": "printer"
+            "icon": "desktop-download"
         }
     ]
 }

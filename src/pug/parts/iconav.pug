@@ -4,13 +4,13 @@ mixin iconav(property)
             li
                 a(href="../../" title="HOME") 
                     span.screen-reader-text Back
-                    svg.icon.icon-forward
+                    svg.icon.icon-home
                         use(xlink:href="#icon-home")
             li
                 a(href="#" data-action="infobox" title="INFO")
                     span.screen-reader-text Info
-                    svg.icon.icon-bubble
-                        use(xlink:href="#icon-bubble")
+                    svg.icon.icon-info
+                        use(xlink:href="#icon-info")
 
 
 
@@ -24,11 +24,11 @@ mixin iconav(property)
                                     if action.icon != null
                                         use(xlink:href="#icon-"+ action.icon)
                                     else
-                                        use(xlink:href="#icon-cog")
+                                        use(xlink:href="#icon-settings")
 
 
             li
                 a(href="https://github.com/nclslbrn/make/tree/master/"+ project title="CODE")
-                    span.screen-reader-text Info
+                    span.screen-reader-text Code
                     svg.icon.icon-forward
-                        use(xlink:href="#icon-book")
+                        use(xlink:href="#icon-repo")

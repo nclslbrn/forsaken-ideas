@@ -5,11 +5,11 @@
     "action": [
         {
             "name": "download_SVG",
-            "icon": "printer"
+            "icon": "desktop-download"
         },
         {
             "name": "init",
-            "icon": "refresh"
+            "icon": "sync"
         }
     ]
 }
