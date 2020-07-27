@@ -21,7 +21,7 @@
         fill: #292929;
 
         &::after {
-            content: "";
+            content: '';
             display: table;
             clear: both;
             float: none;
@@ -40,5 +40,11 @@
 
     &.active {
         margin: 0 0 0 3.5rem;
+    }
+
+    small svg {
+        width: 1em;
+        height: 1em;
+        margin-right: 0.25em;
     }
 }

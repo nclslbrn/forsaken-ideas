@@ -4,12 +4,12 @@ A tool to design several sketches with the same webpack script and list every sk
 Usefull for offline prototyping and online showcasing.
 
 ## Directory structure
-- node_modules/ You can add packages to fit your needs
-- public/ the generated static site root
+- node_modules/ *You can add packages to fit your needs*
+- public/ *the generated static site root*
   - css/
   - fonts/
   - img/
-  - sketch/ where sketches are exported
+  - sketch/ *where sketches are exported*
     - sketch-1
       - css
         - main.css
@@ -17,9 +17,9 @@ Usefull for offline prototyping and online showcasing.
       - main-bundle.js
     - sketch-2
     - ...
-  - index.html the home page
-  - list-bundle.js js bundle use in homepage
-- sketch/ where you write sketches
+  - index.html *the home page*
+  - list-bundle.js *js bundle use in homepage*
+- sketch/ *where you write sketches*
     - sketch-1
       - index.js &ast; 
       - whatever.js
@@ -29,11 +29,11 @@ Usefull for offline prototyping and online showcasing.
 - src/
   - fonts/
   - img/
-  - js/ scripts includeds in homepage and sketch bundle
-  - pug/ HTML template to build homepage and sketch page
-  - sass/ style
-- templates/ empty project copy them in ./sketch to begin a new sketch
-- tools/ some dependencies and commons functions (git submodule update --init --recursive)
+  - js/ *scripts includeds in homepage and sketch bundle*
+  - pug/ *HTML template to build homepage and sketch page*
+  - sass/ *style*
+- templates/ *empty project copy them in ./sketch to begin a new sketch*
+- tools/ *some dependencies and commons functions (git submodule update --init --recursive)*
 
 &ast;: every sketch need an index.js (entry point for webpack) and a property.json
 which specifies project informations.

@@ -6,5 +6,9 @@ mixin infobox(title, property)
                     use(xlink:href="#icon-cross")
 
             h1 #{title}
-            small #{property.date}
+            small 
+                svg.icon.icon-calendar
+                    use(xlink:href="#icon-calendar")
+                span #{property.date}
+                
             p !{property.info}
