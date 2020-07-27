@@ -9,7 +9,8 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = (env, argv) => {
     const pPath = argv._[0]
-    const pName = pPath.replace(/.+\\(.+)\\[^\\]+$/, '$1')
+    let pName = JSON.parse(JSON.stringify(pPath))
+    pName = pName.split('/').pop()
     const entry = pPath + '/index.js'
     const property = require(pPath + '/property.json')
     const mode = argv.mode == 'production' ? 'production' : 'development'
@@ -18,13 +19,16 @@ module.exports = (env, argv) => {
         const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
         return capitalize
     }
+
+    console.log(pName)
+
     if (mode && pPath && pName && entry) {
         const config = {
             mode: mode,
             context: __dirname,
             entry: entry,
             output: {
-                path: pName.replace('sketch/', 'public/sketch/'),
+                path: __dirname + '/public/sketch/' + pName + '/',
                 filename: '[name]-bundle.js'
             },
             module: {
