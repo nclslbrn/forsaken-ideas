@@ -1,11 +1,11 @@
 const sketch = (p5) => {
     let arcs = []
     let numFrames = 125
-    let margin = 12, // margin between circle
-        noiseScale = 256,
-        noiseRadius = 3,
-        noiseStrength = 1.5,
-        lineSize = 4,
+    let margin = 16, // margin between circle
+        noiseScale = 16,
+        noiseRadius = 6,
+        noiseStrength = 1,
+        lineSize = 8,
         speed = 0, // the value wich increments circle's radiuses
         maxRadius = 0 // Limit the size of the arc circle
 
@@ -58,7 +58,7 @@ const sketch = (p5) => {
                 angleID += 2
             ) {
                 var strokeColor = p5.map(arc.radius, 0, maxRadius, 255, 0)
-                var lineWeight = p5.map(arc.radius, 0, maxRadius, 0.1, 1.5)
+                var lineWeight = p5.map(arc.radius, 0, maxRadius, 0.5, 2)
 
                 var start = currentAngle + arc.angles[angleID]
                 var end = currentAngle + arc.angles[angleID + 1]
@@ -78,6 +78,7 @@ const sketch = (p5) => {
 
                 p5.stroke(strokeColor)
                 p5.strokeWeight(lineWeight)
+                p5.beginShape(p5.LINES)
 
                 for (var d = 0; d <= distance; d += lineSize) {
                     var ratio = d / distance
@@ -86,18 +87,16 @@ const sketch = (p5) => {
                     var y = startPoint.y + (endPoint.y - startPoint.y) * ratio
 
                     var pointNoise = getNoiseIntensity(x, y, t)
-
-                    p5.beginShape(p5.LINES)
-                    p5.vertex(currentPoint.x, currentPoint.y, 0)
-                    p5.vertex(
+                    p5.curveVertex(currentPoint.x, currentPoint.y, 0)
+                    p5.curveVertex(
                         x + noiseRadius * p5.cos(pointNoise),
                         y + noiseRadius * p5.sin(pointNoise),
                         0
                     )
-                    p5.endShape()
 
                     currentPoint = p5.createVector(x, y)
                 }
+                p5.endShape()
                 currentAngle = end
             }
             arc.radius += speed
