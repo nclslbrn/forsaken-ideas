@@ -1,3 +1,0 @@
-[submodule "tools/p5.collide2D"]
-	path = tools/p5.collide2D
-	url = git@github.com:bmoren/p5.collide2D.git
