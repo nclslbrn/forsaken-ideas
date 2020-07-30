@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "Experiments with cubes.",
+    "info": "Experiments with cubes, transition by position on a grid and ease.",
     "action": [],
     "date": "2020-07-11"
 }
