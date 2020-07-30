@@ -109,6 +109,7 @@ const sketch = (p5) => {
         p5.createCanvas(sketchWidth, sketchHeight)
         p5.fill(0)
         p5.strokeWeight(0.5)
+        p5.textSize(16)
         init()
     }
 
@@ -143,7 +144,14 @@ const sketch = (p5) => {
             p5.background(255)
             processTree()
         }
-
+        if (lines.length == 0) {
+            p5.textAlign(p5.CENTER, p5.CENTER)
+            p5.text(
+                "Walkers don't yet hit the first cluster.",
+                window.innerWidth / 2 - 100,
+                window.innerHeight / 2 - 32
+            )
+        }
         for (let i = 0; i < lines.length && !isTreeFinished; i++) {
             if (
                 lines[i].x1 <= xMargin ||
@@ -155,7 +163,6 @@ const sketch = (p5) => {
                 lines[i].x2 >= sketchWidth - xMargin ||
                 lines[i].y2 >= sketchHeight - yMargin
             ) {
-                console.log('Finished')
                 isTreeFinished = true
             } else {
                 const strokeWeight = p5.map(
