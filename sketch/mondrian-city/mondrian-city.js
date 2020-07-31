@@ -6,7 +6,6 @@ let roads = []
 let builds = []
 
 const sketch = (p5) => {
-
     const maxRoad = 32
     const paperColor = p5.color(255, 248, 250)
 
@@ -16,11 +15,11 @@ const sketch = (p5) => {
         const halfHeight = window.innerHeight / 2
 
         const property = {
-            "x": halfWidth + (p5.random(-0.25, 0.25) * window.innerWidth),
-            "y": halfHeight + (p5.random(-0.25, 0.25) * window.innerWidth),
-            "width": parseInt(p5.random(minWidth, maxWidth)),
-            "height": parseInt(p5.random(minHeight, maxHeight)),
-            "orientation": Math.random() < 0.5
+            x: halfWidth + p5.random(-0.25, 0.25) * window.innerWidth,
+            y: halfHeight + p5.random(-0.25, 0.25) * window.innerWidth,
+            width: parseInt(p5.random(minWidth, maxWidth)),
+            height: parseInt(p5.random(minHeight, maxHeight)),
+            orientation: Math.random() < 0.5
         }
         return property
     }
@@ -28,44 +27,41 @@ const sketch = (p5) => {
     const blockPoints = (p) => {
         let poly = []
         let rotatePoly = []
-        let clockwise = true
         // local
         const halfWidth = p.width / 2
         const halfHeight = p.height / 2
 
         poly[0] = p5.createVector(
-            p.x - (p.orientation ? halfWidth : halfHeight),
-            p.y - (p.orientation ? halfHeight : halfWidth)
+            p.orientation ? -halfWidth : -halfHeight,
+            p.orientation ? -halfHeight : -halfWidth
         )
         poly[1] = p5.createVector(
-            p.x + (p.orientation ? halfWidth : halfHeight),
-            p.y - (p.orientation ? halfHeight : halfWidth)
+            p.orientation ? halfWidth : halfHeight,
+            p.orientation ? -halfHeight : -halfWidth
         )
         poly[2] = p5.createVector(
-            p.x + (p.orientation ? halfWidth : halfHeight),
-            p.y + (p.orientation ? halfHeight : halfWidth)
+            p.orientation ? halfWidth : halfHeight,
+            p.orientation ? halfHeight : halfWidth
         )
         poly[3] = p5.createVector(
-            p.x - (p.orientation ? halfWidth : halfHeight),
-            p.y + (p.orientation ? halfHeight : halfWidth)
+            p.orientation ? -halfWidth : -halfHeight,
+            p.orientation ? halfHeight : halfWidth
         )
 
         rotatePoly = poly
 
-        for (let polyId = 0; polyId < poly.length; polyId++) {
-
+        for (let i = 0; i < poly.length; i++) {
             if (p.orientation) {
-                rotatePoly[polyId].rotate(315)
+                rotatePoly[i].rotate(-p5.QUARTER_PI * 3)
             } else {
-                rotatePoly[polyId].rotate(-45)
+                rotatePoly[i].rotate(p5.QUARTER_PI)
             }
-            rotatePoly[polyId].y += window.innerHeight * 0.85 // <- why ?
+            rotatePoly[i].x += p.x
+            rotatePoly[i].y += p.y
         }
         return rotatePoly
-
     }
     const init = () => {
-
         p5.background(paperColor)
 
         roads.length = 0
@@ -78,10 +74,10 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         p5.createCanvas(window.innerWidth, window.innerHeight)
-        p5.angleMode(p5.DEGREES)
+        //p5.angleMode(p5.DEGREES)
         p5.noStroke()
         p5.collideDebug(false)
-        init();
+        init()
     }
 
     p5.draw = () => {
@@ -99,19 +95,18 @@ const sketch = (p5) => {
     p5.computeRoad = () => {
         p5.fill(palette.background)
         const roadProperty = blockProperty(
-            window.innerHeight,
-            window.innerHeight,
+            window.innerWidth,
+            window.innerWidth,
             2,
             6
         )
-        const road = blockPoints(roadProperty);
+        const road = blockPoints(roadProperty)
         p5.beginShape()
         for (let p = 0; p < road.length; p++) {
             p5.vertex(road[p].x, road[p].y)
         }
         p5.endShape(p5.CLOSE)
         roads.push(road)
-
     }
 
     p5.computeBuilding = () => {
@@ -121,7 +116,7 @@ const sketch = (p5) => {
         const buildingProperty = blockProperty(12, 64, 4, 32)
         let isHoverRoads = false
         let isHoverBuildings = false
-        const build = blockPoints(buildingProperty);
+        const build = blockPoints(buildingProperty)
 
         for (let r = 0; r < roads.length; r++) {
             if (p5.collidePolyPoly(roads[r], build)) {
@@ -136,7 +131,6 @@ const sketch = (p5) => {
             }
         }
         if (!isHoverRoads && !isHoverBuildings) {
-
             builds[colorID].push(build)
 
             p5.beginShape()
@@ -149,12 +143,11 @@ const sketch = (p5) => {
     sketch.init = init
     sketch.getCityData = () => {
         return {
-            "roads": roads,
-            "builds": builds,
-            "palette": palette,
-            "paperColor": paperColor,
+            roads: roads,
+            builds: builds,
+            palette: palette,
+            paperColor: paperColor
         }
     }
-
 }
 export default sketch
