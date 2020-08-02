@@ -22,7 +22,8 @@ html(lang="en")
   body
   
     include parts/svg-defs.pug
-    header.headimg
+
+    header#hero-image.headimg
     
     main
       
@@ -44,7 +45,7 @@ html(lang="en")
                   a(href="./sketch/" + project.name ) 
                     h3 #{unescapeTitle(project.name)}
                     small #{project.date}
-
+        
       aside.column.about
         ul
           li  
@@ -71,3 +72,6 @@ html(lang="en")
               span Mail
 
         p - Nicolas Lebrun 
+      
+      .clearfix
+

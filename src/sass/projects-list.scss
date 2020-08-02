@@ -5,14 +5,12 @@
 @include font-face(Inter, '../fonts/Inter-Bold', 500, normal, woff2 woff);
 
 header.headimg {
-    padding-bottom: 30%;
-    background: center / cover no-repeat
-        url(../img/Mondrian-City.2019-10-2_14.34.29--copyright_Nicolas_Lebrun_CC-by-3.0.svg);
+    padding-bottom: 50vh;
 }
 
 main {
     display: block;
-    padding: 1em 3em;
+    padding: 1em 3em 4em 1em;
 }
 
 @import 'modules/aside';

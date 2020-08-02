@@ -1,12 +1,14 @@
-import style from "../sass/projects-list.scss"
-import makeAcronym from "./random-acronym-extend"
-
-const acronymElement = document.getElementById("acronym")
+import style from '../sass/projects-list.scss'
+import makeAcronym from './random-acronym-extend'
+import randomHeroImage from './random-hero-image'
+const acronymElement = document.getElementById('acronym')
 
 if (acronymElement != null) {
     makeAcronym(acronymElement)
 
-    acronymElement.addEventListener("click", function() {
+    acronymElement.addEventListener('click', function () {
         makeAcronym(acronymElement)
     })
 }
+
+randomHeroImage()

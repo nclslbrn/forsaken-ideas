@@ -4,6 +4,11 @@ section.project {
 section.project ul {
     margin: 0;
 }
+@include breakpoint(xs) {
+    section.project > .column:last-child {
+        padding-bottom: 4em;
+    }
+}
 section.project ul li {
     padding-bottom: 1em;
 }
