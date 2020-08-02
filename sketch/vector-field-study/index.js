@@ -26,6 +26,7 @@ window.addEventListener('resize', function (event) {
     }, 500)
 })
 
-window.export_PNG = sketch.exportPNG
+window.download_PNG = sketch.download_PNG
+window.init_sketch = sketch.init_sketch
 window.infobox = infobox
 handleAction()

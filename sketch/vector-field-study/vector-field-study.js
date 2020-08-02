@@ -9,7 +9,7 @@ const sketch = (p5) => {
     const numFrame = 60
     const alpha = 50
     const funcs = planeCurveFuncs(p5)
-    let selectedFunc, palette, points
+    let selectedFunc, palette, points, canvas
 
     const planeCurveFunctionSelector = () => {
         const funcSelector = document.createElement('select')
@@ -31,15 +31,11 @@ const sketch = (p5) => {
         document.body.appendChild(funcSelector)
         // change selected function when user change it
         funcSelector.addEventListener('change', (event) => {
-            initSketch()
+            sketch.init_pos()
             selectedFunc = funcSelector.value
         })
     }
-
-    const initSketch = () => {
-        // get a random palette from chromotome
-        palette = tome.get()
-
+    sketch.init_pos = () => {
         // initialise points positions
         points = []
         for (let x = -3; x <= 3; x += res) {
@@ -52,7 +48,6 @@ const sketch = (p5) => {
                 )
             }
         }
-
         // clear the canvas background
         if (palette.background) {
             p5.background(palette.background)
@@ -62,16 +57,21 @@ const sketch = (p5) => {
             p5.background(25, 25, 25)
         }
     }
+    sketch.init_sketch = () => {
+        // get a random palette from chromotome
+        palette = tome.get()
+        sketch.init_pos()
+    }
 
     const circle = function (theta) {
         return p5.createVector(p5.cos(theta), p5.sin(theta))
     }
 
     p5.setup = () => {
-        p5.createCanvas(800, 800)
+        canvas = p5.createCanvas(800, 800)
         p5.stroke(0)
         planeCurveFunctionSelector()
-        initSketch()
+        init_sketch()
     }
 
     p5.draw = () => {
@@ -94,7 +94,7 @@ const sketch = (p5) => {
             points[p].y += scale * v.y
         }
     }
-    sketch.exportPNG = () => {
+    sketch.download_PNG = () => {
         const date = new Date()
         const filename =
             'Vector-field.' +
