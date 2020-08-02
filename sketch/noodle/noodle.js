@@ -3,9 +3,10 @@ import { newExpression } from 'babel-types'
 
 const sketch = (p5) => {
     const points = []
+    const filled = []
     const numFrame = 60
     let margin = 4
-    let w, h, r, d
+    let w, h, r, d, m
 
     // alias createVector function
     const pVec = (x, y) => {
@@ -20,42 +21,49 @@ const sketch = (p5) => {
         h = p5.height / 16
         d = p5.max(w, h) / numFrame
         r = w / 4
+        m = w / 6
 
         for (let x = 0; x < p5.width; x += w) {
+            filled[x] = []
             for (let y = 0; y < p5.height; y += h) {
-                points.push(
-                    pVec(x + (p5.random(2) - 1) * r, y + (p5.random(2) - 1) * r)
-                )
-                points.push(
-                    pVec(
-                        x + (p5.random(2) - 1) * r,
-                        y + (p5.random(2) - 1) * r + h
+                if (p5.random(1) > 0.5) {
+                    points.push(
+                        pVec(
+                            x + m + (p5.random(2) - 1) * r,
+                            y + m + (p5.random(2) - 1) * r
+                        )
                     )
-                )
-                points.push(
-                    pVec(
-                        x + (p5.random(2) - 1) * r + w / 2,
-                        y + (p5.random(2) - 1) * r + h / 2
+                    points.push(
+                        pVec(
+                            x + m + (p5.random(2) - 1) * r,
+                            y - m + (p5.random(2) - 1) * r + h
+                        )
                     )
-                )
-                points.push(
-                    pVec(
-                        x + (p5.random(2) - 1) * r + w / 2,
-                        y + (p5.random(2) - 1) * r + h / 2
+                    points.push(
+                        pVec(
+                            x + (p5.random(2) - 1) * r + w / 2,
+                            y + (p5.random(2) - 1) * r + h / 2
+                        )
                     )
-                )
-                points.push(
-                    pVec(
-                        x + (p5.random(2) - 1) * r + w,
-                        y + (p5.random(2) - 1) * r + h
+                    points.push(
+                        pVec(
+                            x + (p5.random(2) - 1) * r + w / 2,
+                            y + (p5.random(2) - 1) * r + h / 2
+                        )
                     )
-                )
-                points.push(
-                    pVec(
-                        x + (p5.random(2) - 1) * r + w,
-                        y + (p5.random(2) - 1) * r
+                    points.push(
+                        pVec(
+                            x - m + (p5.random(2) - 1) * r + w,
+                            y - m + (p5.random(2) - 1) * r + h
+                        )
                     )
-                )
+                    points.push(
+                        pVec(
+                            x - m + (p5.random(2) - 1) * r + w,
+                            y + m + (p5.random(2) - 1) * r
+                        )
+                    )
+                }
             }
         }
     }
