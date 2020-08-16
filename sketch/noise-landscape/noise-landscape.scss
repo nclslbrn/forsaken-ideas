@@ -1,0 +1,19 @@
+#interactiveParameter {
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+
+    width: 200px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+input,
+label {
+    text-align: center;
+}
+
+label {
+    margin-top: 1em;
+}

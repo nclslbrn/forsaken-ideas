@@ -1,6 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/full-canvas.scss'
+import customStyle from './noise-landscape.scss'
 import sketch from './noise-landscape'
 import infobox from '../../src/js/infobox'
 import handleAction from '../../src/js/handle-action'
@@ -21,9 +22,8 @@ window.addEventListener('resize', function (event) {
         let P5 = new p5(sketch, containerElement)
     }, 500)
 })
-/*
+
 window.init = sketch.init
 window.export_PNG = sketch.exportPNG
-*/
 window.infobox = infobox
 handleAction()

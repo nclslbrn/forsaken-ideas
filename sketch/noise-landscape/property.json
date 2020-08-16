@@ -1,6 +1,15 @@
 {
     "libs": ["p5"],
-    "info": "Create terrain height with Perlin noise value.",
+    "info": "Create organic terrain shape with Perlin. Map value to skew the inital rectangle where points are projected.",
     "date": "2020-07-31",
-    "action": []
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_PNG",
+            "icon": "desktop-download"
+        }
+    ]
 }
