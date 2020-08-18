@@ -106,13 +106,12 @@ const sketch = (p5) => {
         const paramBox = document.createElement('div')
         paramBox.id = 'interactiveParameter'
         params.forEach((param) => {
-            const elems = htmlParam(param, paramBox)
+            const elems = htmlParam(param)
             elems.forEach((elem) => {
                 paramBox.appendChild(elem)
             })
         })
         document.body.appendChild(paramBox)
-
         init()
     }
 
