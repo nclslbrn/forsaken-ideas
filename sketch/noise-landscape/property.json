@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "Create organic terrain shape with Perlin. Map value to skew the inital rectangle where points are projected.",
+    "info": "Inspired by Kjetil Golid work, <a href=\"https://generated.space/sketch/altitude-map-trace/\">Altitutude map trace</a>, this script create random topology with Perlin noise.",
     "date": "2020-07-31",
     "action": [
         {
