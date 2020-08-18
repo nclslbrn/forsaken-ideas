@@ -10,7 +10,43 @@ const sketch = (p5) => {
     let opacity = 12.5
     const squeeze_y = 0.45
     const perspective_x = 0.75
+    const params = [
+        {
+            value: 0.5,
+            options: { min: 0.1, max: 1, step: 0.01, label: 'Noise scale' }
+        },
+        {
+            value: 2,
+            options: { min: 0.1, max: 4.0, step: 0.1, label: 'Noise sample' }
+        },
+        {
+            value: 12.5,
+            options: { min: 1, max: 25, step: 1, label: 'Opacity' }
+        }
+    ]
 
+    const htmlParam = (param) => {
+        const label = document.createElement('label')
+        label.innerHTML = param.options.label
+        const slider = document.createElement('input')
+        slider.type = 'range'
+        slider.min = param.options.min
+        slider.max = param.options.max
+        slider.step = param.options.step
+        slider.value = param.value
+        const value = document.createElement('input')
+        value.type = 'text'
+        value.value = param.value
+
+        slider.addEventListener('change', (event) => {
+            param.value = event.target.value
+            value.value = event.target.value
+
+            console.log(param.options.label + ' : ' + param.value)
+            init()
+        })
+        return [label, slider, value]
+    }
     const ratio = window.innerWidth / window.innerHeight
 
     sketch.init = () => {
@@ -29,74 +65,7 @@ const sketch = (p5) => {
 
         p5.background(255)
     }
-    const setupParamInteraction = () => {
-        const paramBox = document.createElement('div')
-        paramBox.id = 'interactiveParameter'
-        const noiseScaleLabel = document.createElement('label')
-        noiseScaleLabel.innerHTML = 'Noise scale'
-        const noiseScaleSlider = document.createElement('input')
-        noiseScaleSlider.type = 'range'
-        noiseScaleSlider.min = 0.1
-        noiseScaleSlider.max = 1
-        noiseScaleSlider.step = 0.01
-        noiseScaleSlider.value = noiseScale
-        const noiseScaleValue = document.createElement('input')
-        noiseScaleValue.type = 'text'
-        noiseScaleValue.value = noiseScale
 
-        const noiseSampleLabel = document.createElement('label')
-        noiseSampleLabel.innerHTML = 'Noise sample'
-        const noiseSampleSlider = document.createElement('input')
-        noiseSampleSlider.type = 'range'
-        noiseSampleSlider.min = 0.1
-        noiseSampleSlider.max = 4.0
-        noiseSampleSlider.step = 0.1
-        noiseSampleSlider.value = noiseScale
-        const noiseSampleValue = document.createElement('input')
-        noiseSampleValue.type = 'text'
-        noiseSampleValue.value = noiseSample
-
-        const opacityLabel = document.createElement('label')
-        opacityLabel.innerHTML = 'opacity'
-        const opacitySlider = document.createElement('input')
-        opacitySlider.type = 'range'
-        opacitySlider.min = 0.1
-        opacitySlider.max = 25
-        opacitySlider.step = 0.1
-        opacitySlider.value = opacity
-        const opacityValue = document.createElement('input')
-        opacityValue.type = 'text'
-        opacityValue.value = opacity
-
-        paramBox.appendChild(noiseScaleLabel)
-        paramBox.appendChild(noiseScaleSlider)
-        paramBox.appendChild(noiseScaleValue)
-
-        paramBox.appendChild(noiseSampleLabel)
-        paramBox.appendChild(noiseSampleSlider)
-        paramBox.appendChild(noiseSampleValue)
-
-        paramBox.appendChild(opacityLabel)
-        paramBox.appendChild(opacitySlider)
-        paramBox.appendChild(opacityValue)
-
-        document.body.appendChild(paramBox)
-
-        noiseScaleSlider.addEventListener('change', (event) => {
-            noiseScale = noiseScaleSlider.value
-            noiseScaleValue.value = noiseScale
-            init()
-        })
-        noiseSampleSlider.addEventListener('change', (event) => {
-            noiseSample = noiseSampleSlider.value
-            noiseSampleValue.value = noiseSample
-            init()
-        })
-        opacitySlider.addEventListener('change', (event) => {
-            opacity = opacitySlider.value
-            opacityValue.value = opacity
-        })
-    }
     sketch.exportPNG = () => {
         const date = new Date()
         const filename =
@@ -133,7 +102,17 @@ const sketch = (p5) => {
         ]
         pTransform = perspective(srcCorners, dstCorners)
         p5.randomSeed(p5.floor(p5.random(9999999)))
-        setupParamInteraction()
+
+        const paramBox = document.createElement('div')
+        paramBox.id = 'interactiveParameter'
+        params.forEach((param) => {
+            const elems = htmlParam(param, paramBox)
+            elems.forEach((elem) => {
+                paramBox.appendChild(elem)
+            })
+        })
+        document.body.appendChild(paramBox)
+
         init()
     }
 
@@ -150,14 +129,15 @@ const sketch = (p5) => {
                         topoPoints[i].height * p5.height
                 )
 
-                p5.stroke(0, 25)
+                p5.stroke(0, params[2].value)
                 p5.point(np[0], np[1])
 
                 /**
                  * Compute vectors
                  */
                 const n1 =
-                    p5.noise(nx * noiseSample, ny * noiseSample) * noiseScale
+                    p5.noise(nx * params[1].value, ny * params[1].value) *
+                    params[0].value
 
                 topoPoints[i].height = 0.75 + n1
                 topoPoints[i].pos.x += p5.cos(topoPoints[i].angle) * scale
