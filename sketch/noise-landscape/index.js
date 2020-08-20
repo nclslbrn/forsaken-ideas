@@ -12,17 +12,6 @@ const loader = document.getElementById('loading')
 const P5 = new p5(sketch, containerElement)
 document.body.removeChild(loader)
 
-let resizeTimeout
-window.addEventListener('resize', function (event) {
-    clearTimeout(resizeTimeout)
-    resizeTimeout = setTimeout(function () {
-        containerElement.removeChild(
-            containerElement.getElementsByTagName('canvas')[0]
-        )
-        let P5 = new p5(sketch, containerElement)
-    }, 500)
-})
-
 window.init = sketch.init
 window.export_PNG = sketch.exportPNG
 window.infobox = infobox
