@@ -75,8 +75,6 @@ const sketch = (p5) => {
     }
 
     p5.draw = () => {
-        const t = (p5.frameCount % numFrame) / numFrame
-
         for (let p = 0; p < points.length; p++) {
             const xx = p5.map(points[p].x, -6.5, 6.5, 0, p5.width)
             const yy = p5.map(points[p].y, -6.5, 6.5, 0, p5.height)
