@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "Coming soon",
+    "info": "Compute planes rotations with theirs indexes and positions (x & y).",
     "date": "2020-07-25",
     "action": []
 }
