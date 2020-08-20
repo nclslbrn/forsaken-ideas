@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "A simple walker tracing lines.",
+    "info": "Simple walkers are used to trace lines if they are'nt offcanvas.",
     "date": "2020-01-21",
     "action": [
         {
