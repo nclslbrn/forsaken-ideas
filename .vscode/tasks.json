@@ -15,6 +15,24 @@
             "script": "export ${fileDirname}",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "export-all",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "index",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "watch-index",
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }
