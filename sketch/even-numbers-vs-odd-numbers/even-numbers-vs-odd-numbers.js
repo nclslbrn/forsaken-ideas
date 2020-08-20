@@ -5,14 +5,14 @@ import ease from '../../tools/ease'
 import * as tome from 'chromotome'
 
 const sketch = (p5) => {
-    const N = 5
+    const N = 13
     const odd = []
     const even = []
-    const numFrame = 120
+    const numFrame = 160
     const shapeColorId = []
-    let s, palette
+    let s, palette, sumSquare, animScale
 
-    const drawThis = (posX, posY, s, t, tt, odd) => {
+    const drawThis = (posX, posY, s, t, tt, odd, i) => {
         let last = null
         const step = p5.TWO_PI / 4
         const size = s * (odd ? tt : 1 - tt)
@@ -22,8 +22,8 @@ const sketch = (p5) => {
 
         for (let theta = 0; theta <= p5.TWO_PI; theta += step) {
             const rot = odd
-                ? p5.QUARTER_PI * tt - theta - step * t
-                : theta + step * t
+                ? theta + step * (t * i) + p5.HALF_PI * (tt * i)
+                : theta + step * (t * i) + p5.HALF_PI * (tt * i)
             const current = {
                 x: posX + displace + size * p5.cos(rot),
                 y: posY + displace + size * p5.sin(rot)
@@ -42,7 +42,6 @@ const sketch = (p5) => {
 
         p5.createCanvas(sketchSize, sketchSize)
         p5.noStroke()
-        //p5.colorMode(p5.HSB, N * N * 3, 1, 1, 1)
         s = sketchSize / N
 
         for (let x = 0; x <= N; x++) {
@@ -58,22 +57,29 @@ const sketch = (p5) => {
                 shapeColorId.push((y * N + x) % 2)
             }
         }
+        sumSquare = p5.max(odd.length, even.length)
+        animScale = sumSquare + numFrame / (N * 2)
     }
 
     p5.draw = () => {
-        const t = p5.pow((p5.frameCount % numFrame) / numFrame, 2)
-        const tt = ease(t < 0.5 ? t + t : 2 - (t + t))
+        const t = (p5.frameCount % numFrame) / numFrame
+        const tt = t < 0.5 ? t + t : 2 - (t + t)
+        const frame = p5.frameCount % numFrame
 
         p5.background(0)
 
         for (let o in odd) {
+            const index = o > sumSquare / 2 ? sumSquare - o : o
+            const i = p5.map((frame + index) / animScale, 0, animScale, 0, 1)
             p5.fill(palette.colors[shapeColorId[o]])
-            drawThis(odd[o].x, odd[o].y, s, t, tt, true)
+            drawThis(odd[o].x, odd[o].y, s, t, tt, true, i)
         }
 
         for (let e in even) {
+            const index = e > sumSquare / 2 ? sumSquare - e : e
+            const i = p5.map((frame + index) / animScale, 0, animScale, 0, 1)
             p5.fill(palette.colors[shapeColorId[e]])
-            drawThis(even[e].x, even[e].y, s, 1 - t, tt, false)
+            drawThis(even[e].x, even[e].y, s, 1 - t, tt, false, i)
         }
     }
 }
