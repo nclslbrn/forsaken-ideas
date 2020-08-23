@@ -1,5 +1,5 @@
 import perspective from 'perspective-transform'
-import paramSlider from '../../src/js/param-slider'
+import paramSlider from '../../src/js/sketch-common/param-slider'
 let canvas = null
 const params = {
     strenght: {

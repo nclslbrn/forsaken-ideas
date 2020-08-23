@@ -1,6 +1,6 @@
 /// <reference path="../../node_modules/@types/p5/global.d.ts" />
 
-import ease from '../../tools/ease'
+import ease from '../../src/js/sketch-common/ease'
 import * as tome from 'chromotome'
 
 const sketch = (p5) => {

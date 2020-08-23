@@ -3,8 +3,8 @@ import style from '../../src/sass/project.scss'
 import frameCanvas from '../../src/sass/frame-canvas.scss'
 import custom from './vector-field-study.scss'
 import sketch from './vector-field-study'
-import infobox from '../../src/js/infobox'
-import handleAction from '../../src/js/handle-action'
+import infobox from '../../src/js/sketch-common/infobox'
+import handleAction from '../../src/js/sketch-common/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')

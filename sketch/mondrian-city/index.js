@@ -6,9 +6,9 @@ import p5 from 'p5'
 import p5Collide2D from 'p5.collide2d'
 import sketch from './mondrian-city'
 import computeSVG from './computeSVG'
-import exportSVG from '../../tools/exportSVG'
-import infobox from '../../src/js/infobox'
-import handleAction from '../../src/js/handle-action'
+import exportSVG from '../../src/js/sketch-common/exportSVG'
+import infobox from '../../src/js/sketch-common/infobox'
+import handleAction from '../../src/js/sketch-common/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')

@@ -1,6 +1,6 @@
 import style from '../sass/projects-list.scss'
-import makeAcronym from './random-acronym-extend'
-import randomHeroImage from './random-hero-image'
+import makeAcronym from './home/random-acronym-extend'
+import randomHeroImage from './home/random-hero-image'
 const acronymElement = document.getElementById('acronym')
 
 if (acronymElement != null) {

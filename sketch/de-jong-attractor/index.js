@@ -3,9 +3,9 @@ import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/frame-canvas.scss'
 import sketch from './de-jong-attractor'
 import computeSVG from './computeSVG'
-import exportSVG from '../../tools/exportSVG'
-import infobox from '../../src/js/infobox'
-import handleAction from '../../src/js/handle-action'
+import exportSVG from '../../src/js/sketch-common/exportSVG'
+import infobox from '../../src/js/sketch-common/infobox'
+import handleAction from '../../src/js/sketch-common/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')

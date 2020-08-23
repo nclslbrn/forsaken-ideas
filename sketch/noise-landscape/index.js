@@ -3,8 +3,8 @@ import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/full-canvas.scss'
 import customStyle from './noise-landscape.scss'
 import sketch from './noise-landscape'
-import infobox from '../../src/js/infobox'
-import handleAction from '../../src/js/handle-action'
+import infobox from '../../src/js/sketch-common/infobox'
+import handleAction from '../../src/js/sketch-common/handle-action'
 
 const containerElement = document.body
 const loader = document.getElementById('loading')

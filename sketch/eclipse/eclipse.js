@@ -1,5 +1,5 @@
 import * as tome from 'chromotome'
-import ease from '../../tools/ease'
+import ease from '../../src/js/sketch-common/ease'
 
 let palette = tome.get()
 
