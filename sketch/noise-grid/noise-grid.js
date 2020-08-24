@@ -1,21 +1,22 @@
 /// <reference path="../../node_modules/@types/p5/global.d.ts" />
 /**
- * cols = 3
- * rows = 4
- *
- * 0 - 4 - 8
- * 1 - 5 - 9
- * 2 - 6 - 10
- * 3 - 7 - 11
- * @param {*} p5
+ * Main sketch function
+ * @param {*} p5 the lib
  */
 const sketch = (p5) => {
     const debug = false
+    const sizes = [16, 24, 32, 48, 64, 128]
+    const noiseThreshold = 0.35
     let size, cols, rows, points, t
+
+    /**
+     * Initialize sketch constants and build the
+     * grid with noise value
+     */
     sketch.init = () => {
-        size = 64
-        cols = p5.floor(window.innerWidth / size)
-        rows = p5.floor(window.innerHeight / size)
+        size = sizes[p5.floor(p5.random(1) * sizes.length)]
+        cols = p5.floor((window.innerWidth * 0.75) / size)
+        rows = p5.floor((window.innerHeight * 0.75) / size)
         points = []
         t = 0
 
@@ -29,6 +30,11 @@ const sketch = (p5) => {
             }
         }
     }
+    /**
+     * From top, left, bottom and right find the
+     * closest cell with noise value inferior to threshold
+     * @param {*} index
+     */
     const getNextPoint = (index) => {
         const selection = []
         const sides = [
@@ -47,7 +53,7 @@ const sketch = (p5) => {
         ]
 
         for (let i = 0; i < sides.length; i++) {
-            if (sides[i] && points[sides[i]].weight < 0.45) {
+            if (sides[i] && points[sides[i]].weight < noiseThreshold) {
                 selection.push(sides[i])
             }
         }
@@ -67,7 +73,11 @@ const sketch = (p5) => {
             p5.background(0)
             // p5.noStroke()
             for (let i = 0; i < points.length; i++) {
-                points[i].weight = p5.noise(points[i].x, points[i].y, t)
+                points[i].weight = p5.noise(
+                    points[i].x * size,
+                    points[i].y * size,
+                    t
+                )
                 // p5.fill(points[i].weight * 255)
                 // p5.rect(points[i].x * size, points[i].y * size, size, size)
             }
