@@ -4,8 +4,8 @@ const fs = require('fs')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, argv) => {
     const pPath = argv._[0]
@@ -134,15 +134,7 @@ module.exports = (env, argv) => {
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
                 }),
-                new UglifyJSPlugin({
-                    sourceMap: mode == 'production' ? false : true
-                })
-                /*
-                new CopyWebpackPlugin([{
-                    from: path.resolve(__dirname, project, 'assets'),
-                    to: path.resolve(__dirname, 'dist', 'assets'),
-                }])
-                */
+                new TerserPlugin()
             ],
             externals: {
                 p5: 'p5',

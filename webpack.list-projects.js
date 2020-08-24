@@ -4,6 +4,7 @@ const fs = require('fs')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const publicFolder = './public/sketch/'
 
 function fileList(dir) {
@@ -130,7 +131,8 @@ module.exports = (env, argv) => {
                         to: path.resolve(__dirname, 'public/fonts')
                     }
                 ]
-            })
+            }),
+            new TerserPlugin()
         ],
         devtool: mode == 'production' ? '' : 'source-map'
     }

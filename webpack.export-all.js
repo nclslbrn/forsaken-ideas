@@ -3,9 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const publicFolder = './public/sketch/'
+const TerserPlugin = require('terser-webpack-plugin')
 
 const commonsConfig = (project, entry, title, property) => {
     return {
@@ -102,15 +100,7 @@ const commonsConfig = (project, entry, title, property) => {
             new MiniCssExtractPlugin({
                 filename: 'css/[name].css'
             }),
-            new UglifyJSPlugin({
-                sourceMap: false
-            })
-            /*
-            new CopyWebpackPlugin([{
-                from: path.resolve(__dirname, project, 'assets'),
-                to: path.resolve(__dirname, 'dist', 'assets'),
-            }])
-            */
+            new TerserPlugin()
         ],
         externals: {
             p5: 'p5',

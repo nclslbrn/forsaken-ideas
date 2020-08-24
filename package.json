@@ -69,9 +69,9 @@
         "rimraf": "^3.0.2",
         "sass-loader": "^9.0.3",
         "svg.js": "^2.7.1",
+        "terser-webpack-plugin": "^4.1.0",
         "three.js": "^0.77.1",
         "typescript": "^3.9.7",
-        "uglifyjs-webpack-plugin": "^2.2.0",
         "webpack": "^4.44.1",
         "webpack-cli": "^3.3.12",
         "webpack-dev-server": "^3.11.0"
