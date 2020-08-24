@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "Coming soon",
+    "info": "Create line between grid cell with filtering them by noise value.",
     "date": "2020-07-25",
     "action": [
         {
