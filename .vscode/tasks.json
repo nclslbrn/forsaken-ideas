@@ -33,6 +33,12 @@
             "script": "watch-index",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "deploy",
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

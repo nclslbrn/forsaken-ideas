@@ -8,7 +8,8 @@
         "export": "webpack -p --display-error-details",
         "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js --display-error-details && webpack -p --config webpack.list-projects.js --display-error-details",
         "watch-index": "webpack-dev-server --config webpack.list-projects.js",
-        "index": "webpack -p --config webpack.list-projects.js"
+        "index": "webpack -p --config webpack.list-projects.js",
+        "deploy": "node deploy"
     },
     "keywords": [
         "p5js",
@@ -62,9 +63,11 @@
         "expose-loader": "^1.0.0",
         "fiber": "^1.0.4",
         "file-loader": "^6.0.0",
+        "ftp-deploy": "^2.3.7",
         "html-webpack-plugin": "^4.3.0",
         "imports-loader": "^1.1.0",
         "p5.collide2d": "^0.7.3",
+        "promise-ftp-common": "^1.1.5",
         "pug": "^3.0.0",
         "rimraf": "^3.0.2",
         "sass-loader": "^9.0.3",
