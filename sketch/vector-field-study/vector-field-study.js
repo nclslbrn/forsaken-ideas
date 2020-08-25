@@ -67,7 +67,10 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(800, 800)
+        canvas = p5.createCanvas(
+            window.innerHeight * 0.75,
+            window.innerHeight * 0.75
+        )
         p5.stroke(0)
         planeCurveFunctionSelector()
         init_sketch()
@@ -90,6 +93,10 @@ const sketch = (p5) => {
             points[p].x += scale * v.x
             points[p].y += scale * v.y
         }
+    }
+    p5.windowResized = () => {
+        sketch.init_pos()
+        p5.resizeCanvas(window.innerHeight * 0.75, window.innerHeight * 0.75)
     }
     sketch.download_PNG = () => {
         const date = new Date()
