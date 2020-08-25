@@ -5,7 +5,21 @@
 @include font-face(Inter, '../fonts/Inter-Bold', 500, normal, woff2 woff);
 
 header.headimg {
+    position: relative;
     padding-bottom: 50vh;
+    overflow: hidden;
+}
+header.headimg button.button {
+    position: absolute;
+    right: 0.5em;
+    bottom: 0;
+    padding: 4px 0;
+    font-size: 1.25em;
+    transform: translate(0, 100%);
+    transition: all 0.05s ease-out;
+}
+header.headimg:hover button.button {
+    transform: translate(0, -0.5em);
 }
 
 main {

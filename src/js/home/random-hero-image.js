@@ -53,12 +53,22 @@ const randomHeroImage = () => {
             style: '50%/cover'
         }
     ]
-
-    if (hero && images) {
+    const randomCover = () => {
         const imgId = Math.floor(Math.random(1) * images.length)
         const style = `background: ${images[imgId].style} url(img/${images[imgId].url});`
-
         hero.setAttribute('style', style)
+    }
+    if (hero && images) {
+        randomCover()
+        const button = document.createElement('button')
+        button.innerHTML =
+            '<span class="screen-reader-text">Random cover</span><span class="icon">&nesear;</span>'
+        button.classList.add('button')
+        hero.appendChild(button)
+
+        button.addEventListener('click', (event) => {
+            randomCover()
+        })
     }
 }
 
