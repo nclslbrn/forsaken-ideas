@@ -1,6 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/frame-canvas.scss'
+import p5createLoop from 'p5.createLoop'
 import sketch from './noise-grid'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'

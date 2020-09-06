@@ -1,99 +1,93 @@
-/// <reference path="../../node_modules/@types/p5/global.d.ts" />
-/**
- * Main sketch function
- * @param {*} p5 the lib
- */
+'use strict'
+import Layer from './Layer'
+import { makeNoise3D } from 'open-simplex-noise'
+
+const recording = false
+const numFrame = 60
+const numLayer = 100
+const noiseThreshold = 0.35
+const gifOptions = {
+    quality: 10,
+    render: false,
+    download: true,
+    fileName: 'noiseGrid.gif'
+}
+const noise3D = makeNoise3D(Date.now())
+
 const sketch = (p5) => {
-    const debug = false
-    const sizes = [16, 24, 32, 48, 64, 128]
-    const noiseThreshold = 0.35
-    let size, cols, rows, points, t
+    // Layer need these two functions
+    //window.noise = p5.noise
+    window.line = p5.line
+    window.noise = noise3D
+    let noise, size, cols, rows, layers, depthStep, width, height
 
     /**
      * Initialize sketch constants and build the
      * grid with noise value
      */
     sketch.init = () => {
-        size = sizes[p5.floor(p5.random(1) * sizes.length)]
-        cols = p5.floor((window.innerWidth * 0.75) / size)
-        rows = p5.floor((window.innerHeight * 0.75) / size)
-        points = []
-        t = 0
-
-        for (let x = 0; x < cols; x++) {
-            for (let y = 0; y < rows; y++) {
-                points.push({
-                    weight: p5.noise(x, y, 0),
-                    x: x,
-                    y: y
-                })
-            }
+        size = 4 * p5.floor(p5.random(8, 16))
+        width = 800
+        height = 800
+        cols = p5.floor(width / size)
+        rows = p5.floor(height / size)
+        depthStep = (height * numFrame) / (numLayer * size)
+        layers = []
+        for (let n = 0; n <= numLayer; n++) {
+            layers.push(new Layer(cols, rows, n * depthStep))
         }
-    }
-    /**
-     * From top, left, bottom and right find the
-     * closest cell with noise value inferior to threshold
-     * @param {*} index
-     */
-    const getNextPoint = (index) => {
-        const selection = []
-        const sides = [
-            index - 1 > 0 && (index - 1) % rows !== 0 && index % rows !== 0
-                ? index - 1
-                : false,
-            index + rows < cols * rows && (index + rows) % rows !== 0
-                ? index + rows
-                : false,
-            index + 1 < cols * rows && (index + 1) % rows !== 0
-                ? index + 1
-                : false,
-            index - rows > 0 && (index - rows) % rows !== 0
-                ? index - rows
-                : false
-        ]
-
-        for (let i = 0; i < sides.length; i++) {
-            if (sides[i] && points[sides[i]].weight < noiseThreshold) {
-                selection.push(sides[i])
-            }
-        }
-        return selection
     }
 
     p5.setup = () => {
         init()
-        p5.createCanvas(cols * size, rows * size)
-        p5.strokeWeight(8)
-        p5.stroke(255)
+        p5.createCanvas(width, height, p5.WEBGL)
+        p5.stroke(150)
+        p5.noFill()
+        p5.smooth()
+
+        if (recording) {
+            p5.createLoop({
+                gif: { ...gifOptions },
+                duration: 2.5,
+                framesPerSecond: 24
+            })
+        }
     }
 
     p5.draw = () => {
-        // slowdown animation to debug it
-        if (!debug || (debug && p5.frameCount % 12 == 0)) {
-            p5.background(0)
-            // p5.noStroke()
-            for (let i = 0; i < points.length; i++) {
-                points[i].weight = p5.noise(
-                    points[i].x * size,
-                    points[i].y * size,
-                    t
+        const t = (p5.frameCount % numFrame) / numFrame
+        const tt = (t < 0.5 ? t : 1 - t) * 2
+        p5.background(50)
+        p5.push()
+        p5.translate(
+            -p5.width * 0.5,
+            p5.height * 0.5 - t * size,
+            -p5.height * 0.5
+        )
+        //p5.rotateX(p5.QUARTER_PI)
+        p5.rotateX(p5.HALF_PI)
+
+        for (let i = 0; i < layers.length; i++) {
+            layers[i].depth += depthStep
+            if (layers[i].depth >= height) {
+                layers[i] = new Layer(cols, rows, depthStep)
+            }
+            layers[i].computePoints(tt + i)
+            const z = layers[i].depth
+            const lines = layers[i].getLines(noiseThreshold, size)
+            for (let j = 0; j < lines.length; j++) {
+                p5.line(
+                    lines[j].x1,
+                    lines[j].y1,
+                    z,
+                    lines[j].x2,
+                    lines[j].y2,
+                    z
                 )
-                // p5.fill(points[i].weight * 255)
-                // p5.rect(points[i].x * size, points[i].y * size, size, size)
             }
-            for (let j = 0; j < points.length; j++) {
-                const nexts = getNextPoint(j)
-                for (let k = 0; k < nexts.length; k++) {
-                    p5.line(
-                        points[j].x * size + size / 2,
-                        points[j].y * size + size / 2,
-                        points[nexts[k]].x * size + size / 2,
-                        points[nexts[k]].y * size + size / 2
-                    )
-                }
-            }
-            t += 0.005
         }
+
+        p5.pop()
     }
 
     p5.windowResized = () => {
