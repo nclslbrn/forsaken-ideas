@@ -22,3 +22,6 @@ mixin libs(property)
 
 	if property.libs.includes('fabric')
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js")
+	
+	if property.libs.includes("p5.createloop")
+		script(src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js")

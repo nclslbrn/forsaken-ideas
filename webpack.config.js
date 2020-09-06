@@ -4,8 +4,9 @@ const fs = require('fs')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const copyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = (env, argv) => {
     const pPath = argv._[0]
@@ -36,7 +37,7 @@ module.exports = (env, argv) => {
                     {
                         // js
                         test: /\.m?js$/,
-                        //exclude: /(node_modules|bower_components)/,
+                        exclude: /(node_modules|bower_components)/,
                         use: {
                             loader: 'babel-loader',
                             options: {
@@ -134,7 +135,26 @@ module.exports = (env, argv) => {
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
                 }),
-                new TerserPlugin()
+                new TerserPlugin(),
+                new copyWebpackPlugin({
+                    patterns: [
+                        {
+                            from: 'node_modules/gif.js/dist/gif.js',
+                            to: '../../libs/gif.js',
+                            force: true
+                        },
+                        {
+                            from: 'node_modules/gif.js/dist/gif.worker.js',
+                            to: '../../libs/gif.worker.js',
+                            force: true
+                        },
+                        {
+                            from: 'node_modules/p5/lib/p5.min.js',
+                            to: '../../libs/p5.min.js',
+                            force: true
+                        }
+                    ]
+                })
             ],
             externals: {
                 p5: 'p5',
@@ -143,12 +163,20 @@ module.exports = (env, argv) => {
                 'p5.js-svg': 'p5.jsSVG',
                 'p5.dom': 'p5.dom',
                 'p5.sound': 'p5.sound',
+                'p5.createLoop': 'p5.createLoop',
+                ccapture: 'ccapture.js',
+                gif: 'gif.js',
                 svg: '@svgdotjs/svg.js'
             },
             devtool: mode == 'development' ? 'source-map' : ''
         }
-        console.log('-->' + config.entry)
-        console.log('<--' + config.output.path + config.output.filename)
+        console.log(
+            'Bundleling from ' +
+                config.entry +
+                ' to ' +
+                config.output.path +
+                config.output.filename
+        )
         return config
     } else {
         console.log(

@@ -5,8 +5,8 @@
     "main": "index.js",
     "scripts": {
         "watch": "webpack-dev-server",
-        "export": "webpack -p --display-error-details",
-        "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js --display-error-details && webpack -p --config webpack.list-projects.js --display-error-details",
+        "export": "webpack -p",
+        "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js && webpack -p --config webpack.list-projects.js",
         "watch-index": "webpack-dev-server --config webpack.list-projects.js",
         "index": "webpack -p --config webpack.list-projects.js",
         "deploy": "node deploy"
@@ -15,16 +15,16 @@
         "p5js",
         "pug",
         "sass",
-        "p5js",
         "threejs",
         "webpack",
-        "boilerplate"
+        "boilerplate",
+        "gallery"
     ],
     "repository": {
         "type": "git",
         "url": "https://github.com/nclslbrn/make.git"
     },
-    "author": "Nicolas Lebrun <nclslbrn@gmail.com>",
+    "author": "Nicolas Lebrun <nl@artemg.com>",
     "license": "MIT",
     "dependencies": {
         "@types/p5": "^0.9.1",
@@ -64,9 +64,13 @@
         "fiber": "^1.0.4",
         "file-loader": "^6.0.0",
         "ftp-deploy": "^2.3.7",
+        "gif.js": "^0.2.0",
+        "gif.js.optimized": "^1.0.1",
         "html-webpack-plugin": "^4.3.0",
         "imports-loader": "^1.1.0",
+        "open-simplex-noise": "^2.4.0-pre4",
         "p5.collide2d": "^0.7.3",
+        "p5.createloop": "^0.1.3",
         "promise-ftp-common": "^1.1.5",
         "pug": "^3.0.0",
         "rimraf": "^3.0.2",
