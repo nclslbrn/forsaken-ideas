@@ -1,7 +1,18 @@
 /**
  * Plane curves function: used to displace vectors
  * https://www.wolframalpha.com/widgets/view.jsp?id=4e37f43fcbe8be03c20f977f32e20d15
+ *
+ * For every functions
+ * @param {vector} v a p5.vector object with x & y (z will be ignored)
+ * @param {float} amount the intensity of the displacement
+ * @return {vector} undeclared a p5.vector object with x & y (z will be ignored)
+ *
+ * Special cases: pdj and d_pdj
+ * you need to setup an attractors object in the JS file which include this one
+ * window.attractors = { a: 0.1, b: 1.2, c -1.2, d: -1.8 }
  */
+
+import p5 from 'p5'
 
 export default function (p5) {
     const hyperbolic = function (v, amount = 1) {
@@ -82,6 +93,35 @@ export default function (p5) {
         return p5.createVector(v.x, Math.cosh(v.y / theta))
     }
 
+    const julia = (v, amount = 1.0) => {
+        const r = amount * p5.sqrt(v.mag())
+        const theta =
+            0.5 * p5.atan2(v.x, v.y) + p5.round(2.0 * p5.random(0, 1)) * p5.PI
+        const x = r * p5.cos(theta)
+        const y = r * p5.sin(theta)
+        return p5.createVector(x, y)
+    }
+    const pdj = (v, amount = 1.0) => {
+        if (window.attractors) {
+            let a, b, c, d
+            ;({ a, b, c, d } = window.attractors)
+            return p5.createVector(
+                amount * p5.sin(a * v.y) - p5.cos(b * v.x),
+                amount * p5.sin(c * v.x) - p5.cos(d * v.y)
+            )
+        } else {
+            console.error('You need to setup window.attractors')
+            return v
+        }
+    }
+
+    const d_pdj = (v, amount = 1.0) => {
+        const h = 0.1 // step
+        const sqrth = p5.sqrt(h)
+        const v1 = pdj(v, attractors, amount)
+        const v2 = pdj(p5.createVector(v.x + h, v.y + h), amount)
+        return p5.createVector((v2.x - v1.x) / sqrth, (v2.y - v1.y) / sqrth)
+    }
     return {
         hyperbolic,
         rect_hyperbola,
@@ -92,6 +132,9 @@ export default function (p5) {
         kilroy_curve,
         conchoid,
         superformula,
-        catenary
+        catenary,
+        julia,
+        pdj,
+        d_pdj
     }
 }

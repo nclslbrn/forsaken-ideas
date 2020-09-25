@@ -1,12 +1,17 @@
-/// <reference path="../../node_modules/@types/p5/global.d.ts" />
-
 import * as tome from 'chromotome'
-import planeCurveFuncs from './plane-function'
+import planeCurveFuncs from '../../src/js/sketch-common/plane-function'
 
 const sketch = (p5) => {
     const res = 0.05
     const scale = 0.01
     const alpha = 50
+    const attractors = {
+        a: p5.random(-2, 2),
+        b: p5.random(-2, 2),
+        c: p5.random(-2, 2),
+        d: p5.random(-2, 2)
+    }
+    window.attractors = attractors
     const funcs = planeCurveFuncs(p5)
     let selectedFunc, palette, points, canvas
 
