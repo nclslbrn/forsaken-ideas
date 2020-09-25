@@ -93,7 +93,7 @@ export default function (p5) {
         return p5.createVector(v.x, Math.cosh(v.y / theta))
     }
 
-    const julia = (v, amount = 1.0) => {
+    const julia = (v, amount = 3.0) => {
         const r = amount * p5.sqrt(v.mag())
         const theta =
             0.5 * p5.atan2(v.x, v.y) + p5.round(2.0 * p5.random(0, 1)) * p5.PI
@@ -102,7 +102,7 @@ export default function (p5) {
         return p5.createVector(x, y)
     }
 
-    const pdj = (v, amount = 1.0) => {
+    const de_jong = (v, amount = 1.0) => {
         if (window.attractors) {
             let a, b, c, d
             ;({ a, b, c, d } = window.attractors)
@@ -114,14 +114,6 @@ export default function (p5) {
             console.error('You need to setup window.attractors')
             return v
         }
-    }
-
-    const d_pdj = (v, amount = 1.0) => {
-        const h = 0.1 // step
-        const sqrth = p5.sqrt(h)
-        const v1 = pdj(v, attractors, amount)
-        const v2 = pdj(p5.createVector(v.x + h, v.y + h), amount)
-        return p5.createVector((v2.x - v1.x) / sqrth, (v2.y - v1.y) / sqrth)
     }
 
     const sech = (v, amount = 1.0) => {
@@ -151,8 +143,7 @@ export default function (p5) {
         superformula,
         catenary,
         julia,
-        pdj,
-        d_pdj,
+        de_jong,
         sech
     }
 }
