@@ -56,9 +56,8 @@ export default function (p5) {
     }
 
     const kilroy_curve = function (v, amount = 0.5) {
-        const theta = p5.atan2(v.x, v.y)
         const sinc = p5.sin(v.y) / v.y
-        return p5.createVector(v.x, p5.log(v.y))
+        return p5.createVector(v.x, p5.log(sinc * v.y))
     }
 
     const conchoid = function (v, amount = 1) {
@@ -131,6 +130,14 @@ export default function (p5) {
         )
     }
 
+    const cardioid_pedal = (v, amount = 1.0) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(
+            amount * (1 + p5.cos(theta)) * p5.cos(theta),
+            amount * (1 + p5.cos(theta)) * p5.sin(theta)
+        )
+    }
+
     return {
         hyperbolic,
         rect_hyperbola,
@@ -144,6 +151,7 @@ export default function (p5) {
         catenary,
         julia,
         de_jong,
-        sech
+        sech,
+        cardioid_pedal
     }
 }
