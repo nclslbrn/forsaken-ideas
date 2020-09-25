@@ -17,24 +17,24 @@ const noise3D = makeNoise3D(Date.now())
 const sketch = (p5) => {
     // Layer need these two functions
     //window.noise = p5.noise
-    window.line = p5.line
     window.noise = noise3D
-    let noise, size, cols, rows, layers, depthStep, width, height
+    let noise, size, cols, rows, layers, depthStep, hSize, width, height
 
     /**
      * Initialize sketch constants and build the
      * grid with noise value
      */
     sketch.init = () => {
-        size = 4 * p5.floor(p5.random(8, 16))
+        size = 8 * p5.floor(p5.random(4, 8))
         width = 800
         height = 800
         cols = p5.floor(width / size)
         rows = p5.floor(height / size)
-        depthStep = (height * numFrame) / (numLayer * size)
+        depthStep = height / (numLayer * numFrame)
+        hSize = height / numLayer
         layers = []
         for (let n = 0; n < numLayer; n++) {
-            layers.push(new Layer(cols, rows, n * depthStep))
+            layers.push(new Layer(cols, rows, n, n / numLayer))
         }
     }
 
@@ -57,23 +57,25 @@ const sketch = (p5) => {
     p5.draw = () => {
         const t = (p5.frameCount % numFrame) / numFrame
         const tt = (t < 0.5 ? t : 1 - t) * 2
-        p5.background(25)
+        p5.background(15)
         p5.push()
         p5.translate(
             -p5.width * 0.5,
-            p5.height * 0.5 - t * size,
+            p5.height * 0.5 - depthStep,
             -p5.height * 0.5
         )
         //p5.rotateX(p5.QUARTER_PI)
         p5.rotateX(p5.HALF_PI)
 
         for (let i = 0; i < layers.length; i++) {
-            layers[i].depth += depthStep
-            if (layers[i].depth >= height) {
-                layers[i] = new Layer(cols, rows, depthStep)
+            layers[i].depth++
+            if (layers[i].depth >= numLayer) {
+                layers[i] = new Layer(cols, rows, 1, t + i)
+            } else {
+                layers[i].computePoints(t + i)
             }
-            layers[i].computePoints(tt + i)
-            const z = layers[i].depth
+
+            const z = layers[i].depth * hSize
             const lines = layers[i].getLines(noiseThreshold, size)
             for (let j = 0; j < lines.length; j++) {
                 p5.line(

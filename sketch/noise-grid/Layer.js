@@ -6,7 +6,7 @@ export default class Layer {
      * @param {int} rows number rows in grid
      * @param {int} depth the height of the layer
      */
-    constructor(cols, rows, depth) {
+    constructor(cols, rows, depth, frameIndex) {
         this.cols = cols
         this.rows = rows
         this.depth = depth
@@ -14,7 +14,7 @@ export default class Layer {
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
                 this.points.push({
-                    weight: window.noise(x, y, this.depth),
+                    weight: window.noise(x, y, frameIndex),
                     x: x,
                     y: y
                 })
