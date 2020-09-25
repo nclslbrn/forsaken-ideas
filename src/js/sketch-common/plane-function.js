@@ -101,6 +101,7 @@ export default function (p5) {
         const y = r * p5.sin(theta)
         return p5.createVector(x, y)
     }
+
     const pdj = (v, amount = 1.0) => {
         if (window.attractors) {
             let a, b, c, d
@@ -122,6 +123,22 @@ export default function (p5) {
         const v2 = pdj(p5.createVector(v.x + h, v.y + h), amount)
         return p5.createVector((v2.x - v1.x) / sqrth, (v2.y - v1.y) / sqrth)
     }
+
+    const sech = (v, amount = 1.0) => {
+        const cosh = (x) => {
+            return 0.5 * (p5.exp(x) + p5.exp(-x))
+        }
+        const sinh = (x) => {
+            return 0.5 * (p5.exp(x) - p5.exp(-x))
+        }
+        let d = p5.cos(2.0 * v.y) + cosh(2.0 * v.x)
+        if (d != 0) d = (amount * 2.0) / d
+        return p5.createVector(
+            d * p5.cos(v.y) * cosh(v.x),
+            -d * p5.sin(v.y) * sinh(v.x)
+        )
+    }
+
     return {
         hyperbolic,
         rect_hyperbola,
@@ -135,6 +152,7 @@ export default function (p5) {
         catenary,
         julia,
         pdj,
-        d_pdj
+        d_pdj,
+        sech
     }
 }
