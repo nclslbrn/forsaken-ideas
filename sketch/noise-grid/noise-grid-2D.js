@@ -2,7 +2,7 @@
 import Layer from './Layer'
 import { makeNoise3D } from 'open-simplex-noise'
 
-const recording = false
+const recording = true
 const numFrame = 60
 const numLayer = 100
 const noiseThreshold = 0.35
@@ -33,7 +33,7 @@ const sketch = (p5) => {
         rows = p5.floor(height / size)
         depthStep = (height * numFrame) / (numLayer * size)
         layers = []
-        for (let n = 0; n <= numLayer; n++) {
+        for (let n = 0; n < numLayer; n++) {
             layers.push(new Layer(cols, rows, n * depthStep))
         }
     }
@@ -41,7 +41,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         init()
         p5.createCanvas(width, height, p5.WEBGL)
-        p5.stroke(150)
+        p5.stroke(125)
         p5.noFill()
         p5.smooth()
 
@@ -57,7 +57,7 @@ const sketch = (p5) => {
     p5.draw = () => {
         const t = (p5.frameCount % numFrame) / numFrame
         const tt = (t < 0.5 ? t : 1 - t) * 2
-        p5.background(50)
+        p5.background(25)
         p5.push()
         p5.translate(
             -p5.width * 0.5,
