@@ -107,12 +107,8 @@ const sketch = (p5) => {
         const date = new Date()
         const filename =
             'Vector-field.' +
-            date.getFullYear() +
-            '-' +
-            date.getMonth() +
-            '-' +
-            date.getDay() +
-            '_' +
+            selectedFunc +
+            '.' +
             date.getHours() +
             '.' +
             date.getMinutes() +
