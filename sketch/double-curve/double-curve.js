@@ -1,77 +1,74 @@
 import planeCurveFuncs from '../../src/js/sketch-common/plane-function'
+import joinVector from './joinVector'
+import { generateHslaColors } from './generateHslaColors'
 
 const sketch = (p5) => {
-    const n = 3
+    const n = 1
+    const margin = 50
+    const alpha = 25
     const x1 = -3
     const y1 = -3
     const x2 = 3
     const y2 = 3
     let y = y1
-    let step
-    let drawing
-    let planeFunctionOne, planeFunctionTwo
-    window.attractors = {
-        a: p5.random(-2, 2),
-        b: p5.random(-2, 2),
-        c: p5.random(-2, 2),
-        d: p5.random(-2, 2)
-    }
+    let step,
+        drawing,
+        planeFunctionOne,
+        planeFunctionTwo,
+        canvas,
+        choosenJoinFunc,
+        colors
+
     // displacement functions
     const funcs = planeCurveFuncs(p5)
-    const functionNames = []
-    Object.entries(funcs).forEach((func_name) => {
-        functionNames.push(func_name[0])
+    const functionNames = Object.entries(funcs).map((func_name) => {
+        return func_name[0]
     })
+    const { joinVectorFuncs, joinVectorFuncsNames } = joinVector(p5)
 
-    const randomPlaneFunctions = () => {
-        planeFunctionOne =
-            functionNames[p5.floor(p5.random() * functionNames.length)]
-        planeFunctionTwo =
-            functionNames[p5.floor(p5.random() * functionNames.length)]
-
-        console.log(planeFunctionOne, planeFunctionTwo)
-    }
-    const init = () => {
-        drawing = true
-        y = y1
-        randomPlaneFunctions()
-        p5.background(255)
-    }
     // draw function
     const drawVariation = (x, y) => {
-        let v = p5.createVector(x, y)
+        const v = p5.createVector(x, y)
         for (let i = 0; i < n; i++) {
-            v = funcs[planeFunctionOne](v)
-            v = funcs[planeFunctionTwo](v)
-            v = funcs['sinusoidal'](v, (x2 - x1) / 2)
+            //const theta = p5.map(p5.noise(v.x, v.y), 0, 1, -1, 1)
+            //const v1 = p5.createVector(p5.cos(theta), p5.sin(theta))
+            const v2 = funcs[planeFunctionOne](v)
+            const v3 = funcs[planeFunctionTwo](v)
+            const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
+            const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
-                v.x + 0.003 * p5.randomGaussian(),
+                fv.x + 0.003 * p5.randomGaussian(),
                 x1,
                 x2,
-                20,
-                p5.width - 20
+                margin,
+                p5.width - margin
             )
             const yy = p5.map(
-                v.y + 0.003 * p5.randomGaussian(),
+                fv.y + 0.003 * p5.randomGaussian(),
                 y1,
                 y2,
-                20,
-                p5.height - 20
+                margin,
+                p5.height - margin
             )
             p5.point(xx, yy)
         }
     }
     p5.setup = () => {
-        p5.createCanvas(800, 800)
-        p5.strokeWeight(0.5)
-        p5.stroke(0, 25)
-        step = (p5.sqrt(n) * (x2 - x1)) / (2 * p5.width)
-        init()
+        canvas = p5.createCanvas(800, 800)
+        // A4 150dpi canvas = p5.createCanvas(1754, 1280)
+        canvas.elt.setAttribute('style', 'max-height: 85vh; width: auto')
+        //p5.strokeWeight(0.5)
+        p5.colorMode(p5.HSL, 100)
+        step = (p5.sqrt(n) * (x2 - x1)) / (1.526 * p5.width)
+        init_sketch()
     }
     p5.draw = () => {
         if (drawing) {
             for (let i = 0; (i < 20) & drawing; i++) {
                 for (let x = x1; x <= x2; x += step) {
+                    const index = p5.map(x + y, -6, 6, 0, 1)
+                    const color = p5.lerpColor(colors[0], colors[1], index)
+                    p5.stroke(color)
                     drawVariation(x, y)
                 }
                 y += step
@@ -82,11 +79,48 @@ const sketch = (p5) => {
             }
         }
     }
-    p5.mousePressed = () => {
-        init()
+
+    sketch.init_sketch = () => {
+        drawing = true
+        y = y1
+        window.attractors = {
+            a: p5.random(-2, 2),
+            b: p5.random(-2, 2),
+            c: p5.random(-2, 2),
+            d: p5.random(-2, 2)
+        }
+        choosenJoinFunc =
+            joinVectorFuncsNames[
+                p5.floor(p5.random() * joinVectorFuncsNames.length)
+            ]
+        planeFunctionOne =
+            functionNames[p5.floor(p5.random() * functionNames.length)]
+        planeFunctionTwo =
+            functionNames[p5.floor(p5.random() * functionNames.length)]
+        colors = generateHslaColors(75, 75, 5, 2).map((c) => {
+            console.table(c)
+            return p5.color(c[0], c[1], c[2], c[3])
+        })
+        p5.background(0)
+        console.log(planeFunctionOne, choosenJoinFunc, planeFunctionTwo)
     }
-    p5.windowResized = () => {
-        p5.resizeCanvas(800, 800)
+    sketch.download_PNG = () => {
+        const date = new Date()
+        const filename =
+            'Double-curve.' +
+            planeFunctionOne +
+            '-' +
+            choosenJoinFunc +
+            '-' +
+            planeFunctionTwo +
+            '.' +
+            date.getHours() +
+            '.' +
+            date.getMinutes() +
+            '.' +
+            date.getSeconds() +
+            '--copyright_Nicolas_Lebrun_CC-by-3.0'
+        p5.save(canvas, filename, 'png')
     }
 }
 export default sketch
