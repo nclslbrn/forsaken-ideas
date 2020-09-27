@@ -3,7 +3,7 @@ import joinVector from './joinVector'
 import { generateHslaColors } from './generateHslaColors'
 
 const sketch = (p5) => {
-    const n = 1
+    const n = 2
     const margin = 50
     const alpha = 25
     const x1 = -3
@@ -17,7 +17,8 @@ const sketch = (p5) => {
         planeFunctionTwo,
         canvas,
         choosenJoinFunc,
-        colors
+        colors,
+        cartel
 
     // displacement functions
     const funcs = planeCurveFuncs(p5)
@@ -59,7 +60,10 @@ const sketch = (p5) => {
         canvas.elt.setAttribute('style', 'max-height: 85vh; width: auto')
         //p5.strokeWeight(0.5)
         p5.colorMode(p5.HSL, 100)
-        step = (p5.sqrt(n) * (x2 - x1)) / (1.526 * p5.width)
+        step = (p5.sqrt(n) * (x2 - x1)) / (3.526 * p5.width)
+        cartel = document.createElement('div')
+        cartel.id = 'cartel'
+        document.body.appendChild(cartel)
         init_sketch()
     }
     p5.draw = () => {
@@ -74,7 +78,9 @@ const sketch = (p5) => {
                 y += step
                 if (y > y2) {
                     drawing = false
-                    console.log('done')
+                    const notification = document.createElement('p')
+                    notification.innerHTML = 'Ready'
+                    cartel.appendChild(notification)
                 }
             }
         }
@@ -97,12 +103,40 @@ const sketch = (p5) => {
             functionNames[p5.floor(p5.random() * functionNames.length)]
         planeFunctionTwo =
             functionNames[p5.floor(p5.random() * functionNames.length)]
-        colors = generateHslaColors(75, 75, 5, 2).map((c) => {
-            console.table(c)
+        cartel.innerHTML = ''
+        const vectorInfo = document.createElement('p')
+        vectorInfo.innerHTML = (
+            planeFunctionOne +
+            ' & ' +
+            planeFunctionTwo +
+            ' (' +
+            choosenJoinFunc +
+            ')'
+        )
+            .replace('_', ' ')
+            .toUpperCase()
+        cartel.appendChild(vectorInfo)
+        const colorBlock = document.createElement('div')
+        colorBlock.classList.add('colorBlock')
+        colors = generateHslaColors(75, 75, 7, 2).map((c) => {
+            const color = document.createElement('div')
+            color.classList.add('color')
+            let style = 'width: 40px; height: 40px; '
+            style +=
+                'background-color: hsl(' +
+                c[0] +
+                ', ' +
+                c[1] +
+                '%, ' +
+                c[2] +
+                '%);'
+            color.setAttribute('style', style)
+            colorBlock.appendChild(color)
+
             return p5.color(c[0], c[1], c[2], c[3])
         })
+        cartel.appendChild(colorBlock)
         p5.background(0)
-        console.log(planeFunctionOne, choosenJoinFunc, planeFunctionTwo)
     }
     sketch.download_PNG = () => {
         const date = new Date()

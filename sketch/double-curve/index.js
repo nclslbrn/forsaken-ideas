@@ -1,6 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
 import frameCanvas from '../../src/sass/frame-canvas.scss'
+import dedicatedStyle from './double-curve.scss'
 import sketch from './double-curve'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
