@@ -7,7 +7,7 @@
  * @param {float} amount the intensity of the displacement
  * @return {vector} undeclared a p5.vector object with x & y (z will be ignored)
  *
- * Special cases: pdj and d_pdj
+ * Special cases: de_jong & clifford
  * you need to setup an attractors object in the JS file which include this one
  * window.attractors = { a: 0.1, b: 1.2, c -1.2, d: -1.8 }
  */
@@ -115,6 +115,20 @@ export default function (p5) {
         }
     }
 
+    const clifford = (v, amount = 1.0) => {
+        if (window.attractors) {
+            let a, b, c, d
+            ;({ a, b, c, d } = window.attractors)
+            return p5.createVector(
+                amount * p5.sin(a * v.x) + c * p5.cos(a * v.x),
+                amount * p5.sin(b * v.x) + d * p5.cos(b * v.y)
+            )
+        } else {
+            console.error('You need to setup window.attractors')
+            return v
+        }
+    }
+
     const sech = (v, amount = 1.0) => {
         const cosh = (x) => {
             return 0.5 * (p5.exp(x) + p5.exp(-x))
@@ -151,6 +165,7 @@ export default function (p5) {
         catenary,
         julia,
         de_jong,
+        clifford,
         sech,
         cardioid_pedal
     }
