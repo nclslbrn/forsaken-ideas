@@ -13,11 +13,12 @@ const generateHslaColors = (
     amount
 ) => {
     const colors = []
-    const hueBegin = Math.floor(Math.random() * 360)
+    const hueBegin = Math.floor(Math.random() * 180)
     const hueDelta = Math.trunc(360 / amount)
 
     for (let i = 0; i < amount; i++) {
-        let hue = (hueBegin + i * hueDelta) % 360
+        let hue = hueBegin + i * hueDelta
+        hue = hue >= 360 ? hue % 360 : hue
         colors.push([hue, saturation, lightness, alpha])
     }
 
