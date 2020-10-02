@@ -4,7 +4,7 @@ import { generateHslaColors } from './generateHslaColors'
 
 const sketch = (p5) => {
     const n = 3
-    const margin = 12
+    const margin = 120
     const alpha = 25
     const x1 = -3
     const y1 = -3
@@ -20,8 +20,13 @@ const sketch = (p5) => {
         colors,
         cartel
 
+    // A4 150dpi canvas = p5.createCanvas(1754, 1280)
+    /*
     const sketchWidth = window.innerWidth > 800 ? 800 : window.innerWidth
     const sketchHeight = window.innerHeight > 800 ? 800 : window.innerHeight
+    */
+    const sketchWidth = 1280
+    const sketchHeight = 1500
 
     // displacement functions
     const funcs = planeCurveFuncs(p5)
@@ -57,12 +62,18 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         canvas = p5.createCanvas(sketchWidth, sketchHeight)
-        // A4 150dpi canvas = p5.createCanvas(1754, 1280)
-        //canvas.elt.setAttribute('style', 'max-height: 85vh; width: auto')
+        canvas.elt.setAttribute(
+            'style',
+            'max-width:' +
+                sketchWidth / 2 +
+                'px; max-height:' +
+                sketchHeight / 2 +
+                'px'
+        )
         //p5.strokeWeight(0.5)
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
-        step = (p5.sqrt(n) * (x2 - x1)) / (2.256 * p5.width)
+        step = (p5.sqrt(n) * (x2 - x1)) / (2.526 * p5.width)
         cartel = document.createElement('div')
         cartel.id = 'cartel'
         document.body.appendChild(cartel)
@@ -72,8 +83,11 @@ const sketch = (p5) => {
         if (drawing) {
             for (let i = 0; (i < 20) & drawing; i++) {
                 for (let x = x1; x <= x2; x += step) {
-                    const index = p5.map(x + y, -6, 6, 0, 1)
-                    const color = p5.lerpColor(colors[0], colors[1], index)
+                    const color = p5.lerpColor(
+                        colors[0],
+                        colors[1],
+                        (x * y) / 9
+                    )
                     p5.stroke(color)
                     drawVariation(x, y)
                 }
@@ -120,25 +134,28 @@ const sketch = (p5) => {
         cartel.appendChild(vectorInfo)
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(75, 50, 5, 2).map((c) => {
-            const color = document.createElement('div')
-            color.classList.add('color')
-            let style = 'width: 40px; height: 40px; '
-            style +=
-                'background-color: hsl(' +
-                c[0] +
-                ', ' +
-                c[1] +
-                '%, ' +
-                c[2] +
-                '%);'
-            color.setAttribute('style', style)
-            colorBlock.appendChild(color)
-
+        colors = generateHslaColors(60, 60, 25, 4).map((c, index) => {
+            // Skip the third color to get a gap between shape and backgroud
+            if (index !== 2) {
+                const color = document.createElement('div')
+                color.classList.add('color')
+                let style = 'width: 24px; height: 24px; '
+                style +=
+                    'background-color: hsl(' +
+                    c[0] +
+                    ', ' +
+                    c[1] +
+                    '%, ' +
+                    c[2] +
+                    '%);'
+                color.setAttribute('style', style)
+                colorBlock.appendChild(color)
+            }
             return p5.color(c[0], c[1], c[2], c[3])
         })
         cartel.appendChild(colorBlock)
-        p5.background(100, 0, 95)
+        colors[3].setAlpha(255)
+        p5.background(colors[3])
     }
     sketch.download_PNG = () => {
         const date = new Date()
