@@ -1,4 +1,4 @@
-import planeCurveFuncs from '../../src/js/sketch-common/plane-function'
+import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 import joinVector from './joinVector'
 import { generateHslaColors } from './generateHslaColors'
 
@@ -134,7 +134,7 @@ const sketch = (p5) => {
         cartel.appendChild(vectorInfo)
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(60, 60, 25, 4).map((c, index) => {
+        colors = generateHslaColors(80, 60, 25, 4).map((c, index) => {
             // Skip the third color to get a gap between shape and backgroud
             if (index !== 2) {
                 const color = document.createElement('div')

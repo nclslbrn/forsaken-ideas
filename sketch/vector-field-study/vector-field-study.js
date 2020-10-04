@@ -1,5 +1,5 @@
 import * as tome from 'chromotome'
-import planeCurveFuncs from '../../src/js/sketch-common/plane-function'
+import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 
 const sketch = (p5) => {
     const res = 0.05
