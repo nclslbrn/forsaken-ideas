@@ -48,7 +48,7 @@ const sketch = (p5) => {
             const v2 = funcs[planeFunction](v)
             const v3 = attractors[attractor](v)
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
-            const fv = funcs['sinusoidal'](v3, (x2 - x1) / 2)
+            const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
                 fv.x + 0.003 * p5.randomGaussian(),
                 x1,
