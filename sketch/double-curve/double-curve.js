@@ -136,7 +136,7 @@ const sketch = (p5) => {
         cartel.appendChild(vectorInfo)
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(80, 60, 25, 4).map((c, index) => {
+        colors = generateHslaColors(80, 50, 25, 4).map((c, index) => {
             // Skip the third color to get a gap between shape and backgroud
             if (index !== 2) {
                 const color = document.createElement('div')
@@ -167,7 +167,7 @@ const sketch = (p5) => {
             '-' +
             choosenJoinFunc +
             '-' +
-            strangeAttractor +
+            attractor +
             '.' +
             date.getHours() +
             '.' +
