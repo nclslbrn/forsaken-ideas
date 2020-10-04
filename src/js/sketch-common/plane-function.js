@@ -15,7 +15,7 @@
 import p5 from 'p5'
 
 export default function (p5) {
-    const hyperbolic = function (v, amount = 1) {
+    const hyperbolic = (v, amount = 1) => {
         const r = v.mag() + 1.0e-10
         const theta = p5.atan2(v.x, v.y)
         const x = (amount * p5.sin(theta)) / r
@@ -23,31 +23,31 @@ export default function (p5) {
         return p5.createVector(x, y)
     }
 
-    const rect_hyperbola = function (v, amount = 0.4) {
+    const rect_hyperbola = (v, amount = 0.4) => {
         const theta = p5.atan2(v.x, v.y)
         const sec = 1 / p5.cos(theta)
         return p5.createVector(sec * theta * amount, p5.tan(theta) * amount)
     }
 
-    const sinusoidal = function (v, amount = 0.6) {
+    const sinusoidal = (v, amount = 0.6) => {
         return p5.createVector(amount * p5.sin(v.x), amount * p5.sin(v.y))
     }
 
-    const kampyle = function (v, amount = 1) {
+    const kampyle = (v, amount = 1) => {
         const theta = p5.atan2(v.x, v.y)
         const sec = 1 / p5.cos(theta)
 
         return p5.createVector(sec * v.x, p5.tan(v.y) * sec * v.y)
     }
 
-    const maltese_cross = function (v, amount = 1) {
+    const maltese_cross = (v, amount = 1) => {
         return p5.createVector(
             (2 * p5.cos(v.x)) / p5.sqrt(p5.sin(4 * v.x)),
             (2 * p5.sin(v.y)) / p5.sqrt(p5.sin(4 * v.y))
         )
     }
 
-    const astroid = function (v, amount = 0.5) {
+    const astroid = (v, amount = 0.5) => {
         const theta = p5.atan2(v.x, v.y)
         return p5.createVector(
             p5.pow(p5.cos(theta), 3),
@@ -55,12 +55,12 @@ export default function (p5) {
         )
     }
 
-    const kilroy_curve = function (v, amount = 0.5) {
+    const kilroy_curve = (v, amount = 0.5) => {
         const sinc = p5.sin(v.y) / v.y
         return p5.createVector(v.x, p5.log(sinc * v.y))
     }
 
-    const conchoid = function (v, amount = 1) {
+    const conchoid = (v, amount = 1) => {
         const theta = p5.atan2(v.x, v.y)
         const sec = 1 / p5.cos(theta)
         const A = p5.ceil(p5.random(1, 2))
@@ -71,7 +71,16 @@ export default function (p5) {
         )
     }
 
-    const superformula = function (v, amount = 1) {
+    const cochlioid = (v, amount = 0.75) => {
+        const theta = p5.atan2(v.x, v.y)
+        const sinc = p5.sin(v.y) / v.y
+        return p5.createVector(
+            amount * sinc * p5.cos(theta),
+            amount * sinc * p5.sin(theta)
+        )
+    }
+
+    const superformula = (v, amount = 1) => {
         const theta = p5.atan2(v.x, v.y)
         const a = 1
         const b = 1
@@ -87,9 +96,14 @@ export default function (p5) {
         return p5.createVector(p5.cos(theta) * fr, p5.sin(theta) * fr)
     }
 
-    const catenary = function (v, amount = 1) {
+    const catenary = (v, amount = 1) => {
         const theta = p5.atan2(v.x, v.y)
         return p5.createVector(v.x, Math.cosh(v.y / theta))
+    }
+
+    const archimedean_spiral = (v, amount = 0.75) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(amount * p5.cos(theta), amount * p5.sin(theta))
     }
 
     const julia = (v, amount = 3.0) => {
@@ -152,6 +166,33 @@ export default function (p5) {
         )
     }
 
+    const agnesi_witch = (v, amount = 0.65) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(
+            2 * amount * theta,
+            (2 * amount) / p5.sqrt(theta) + 1
+        )
+    }
+
+    const hippias_quadratix = (v, amount = 1) => {
+        const theta = p5.atan2(v.x, v.y)
+        const sinc = p5.sin(v.y) / v.y
+
+        return p5.createVector(
+            (2 * amount * p5.cos(theta)) / (p5.PI * sinc * theta),
+            (2 * amount * p5.sin(theta)) / (p5.PI * sinc * theta)
+        )
+    }
+
+    const parallel_parabola = (v, amount = 1) => {
+        const theta = p5.atan2(v.x, v.y)
+        const offset = 0.3
+        return p5.createVector(
+            2 * amount * theta + (offset * theta) / p5.sqrt(theta * theta + 1),
+            amount * theta * theta - offset / p5.sqrt(theta * theta + 1)
+        )
+    }
+
     return {
         hyperbolic,
         rect_hyperbola,
@@ -167,6 +208,11 @@ export default function (p5) {
         de_jong,
         clifford,
         sech,
-        cardioid_pedal
+        cardioid_pedal,
+        archimedean_spiral,
+        cochlioid,
+        agnesi_witch,
+        hippias_quadratix,
+        parallel_parabola
     }
 }
