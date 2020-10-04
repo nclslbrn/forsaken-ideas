@@ -5,11 +5,7 @@
  * For every functions
  * @param {vector} v a p5.vector object with x & y (z will be ignored)
  * @param {float} amount the intensity of the displacement
- * @return {vector} undeclared a p5.vector object with x & y (z will be ignored)
- *
- * Special cases: de_jong & clifford
- * you need to setup an attractors object in the JS file which include this one
- * window.attractors = { a: 0.1, b: 1.2, c -1.2, d: -1.8 }
+ * @return {vector} a p5.vector object with x & y (z will be ignored)
  */
 
 import p5 from 'p5'
@@ -115,34 +111,6 @@ export default function (p5) {
         return p5.createVector(x, y)
     }
 
-    const de_jong = (v, amount = 1.0) => {
-        if (window.attractors) {
-            let a, b, c, d
-            ;({ a, b, c, d } = window.attractors)
-            return p5.createVector(
-                amount * p5.sin(a * v.y) - p5.cos(b * v.x),
-                amount * p5.sin(c * v.x) - p5.cos(d * v.y)
-            )
-        } else {
-            console.error('You need to setup window.attractors')
-            return v
-        }
-    }
-
-    const clifford = (v, amount = 1.0) => {
-        if (window.attractors) {
-            let a, b, c, d
-            ;({ a, b, c, d } = window.attractors)
-            return p5.createVector(
-                amount * p5.sin(a * v.x) + c * p5.cos(a * v.x),
-                amount * p5.sin(b * v.x) + d * p5.cos(b * v.y)
-            )
-        } else {
-            console.error('You need to setup window.attractors')
-            return v
-        }
-    }
-
     const sech = (v, amount = 1.0) => {
         const cosh = (x) => {
             return 0.5 * (p5.exp(x) + p5.exp(-x))
@@ -166,7 +134,7 @@ export default function (p5) {
         )
     }
 
-    const agnesi_witch = (v, amount = 0.65) => {
+    const agnesi_witch = (v, amount = 1.0) => {
         const theta = p5.atan2(v.x, v.y)
         return p5.createVector(
             2 * amount * theta,
@@ -174,7 +142,7 @@ export default function (p5) {
         )
     }
 
-    const hippias_quadratix = (v, amount = 1) => {
+    const hippias_quadratix = (v, amount = 1.0) => {
         const theta = p5.atan2(v.x, v.y)
         const sinc = p5.sin(v.y) / v.y
 
@@ -184,9 +152,9 @@ export default function (p5) {
         )
     }
 
-    const parallel_parabola = (v, amount = 1) => {
+    const parallel_parabola = (v, amount = 1.0) => {
         const theta = p5.atan2(v.x, v.y)
-        const offset = 0.3
+        const offset = 1
         return p5.createVector(
             2 * amount * theta + (offset * theta) / p5.sqrt(theta * theta + 1),
             amount * theta * theta - offset / p5.sqrt(theta * theta + 1)
@@ -205,8 +173,6 @@ export default function (p5) {
         superformula,
         catenary,
         julia,
-        de_jong,
-        clifford,
         sech,
         cardioid_pedal,
         archimedean_spiral,
