@@ -1,4 +1,5 @@
 import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import joinVector from './joinVector'
 import { generateHslaColors } from './generateHslaColors'
 
@@ -13,8 +14,8 @@ const sketch = (p5) => {
     let y = y1
     let step,
         drawing,
-        planeFunctionOne,
-        planeFunctionTwo,
+        planeFunction,
+        attractor,
         canvas,
         choosenJoinFunc,
         colors,
@@ -30,8 +31,13 @@ const sketch = (p5) => {
 
     // displacement functions
     const funcs = planeCurveFuncs(p5)
+    const attractors = strangeAttractors(p5).attractors
+
     const functionNames = Object.entries(funcs).map((func_name) => {
         return func_name[0]
+    })
+    const attractorNames = Object.entries(attractors).map((attr_name) => {
+        return attr_name[0]
     })
     const { joinVectorFuncs, joinVectorFuncsNames } = joinVector(p5)
 
@@ -39,10 +45,10 @@ const sketch = (p5) => {
     const drawVariation = (x, y) => {
         const v = p5.createVector(x, y)
         for (let i = 0; i < n; i++) {
-            const v2 = funcs[planeFunctionOne](v)
-            const v3 = funcs[planeFunctionTwo](v)
+            const v2 = funcs[planeFunction](v)
+            const v3 = attractors[attractor](v)
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
-            const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
+            const fv = funcs['sinusoidal'](v3, (x2 - x1) / 2)
             const xx = p5.map(
                 fv.x + 0.003 * p5.randomGaussian(),
                 x1,
@@ -105,26 +111,22 @@ const sketch = (p5) => {
     sketch.init_sketch = () => {
         drawing = true
         y = y1
-        window.attractors = {
-            a: p5.random(-2, 2),
-            b: p5.random(-2, 2),
-            c: p5.random(-2, 2),
-            d: p5.random(-2, 2)
-        }
+
         choosenJoinFunc =
             joinVectorFuncsNames[
                 p5.floor(p5.random() * joinVectorFuncsNames.length)
             ]
-        planeFunctionOne =
+        planeFunction =
             functionNames[p5.floor(p5.random() * functionNames.length)]
-        planeFunctionTwo =
-            functionNames[p5.floor(p5.random() * functionNames.length)]
+        attractor =
+            attractorNames[p5.floor(p5.random() * attractorNames.length)]
+        strangeAttractors(p5).init(attractor)
         cartel.innerHTML = ''
         const vectorInfo = document.createElement('p')
         vectorInfo.innerHTML = (
-            planeFunctionOne +
+            planeFunction +
             ' & ' +
-            planeFunctionTwo +
+            attractor +
             ' (' +
             choosenJoinFunc +
             ')'
@@ -161,11 +163,11 @@ const sketch = (p5) => {
         const date = new Date()
         const filename =
             'Double-curve.' +
-            planeFunctionOne +
+            planeFunction +
             '-' +
             choosenJoinFunc +
             '-' +
-            planeFunctionTwo +
+            strangeAttractor +
             '.' +
             date.getHours() +
             '.' +
