@@ -1,13 +1,8 @@
-import { newExpression } from "babel-types"
+import { newExpression } from 'babel-types'
+import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 
-const sketch = p5 => {
-    const res = 5
-
-    let a,
-        b,
-        c,
-        d = 0
-
+const sketch = (p5) => {
+    const res = 8
     const initPoints = []
     let points = []
     let pointsHistory = []
@@ -15,6 +10,9 @@ const sketch = p5 => {
     const strokeColor = p5.color(0, 25)
     const width = window.innerWidth * 0.75
     const height = window.innerHeight * 0.75
+    const scale = 0.005
+    const margin = window.innerWidth / 64
+    const cliffordAttractor = strangeAttractors(p5).attractors['clifford']
 
     p5.setup = () => {
         p5.createCanvas(width, height)
@@ -25,7 +23,7 @@ const sketch = p5 => {
                 x: x,
                 y: 0,
                 vx: 0,
-                vy: 0
+                vy: 5
             })
             pointsHistory.push([])
         }
@@ -33,10 +31,12 @@ const sketch = p5 => {
     }
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
-            const angle = cliffordAttractor(points[p].x, points[p].y)
-
-            points[p].vx += Math.cos(angle) * 0.3
-            points[p].vy += Math.sin(angle) * 0.3
+            const x = (points[p].x - width / 2) * scale
+            const y = (points[p].x - height / 2) * scale
+            const v = cliffordAttractor(p5.createVector(x, y))
+            const angle = p5.atan2(v.x - x, v.y - y)
+            points[p].vx += p5.cos(angle) * 0.3
+            points[p].vy += p5.sin(angle) * 0.3
 
             p5.line(
                 points[p].x,
@@ -48,15 +48,15 @@ const sketch = p5 => {
             points[p].y += points[p].vy
 
             if (
-                points[p].x + points[p].vx > width ||
-                points[p].y + points[p].vy > height ||
-                points[p].x + points[p].vx < 0 ||
-                points[p].y + points[p].vy < 0
+                points[p].x + points[p].vx > width - margin ||
+                points[p].y + points[p].vy > height - margin ||
+                points[p].x + points[p].vx < margin ||
+                points[p].y + points[p].vy < margin
             ) {
                 newLineCrossRef[p] = pointsHistory.length
                 pointsHistory[pointsHistory.length] = []
             } else {
-                if (typeof newLineCrossRef[p] != "undefined") {
+                if (typeof newLineCrossRef[p] != 'undefined') {
                     pointsHistory[newLineCrossRef[p]].push({
                         x: points[p].x,
                         y: points[p].y
@@ -72,41 +72,28 @@ const sketch = p5 => {
             points[p].vx *= 0.99
             points[p].vy *= 0.99
 
-            if (points[p].x > width) points[p].x = 0
-            if (points[p].y > height) points[p].y = 0
-            if (points[p].x < 0) points[p].x = width - 0
-            if (points[p].y < 0) points[p].y = height - 0
+            if (points[p].x > width - margin) points[p].x = margin
+            if (points[p].y > height - margin) points[p].y = margin
+            if (points[p].x < margin) points[p].x = width - margin
+            if (points[p].y < margin) points[p].y = height - margin
         }
     }
     sketch.init = () => {
-        a = Math.random() * 4 - 2
-        b = Math.random() * 4 - 2
-        c = Math.random() * 4 - 2
-        d = Math.random() * 4 - 2
-        points = initPoints.map(p => ({
+        strangeAttractors(p5).init('clifford')
+        points = initPoints.map((p) => ({
             ...p
         }))
+        pointsHistory = []
         p5.background(255, 250, 245)
     }
     sketch.getSketchProperties = () => {
         p5.noLoop()
+        //atttractor['clifford'].init()
         return {
             points: pointsHistory,
             width: width,
             height: height
         }
-    }
-
-    const cliffordAttractor = (x, y) => {
-        // clifford attractor
-        // http://paulbourke.net/fractals/clifford/
-        const scale = 0.005
-        x = (x - width / 2) * scale
-        y = (y - height / 2) * scale
-        const x1 = Math.sin(a * y) + c * Math.cos(a * x)
-        const y1 = Math.sin(b * x) + d * Math.cos(b * y)
-
-        return Math.atan2(y1 - y, x1 - x)
     }
 }
 
