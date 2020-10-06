@@ -23,6 +23,19 @@ export default function (p5) {
             return func_name[0]
         }
     )
+    const getOperatorSymbol = (joinFunc) => {
+        const conversion = {
+            add: '+',
+            sub: '-',
+            mul: '*',
+            div: '/'
+        }
+        if (joinFunc in conversion) {
+            return conversion[joinFunc]
+        } else {
+            return ':-('
+        }
+    }
 
-    return { joinVectorFuncs, joinVectorFuncsNames }
+    return { joinVectorFuncs, joinVectorFuncsNames, getOperatorSymbol }
 }

@@ -4,9 +4,8 @@ import joinVector from './joinVector'
 import { generateHslaColors } from './generateHslaColors'
 
 const sketch = (p5) => {
-    const n = 3
+    const n = 2
     const margin = 120
-    const alpha = 25
     const x1 = -3
     const y1 = -3
     const x2 = 3
@@ -39,8 +38,15 @@ const sketch = (p5) => {
     const attractorNames = Object.entries(attractors).map((attr_name) => {
         return attr_name[0]
     })
-    const { joinVectorFuncs, joinVectorFuncsNames } = joinVector(p5)
+    const {
+        joinVectorFuncs,
+        joinVectorFuncsNames,
+        getOperatorSymbol
+    } = joinVector(p5)
 
+    const strFromVar = (variable) => {
+        return variable.replace('_', ' ').toUpperCase()
+    }
     // draw function
     const drawVariation = (x, y) => {
         const v = p5.createVector(x, y)
@@ -50,14 +56,14 @@ const sketch = (p5) => {
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
             const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
-                fv.x + 0.003 * p5.randomGaussian(),
+                fv.x, // + 0.003 * p5.randomGaussian(),
                 x1,
                 x2,
                 margin,
                 p5.width - margin
             )
             const yy = p5.map(
-                fv.y + 0.003 * p5.randomGaussian(),
+                fv.y, // + 0.003 * p5.randomGaussian(),
                 y1,
                 y2,
                 margin,
@@ -70,16 +76,12 @@ const sketch = (p5) => {
         canvas = p5.createCanvas(sketchWidth, sketchHeight)
         canvas.elt.setAttribute(
             'style',
-            'max-width:' +
-                sketchWidth / 2 +
-                'px; max-height:' +
-                sketchHeight / 2 +
-                'px'
+            `max-width: ${sketchWidth / 2}px; max-height: ${sketchHeight / 2}px`
         )
         //p5.strokeWeight(0.5)
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
-        step = (p5.sqrt(n) * (x2 - x1)) / (2.526 * p5.width)
+        step = (p5.sqrt(n) * (x2 - x1)) / (1.356 * p5.width)
         cartel = document.createElement('div')
         cartel.id = 'cartel'
         document.body.appendChild(cartel)
@@ -111,7 +113,6 @@ const sketch = (p5) => {
     sketch.init_sketch = () => {
         drawing = true
         y = y1
-
         choosenJoinFunc =
             joinVectorFuncsNames[
                 p5.floor(p5.random() * joinVectorFuncsNames.length)
@@ -122,42 +123,27 @@ const sketch = (p5) => {
             attractorNames[p5.floor(p5.random() * attractorNames.length)]
         strangeAttractors(p5).init(attractor)
         cartel.innerHTML = ''
-        const vectorInfo = document.createElement('p')
-        vectorInfo.innerHTML = (
-            planeFunction +
-            ' & ' +
-            attractor +
-            ' (' +
-            choosenJoinFunc +
-            ')'
-        )
-            .replace('_', ' ')
-            .toUpperCase()
-        cartel.appendChild(vectorInfo)
+        cartel.innerHTML += `<p>a ${strFromVar(
+            planeFunction
+        )} <sup>Plane function</p>`
+        cartel.innerHTML += `<p>b ${strFromVar(
+            attractor
+        )} <sup>Attractor</sup></p>`
+        cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(80, 50, 25, 4).map((c, index) => {
-            // Skip the third color to get a gap between shape and backgroud
-            if (index !== 2) {
-                const color = document.createElement('div')
-                color.classList.add('color')
-                let style = 'width: 24px; height: 24px; '
-                style +=
-                    'background-color: hsl(' +
-                    c[0] +
-                    ', ' +
-                    c[1] +
-                    '%, ' +
-                    c[2] +
-                    '%);'
-                color.setAttribute('style', style)
-                colorBlock.appendChild(color)
-            }
+        colors = generateHslaColors(84, 42, 8, 2).map((c, index) => {
+            const color = document.createElement('div')
+            color.classList.add('color')
+            let style = 'width: 24px; height: 24px; '
+            style += `background-color: hsl(${c[0]}, ${c[1]}%, ${c[2]}%);`
+            color.setAttribute('style', style)
+            colorBlock.appendChild(color)
+
             return p5.color(c[0], c[1], c[2], c[3])
         })
         cartel.appendChild(colorBlock)
-        colors[3].setAlpha(255)
-        p5.background(colors[3])
+        p5.background(0, 75, 4)
     }
     sketch.download_PNG = () => {
         const date = new Date()
