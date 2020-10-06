@@ -132,7 +132,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(80, 35, 10, 2).map((c, index) => {
+        colors = generateHslaColors(84, 42, 8, 2).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '
@@ -143,7 +143,7 @@ const sketch = (p5) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
         cartel.appendChild(colorBlock)
-        p5.background(0, 100, 100)
+        p5.background(0, 75, 4)
     }
     sketch.download_PNG = () => {
         const date = new Date()
