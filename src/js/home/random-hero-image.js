@@ -12,7 +12,7 @@ const randomHeroImage = () => {
         randomCover()
         const button = document.createElement('button')
         button.innerHTML =
-            '<span class="screen-reader-text">Random cover</span><span class="icon">&nesear;</span>'
+            '<span class="screen-reader-text">Random cover</span><span class="icon">&nesear;</span> image'
         button.classList.add('button')
         hero.appendChild(button)
 

@@ -12,19 +12,34 @@ header.headimg {
 header.headimg button.button {
     position: absolute;
     right: 0.5em;
-    bottom: 0;
-    padding: 4px 0;
-    font-size: 1.25em;
+    top: 100%;
+    padding: 0.25em;
+    margin-top: 1em;
+    font-size: 1em;
+    line-height: 1;
     transform: translate(0, 100%);
+    outline: none;
+    border-radius: 0;
+    border: none;
+    background: #fff;
+    font-weight: 400;
+    font-family: sans-serif;
+    box-shadow: 0 0 5em rgba(0, 0, 0, 0.5);
     transition: all 0.05s ease-out;
+
+    &:hover {
+        background-color: #f3f3f3;
+        cursor: pointer;
+    }
 }
 header.headimg:hover button.button {
-    transform: translate(0, -0.5em);
+    transform: translate(0, -2.5em);
 }
 
 main {
     display: block;
     padding: 1em 3em 4em 1em;
+    box-shadow: 0 -0.5em 5em rgba(0, 0, 0, 0.5);
 }
 
 @import 'modules/aside';
