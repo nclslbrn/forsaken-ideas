@@ -34,3 +34,32 @@ aside {
         height: 1em;
     }
 }
+
+aside.column.about {
+    @include breakpoint(xs) {
+        clear: both;
+        float: none;
+        border-top: 1px solid #333;
+        padding-top: 4em;
+    }
+    @include breakpoint(sm) {
+        clear: none;
+        float: unset;
+        border-top: none;
+    }
+    ul {
+        display: flex;
+        flex-flow: row wrap;
+        position: relative;
+        width: 100%;
+    }
+    ul::after {
+        content: '';
+        display: table;
+        clear: both;
+        float: none;
+    }
+    ul li {
+        flex: 0 1 44%;
+    }
+}

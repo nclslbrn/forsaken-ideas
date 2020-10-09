@@ -1,0 +1,23 @@
+body {
+    box-sizing: border-box;
+}
+main {
+    display: block;
+    padding: 2em 3em 4em 3em;
+    box-shadow: 0 -0.5em 5em rgba(0, 0, 0, 0.25);
+}
+
+aside,
+section.project {
+    ul {
+        margin-left: 0;
+        padding: 0 5em 2em 0;
+
+        list-style-type: none;
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    }
+}

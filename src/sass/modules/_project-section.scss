@@ -1,4 +1,32 @@
 section.project {
+    display: block;
+    float: right;
+    @include breakpoint(xs) {
+        margin-top: 1.5rem;
+        width: 100%;
+    }
+    @include breakpoint(sm) {
+        width: 50%;
+    }
+    @include breakpoint(md) {
+        margin-top: 0;
+        width: 66%;
+    }
+    @include breakpoint(lg) {
+        width: 75%;
+    }
+    @include breakpoint(xl) {
+        width: 80%;
+    }
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+        float: none;
+    }
+}
+
+section.project {
     padding-top: 0.5em;
 }
 section.project ul {
