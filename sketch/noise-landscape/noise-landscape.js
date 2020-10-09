@@ -4,16 +4,18 @@ let canvas = null
 const params = {
     strenght: {
         value: 35.0,
-        options: { min: 20.0, max: 50, step: 0.5, label: 'Strength' }
+        options: { min: 20.0, max: 50, step: 0.1, label: 'Strength' }
     },
     noiseScale: {
         value: 1.0,
-        options: { min: 0.1, max: 2.1, step: 0.5, label: 'Noise scale' }
+        options: { min: 0.1, max: 2.1, step: 0.05, label: 'Noise scale' }
     },
+
     noiseSample: {
         value: 5,
-        options: { min: 0.1, max: 10.0, step: 0.1, label: 'Noise sample' }
+        options: { min: 1, max: 11, step: 1, label: 'Noise sample' }
     },
+
     opacity: {
         value: 25,
         options: { min: 1, max: 50, step: 1, label: 'Opacity' }
@@ -80,8 +82,6 @@ const sketch = (p5) => {
             p5.height - pad_y
         ]
         pTransform = perspective(srcCorners, dstCorners)
-        //p5.randomSeed(p5.floor(p5.random(9999999)))
-
         const paramBox = document.createElement('div')
         paramBox.id = 'interactiveParameter'
         for (const i in params) {
@@ -120,14 +120,14 @@ const sketch = (p5) => {
                     ) * params['noiseScale'].value
                 const n2 =
                     p5.noise(
-                        nx / params['noiseSample'].value,
-                        ny / params['noiseSample'].value
+                        nx * params['noiseSample'].value * 3,
+                        ny * params['noiseSample'].value * 3
                     ) *
                     (params['noiseScale'].value / 300)
                 const n3 =
                     p5.noise(
-                        nx + params['noiseSample'].value,
-                        ny + params['noiseSample'].value
+                        nx * params['noiseSample'].value * 6,
+                        ny * params['noiseSample'].value * 6
                     ) *
                     (params['noiseScale'].value / 50)
 

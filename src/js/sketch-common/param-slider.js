@@ -1,6 +1,25 @@
+/**
+ * Utility function to create slider to change a sketch parameter
+ *
+ * @param {object} param initialization object
+ * paramter name : {
+ *      value: init parameter value,
+ *      options : {
+ *         min: minimum parameter value,
+ *         max: maximum valeu,
+ *         step: step to increment value
+ *         label: explicit name or false
+ *      }
+ * }
+ * If you want to call a function after param change,
+ * you have to set a sketch.init function
+ */
 const paramSlider = (param) => {
-    const label = document.createElement('label')
-    label.innerHTML = param.options.label
+    let label = ''
+    if (param.options.label) {
+        label = document.createElement('label')
+        label.innerHTML = param.options.label
+    }
     const slider = document.createElement('input')
     slider.type = 'range'
     slider.min = param.options.min
@@ -14,7 +33,9 @@ const paramSlider = (param) => {
     slider.addEventListener('change', (event) => {
         param.value = event.target.value
         value.value = event.target.value
-        init()
+        if (typeof init == 'function') {
+            init()
+        }
     })
     return [label, slider, value]
 }
