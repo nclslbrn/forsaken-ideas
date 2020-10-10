@@ -49,7 +49,9 @@ property.json
 }
 ```
 
-## Scripting sketch
+---
+
+## Writing sketch
 
 To start you have to create a folder for your sketch and start writing an index.js file where you can include every dependencies you need.
 You can work on it with live reload with wepack webserver by using:
@@ -61,7 +63,7 @@ Once your script is done, you can export it into the `public` folder by using:
 If you want to export every sketches in sketch/ you can run
 `npm run export-all-sketch` \*
 
-\* If you use VS code you can use tasks (from .vscode/tasks.json) and simply click watch ${fileDirname} or export ${fileDirname} webpack will use \${fileDirname}/index.js to build the sketch.
+If you use VS code you can use tasks (from .vscode/tasks.json) and simply click watch ${fileDirname} or export ${fileDirname} webpack will use \${fileDirname}/index.js to build the sketch.
 
 ## Showcase / link your sketches to the homepage
 
@@ -71,8 +73,12 @@ If you want to work on the homepage which lists every sketch, you can build it a
 And if you want to work on the design or the content of the homepage (stored into src/pug/) you can use:
 `npm run watch-gallery`
 
-## Conclusion
+---
+
+### Conclusion
 The content of the public folder is ready for use in production and it can be put on a basic hosting without node.js (as static HTML/frontend JS files).
+
+---
 
 ## EXTRA: Send the public folder online
 
