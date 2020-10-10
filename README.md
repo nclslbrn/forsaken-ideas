@@ -65,6 +65,8 @@ If you want to export every sketches in sketch/ you can run
 
 If you use VS code you can use tasks (from .vscode/tasks.json) and simply click watch ${fileDirname} or export ${fileDirname} webpack will use \${fileDirname}/index.js to build the sketch.
 
+---
+
 ## Showcase / link your sketches to the homepage
 
 If you want to work on the homepage which lists every sketch, you can build it and get a list of every exported sketch by using:
