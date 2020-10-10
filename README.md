@@ -1,6 +1,6 @@
 # Make
 
-A tool to design several sketches with the same webpack script and list every sketch into an index.
+A tool to design several p5js sketches with the same webpack script and list every sketch into an index.
 Usefull for offline prototyping and online showcasing.
 
 ## Directory structure
@@ -77,12 +77,13 @@ And if you want to work on the design or the content of the homepage (stored int
 
 ---
 
-### Conclusion
+## Conclusion
+
 The content of the public folder is ready for use in production and it can be put on a basic hosting without node.js (as static HTML/frontend JS files).
 
 ---
 
-## EXTRA: Send the public folder online
+## Bonus : send the public folder online
 
 If you want to send the whole generated site (after running previous command) you can do it but, first, you have to fill a file named `ftp.json` in the roots of the repo. In this one, you have to specify your hosting connection:
 
