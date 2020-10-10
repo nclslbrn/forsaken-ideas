@@ -1,6 +1,6 @@
-const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs')
+const unescapeTitle = require('./webpack/unescapeTitle')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -13,11 +13,6 @@ function fileList(dir) {
         var isDir = fs.statSync(name).isDirectory()
         return list.concat(isDir ? [file] : null)
     }, [])
-}
-const unescapeTitle = (title) => {
-    const addSpace = title.replace(/-/g, ' ')
-    const capitalize = addSpace.charAt(0).toUpperCase() + addSpace.slice(1)
-    return capitalize
 }
 
 module.exports = (env, argv) => {

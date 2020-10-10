@@ -4,11 +4,11 @@
     "description": "A workflow to build multiple js sketches/projects with",
     "main": "index.js",
     "scripts": {
-        "watch": "webpack-dev-server",
-        "export": "webpack -p",
-        "export-all": "rimraf public/sketch/* && webpack --config webpack.export-all.js && webpack -p --config webpack.list-projects.js",
-        "watch-index": "webpack-dev-server --config webpack.list-projects.js",
-        "index": "webpack -p --config webpack.list-projects.js",
+        "watch-sketch": "webpack-dev-server",
+        "export-sketch": "webpack -p",
+        "export-all-sketch": "rimraf public/sketch/* && webpack --config webpack.export-all.js && webpack -p --config webpack.list-projects.js",
+        "watch-gallery": "webpack-dev-server --config webpack.list-projects.js",
+        "export-gallery": "webpack -p --config webpack.list-projects.js",
         "deploy": "node deploy"
     },
     "keywords": [

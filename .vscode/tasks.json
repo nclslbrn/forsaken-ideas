@@ -5,36 +5,42 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "run sketch",
             "type": "npm",
-            "script": "watch ${fileDirname}",
+            "script": "watch-sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
+            "label": "build sketch",
             "type": "npm",
-            "script": "export ${fileDirname}",
+            "script": "export-sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
+            "label": "build all sketches",
             "type": "npm",
-            "script": "export-all",
+            "script": "export-all-sketch",
             "group": "build",
             "problemMatcher": []
         },
         {
+            "label": "(re)build gallery",
             "type": "npm",
-            "script": "index",
+            "script": "export-gallery",
             "group": "build",
             "problemMatcher": []
         },
         {
+            "label": "run gallery",
             "type": "npm",
-            "script": "watch-index",
+            "script": "watch-gallery",
             "group": "build",
             "problemMatcher": []
         },
         {
+            "label": "Send it online",
             "type": "npm",
             "script": "deploy",
             "group": "build",
