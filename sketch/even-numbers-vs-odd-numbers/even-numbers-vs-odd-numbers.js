@@ -1,7 +1,3 @@
-/// <reference path="../../node_modules/@types/p5/global.d.ts" />
-import { newExpression } from 'babel-types'
-
-import ease from '../../src/js/sketch-common/ease'
 import * as tome from 'chromotome'
 
 const sketch = (p5) => {
@@ -11,7 +7,13 @@ const sketch = (p5) => {
     const numFrame = 160
     const shapeColorId = []
     let s, palette, sumSquare, animScale
-
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     const drawThis = (posX, posY, s, t, tt, odd, i) => {
         let last = null
         const step = p5.TWO_PI / 4
@@ -37,12 +39,12 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        const sketchSize = p5.min(window.innerWidth, 800)
+        const sketchDim = sketchSize()
         palette = tome.get()
 
-        p5.createCanvas(sketchSize, sketchSize)
+        p5.createCanvas(sketchDim.w, sketchDim.h)
         p5.noStroke()
-        s = sketchSize / N
+        s = sketchDim.w / N
 
         for (let x = 0; x <= N; x++) {
             for (let y = 0; y <= N; y++) {

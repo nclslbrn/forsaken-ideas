@@ -8,9 +8,16 @@ const sketch = (p5) => {
     const arcs = 8
     const arcLenght = 32
     let pb = []
-
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     p5.setup = () => {
-        p5.createCanvas(800, 800)
+        const size = sketchSize()
+        p5.createCanvas(size.w, size.h)
         center = p5.createVector(p5.width / 2, p5.height / 2)
         p5.fill(127)
         p5.stroke(255)
@@ -60,6 +67,11 @@ const sketch = (p5) => {
 
             i++
         }
+    }
+    p5.windowResized = () => {
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
+        center = p5.createVector(p5.width / 2, p5.height / 2)
     }
 }
 

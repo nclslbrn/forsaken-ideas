@@ -5,13 +5,13 @@ import { generateHslaColors } from './generateHslaColors'
 
 const sketch = (p5) => {
     const n = 2
-    const margin = 120
     const x1 = -3
     const y1 = -3
     const x2 = 3
     const y2 = 3
     let y = y1
-    let step,
+    let margin,
+        step,
         drawing,
         planeFunction,
         attractor,
@@ -21,12 +21,16 @@ const sketch = (p5) => {
         cartel
 
     // A4 150dpi canvas = p5.createCanvas(1754, 1280)
-    /*
-    const sketchWidth = window.innerWidth > 800 ? 800 : window.innerWidth
-    const sketchHeight = window.innerHeight > 800 ? 800 : window.innerHeight
-    */
     const sketchWidth = 1280
     const sketchHeight = 1500
+    const sketchSize = (sketchWidth, sketchHeight) => {
+        const ratio = sketchWidth / sketchHeight
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? sketchWidth : side * ratio,
+            h: side > 800 ? sketchHeight : side
+        }
+    }
 
     // displacement functions
     const funcs = planeCurveFuncs(p5)
@@ -73,11 +77,15 @@ const sketch = (p5) => {
         }
     }
     p5.setup = () => {
-        canvas = p5.createCanvas(sketchWidth, sketchHeight)
+        const sketchDim = sketchSize(sketchWidth, sketchHeight)
+        margin = sketchDim.w / 8
+        canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
+
         canvas.elt.setAttribute(
             'style',
             `max-width: ${sketchWidth / 2}px; max-height: ${sketchHeight / 2}px`
         )
+
         //p5.strokeWeight(0.5)
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)

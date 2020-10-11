@@ -1,3 +1,7 @@
+html {
+    min-height: 100vh;
+}
+
 body {
     box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -6,6 +10,7 @@ body {
     text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 
 .screen-reader-text {

@@ -4,6 +4,10 @@
     "date": "2019-11-05",
     "action": [
         {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
             "name": "export_PNG",
             "icon": "desktop-download"
         }

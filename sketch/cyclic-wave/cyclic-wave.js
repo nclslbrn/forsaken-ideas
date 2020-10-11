@@ -2,13 +2,31 @@ const sketch = (p5) => {
     let arcs = []
     let numFrames = 125
     let margin = 16, // margin between circle
-        noiseScale = 16,
         noiseRadius = 6,
         noiseStrength = 1,
         lineSize = 8,
         speed = 0, // the value wich increments circle's radiuses
         maxRadius = 0 // Limit the size of the arc circle
 
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
+    sketch.init = () => {
+        const center = p5.createVector(p5.width / 2, p5.height / 2)
+        maxRadius = p5.width / 2.5
+        speed = maxRadius / numFrames
+
+        for (var c = margin; c <= maxRadius; c += margin) {
+            let newArc
+            newArc = new EllipseSection(c, 0, [], center)
+            newArc.init()
+            arcs.push(newArc)
+        }
+    }
     const getNoiseIntensity = function (x, y, t) {
         return (
             p5.noise(
@@ -19,21 +37,10 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        p5.createCanvas(window.innerWidth, window.innerHeight, p5.WEBGL)
+        const sketchDim = sketchSize()
+        p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
         p5.smooth(20)
-        const center = p5.createVector(
-            window.innerWith / 2,
-            window.innerHeight / 2
-        )
-        maxRadius = window.innerHeight / 2.5
-        speed = maxRadius / numFrames
-
-        for (var c = margin; c <= maxRadius; c += margin) {
-            let newArc
-            newArc = new EllipseSection(c, 0, [], center)
-            newArc.init()
-            arcs.push(newArc)
-        }
+        sketch.init()
     }
 
     p5.draw = () => {
@@ -108,6 +115,11 @@ const sketch = (p5) => {
             }
         }
         p5.pop()
+    }
+    p5.windowResized = () => {
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
+        sketch.init()
     }
 
     class EllipseSection {

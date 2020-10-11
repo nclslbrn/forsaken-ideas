@@ -6,7 +6,13 @@ const cellByLine = 16
 
 const sketch = (p5) => {
     let cellSize, palette, radii, nextRadii, colors, nextColors
-
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     const switchLine = () => {
         let switchRadii = [...radii]
         let switchColors = [...colors]
@@ -37,10 +43,8 @@ const sketch = (p5) => {
         return [switchRadii, switchColors]
     }
     p5.setup = () => {
-        p5.createCanvas(
-            window.innerWidth > 800 ? 800 : window.innerWidth,
-            window.innerHeight > 800 ? 800 : window.innerHeight
-        )
+        const size = sketchSize()
+        p5.createCanvas(size.w, size.h)
         p5.noStroke()
         sketch.init_sketch()
     }
@@ -96,10 +100,8 @@ const sketch = (p5) => {
     }
 
     p5.windowResized = () => {
-        p5.resizeCanvas(
-            window.innerWidth > 800 ? 800 : window.innerWidth,
-            window.innerHeight > 800 ? 800 : window.innerHeight
-        )
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
         sketch.init_sketch()
     }
 }

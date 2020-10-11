@@ -1,10 +1,20 @@
 nav#iconav {
     position: absolute;
-    top: 0.25rem;
-    left: 0.25rem;
-    padding: 0.15rem;
-    width: 3rem;
-    height: 6rem;
+    left: 0;
+    // mobile
+    padding: 0;
+    bottom: 0;
+    height: 3rem;
+    width: 100vw;
+
+    @include breakpoint(md) {
+        padding: 0.15rem;
+        top: 0;
+        bottom: auto;
+        width: 3rem;
+        height: 6rem;
+    }
+
     border: none;
     z-index: 10;
 }
@@ -13,9 +23,16 @@ nav#iconav ul {
     padding: 0;
     margin: 0;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: stretch;
-    width: 3rem;
+    //mobile
+    flex-flow: row nowrap;
+    justify-content: space-around;
+
+    @include breakpoint(md) {
+        flex-flow: column nowrap;
+        justify-content: stretch;
+        width: 3rem;
+    }
+
     list-style-type: none;
     background: #f3f3f3;
     /*

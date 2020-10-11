@@ -10,8 +10,8 @@ const sketch = (p5) => {
     const strokeColor = p5.color(0, 25)
     const width = window.innerWidth * 0.75
     const height = window.innerHeight * 0.75
-    const scale = 0.005
-    const margin = window.innerWidth / 64
+    const scale = 0.008
+    const margin = window.innerWidth / 56
     const cliffordAttractor = strangeAttractors(p5).attractors['clifford']
 
     p5.setup = () => {
@@ -44,8 +44,6 @@ const sketch = (p5) => {
                 points[p].x + points[p].vx,
                 points[p].y + points[p].vy
             )
-            points[p].x += points[p].vx
-            points[p].y += points[p].vy
 
             if (
                 points[p].x + points[p].vx > width - margin ||
@@ -68,7 +66,8 @@ const sketch = (p5) => {
                     })
                 }
             }
-
+            points[p].x += points[p].vx
+            points[p].y += points[p].vy
             points[p].vx *= 0.99
             points[p].vy *= 0.99
 

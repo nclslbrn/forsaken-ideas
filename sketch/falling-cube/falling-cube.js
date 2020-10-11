@@ -1,5 +1,3 @@
-/// <reference path="../../node_modules/@types/p5/global.d.ts" />
-
 import ease from '../../src/js/sketch-common/ease'
 import * as tome from 'chromotome'
 
@@ -8,7 +6,13 @@ const sketch = (p5) => {
     const offset = 2
     let w, h, palette
     const numFrame = 120
-
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     const cube = (d) => {
         p5.push()
         p5.translate(0, d / 2, 0)
@@ -34,7 +38,8 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        p5.createCanvas(720, 720, p5.WEBGL)
+        const size = sketchSize()
+        p5.createCanvas(size.w, size.h, p5.WEBGL)
         p5.ortho()
         p5.noStroke()
         palette = tome.get()
@@ -42,6 +47,7 @@ const sketch = (p5) => {
         w = p5.ceil(p5.width / N)
         h = p5.ceil(p5.height / N)
     }
+
     p5.draw = () => {
         const t = (p5.frameCount % numFrame) / numFrame
         p5.background(0)
@@ -66,6 +72,10 @@ const sketch = (p5) => {
             }
         }
         p5.pop()
+    }
+    p5.windowResized = () => {
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
     }
 }
 export default sketch

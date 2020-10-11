@@ -1,52 +1,38 @@
 import Walker from './walker'
 
 const sketch = (p5) => {
-    const sketchWidth = window.innerWidth * 0.8
-    const sketchHeight = window.innerHeight * 0.9
-
-    let isTreeFinished = false
-    const walkerNum = 320
-    const iteration = 12
-    const stickiness = 0.4
-    const walkerSpeed = 4
-    const strokeWidth = {
-        min: 0.5,
-        max: 5
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
     }
-    const initBranchSize = sketchHeight / 48
-    let branchSize = initBranchSize
-    let initPos = []
-    let walkers = []
-    let tree = []
-    let lines = []
-    const xMargin = p5.round(sketchWidth / 24)
-    const yMargin = p5.round(sketchHeight / 24)
-
     const randPos = () => {
         const randSide = Math.round(Math.random() * 3)
         switch (randSide) {
             case 0:
                 return {
-                    x: xMargin + Math.random() * sketchWidth - xMargin,
-                    y: yMargin
+                    x: margin + Math.random() * sketchDim.w - margin,
+                    y: margin
                 }
                 break
             case 1:
                 return {
-                    x: xMargin + Math.random() * sketchWidth - xMargin,
-                    y: sketchHeight - yMargin
+                    x: margin + Math.random() * sketchDim.w - margin,
+                    y: sketchDim.h - margin
                 }
                 break
             case 2:
                 return {
-                    x: xMargin,
-                    y: yMargin + Math.random() * sketchWidth - yMargin
+                    x: margin,
+                    y: margin + Math.random() * sketchDim.w - margin
                 }
                 break
             case 3:
                 return {
-                    x: sketchWidth - xMargin,
-                    y: yMargin + Math.random() * sketchWidth - yMargin
+                    x: sketchDim.w - margin,
+                    y: margin + Math.random() * sketchDim.w - margin
                 }
                 break
         }
@@ -60,10 +46,10 @@ const sketch = (p5) => {
                     //p5.point(walkers[w].x, walkers[w].y) // debug purpose
 
                     if (
-                        walkers[w].x < xMargin ||
-                        walkers[w].x > sketchWidth - xMargin ||
-                        walkers[w].y < yMargin ||
-                        walkers[w].y > sketchHeight - yMargin
+                        walkers[w].x < margin ||
+                        walkers[w].x > sketchDim.w - margin ||
+                        walkers[w].y < margin ||
+                        walkers[w].y > sketchDim.h - margin
                     ) {
                         const randPosition = randPos()
                         walkers[w].x = randPosition.x
@@ -105,11 +91,30 @@ const sketch = (p5) => {
         }
     }
 
+    let isTreeFinished = false
+    const walkerNum = 320
+    const iteration = 12
+    const stickiness = 0.4
+    const walkerSpeed = 4
+    const strokeWidth = {
+        min: 0.5,
+        max: 5
+    }
+    const sketchDim = sketchSize()
+    const margin = p5.round(sketchDim.w / 24)
+    const initBranchSize = sketchDim.h / 48
+    let branchSize = initBranchSize
+    let initPos = []
+    let walkers = []
+    let tree = []
+    let lines = []
+
     p5.setup = () => {
-        p5.createCanvas(sketchWidth, sketchHeight)
+        p5.createCanvas(sketchDim.w, sketchDim.h)
         p5.fill(0)
         p5.strokeWeight(0.5)
         p5.textSize(16)
+        p5.textAlign(p5.CENTER, p5.CENTER)
         init()
     }
 
@@ -119,8 +124,8 @@ const sketch = (p5) => {
         tree = []
         lines = []
         tree[0] = new Walker(
-            sketchWidth / 2,
-            sketchHeight / 2,
+            sketchDim.w / 2,
+            sketchDim.h / 2,
             true,
             0,
             walkerSpeed
@@ -148,20 +153,20 @@ const sketch = (p5) => {
             p5.textAlign(p5.CENTER, p5.CENTER)
             p5.text(
                 "Walkers don't yet hit the first cluster.",
-                window.innerWidth / 2 - 100,
-                window.innerHeight / 2 - 32
+                p5.width / 2,
+                p5.height / 2
             )
         }
         for (let i = 0; i < lines.length && !isTreeFinished; i++) {
             if (
-                lines[i].x1 <= xMargin ||
-                lines[i].y1 <= yMargin ||
-                lines[i].x2 <= xMargin ||
-                lines[i].y2 <= yMargin ||
-                lines[i].x1 >= sketchWidth - xMargin ||
-                lines[i].y1 >= sketchHeight - yMargin ||
-                lines[i].x2 >= sketchWidth - xMargin ||
-                lines[i].y2 >= sketchHeight - yMargin
+                lines[i].x1 <= margin ||
+                lines[i].y1 <= margin ||
+                lines[i].x2 <= margin ||
+                lines[i].y2 <= margin ||
+                lines[i].x1 >= sketchDim.w - margin ||
+                lines[i].y1 >= sketchDim.h - margin ||
+                lines[i].x2 >= sketchDim.w - margin ||
+                lines[i].y2 >= sketchDim.h - margin
             ) {
                 isTreeFinished = true
             } else {
@@ -183,8 +188,8 @@ const sketch = (p5) => {
     sketch.getSketchProperties = () => {
         return {
             lines: lines,
-            width: sketchWidth,
-            height: sketchHeight,
+            width: sketchDim.w,
+            height: sketchDim.h,
             strokeWidth: strokeWidth
         }
     }

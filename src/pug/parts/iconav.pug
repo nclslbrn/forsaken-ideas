@@ -1,4 +1,5 @@
 mixin iconav(property)
+    - const folder = project.split('/').pop()
     nav#iconav
         ul
             li
@@ -28,7 +29,7 @@ mixin iconav(property)
 
 
             li
-                a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ project title="CODE")
+                a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ folder title="CODE")
                     span.screen-reader-text Code
                     svg.icon.icon-forward
                         use(xlink:href="#icon-repo")

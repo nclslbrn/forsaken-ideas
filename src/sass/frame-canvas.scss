@@ -3,7 +3,12 @@
 
 body {
     position: relative;
+    // mobile
     display: flex;
+    flex-flow: column nowrap;
+    @include breakpoint(md) {
+        flex-flow: row nowrap;
+    }
     height: 100vh;
     margin: 0;
     align-items: center;
@@ -16,7 +21,7 @@ canvas {
     @include breakpoint(xs) {
         padding: 0;
         background: transparent;
-        box-shadow: none;
+        box-shadow: 0 4px 2px rgba(0, 0, 0, 0.15);
     }
     @include breakpoint(md) {
         padding: 20px;

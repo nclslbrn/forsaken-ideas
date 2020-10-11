@@ -5,16 +5,15 @@ const sketch = (p5) => {
     const res = 0.05
     const scale = 0.01
     const alpha = 50
-    const attractors = {
-        a: p5.random(-2, 2),
-        b: p5.random(-2, 2),
-        c: p5.random(-2, 2),
-        d: p5.random(-2, 2)
-    }
-    window.attractors = attractors
     const funcs = planeCurveFuncs(p5)
     let selectedFunc, palette, points, canvas
-
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     const planeCurveFunctionSelector = () => {
         const funcSelector = document.createElement('select')
         const lastFunc = Object.keys(funcs).pop()
@@ -72,10 +71,8 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(
-            window.innerHeight * 0.75,
-            window.innerHeight * 0.75
-        )
+        const size = sketchSize()
+        canvas = p5.createCanvas(size.w, size.h)
         p5.stroke(0)
         planeCurveFunctionSelector()
         init_sketch()
@@ -101,7 +98,8 @@ const sketch = (p5) => {
     }
     p5.windowResized = () => {
         sketch.init_pos()
-        p5.resizeCanvas(window.innerHeight * 0.75, window.innerHeight * 0.75)
+        const size = sketchSize()
+        canvas = p5.createCanvas(size.w, size.h)
     }
     sketch.download_PNG = () => {
         const date = new Date()

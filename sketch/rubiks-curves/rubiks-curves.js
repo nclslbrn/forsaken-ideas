@@ -33,11 +33,16 @@ const sketch = (p5) => {
         }
         return switchCurves
     }
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     p5.setup = () => {
-        p5.createCanvas(
-            window.innerWidth > 800 ? 800 : window.innerWidth,
-            window.innerHeight > 800 ? 800 : window.innerHeight
-        )
+        const size = sketchSize()
+        p5.createCanvas(size.w, size.h)
         p5.stroke(230, 150)
         p5.strokeWeight(2)
         p5.noFill()
@@ -102,10 +107,8 @@ const sketch = (p5) => {
     }
 
     p5.windowResized = () => {
-        p5.resizeCanvas(
-            window.innerWidth > 800 ? 800 : window.innerWidth,
-            window.innerHeight > 800 ? 800 : window.innerHeight
-        )
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
         sketch.init_sketch()
     }
 }

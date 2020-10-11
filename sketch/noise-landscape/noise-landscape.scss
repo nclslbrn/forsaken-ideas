@@ -1,9 +1,16 @@
+@import '../../src/sass/variables';
+@import '../../src/sass/mixins';
+
 #interactiveParameter {
     position: absolute;
     bottom: 1em;
     left: 1em;
-
-    width: 200px;
+    width: 120px;
+    margin-bottom: 3rem;
+    @include breakpoint(md) {
+        width: 200px;
+        margin-bottom: 0;
+    }
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
@@ -12,6 +19,12 @@
 input,
 label {
     text-align: center;
+}
+input[type='text'] {
+    display: none;
+    @include breakpoint(md) {
+        display: block;
+    }
 }
 
 label {

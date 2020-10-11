@@ -2,13 +2,13 @@
 import Layer from './Layer'
 import { makeNoise3D } from 'open-simplex-noise'
 
-const recording = true
+const recording = false
 const numFrame = 60
 const numLayer = 100
 const noiseThreshold = 0.35
 const gifOptions = {
     quality: 10,
-    render: false,
+    render: true,
     download: true,
     fileName: 'noiseGrid.gif'
 }
@@ -18,20 +18,25 @@ const sketch = (p5) => {
     // Layer need these two functions
     //window.noise = p5.noise
     window.noise = noise3D
-    let noise, size, cols, rows, layers, depthStep, hSize, width, height
-
+    let size, cols, rows, layers, depthStep, hSize, sketchDim
+    const sketchSize = () => {
+        const side = p5.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
+    }
     /**
      * Initialize sketch constants and build the
      * grid with noise value
      */
     sketch.init = () => {
         size = 8 * p5.floor(p5.random(4, 8))
-        width = 800
-        height = 800
-        cols = p5.floor(width / size)
-        rows = p5.floor(height / size)
-        depthStep = height / (numLayer * numFrame)
-        hSize = height / numLayer
+        sketchDim = sketchSize()
+        cols = p5.floor(sketchDim.w / size)
+        rows = p5.floor(sketchDim.h / size)
+        depthStep = sketchDim.h / (numLayer * numFrame)
+        hSize = sketchDim.h / numLayer
         layers = []
         for (let n = 0; n < numLayer; n++) {
             layers.push(new Layer(cols, rows, n, n / numLayer))
@@ -40,7 +45,7 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         init()
-        p5.createCanvas(width, height, p5.WEBGL)
+        p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
         p5.stroke(125)
         p5.noFill()
         p5.smooth()
@@ -94,7 +99,7 @@ const sketch = (p5) => {
 
     p5.windowResized = () => {
         init()
-        p5.resizeCanvas(cols * size, rows * size)
+        p5.resizeCanvas(sketchDim.w, sketchDim.h)
     }
 }
 export default sketch

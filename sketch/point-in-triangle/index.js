@@ -21,7 +21,7 @@ window.addEventListener('resize', function (event) {
         let P5 = new p5(sketch, containerElement)
     }, 500)
 })
-
+window.init = sketch.initSketch
 window.export_PNG = sketch.exportPNG
 window.infobox = infobox
 handleAction()
