@@ -15,6 +15,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
  */
 module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
+        let folder = (' ' + project).slice(1)
+        folder = folder.split('/').pop()
         return {
             mode: 'production',
             entry: entry,
@@ -116,7 +118,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                     patterns: [
                         {
                             from: path.join(project, '/data/*'),
-                            to: path.join(output, '/data')
+                            to: '../../'
                         }
                     ]
                 })
