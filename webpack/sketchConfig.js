@@ -2,6 +2,7 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -110,7 +111,15 @@ module.exports = (project, entry, output, title, property, mode) => {
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
                 }),
-                new TerserPlugin()
+                new TerserPlugin(),
+                new CopyWebpackPlugin({
+                    patterns: [
+                        {
+                            from: path.join(project, '/data/*'),
+                            to: path.join(output, '/data')
+                        }
+                    ]
+                })
             ],
             externals: {
                 p5: 'p5',
