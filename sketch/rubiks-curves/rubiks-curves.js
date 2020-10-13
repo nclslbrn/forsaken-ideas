@@ -55,7 +55,7 @@ const sketch = (p5) => {
             p5.height / (cellByLine + 2)
         )
 
-        const radiusChoices = [2, 3, 5].map((factor) => {
+        const radiusChoices = [1, 2, 3, 5, 8].map((factor) => {
             const side = p5.random() > 0.5 ? -1 : 1
             return cellSize / 2 + ((cellSize / 2) * side) / factor
         })
