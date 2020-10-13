@@ -1,13 +1,14 @@
 nav#iconav {
-    position: absolute;
-    left: 0;
     // mobile
+    position: fixed;
+    left: 0;
     padding: 0;
     bottom: 0;
     height: 3rem;
     width: 100vw;
 
     @include breakpoint(md) {
+        position: absolute;
         padding: 0.15rem;
         top: 0;
         bottom: auto;
