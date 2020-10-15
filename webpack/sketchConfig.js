@@ -23,11 +23,6 @@ module.exports = (project, entry, output, title, property, mode) => {
             path.join('./sketch/', project, '/data')
         )
 
-        console.log(
-            path.join(project, '/data'),
-            HaveToCopyData ? ' exists.' : " doesn't exist"
-        )
-
         const config = {
             mode: 'production',
             entry: entry,
