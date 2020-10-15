@@ -1,4 +1,5 @@
 const path = require('path')
+const fs = require('fs')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -17,7 +18,17 @@ module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
         let folder = (' ' + project).slice(1)
         folder = folder.split('/').pop()
-        return {
+
+        const HaveToCopyData = fs.existsSync(
+            path.join('./sketch/', project, '/data')
+        )
+
+        console.log(
+            path.join(project, '/data'),
+            HaveToCopyData ? ' exists.' : " doesn't exist"
+        )
+
+        const config = {
             mode: 'production',
             entry: entry,
             output: {
@@ -113,15 +124,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
                 }),
-                new TerserPlugin(),
-                new CopyWebpackPlugin({
-                    patterns: [
-                        {
-                            from: path.join(project, '/data/*'),
-                            to: '../../'
-                        }
-                    ]
-                })
+                new TerserPlugin()
             ],
             externals: {
                 p5: 'p5',
@@ -137,6 +140,29 @@ module.exports = (project, entry, output, title, property, mode) => {
             devtool: mode == 'development' ? 'source-map' : '',
             stats: 'errors-only'
         }
+        if (HaveToCopyData) {
+            config.plugins.push(
+                new CopyWebpackPlugin({
+                    patterns: [
+                        {
+                            from: path.join(
+                                __dirname,
+                                '../sketch',
+                                project,
+                                '/data/*.*'
+                            ),
+                            to: path.join(
+                                __dirname,
+                                '../public/sketch/',
+                                project,
+                                '/data'
+                            )
+                        }
+                    ]
+                })
+            )
+        }
+        return config
     }
     return sketchConfig(project, entry, output, title, property, mode)
 }
