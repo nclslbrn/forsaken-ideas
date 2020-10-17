@@ -5,14 +5,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "run sketch",
+            "label": "watch sketch ${fileDirname}",
             "type": "npm",
             "script": "watch-sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "build sketch",
+            "label": "export sketch ${fileDirname}",
             "type": "npm",
             "script": "export-sketch ${fileDirname}",
             "group": "build",
@@ -21,19 +21,19 @@
         {
             "label": "build all sketches",
             "type": "npm",
-            "script": "export-all-sketch",
+            "script": "export-all-sketches",
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "(re)build gallery",
+            "label": "export gallery",
             "type": "npm",
             "script": "export-gallery",
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "run gallery",
+            "label": "watch gallery",
             "type": "npm",
             "script": "watch-gallery",
             "group": "build",

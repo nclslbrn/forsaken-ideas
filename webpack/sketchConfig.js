@@ -1,8 +1,8 @@
 const path = require('path')
 const fs = require('fs')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 /**
  * Common webpack configuration for sketch watching & building
@@ -16,11 +16,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
  */
 module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
-        let folder = (' ' + project).slice(1)
-        folder = folder.split('/').pop()
-
         const HaveToCopyData = fs.existsSync(
-            path.join('./sketch/', project, '/data')
+            path.resolve('./sketch/', project, '/data')
         )
 
         const config = {
@@ -50,58 +47,52 @@ module.exports = (project, entry, output, title, property, mode) => {
                         loader: 'pug-loader'
                     },
                     {
-                        //sasss
+                        test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
+                        loader: 'file-loader'
+                    },
+                    {
+                        test: /\.(png|jp(e*)g|svg)$/,
+                        use: 'file-loader'
+                    },
+                    {
+                        //sass
                         test: /\.(sa|sc|c)ss$/,
                         use: [
-                            {
-                                loader: MiniCssExtractPlugin.loader
-                            },
+                            'style-loader',
                             {
                                 loader: 'css-loader',
                                 options: {
-                                    url: false,
-                                    sourceMap:
-                                        mode == 'production' ? false : true
-                                }
-                            },
-                            {
-                                loader: 'postcss-loader',
-                                options: {
-                                    ident: 'postcss',
-                                    plugins: (loader) => [
-                                        require('autoprefixer'),
-                                        require('cssnano')
-                                    ]
+                                    url: false
                                 }
                             },
                             {
                                 loader: 'sass-loader',
                                 options: {
                                     implementation: require('sass'),
-                                    sourceMap:
-                                        mode == 'production' ? false : true
+                                    sassOptions: {
+                                        fiber: require('fibers')
+                                    }
                                 }
-                            }
+                            },
+                            'postcss-loader'
                         ],
                         include: [
                             path.resolve(__dirname, '../node_modules'),
-                            path.resolve(__dirname, '../tools'),
                             path.resolve(__dirname, '../')
                         ]
                     }
                 ]
             },
-
             resolve: {
-                extensions: ['.js', '.pug', 'json']
+                extensions: ['.js', '.pug', '.json']
             },
 
             devServer: {
                 contentBase: path.resolve(__dirname, '../public'),
                 port: 8080,
                 open: true,
-                openPage: '',
-                stats: 'errors-only'
+                openPage: ''
+                //stats: 'errors-only'
             },
 
             plugins: [
@@ -132,8 +123,13 @@ module.exports = (project, entry, output, title, property, mode) => {
                 gif: 'gif.js',
                 svg: '@svgdotjs/svg.js'
             },
-            devtool: mode == 'development' ? 'source-map' : '',
-            stats: 'errors-only'
+            optimization: {
+                minimize: true,
+                minimizer: [new TerserPlugin()]
+            },
+            devtool:
+                mode == 'development' ? 'source-map' : 'nosources-source-map'
+            //stats: 'verbose' //'errors-only'
         }
         if (HaveToCopyData) {
             config.plugins.push(

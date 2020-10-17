@@ -2,16 +2,20 @@ const path = require('path')
 const sketchConfig = require('./webpack/sketchConfig')
 const unescapeTitle = require('./webpack/unescapeTitle')
 
-module.exports = (env, argv) => {
-    const project = argv._[0]
-    let folder = JSON.parse(JSON.stringify(project))
-    folder = folder.split('/').pop()
-    title = unescapeTitle(folder)
+module.exports = (env, process) => {
+    const project = process.entry
+    const folder = JSON.parse(JSON.stringify(project))
+        .toString()
+        .split('/')
+        .pop()
+    const title = unescapeTitle(folder)
     const entry = project + '/index.js'
-    const output = path.resolve(__dirname, 'public/sketch/', folder)
-    console.log(output)
+    const output = path.join(__dirname, 'public/sketch/', folder)
+
+    console.log('<', output)
+
     const property = require(project + '/property.json')
-    const mode = argv.mode == 'production' ? 'production' : 'development'
+    const mode = process.mode == 'production' ? 'production' : 'development'
 
     if (project && entry && property && title && mode) {
         return sketchConfig(project, entry, output, title, property, mode)

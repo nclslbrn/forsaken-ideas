@@ -61,7 +61,7 @@ Once your script is done, you can export it into the `public` folder by using:
 `npm run export-sketch the-name-of-the-folder-of-your-script` \*.
 
 If you want to export every sketches in sketch/ you can run
-`npm run export-all-sketch` \*
+`npm run export-all-sketches` \*
 
 If you use VS code you can use tasks (from .vscode/tasks.json) and simply click watch ${fileDirname} or export ${fileDirname} webpack will use \${fileDirname}/index.js to build the sketch.
 
@@ -70,7 +70,7 @@ If you use VS code you can use tasks (from .vscode/tasks.json) and simply click 
 ## Showcase / link your sketches to the homepage
 
 If you want to work on the homepage which lists every sketch, you can build it and get a list of every exported sketch by using:
-`npm run gallery`
+`npm run export-gallery`
 
 And if you want to work on the design or the content of the homepage (stored into src/pug/) you can use:
 `npm run watch-gallery`

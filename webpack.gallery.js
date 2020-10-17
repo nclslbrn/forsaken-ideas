@@ -15,8 +15,8 @@ function fileList(dir) {
     }, [])
 }
 
-module.exports = (env, argv) => {
-    const mode = argv.mode == 'production' ? 'production' : 'development'
+module.exports = (env, process) => {
+    const mode = process.mode == 'production' ? 'production' : 'development'
     const projects = fileList(publicFolder)
     let projectWithMeta = []
 
@@ -30,7 +30,7 @@ module.exports = (env, argv) => {
     console.log(mode)
     return {
         mode: mode,
-        entry: __dirname + '/src/js/index-list.js',
+        entry: __dirname + '/src/js/gallery.js',
         output: {
             path: path.resolve(__dirname, 'public/'),
             filename: 'list-bundle.js'
@@ -43,39 +43,30 @@ module.exports = (env, argv) => {
                     loader: 'pug-loader'
                 },
                 {
+                    //sass
                     test: /\.(sa|sc|c)ss$/,
                     use: [
-                        {
-                            loader: MiniCssExtractPlugin.loader
-                        },
+                        'style-loader',
                         {
                             loader: 'css-loader',
                             options: {
-                                url: true,
-                                sourceMap: mode == 'production' ? false : true
-                            }
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                ident: 'postcss',
-                                plugins: (loader) => [
-                                    require('autoprefixer'),
-                                    require('cssnano')
-                                ]
+                                url: false
                             }
                         },
                         {
                             loader: 'sass-loader',
                             options: {
                                 implementation: require('sass'),
-                                sourceMap: mode == 'production' ? false : true
+                                sassOptions: {
+                                    fiber: require('fibers')
+                                }
                             }
-                        }
+                        },
+                        'postcss-loader'
                     ],
                     include: [
-                        path.resolve(__dirname, 'node_modules'),
-                        path.resolve(__dirname, 'src/sass')
+                        path.resolve(__dirname, '../node_modules'),
+                        path.resolve(__dirname, '../')
                     ]
                 },
                 {
@@ -129,7 +120,7 @@ module.exports = (env, argv) => {
             }),
             new TerserPlugin()
         ],
-        devtool: mode == 'production' ? '' : 'source-map',
+        devtool: mode == 'production' ? 'nosources-source-map' : 'source-map',
         stats: 'errors-only'
     }
 }
