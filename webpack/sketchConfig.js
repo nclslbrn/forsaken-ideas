@@ -17,7 +17,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
         const HaveToCopyData = fs.existsSync(
-            path.resolve('./sketch/', project, '/data')
+            path.join(project.toString(), '/assets')
         )
 
         const config = {
@@ -136,18 +136,8 @@ module.exports = (project, entry, output, title, property, mode) => {
                 new CopyWebpackPlugin({
                     patterns: [
                         {
-                            from: path.join(
-                                __dirname,
-                                '../sketch',
-                                project,
-                                '/data/*.*'
-                            ),
-                            to: path.join(
-                                __dirname,
-                                '../public/sketch/',
-                                project,
-                                '/data'
-                            )
+                            from: path.join(project.toString(), '/assets/*'),
+                            to: path.join('../../')
                         }
                     ]
                 })
