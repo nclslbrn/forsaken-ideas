@@ -120,7 +120,7 @@ module.exports = (env, process) => {
             }),
             new TerserPlugin()
         ],
-        devtool: mode == 'production' ? 'nosources-source-map' : 'source-map',
-        stats: 'errors-only'
+        devtool: mode == 'production' ? 'nosources-source-map' : 'source-map'
+        //stats: 'verbose' // errors-only'
     }
 }

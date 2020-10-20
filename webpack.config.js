@@ -20,9 +20,9 @@ module.exports = (env, process) => {
     if (project && entry && property && title && mode) {
         return sketchConfig(project, entry, output, title, property, mode)
     } else {
-        console.log(
-            'You must specified a project/folder name npm run watch/export <project-name>'
+        process.exitCode = 128
+        throw new Error(
+            'Entry path is incorrect. Syntax npm run export-sketch ./<sketch>/<project-folder>'
         )
-        process.exit()
     }
 }

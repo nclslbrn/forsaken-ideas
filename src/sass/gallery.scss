@@ -1,6 +1,6 @@
 @import 'variables';
 @import 'mixins';
-@include font-face(Inter, '../fonts/Inter-Bold', 500, normal, woff2 woff);
+@include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
 @import 'commons';
 @import 'modules/hero';
 @import 'layout';
