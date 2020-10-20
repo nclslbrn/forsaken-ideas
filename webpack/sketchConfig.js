@@ -32,7 +32,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                     {
                         // js
                         test: /\.m?js$/,
-                        //exclude: /(node_modules|bower_components)/,
+                        exclude: /(node_modules|bower_components)/,
                         use: {
                             loader: 'babel-loader',
                             options: {
@@ -128,8 +128,8 @@ module.exports = (project, entry, output, title, property, mode) => {
                 minimizer: [new TerserPlugin()]
             },
             devtool:
-                mode == 'development' ? 'source-map' : 'nosources-source-map'
-            //stats: 'verbose' //'errors-only'
+                mode == 'development' ? 'source-map' : 'nosources-source-map',
+            stats: 'verbose' //'errors-only'
         }
         if (HaveToCopyData) {
             config.plugins.push(

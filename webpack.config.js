@@ -3,7 +3,7 @@ const sketchConfig = require('./webpack/sketchConfig')
 const unescapeTitle = require('./webpack/unescapeTitle')
 
 module.exports = (env, process) => {
-    const project = process.entry
+    const project = process.entry[0]
     const folder = JSON.parse(JSON.stringify(project))
         .toString()
         .split('/')

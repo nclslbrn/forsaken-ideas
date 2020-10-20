@@ -3,7 +3,6 @@
 
 body {
     position: relative;
-    // mobile
     display: flex;
     flex-flow: column nowrap;
     @include breakpoint(md) {

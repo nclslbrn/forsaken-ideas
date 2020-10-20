@@ -4,12 +4,12 @@
     "description": "A workflow to build multiple js sketches/projects with",
     "main": "index.js",
     "scripts": {
-        "watch-sketch": "webpack serve --entry",
-        "export-sketch": "webpack --mode production --entry",
+        "watch-sketch": "webpack serve --config webpack.config.js --entry",
+        "export-sketch": "webpack --mode production --config webpack.config.js --entry",
         "clean-exports": "rimraf public/sketch/*",
-        "export-all-sketches": "webpack --mode production --config webpack/webpack.export-all.js",
-        "watch-gallery": "webpack-dev-server --config webpack/webpack.list-projects.js",
-        "export-gallery": "webpack --mode production --config webpack/webpack.gallery.js --entry ./src/js/gallery.js",
+        "export-all-sketches": "webpack --mode production --config webpack.export-all.js",
+        "watch-gallery": "webpack-dev-server --config webpack.gallery.js",
+        "export-gallery": "webpack --mode production --config webpack.gallery.js --entry ./src/js/gallery.js",
         "export-all": "npm run clean-exports && npm run export-all-sketches && npm run export-gallery",
         "deploy": "node deploy"
     },
@@ -41,8 +41,8 @@
     "devDependencies": {
         "@babel/core": "^7.12.3",
         "@babel/preset-env": "^7.12.1",
-        "@typescript-eslint/eslint-plugin": "^4.4.1",
-        "@typescript-eslint/parser": "^4.4.1",
+        "@typescript-eslint/eslint-plugin": "^4.5.0",
+        "@typescript-eslint/parser": "^4.5.0",
         "autoprefixer": "^10.0.1",
         "babel": "^6.23.0",
         "babel-eslint": "^10.1.0",
@@ -69,11 +69,11 @@
         "gif.js.optimized": "^1.0.1",
         "html-webpack-plugin": "^4.5.0",
         "imports-loader": "^1.2.0",
-        "mini-css-extract-plugin": "^1.0.0",
+        "mini-css-extract-plugin": "^1.1.0",
         "open-simplex-noise": "^2.4.0-pre4",
         "p5.collide2d": "^0.7.3",
         "p5.createloop": "^0.1.3",
-        "postcss": "^8.1.1",
+        "postcss": "^8.1.2",
         "postcss-loader": "^4.0.4",
         "promise-ftp-common": "^1.1.5",
         "pug": "^3.0.0",
@@ -86,7 +86,7 @@
         "three.js": "^0.77.1",
         "typescript": "^4.0.3",
         "webpack": "^5.1.3",
-        "webpack-cli": "^4.0.0",
+        "webpack-cli": "^4.1.0",
         "webpack-dev-server": "^3.11.0"
     }
 }
