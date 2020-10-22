@@ -1,9 +1,12 @@
 const path = require('path')
+const webpack = require('webpack')
 const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -21,24 +24,38 @@ module.exports = (project, entry, output, title, property, mode) => {
         )
 
         const config = {
-            mode: 'production',
-            entry: entry,
+            mode: mode,
+            entry: [entry],
             output: {
                 path: output,
                 filename: '[name]-bundle.js'
             },
+            //watch: mode == 'development' ? true : false,
+            plugins: [
+                new CleanWebpackPlugin(),
+                new HtmlWebpackPlugin({
+                    templateParameters: {
+                        project: project,
+                        title: title,
+                        property: property,
+                        srcPath: '../../'
+                    },
+                    filename: './index.html',
+                    template: './src/pug/project.pug'
+                }),
+                new MiniCssExtractPlugin({
+                    filename: 'css/[name].css'
+                }),
+                new TerserPlugin(),
+                new webpack.ProgressPlugin()
+            ],
             module: {
                 rules: [
                     {
                         // js
                         test: /\.m?js$/,
                         exclude: /(node_modules|bower_components)/,
-                        use: {
-                            loader: 'babel-loader',
-                            options: {
-                                presets: ['@babel/preset-env']
-                            }
-                        }
+                        use: ['babel-loader']
                     },
                     {
                         // pug
@@ -62,7 +79,16 @@ module.exports = (project, entry, output, title, property, mode) => {
                             {
                                 loader: 'css-loader',
                                 options: {
-                                    url: false
+                                    url: false,
+                                    sourceMap:
+                                        mode == 'production' ? false : true
+                                }
+                            },
+                            {
+                                loader: 'postcss-loader',
+                                options: {
+                                    sourceMap:
+                                        mode == 'production' ? false : true
                                 }
                             },
                             {
@@ -71,47 +97,34 @@ module.exports = (project, entry, output, title, property, mode) => {
                                     implementation: require('sass'),
                                     sassOptions: {
                                         fiber: require('fibers')
-                                    }
+                                    },
+                                    sourceMap:
+                                        mode == 'production' ? false : true
                                 }
                             },
                             'postcss-loader'
                         ],
                         include: [
                             path.resolve(__dirname, '../node_modules'),
+                            path.resolve(__dirname, 'src/sass'),
                             path.resolve(__dirname, '../')
                         ]
                     }
                 ]
             },
+            optimization: {
+                minimizer: [new TerserPlugin()],
+                splitChunks: {
+                    chunks: 'sync',
+                    minChunks: 1,
+                    minSize: 30000,
+                    name: true
+                }
+            },
             resolve: {
                 extensions: ['.js', '.pug', '.json']
             },
 
-            devServer: {
-                contentBase: path.resolve(__dirname, '../public'),
-                port: 8080,
-                open: true,
-                openPage: ''
-                //stats: 'errors-only'
-            },
-
-            plugins: [
-                new HtmlWebpackPlugin({
-                    templateParameters: {
-                        project: project,
-                        title: title,
-                        property: property,
-                        srcPath: '../../'
-                    },
-                    filename: './index.html',
-                    template: './src/pug/project.pug',
-                    inject: true
-                }),
-                new MiniCssExtractPlugin({
-                    filename: 'css/[name].css'
-                }),
-                new TerserPlugin()
-            ],
             externals: {
                 p5: 'p5',
                 three: 'THREE',
@@ -128,8 +141,10 @@ module.exports = (project, entry, output, title, property, mode) => {
                 minimizer: [new TerserPlugin()]
             },
             devtool:
-                mode == 'development' ? 'source-map' : 'nosources-source-map'
-            //stats: 'verbose' //'errors-only'
+                mode == 'development'
+                    ? 'inline-source-map'
+                    : 'nosources-source-map',
+            stats: 'errors-only'
         }
         if (HaveToCopyData) {
             config.plugins.push(
@@ -143,6 +158,31 @@ module.exports = (project, entry, output, title, property, mode) => {
                 })
             )
         }
+        if (mode !== 'production') {
+            config.plugins.push(new webpack.HotModuleReplacementPlugin())
+            config.devServer = {
+                historyApiFallback: true,
+                contentBase: path.resolve(__dirname, '../public/'),
+                port: 8080,
+                open: true,
+                compress: true,
+                hot: true
+            }
+        } else {
+            config.optimization = {
+                minimize: true,
+                minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()],
+                runtimeChunk: {
+                    name: 'runtime'
+                }
+            }
+            config.performance = {
+                hints: false,
+                maxEntrypointSize: 512000,
+                maxAssetSize: 512000
+            }
+        }
+        console.log(config.watch)
         return config
     }
     return sketchConfig(project, entry, output, title, property, mode)
