@@ -21,9 +21,10 @@ aside.column {
     }
 }
 section.project > .column {
+    position: relative;
     @include breakpoint(md) {
         display: block;
-        width: 25%;
+        width: 33%;
         float: left;
     }
 }

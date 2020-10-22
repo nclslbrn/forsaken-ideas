@@ -36,6 +36,7 @@ aside {
 }
 
 aside.column.about {
+    position: relative;
     @include breakpoint(xs) {
         clear: both;
         float: none;
@@ -48,18 +49,23 @@ aside.column.about {
         border-top: none;
     }
     ul {
-        display: flex;
-        flex-flow: row wrap;
         position: relative;
-        width: 100%;
+        max-width: 100%;
+        li {
+            display: block;
+            float: left;
+            margin: 1em 0;
+            padding: 0;
+            width: 35%;
+        }
+    }
+    ul li a span {
+        padding-right: 1em;
     }
     ul::after {
         content: '';
         display: table;
         clear: both;
         float: none;
-    }
-    ul li {
-        flex: 0 1 44%;
     }
 }
