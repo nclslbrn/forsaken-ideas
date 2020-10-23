@@ -1,7 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
-import fullCanvas from '../../src/sass/frame-canvas.scss'
-import sketch from './advertisement'
+import fullCanvas from '../../src/sass/full-canvas.scss'
+import sketch from './type-deformation'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
@@ -13,7 +13,8 @@ document.body.removeChild(loader)
 
 /*
 window.init = sketch.init
-window.export_PNG = sketch.exportPNG
 */
+window.export_PNG = sketch.exportPNG
+
 window.infobox = infobox
 handleAction()
