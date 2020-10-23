@@ -17,6 +17,7 @@ const sketch = (p5) => {
     sketch.init = () => {
         word = eWords[p5.floor(p5.random() * eWords.length)]
         word.toUpperCase()
+        // TODO: split word by letter and store it into nested array
         points = font.textToPoints(word, 0, 0, 15, {
             sampleFactor: 15,
             simplifyThreshold: 0.1
@@ -41,8 +42,8 @@ const sketch = (p5) => {
     p5.setup = () => {
         canvas = p5.createCanvas(window.innerWidth, window.innerHeight)
         margin = p5.width * 0.15
-        p5.stroke(200)
-        p5.fill(backgroundCol)
+        p5.stroke(200, 200)
+        p5.fill(backgroundCol, 200)
         sketch.init()
     }
     p5.draw = () => {
@@ -108,7 +109,7 @@ const sketch = (p5) => {
                 particles[i].x += v.x * scale
                 particles[i].y += v.y * scale
             }
-            scale += 0.0001
+            scale += 0.00005
             // smooth word transition
             if (t > 0.9) {
                 p5.background(backgroundCol, (t - 0.9) * 2550)
