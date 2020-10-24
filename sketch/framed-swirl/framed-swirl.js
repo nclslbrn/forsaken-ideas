@@ -1,7 +1,7 @@
 import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
-import joinVector from './joinVector'
-import { generateHslaColors } from './generateHslaColors'
+import joinVector from 'joinVector'
+import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
 
 const sketch = (p5) => {
     const n = 2
