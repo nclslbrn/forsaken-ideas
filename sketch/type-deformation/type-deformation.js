@@ -22,8 +22,8 @@ const sketch = (p5) => {
         let _x = 0
         for (let i = 0; i < word.length; i++) {
             const points = font.textToPoints(word.charAt(i), 0, 0, 15, {
-                sampleFactor: 20,
-                simplifyThreshold: 0.1
+                sampleFactor: 25,
+                simplifyThreshold: 0.08
             })
 
             for (let j = 0; j < points.length; j++) {
@@ -36,7 +36,7 @@ const sketch = (p5) => {
 
         bounds = font.textBounds(` ${word} `, 0, 0, 15)
         scale = initScale
-        colors = generateHslaColors(65, 65, 65, word.length).map((c) => {
+        colors = generateHslaColors(50, 90, 75, word.length).map((c) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
         p5.background(backgroundCol)
@@ -83,6 +83,7 @@ const sketch = (p5) => {
                     )
 
                     p5.vertex(x, y)
+
                     const n1 = noiseScale(
                         lettersPoints[i][j].x,
                         lettersPoints[i][j].y,
@@ -99,12 +100,12 @@ const sketch = (p5) => {
                         lettersPoints[i][j].x,
                         lettersPoints[i][j].y,
                         t,
-                        10
+                        0.01
                     )
 
                     const v = {
-                        x: Math.cos((n1 * n2) / n3),
-                        y: Math.sin((n1 * n2) / n3)
+                        x: Math.cos(n1 + n2 * n3),
+                        y: Math.sin(n1 + n2 * n3)
                     }
                     lettersPoints[i][j].x += v.x * scale
                     lettersPoints[i][j].y += v.y * scale
@@ -113,7 +114,7 @@ const sketch = (p5) => {
                 p5.pop()
             }
             // smooth word transition
-            scale = t < 0.8 ? scale * 1.0105 : scale * 0.85
+            scale = t < 0.8 ? scale * 1.005 : scale * 0.85
             if (t > 0.9) {
                 p5.background(backgroundCol, (t - 0.9) * 2550)
             }

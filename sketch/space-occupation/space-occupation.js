@@ -1,9 +1,8 @@
-import * as p5 from 'p5'
 import ease from '../../src/js/sketch-common/ease'
 
 const sketch = (p5) => {
-    const interval = { min: 1, max: 92 }
-    const numFrame = 46
+    const interval = { min: 4, max: 64 }
+    const numFrame = 60
     const numRow = 6
     let cols, nextCols, heights, nextHeights
 
@@ -40,6 +39,7 @@ const sketch = (p5) => {
         const size = sketchSize()
         p5.createCanvas(size.w, size.h)
         p5.fill(255)
+        p5.noStroke()
         sketch.init()
     }
     p5.draw = () => {
@@ -56,7 +56,7 @@ const sketch = (p5) => {
 
                 for (let x = 0; x < tCols; x++) {
                     const l = p5.map(x, 0, tCols, -0.5, 2)
-                    const width = Math.sin(l) * (p5.width / tCols)
+                    const width = Math.asin(l) * (p5.width / tCols)
 
                     p5.ellipse(
                         x * width + width / 2,
