@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -32,6 +33,8 @@ module.exports = (project, entry, output, title, property, mode) => {
             },
 
             plugins: [
+                new webpack.ProgressPlugin(),
+                new ProgressBarPlugin(),
                 new CleanWebpackPlugin(),
                 new HtmlWebpackPlugin({
                     templateParameters: {
@@ -45,8 +48,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                 }),
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
-                }),
-                new webpack.ProgressPlugin()
+                })
             ],
 
             module: {
@@ -54,7 +56,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                     {
                         // js
                         test: /\.m?js$/,
-                        exclude: /(node_modules|bower_components)/,
+                        //exclude: /(node_modules|bower_components)/,
                         use: ['babel-loader']
                     },
                     {
@@ -161,6 +163,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                 hot: true
             }
         } else {
+            config.plugins.push(new CleanWebpackPlugin())
             config.optimization = {
                 minimize: true,
                 minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()],

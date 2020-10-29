@@ -11,7 +11,7 @@ for (let p = 0; p < projects.length; p++) {
     const title = unescapeTitle(projects[p])
     const output = path.resolve(__dirname, 'public/sketch', projects[p])
     projectsConfig[p] = sketchConfig(
-        projects[p],
+        path.resolve('./sketch', projects[p]),
         entry,
         output,
         title,

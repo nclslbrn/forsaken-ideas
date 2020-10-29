@@ -8,6 +8,7 @@ const unescapeTitle = require('./webpack/unescapeTitle')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 
 const publicFolder = './public/sketch/'
 
@@ -40,8 +41,9 @@ module.exports = (env, process) => {
             filename: '[name]-bundle.js'
         },
         plugins: [
-            //new CleanWebpackPlugin(),
-
+            new webpack.ProgressPlugin(),
+            new ProgressBarPlugin(),
+            new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 templateParameters: {
                     projects: projectWithMeta,
