@@ -44,7 +44,7 @@ const sketch = (p5) => {
                 y: p5.round(p5.height * p5.random(-0.5, 0.5)),
                 z: p5.round(p5.height * p5.random(-0.5, 0.5))
             })
-            sizes.push(p5.round(p5.random(16, 88)))
+            sizes.push(p5.round(p5.random(16, 86)))
         }
         ;[newLayers, newSizes] = getNewLayers()
     }
@@ -87,6 +87,7 @@ const sketch = (p5) => {
                 p5.translate(x, y, z)
 
                 p5.rect(size * -0.5, size * -0.5, size, size)
+                p5.rect(size * -0.5, size * -0.5, size, size)
 
                 p5.push()
                 p5.rotateX(p5.HALF_PI)
@@ -98,6 +99,12 @@ const sketch = (p5) => {
                 p5.rotateX(p5.HALF_PI)
                 p5.translate(0, 0, size * 0.5)
                 p5.rect(size * -0.5, -size, size, size)
+                p5.pop()
+
+                p5.push()
+                p5.rotateY(p5.HALF_PI)
+                p5.translate(0, 0, size * 0.5)
+                p5.rect(0, size * -0.5, size, size)
                 p5.pop()
 
                 p5.pop()
