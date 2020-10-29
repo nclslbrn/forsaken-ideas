@@ -30,23 +30,29 @@ html(lang="en")
       aside.column.info
 
         h1 AЯT ∑MG
-	
-        h3#acronym
+        div.acronym-block
+          h3#acronym
+
         p Here you will find essays that are a way for me to discover mathematics. 
         p 
           |Most programs use randomness to define shapes, others are animations 
-          |that question the concept of infinity.
+          |that question concepts of loop and infinity.
+        
+        
       section.project
 
         each col in columns
 
           div.column
             ul
+
               each project in col
+            
                 li
                   a(href="./sketch/" + project.name ) 
                     h3 #{unescapeTitle(project.name)}
                     small #{project.date}
+
         
       aside.column.about
         ul

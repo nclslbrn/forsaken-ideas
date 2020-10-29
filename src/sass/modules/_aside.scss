@@ -1,13 +1,59 @@
 aside {
     @include breakpoint(md) {
         * {
-            padding-right: 4rem;
+            padding-right: 6rem;
         }
     }
 
-    #acronym {
-        text-transform: capitalize;
+    .acronym-block {
+        display: block;
+        position: relative;
+        margin-right: 1.5em;
+        margin-bottom: 1.5rem;
         cursor: pointer;
+
+        * {
+            padding: 0;
+        }
+        #acronym {
+            position: static;
+            text-transform: capitalize;
+            margin: 0;
+            min-height: 2em;
+            z-index: 2;
+        }
+        &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: -1em;
+            left: -1em;
+            right: 100%;
+            bottom: -1em;
+            background-color: #fff;
+            z-index: -1;
+            right: 0;
+            transition: right 0.15s ease-in-out;
+        }
+        button.button {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            margin-top: -1.25rem;
+            padding: 1rem;
+            line-height: 0.5rem;
+            border: 0;
+            opacity: 0;
+            transition: all 0.15s ease-in-out;
+        }
+        &:hover::before {
+            z-index: -1;
+            right: -1em;
+            background-color: #f3f3f3;
+        }
+        &:hover button.button {
+            opacity: 1;
+        }
     }
 
     p {
@@ -44,8 +90,8 @@ aside.column.about {
         padding-top: 4em;
     }
     @include breakpoint(sm) {
-        clear: none;
-        float: unset;
+        clear: left;
+        float: left;
         border-top: none;
     }
     ul {

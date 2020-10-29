@@ -28,3 +28,12 @@ section.project > .column {
         float: left;
     }
 }
+.clearfix {
+    clear: both;
+    float: none;
+    &::before,
+    &::after {
+        content: '';
+        display: table;
+    }
+}

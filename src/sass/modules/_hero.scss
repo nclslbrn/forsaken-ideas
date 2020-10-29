@@ -7,7 +7,7 @@ header.headimg button.button {
     position: absolute;
     right: 0.5em;
     top: 100%;
-    padding: 0.25em;
+    padding: 1em;
     margin-top: 1em;
     font-size: 1em;
     line-height: 1;
@@ -27,5 +27,5 @@ header.headimg button.button {
     }
 }
 header.headimg:hover button.button {
-    transform: translate(0, -2.5em);
+    transform: translate(0, -4em);
 }

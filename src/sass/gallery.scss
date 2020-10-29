@@ -2,8 +2,8 @@
 @import 'mixins';
 @include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
 @import 'commons';
-@import 'modules/hero';
 @import 'layout';
+@import 'modules/hero';
 @import 'modules/aside';
 @import 'modules/project-section';
 @import 'modules/columns';
