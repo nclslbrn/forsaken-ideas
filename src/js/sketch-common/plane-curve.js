@@ -111,7 +111,7 @@ export default function (p5) {
         return p5.createVector(x, y)
     }
 
-    const sech = (v, amount = 1.0) => {
+    const sech = (v, amount = 0.2) => {
         const cosh = (x) => {
             return 0.5 * (p5.exp(x) + p5.exp(-x))
         }
