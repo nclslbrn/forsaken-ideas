@@ -20,7 +20,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
         const HaveToCopyData = fs.existsSync(
-            path.join(project.toString(), '/assets')
+            path.join(project.toString(), 'assets')
         )
 
         const config = {
@@ -30,7 +30,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                 path: output,
                 filename: '[name]-bundle.js'
             },
-            //watch: mode == 'development' ? true : false,
+
             plugins: [
                 new CleanWebpackPlugin(),
                 new HtmlWebpackPlugin({
@@ -46,9 +46,9 @@ module.exports = (project, entry, output, title, property, mode) => {
                 new MiniCssExtractPlugin({
                     filename: 'css/[name].css'
                 }),
-                new TerserPlugin(),
                 new webpack.ProgressPlugin()
             ],
+
             module: {
                 rules: [
                     {
@@ -64,10 +64,12 @@ module.exports = (project, entry, output, title, property, mode) => {
                         loader: 'pug-loader'
                     },
                     {
+                        // font
                         test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
                         loader: 'file-loader'
                     },
                     {
+                        // images
                         test: /\.(png|jp(e*)g|svg)$/,
                         use: 'file-loader'
                     },
@@ -112,15 +114,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                     }
                 ]
             },
-            optimization: {
-                minimizer: [new TerserPlugin()],
-                splitChunks: {
-                    chunks: 'sync',
-                    minChunks: 1,
-                    minSize: 30000,
-                    name: true
-                }
-            },
+
             resolve: {
                 extensions: ['.js', '.pug', '.json']
             },
@@ -136,14 +130,12 @@ module.exports = (project, entry, output, title, property, mode) => {
                 gif: 'gif.js',
                 svg: '@svgdotjs/svg.js'
             },
-            optimization: {
-                minimize: true,
-                minimizer: [new TerserPlugin()]
-            },
+
             devtool:
                 mode == 'development'
                     ? 'inline-source-map'
                     : 'nosources-source-map',
+
             stats: 'errors-only'
         }
         if (HaveToCopyData) {
@@ -182,7 +174,6 @@ module.exports = (project, entry, output, title, property, mode) => {
                 maxAssetSize: 512000
             }
         }
-        console.log(config.watch)
         return config
     }
     return sketchConfig(project, entry, output, title, property, mode)
