@@ -1,6 +1,6 @@
-/// <reference path="../../node_modules/@types/p5/index.d.ts" />
 import words from '../../src/json/e-m-g-words.json'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
+import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 
 const eWords = words.e
 let canvas
@@ -9,7 +9,16 @@ const sketch = (p5) => {
     const numFrame = 400
     const initScale = 0.003
     const backgroundCol = 12
-    let font, word, lettersPoints, bounds, scale, margin, colors
+    const planarFuncs = planeCurveFuncs(p5)
+    const everyFunction = Object.entries(planarFuncs).map((name) => name[0])
+    let font,
+        word,
+        lettersPoints,
+        bounds,
+        scale,
+        margin,
+        colors,
+        planarFunctionID
 
     const noiseScale = (x, y, z, scale) => {
         return scale * p5.map(p5.noise(x, y, z), 0, 1, -1, 1)
@@ -39,6 +48,8 @@ const sketch = (p5) => {
         colors = generateHslaColors(50, 90, 75, word.length).map((c) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
+        planarFunctionID =
+            everyFunction[Math.floor(Math.random() * everyFunction.length)]
         p5.background(backgroundCol)
     }
     sketch.exportPNG = () => {
@@ -107,8 +118,12 @@ const sketch = (p5) => {
                         x: Math.cos(n1 + n2 * n3),
                         y: Math.sin(n1 + n2 * n3)
                     }
-                    lettersPoints[i][j].x += v.x * scale
-                    lettersPoints[i][j].y += v.y * scale
+                    const v2 = planarFuncs[planarFunctionID](
+                        p5.createVector(v.x, v.y),
+                        0.5
+                    )
+                    lettersPoints[i][j].x += v2.x * scale
+                    lettersPoints[i][j].y += v2.y * scale
                 }
                 p5.endShape(p5.CLOSE)
                 p5.pop()
