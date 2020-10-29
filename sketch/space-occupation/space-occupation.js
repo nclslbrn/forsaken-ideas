@@ -1,59 +1,82 @@
 import * as p5 from 'p5'
+import ease from '../../src/js/sketch-common/ease'
 
 const sketch = (p5) => {
-    const interval = { min: 4, max: 84 }
-    const numFrame = 30
-    let rows, cols, nextRows, nextCols
+    const interval = { min: 1, max: 92 }
+    const numFrame = 46
+    const numRow = 6
+    let cols, nextCols, heights, nextHeights
+
     const randomNumber = () => {
         return Math.floor(
             Math.random() * (interval.max - interval.min + 1) + interval.min
         )
     }
     const next = () => {
-        const newRows = randomNumber()
         const newCols = []
-        for (let i = 0; i < newRows; i++) {
+        const newHeights = []
+        for (let i = 0; i < numRow; i++) {
             newCols.push(randomNumber())
+            newHeights.push(randomNumber())
         }
-        return [newRows, newCols]
+        const sumH = newHeights.reduce((sum, h) => sum + h)
+        const hFactor = sumH / p5.height
+        const resizedHeights = newHeights.map((height) => height / hFactor)
+
+        return [newCols, resizedHeights]
+    }
+    const sketchSize = () => {
+        const side = Math.min(window.innerWidth, window.innerHeight)
+        return {
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
+        }
     }
     sketch.init = () => {
-        rows = randomNumber()
-        cols = []
-        for (let i = 0; i < rows; i++) {
-            cols.push(randomNumber())
-        }
+        ;[cols, heights] = next()
+        ;[nextCols, nextHeights] = next()
     }
     p5.setup = () => {
-        p5.createCanvas(window.innerWidth, window.innerHeight)
+        const size = sketchSize()
+        p5.createCanvas(size.w, size.h)
         p5.fill(255)
         sketch.init()
-        ;[nextRows, nextCols] = next()
     }
     p5.draw = () => {
         if (p5.frameCount % numFrame !== 0) {
             p5.background(0)
 
             const t = (p5.frameCount % numFrame) / numFrame
-            const tRows = Math.round(p5.lerp(rows, nextRows, t))
-            const height = p5.height / tRows
+            let y = 0
+            for (let i = 0; i < numRow; i++) {
+                const height = Math.round(
+                    p5.lerp(heights[i], nextHeights[i], ease(t))
+                )
+                const tCols = Math.round(p5.lerp(cols[i], nextCols[i], ease(t)))
 
-            for (let y = 0; y < tRows; y++) {
-                const tCols = Math.round(p5.lerp(cols[y], nextCols[y], t))
-                const width = p5.width / tCols
                 for (let x = 0; x < tCols; x++) {
-                    p5.ellipse(x * width, y * height, width, height)
+                    const l = p5.map(x, 0, tCols, -0.5, 2)
+                    const width = Math.sin(l) * (p5.width / tCols)
+
+                    p5.ellipse(
+                        x * width + width / 2,
+                        y + height / 2,
+                        width,
+                        height
+                    )
                 }
+                y += height
             }
         } else {
             cols = nextCols
-            rows = nextRows
-            ;[nextRows, nextCols] = next()
+            heights = nextHeights
+            ;[nextCols, nextHeights] = next()
         }
     }
 
-    function windowResized() {
-        resizeCanvas(window.innerWidth, window.innerHeight)
+    p5.windowResized = () => {
+        const size = sketchSize()
+        p5.resizeCanvas(size.w, size.h)
     }
 }
 export default sketch
