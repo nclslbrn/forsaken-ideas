@@ -1,5 +1,5 @@
 {
-    "libs": ["three"],
+    "libs": ["three", "FirstPersonControls"],
     "info": "Coming soon",
     "date": "2020-07-25",
     "action": []

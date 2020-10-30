@@ -1,7 +1,7 @@
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_geometry_dynamic.html
 
 import * as THREE from 'three'
-import { FirstPersonControls } from 'three/examples/controls/FirstPersonControls'
+import { FirstPersonControls } from 'three/examples/js/controls/FirstPersonControls'
 let camera, controls, scene, renderer
 let mesh, geometry, material, clock
 let worldWidth = 128,
