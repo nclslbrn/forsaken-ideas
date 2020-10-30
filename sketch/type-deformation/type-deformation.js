@@ -119,8 +119,7 @@ const sketch = (p5) => {
                         y: Math.sin(n1 + n2 * n3)
                     }
                     const v2 = planarFuncs[planarFunctionID](
-                        p5.createVector(v.x, v.y),
-                        0.5
+                        p5.createVector(v.x, v.y)
                     )
                     lettersPoints[i][j].x += v2.x * scale
                     lettersPoints[i][j].y += v2.y * scale
