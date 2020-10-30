@@ -89,7 +89,8 @@ const sketch = (p5) => {
             const n1 =
                 5 * p5.map(p5.noise(points[p].x, points[p].y), 0, 1, -1, 1)
             const v1 = circle(n1)
-            const v = funcs[selectedFunc](v1)
+            const v2 = funcs[selectedFunc](v1)
+            const v = funcs['sinusoidal'](v2)
             let pointColor = p5.color(p5.random(palette.colors))
             pointColor.setAlpha(alpha)
             p5.stroke(pointColor)
