@@ -1,4 +1,4 @@
-section.project {
+section.projects {
     display: block;
     float: right;
     @include breakpoint(xs) {
@@ -26,22 +26,36 @@ section.project {
     }
 }
 
-section.project {
+section.projects {
     padding-top: 0.5em;
 }
-section.project ul {
+section.projects ul {
+    display: flex;
+    flex-flow: row wrap;
     margin: 0;
 }
-@include breakpoint(xs) {
-    section.project > .column:last-child {
-        padding-bottom: 4em;
+@include breakpoint(md) {
+    section.projects ul li {
+        flex: 1 0 50%;
     }
 }
-section.project ul li {
-    padding-bottom: 1em;
+@include breakpoint(lg) {
+    section.projects ul li {
+        flex: 1 0 33%;
+    }
 }
-section.project ul li a {
+@include breakpoint(lg) {
+    section.projects ul li {
+        flex: 1 0 25%;
+    }
+}
+section.projects ul li {
+    padding: 0.5em 0;
+}
+section.projects ul li a {
+    display: block;
     text-transform: capitalize;
+    max-width: 90%;
 
     h3 {
         margin-bottom: 0.25em;
@@ -49,5 +63,60 @@ section.project ul li a {
     &:hover h3 {
         color: #666;
         text-decoration: underline;
+    }
+}
+div#orderButtons {
+    display: block;
+    margin: 1em 3em 0 0;
+    line-height: 0;
+    text-align: center;
+    overflow-y: hidden;
+}
+div#orderButtons button {
+    display: inline-flex;
+    position: relative;
+    height: 2em;
+    transform: translate(0, 2em);
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+
+    span {
+        display: block;
+        padding: 0 1em 0 0;
+        line-height: 2em;
+
+        transform: translate(0, 2em);
+
+        transition: transform 0.15s ease-in-out;
+        z-index: -1;
+    }
+    &.active {
+        background-color: #f3f3f3;
+    }
+    &.active span {
+        transform: translate(0, 1.8em);
+    }
+    &:hover span {
+        transform: translate(0, 0);
+    }
+}
+div#orderButtons button svg,
+div#orderButtons button span {
+    position: static;
+    z-index: 2;
+}
+div#orderButtons button svg {
+    padding: 0 0.5em;
+    width: 2em;
+    height: 2em;
+    background-color: #f3f3f3;
+}
+
+section.projects:hover,
+section.projects:focus {
+    div#orderButtons button {
+        transform: translate(0, 0);
     }
 }

@@ -20,7 +20,7 @@ aside.column {
         float: left;
     }
 }
-section.project > .column {
+section.projects > .column {
     position: relative;
     @include breakpoint(md) {
         display: block;

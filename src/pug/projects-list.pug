@@ -8,13 +8,6 @@
 //| https://github.com/nclslbrn/make |
 //+----------------------------------+
 
-- const projectCount = projects.length;
-- const totalCol = 3;
-- const projectPerCol = Math.ceil( projectCount / totalCol);
-- var columns = [];
-- for( var col = 0; col < totalCol; col++ ) {
-  - columns.push(projects.slice(projectPerCol * col, projectPerCol * (col + 1 ) ) ); 
-- }
 
 html(lang="en")
   include parts/head.pug
@@ -39,20 +32,34 @@ html(lang="en")
           |that question concepts of loop and infinity.
         
         
-      section.project
+      section.projects
 
-        each col in columns
+        ul#projectsList
 
-          div.column
-            ul
+          each project in projects
+        
+            li(
+                data-date=project.date,
+                data-path=project.name,
+                data-name=unescapeTitle(project.name)
+              )
 
-              each project in col
-            
-                li
-                  a(href="./sketch/" + project.name ) 
-                    h3 #{unescapeTitle(project.name)}
-                    small #{project.date}
-
+              a(
+                href="./sketch/" + project.name,
+              ) 
+                h3 #{unescapeTitle(project.name)}
+                small #{project.date}
+        
+        #orderButtons
+          button.active(data-order='name')
+            svg.icon.icon-sort-alphabetically
+              use(xlink:href="#icon-sort-alphabetically")
+            span order by name
+          
+          button(data-order='date')
+            svg.icon.icon-sort-numerically
+              use(xlink:href="#icon-sort-numerically")
+            span Order by date
         
       aside.column.about
         ul
