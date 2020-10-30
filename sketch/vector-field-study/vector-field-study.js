@@ -71,8 +71,11 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        const size = sketchSize()
-        canvas = p5.createCanvas(size.w, size.h)
+        //const size = sketchSize()
+        //canvas = p5.createCanvas(size.w, size.h)
+
+        canvas = p5.createCanvas(2560, 2560)
+        canvas.elt.setAttribute('style', 'max-width: 80vh; height:auto;')
         p5.stroke(0)
         planeCurveFunctionSelector()
         init_sketch()
@@ -97,9 +100,9 @@ const sketch = (p5) => {
         }
     }
     p5.windowResized = () => {
-        sketch.init_pos()
+        /* sketch.init_pos()
         const size = sketchSize()
-        canvas = p5.createCanvas(size.w, size.h)
+        canvas = p5.createCanvas(size.w, size.h) */
     }
     sketch.download_PNG = () => {
         const date = new Date()

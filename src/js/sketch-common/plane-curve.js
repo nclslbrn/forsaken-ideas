@@ -152,7 +152,7 @@ export default function (p5) {
         )
     }
 
-    const parallel_parabola = (v, amount = 1.0) => {
+    const parallel_parabola = (v, amount = 0.5) => {
         const theta = p5.atan2(v.x, v.y)
         const offset = 1
         return p5.createVector(
