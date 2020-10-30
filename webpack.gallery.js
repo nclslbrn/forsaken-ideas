@@ -43,7 +43,8 @@ module.exports = (env, process) => {
         plugins: [
             new webpack.ProgressPlugin(),
             new ProgressBarPlugin(),
-            new CleanWebpackPlugin(),
+            // this one delete all exported sketch
+            // new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 templateParameters: {
                     projects: projectWithMeta,
