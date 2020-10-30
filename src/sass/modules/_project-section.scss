@@ -68,6 +68,8 @@ section.projects ul li a {
 div#orderButtons {
     display: block;
     margin: 1em 3em 0 0;
+    height: 4em;
+    max-height: 4em;
     line-height: 0;
     text-align: center;
     overflow-y: hidden;
@@ -75,8 +77,9 @@ div#orderButtons {
 div#orderButtons button {
     display: inline-flex;
     position: relative;
-    height: 2em;
-    transform: translate(0, 2em);
+    padding: 0;
+    margin: 0 0.25em;
+    transform: translate(0, 4em);
     border: 0;
     background: none;
     cursor: pointer;
@@ -84,20 +87,26 @@ div#orderButtons button {
 
     span {
         display: block;
-        padding: 0 1em 0 0;
-        line-height: 2em;
-
-        transform: translate(0, 2em);
-
-        transition: transform 0.15s ease-in-out;
+        padding: 1.5em 0.5em;
+        line-height: 1em;
+        transform: translate(0, 4em);
+        //background-color: tomato;
+        transition: all 0.15s ease-in-out;
         z-index: -1;
     }
-    &.active {
+    svg {
+        padding: 1em;
+        width: 2em;
+        height: 2em;
         background-color: #f3f3f3;
     }
-    &.active span {
-        transform: translate(0, 1.8em);
+    &:hover {
+        box-shadow: 0 0 0.5em #ccc;
     }
+    &.active span {
+        background-color: #f3f3f3;
+    }
+    &.active span,
     &:hover span {
         transform: translate(0, 0);
     }
@@ -106,12 +115,6 @@ div#orderButtons button svg,
 div#orderButtons button span {
     position: static;
     z-index: 2;
-}
-div#orderButtons button svg {
-    padding: 0 0.5em;
-    width: 2em;
-    height: 2em;
-    background-color: #f3f3f3;
 }
 
 section.projects:hover,

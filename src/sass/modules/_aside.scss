@@ -50,6 +50,7 @@ aside {
             z-index: -1;
             right: -1em;
             background-color: #f3f3f3;
+            box-shadow: 0 0 0.5em #ccc;
         }
         &:hover button.button {
             opacity: 1;
