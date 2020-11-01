@@ -1,0 +1,15 @@
+{
+    "libs": ["p5"],
+    "info": "Plotting plane function from polar coordinate, then iterate each points with the same function.",
+    "date": "2020-11-01",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_PNG",
+            "icon": "desktop-download"
+        }
+    ]
+}

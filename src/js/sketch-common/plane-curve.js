@@ -158,7 +158,10 @@ export default function (p5) {
         const f2 = p5.pow(p5.abs(p5.sin((m * theta) / 4) / b), n3)
         const fr = p5.pow(f1 + f2, -1 / n1)
 
-        return p5.createVector(p5.cos(theta) * fr, p5.sin(theta) * fr)
+        return p5.createVector(
+            p5.cos(theta) * fr * amount,
+            p5.sin(theta) * fr * amount
+        )
     }
 
     return {
