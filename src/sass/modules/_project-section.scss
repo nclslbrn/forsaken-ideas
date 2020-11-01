@@ -37,16 +37,19 @@ section.projects ul {
 @include breakpoint(md) {
     section.projects ul li {
         flex: 1 0 50%;
+        max-width: 50%;
     }
 }
 @include breakpoint(lg) {
     section.projects ul li {
         flex: 1 0 33%;
+        max-width: 33%;
     }
 }
 @include breakpoint(lg) {
     section.projects ul li {
         flex: 1 0 25%;
+        max-width: 25%;
     }
 }
 section.projects ul li {
@@ -54,11 +57,19 @@ section.projects ul li {
 }
 section.projects ul li a {
     display: block;
-    text-transform: capitalize;
+    padding: 4px;
     max-width: 90%;
-
-    h3 {
-        margin-bottom: 0.25em;
+    text-transform: capitalize;
+    background-color: $color_body;
+    box-shadow: $shadows_default;
+    transition: $transition;
+    h3,
+    small {
+        margin: 0.25em;
+    }
+    &:hover {
+        //background-color: $color_hover;
+        box-shadow: $shadows_hover;
     }
     &:hover h3 {
         color: #666;
@@ -67,7 +78,8 @@ section.projects ul li a {
 }
 div#orderButtons {
     display: block;
-    margin: 1em 3em 0 0;
+    padding: 1em 0 0 0;
+    margin: 0 3em 0 0;
     height: 4em;
     max-height: 4em;
     line-height: 0;
@@ -83,28 +95,28 @@ div#orderButtons button {
     border: 0;
     background: none;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: $transition;
 
     span {
         display: block;
-        padding: 1.5em 0.5em;
+        padding: 1em 1em 0 0;
         line-height: 1em;
         transform: translate(0, 4em);
-        //background-color: tomato;
-        transition: all 0.15s ease-in-out;
+        box-shadow: $shadows_default;
+        transition: $transition;
         z-index: -1;
     }
     svg {
-        padding: 1em;
+        padding: 0.5em;
         width: 2em;
         height: 2em;
-        background-color: #f3f3f3;
+        background-color: $color_body;
     }
     &:hover {
-        box-shadow: 0 0 0.5em #ccc;
+        box-shadow: $shadows_hover;
     }
     &.active span {
-        background-color: #f3f3f3;
+        text-decoration: underline;
     }
     &.active span,
     &:hover span {

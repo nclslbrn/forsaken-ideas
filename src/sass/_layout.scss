@@ -1,10 +1,12 @@
 body {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 main {
     display: block;
     position: relative;
-    padding: 2em 3em 4em 3em;
+    padding: 2em 3em 0 3em;
 }
 
 aside,
@@ -17,7 +19,7 @@ section.projects {
 
         a {
             text-decoration: none;
-            color: #333;
+            color: $color_text;
         }
     }
 }

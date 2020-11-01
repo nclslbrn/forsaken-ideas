@@ -5,9 +5,9 @@
     width: 260px;
     margin: -150vh 0 0 3.5rem;
     z-index: 99;
-    background: #f3f3f3;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
-    transition: all 0.15s ease-out;
+    background: $color_body;
+    box-shadow: $shadows_default;
+    transition: $transition;
 
     > div {
         position: relative;
@@ -18,7 +18,7 @@
         float: right;
         width: 1.5rem;
         height: 1.5rem;
-        fill: #292929;
+        fill: $color_text;
 
         &::after {
             content: '';
@@ -31,7 +31,7 @@
     h1,
     p,
     a {
-        color: #303030;
+        color: $color_text;
     }
 
     h1 {

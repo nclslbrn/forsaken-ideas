@@ -2,28 +2,33 @@ header.headimg {
     position: relative;
     padding-bottom: 50vh;
     overflow: hidden;
-}
-header.headimg button.button {
-    position: absolute;
-    right: 0.5em;
-    top: 100%;
-    padding: 1em;
-    margin-top: 1em;
-    font-size: 1em;
-    line-height: 1;
-    transform: translate(0, 100%);
-    outline: none;
-    border-radius: 0;
-    border: none;
-    background: #fff;
-    font-weight: 400;
-    font-family: sans-serif;
-    box-shadow: 0 -0.25em 0.5em #ccc;
-    transition: all 0.05s ease-out;
-
+    button.button {
+        position: absolute;
+        right: 0.5em;
+        top: 100%;
+        padding: 1em;
+        margin-top: 1em;
+        font-size: 1em;
+        line-height: 1;
+        transform: translate(0, 100%);
+        outline: none;
+        border-radius: 0;
+        border: none;
+        background: $color_body;
+        font-weight: 400;
+        font-family: sans-serif;
+        box-shadow: $shadows_default;
+        transition: $transition;
+    }
     &:hover {
-        background-color: #f3f3f3;
+        box-shadow: inset $shadows_hover;
+    }
+    &:hover button.button {
+        box-shadow: $shadows_hover;
         cursor: pointer;
+    }
+    button.button:hover {
+        text-decoration: underline;
     }
 }
 header.headimg:hover button.button {
