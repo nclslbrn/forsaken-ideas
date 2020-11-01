@@ -1,7 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/full-canvas.scss'
-import sketch from './point-in-triangle'
+import sketch from './barycenter-of-the-triangle'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
