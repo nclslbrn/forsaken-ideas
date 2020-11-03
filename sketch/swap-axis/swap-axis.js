@@ -1,5 +1,3 @@
-import p5 from 'p5'
-
 const sketch = (p5) => {
     const pointsByLayer = 24
     let layers = []

@@ -4,15 +4,16 @@ const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const unescapeTitle = require('./webpack/unescapeTitle')
+const unescapeTitle = require('./unescapeTitle')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 
-const publicFolder = './public/sketch/'
+const publicFolder = path.resolve('public/sketch/')
 
 function fileList(dir) {
+    console.log(dir)
     return fs.readdirSync(dir).reduce(function (list, file) {
         var name = path.join(dir, file)
         var isDir = fs.statSync(name).isDirectory()
@@ -28,16 +29,15 @@ module.exports = (env, process) => {
     projects.forEach((proj) => {
         projectWithMeta.push({
             name: proj,
-            ...require(__dirname + '/sketch/' + proj + '/property.json')
+            ...require(path.resolve('sketch/' + proj + '/property.json'))
         })
     })
 
-    console.log(mode)
     const config = {
         mode: mode,
-        entry: [__dirname + '/src/js/gallery.js'],
+        entry: [path.resolve('/src/js/gallery.js')],
         output: {
-            path: path.resolve(__dirname, 'public/'),
+            path: path.resolve('public/'),
             filename: '[name]-bundle.js'
         },
         plugins: [
@@ -60,12 +60,12 @@ module.exports = (env, process) => {
             new CopyWebpackPlugin({
                 patterns: [
                     {
-                        from: path.resolve(__dirname, 'src/img'),
-                        to: path.resolve(__dirname, 'public/img')
+                        from: path.resolve('src/img'),
+                        to: path.resolve('public/img')
                     },
                     {
-                        from: path.resolve(__dirname, 'src/fonts'),
-                        to: path.resolve(__dirname, 'public/fonts')
+                        from: path.resolve('src/fonts'),
+                        to: path.resolve('public/fonts')
                     }
                 ]
             })

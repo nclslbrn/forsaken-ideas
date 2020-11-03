@@ -1,13 +1,13 @@
 const FtpDeploy = require('ftp-deploy')
 const ftp = new FtpDeploy()
 const fs = require('fs')
-
-const rawdata = fs.readFileSync('ftp.json')
+const path = require('path')
+const rawdata = fs.readFileSync('../ftp.json')
 const server = JSON.parse(rawdata)
 
 const config = {
     ...server,
-    localRoot: __dirname + '/public/',
+    localRoot: path.resolve('public/'),
     remoteRoot: '/www/',
     include: ['*', '**/*'],
     deleteRemote: false,

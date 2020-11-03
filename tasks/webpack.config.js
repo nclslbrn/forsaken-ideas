@@ -1,6 +1,6 @@
 const path = require('path')
-const sketchConfig = require('./webpack/sketchConfig')
-const unescapeTitle = require('./webpack/unescapeTitle')
+const sketchConfig = require('./sketchConfig')
+const unescapeTitle = require('./unescapeTitle')
 
 module.exports = (env, process) => {
     const project = process.entry[0]
@@ -9,8 +9,8 @@ module.exports = (env, process) => {
         .split('/')
         .pop()
     const title = unescapeTitle(folder)
-    const entry = project + '/index.js'
-    const output = path.join(__dirname, 'public/sketch/', folder)
+    const entry = path.join(project, '/index.js')
+    const output = path.resolve('public/sketch/', folder)
 
     console.log('<', output)
 
