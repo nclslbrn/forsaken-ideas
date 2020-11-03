@@ -1,6 +1,7 @@
 'use strict'
 import style from '../../src/sass/project.scss'
 import fullCanvas from '../../src/sass/frame-canvas.scss'
+import additionalStyle from './polar-curve.scss'
 import sketch from './polar-curve'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
