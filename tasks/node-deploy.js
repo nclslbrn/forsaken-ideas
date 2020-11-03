@@ -2,7 +2,7 @@ const FtpDeploy = require('ftp-deploy')
 const ftp = new FtpDeploy()
 const fs = require('fs')
 const path = require('path')
-const rawdata = fs.readFileSync('../ftp.json')
+const rawdata = fs.readFileSync(path.resolve('ftp.json'))
 const server = JSON.parse(rawdata)
 
 const config = {
