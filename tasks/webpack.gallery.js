@@ -43,8 +43,7 @@ module.exports = (env, process) => {
         plugins: [
             new webpack.ProgressPlugin(),
             new ProgressBarPlugin(),
-            // this one delete all exported sketch
-            // new CleanWebpackPlugin(),
+            //new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 templateParameters: {
                     projects: projectWithMeta,
@@ -134,10 +133,7 @@ module.exports = (env, process) => {
         },
         resolve: {
             extensions: ['.js', '.pug', '.json']
-        },
-
-        devtool:
-            mode == 'production' ? 'nosources-source-map' : 'inline-source-map'
+        }
         //stats: 'verbose' // errors-only'
     }
     if (mode !== 'production') {
@@ -150,6 +146,7 @@ module.exports = (env, process) => {
             compress: true,
             hot: true
         }
+        config.devtool = 'inline-source-map'
     } else {
         config.optimization = {
             minimize: true,

@@ -2,11 +2,11 @@ const path = require('path')
 const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
 const sketchConfig = require('./sketchConfig')
-const projects = fileList(path.resolve('sketch'))
+const projects = fileList(path.resolve('sketch/'))
 const projectsConfig = []
 
 for (let p = 0; p < projects.length; p++) {
-    const entry = path.resolve('sketch/', projects[p], '/index.js')
+    const entry = path.join(path.resolve('sketch/'), projects[p], '/index.js')
     const property = require(path.resolve(
         'sketch/' + projects[p] + '/property.json'
     ))

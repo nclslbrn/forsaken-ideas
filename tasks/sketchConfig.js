@@ -133,11 +133,6 @@ module.exports = (project, entry, output, title, property, mode) => {
                 svg: '@svgdotjs/svg.js'
             },
 
-            devtool:
-                mode == 'development'
-                    ? 'inline-source-map'
-                    : 'nosources-source-map',
-
             stats: 'errors-only'
         }
         if (HaveToCopyData) {
@@ -162,6 +157,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                 compress: true,
                 hot: true
             }
+            config.devtool = 'inline-source-map'
         } else {
             config.plugins.push(new CleanWebpackPlugin())
             config.optimization = {
