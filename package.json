@@ -12,7 +12,7 @@
         "export-gallery": "webpack --mode production --config tasks/webpack.gallery.js --entry ./src/js/gallery.js",
         "export-all": "npm run clean-exports && npm run export-all-sketches && npm run export-gallery",
         "deploy": "node node-deploy",
-        "build": "webpack"
+        "build": "npm run clean-exports && npm run export-all-sketches && npm run export-gallery"
     },
     "keywords": [
         "p5js",
