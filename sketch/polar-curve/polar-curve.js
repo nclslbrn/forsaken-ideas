@@ -121,6 +121,7 @@ const sketch = (p5) => {
         })
         sketch.resetPalette()
         sketch.resetPointAndColors()
+        p5.pixelDensity(window.devicePixelRatio)
         p5.background(p5.color(palette.background || palette.stroke || 0))
     }
     p5.draw = () => {
