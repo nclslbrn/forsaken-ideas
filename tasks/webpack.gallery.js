@@ -51,7 +51,7 @@ module.exports = (env, process) => {
                     unescapeTitle: unescapeTitle
                 },
                 filename: './index.html',
-                template: './src/pug/projects-list.pug'
+                template: './src/pug/gallery.pug'
             }),
             new MiniCssExtractPlugin({
                 filename: 'css/[name].css'
