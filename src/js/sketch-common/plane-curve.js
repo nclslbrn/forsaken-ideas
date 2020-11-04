@@ -65,6 +65,22 @@ export default function (p5) {
         )
     }
 
+    const eight = (v, amount = 1.0) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(
+            amount * p5.sin(theta),
+            amount * p5.sin(theta) * p5.cos(theta)
+        )
+    }
+
+    const folium = (v, amount = 1.0) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(
+            (3 * theta) / (1 + Math.pow(theta, 3)),
+            (3 * Math.pow(theta, 2)) / (1 + Math.pow(theta, 3))
+        )
+    }
+
     const hippias_quadratix = (v, amount = 1.0) => {
         const theta = p5.atan2(v.x, v.y)
         const sinc = p5.sin(v.y) / v.y
@@ -172,6 +188,7 @@ export default function (p5) {
         catenary,
         cochlioid,
         conchoid,
+        eight,
         hippias_quadratix,
         hyperbolic,
         julia,
@@ -182,6 +199,7 @@ export default function (p5) {
         rect_hyperbola,
         sech,
         sinusoidal,
-        superformula
+        superformula,
+        folium
     }
 }
