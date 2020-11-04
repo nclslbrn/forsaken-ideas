@@ -2,7 +2,10 @@
 @import '../../src/sass/mixins';
 
 body {
-    flex-flow: row-reverse nowrap;
+    flex-flow: column-reverse nowrap;
+    @include breakpoint(md) {
+        flex-flow: row-reverse nowrap;
+    }
 }
 #interactiveParameter {
     display: flex;

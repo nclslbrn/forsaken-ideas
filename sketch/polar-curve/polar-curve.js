@@ -113,7 +113,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
-        canvas.elt.setAttribute('style', 'height: 80vh; width: auto;')
+        canvas.elt.setAttribute('style', `max-width: 60vw; max-height: 60vw;`)
         sketch.planeCurveFunctionSelector()
         const slider = paramSlider(sample)
         slider.forEach((elem) => {
@@ -126,15 +126,11 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
-            const p_ = funcs[selectedFunc](points[p])
+            const p_ = funcs[selectedFunc](points[p], 0.1)
             const a = Math.atan2(p_.x, p_.y)
-            const n = p5.map(
-                noiseSample * p5.noise(Math.cos(a), Math.sin(a)),
-                0,
-                1,
-                -1,
-                1
-            )
+            const n =
+                sample.value /
+                p5.map(p5.noise(Math.cos(a), Math.sin(a)), 0, 1, -1, 1)
 
             const _p = p5.createVector(Math.cos(n), Math.sin(n))
             p_.lerp(_p, 0.5)
