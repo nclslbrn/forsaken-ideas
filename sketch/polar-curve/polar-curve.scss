@@ -11,17 +11,21 @@ body {
     display: flex;
     flex-flow: column nowrap;
 }
-
+p,
 input,
 label,
-select {
+select,
+#colorBlocks {
     margin: 1em;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol';
     text-align: center;
 }
-
+#colorBlocks {
+    display: flex;
+    flex-flow: row nowrap;
+}
 input[type='text'] {
     display: none;
     @include breakpoint(md) {
