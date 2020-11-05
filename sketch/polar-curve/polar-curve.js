@@ -1,36 +1,15 @@
 import * as tome from 'chromotome'
 import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 import paramSlider from '../../src/js/sketch-common/param-slider'
-import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
+import planeFunctionScale from './planeFunctionScale'
+import darkPalettes from './darkPalettes'
 
-const selPalette = [
-    'retro',
-    'retro-washedout',
-    'miradors',
-    'tundra4',
-    'floratopia',
-    'roygbiv-toned',
-    'roygbiv-warm',
-    'yuma_punk',
-    'butterfly',
-    'revolucion'
-]
 let canvas
 
 const sketch = (p5) => {
-    let selectedFunc, palette, points, colors, colorsId
+    let selectedFunc, sample, palette, points, colors, colorsId
 
     const scale = 0.001
-    const sample = {
-        value: 15.0,
-        options: {
-            min: 1,
-            max: 25,
-            step: 0.5,
-            label: 'Scale'
-        }
-    }
-    const noiseSample = 300
     const alpha = 25
     const funcs = planeCurveFuncs(p5)
     // A4 150dpi width
@@ -53,12 +32,13 @@ const sketch = (p5) => {
             h: side > 800 ? sketchHeight : side
         }
     }
+
     sketch.planeCurveFunctionSelector = () => {
         const funcSelector = document.createElement('select')
         const functions = Object.keys(funcs)
-        /* const randomFunc =
-            functions[Math.floor(functions.length * Math.random())] */
-        const randomFunc = 'hyperbola'
+        const randomFunc =
+            functions[Math.floor(functions.length * Math.random())]
+        // const randomFunc = 'hyperbola'
         // loop through functions in func
         Object.entries(funcs).forEach((func) => {
             // create option for each them
@@ -74,20 +54,25 @@ const sketch = (p5) => {
             funcSelector.appendChild(funcOption)
         })
         console.log(selectedFunc)
+        sample = planeFunctionScale[selectedFunc]
+
         paramBox.appendChild(funcSelector)
         // change selected function when user change it
         funcSelector.addEventListener('change', (event) => {
             selectedFunc = funcSelector.value
+            sample = planeFunctionScale[selectedFunc]
             sketch.init()
         })
     }
+
     sketch.init = () => {
         sketch.resetPoint()
         p5.background(p5.color(palette.background || palette.stroke || 0))
     }
+
     sketch.resetPalette = () => {
         palette = tome.get(
-            selPalette[Math.floor(selPalette.length * Math.random())]
+            darkPalettes[Math.floor(darkPalettes.length * Math.random())]
         )
         colors = []
         colorBlocks.innerHTML = ''
@@ -107,13 +92,14 @@ const sketch = (p5) => {
         })
         paletteNameElem.innerText = `Palette : ${palette.name}`
     }
+
     sketch.resetPoint = () => {
         points = []
         colorsId = []
-        for (let a = -1; a <= 1; a += 0.001) {
+        for (let a = -1; a <= 1; a += 0.0005) {
             const point = p5.createVector(
-                p5.randomGaussian() * Math.cos(a * p5.PI),
-                p5.randomGaussian() * Math.sin(a * p5.PI)
+                p5.randomGaussian() * Math.cos(a),
+                p5.randomGaussian() * Math.sin(a)
             )
             // point.normalize()
             const v = funcs[selectedFunc](point)
@@ -136,55 +122,43 @@ const sketch = (p5) => {
             '--copyright_Nicolas_Lebrun_CC-by-3.0'
         p5.save(canvas, filename, 'png')
     }
+
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
         canvas.elt.setAttribute('style', `max-width: 50vw; max-height: 50vw;`)
-        //p5.strokeWeight(4)
+        p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
-        const slider = paramSlider(sample)
-        slider.forEach((elem) => {
-            paramBox.appendChild(elem)
-        })
-
         sketch.resetPalette()
         sketch.resetPoint()
         if (window.devicePixelRatio > 1)
             p5.pixelDensity(window.devicePixelRatio)
         p5.background(p5.color(palette.background || palette.stroke || 0))
     }
+
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
             const v1 = funcs[selectedFunc](points[p])
             const a1 = Math.atan2(v1.x, v1.y)
             const a2 =
-                noiseSample *
-                p5.map(p5.noise(Math.cos(a1), Math.sin(a1)), 0, 1, -1, 1)
-            const v3 = p5.createVector(Math.cos(a2), Math.sin(a2))
-            v1.lerp(v3, 0.5)
-            points[p].x += v1.x * scale
-            points[p].y += v1.y * scale
+                p5.map(p5.noise(Math.cos(v1.x), Math.sin(v1.y)), 0, 1, -1, 1) *
+                150
 
-            const xx = p5.map(
-                points[p].x,
-                -sample.value,
-                sample.value,
-                0,
-                p5.width
-            )
-            const yy = p5.map(
-                points[p].y,
-                -sample.value,
-                sample.value,
-                0,
-                p5.height
-            )
+            const v3 = p5.createVector(Math.cos(a1 * a2), Math.sin(a1 * a2))
+            const v4 = funcs['sinusoidal'](v3)
 
-            p5.stroke(colors[Math.floor(Math.random() * colors.length)])
+            points[p].x += v4.x * scale
+            points[p].y += v4.y * scale
+
+            const xx = p5.map(points[p].x, -sample, sample, 0, p5.width)
+            const yy = p5.map(points[p].y, -sample, sample, 0, p5.height)
+
+            p5.stroke(colors[colorsId[p]])
             p5.point(xx, yy)
         }
     }
+
     p5.windowResized = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         p5.resizeCanvas(size.w, size.h)
