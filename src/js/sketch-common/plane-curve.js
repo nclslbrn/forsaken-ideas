@@ -11,135 +11,151 @@
 import p5 from 'p5'
 
 export default function (p5) {
-    const agnesi_witch = (v, amount = 0.5) => {
-        const theta = p5.atan2(v.x, v.y)
+    const archimedean_spiral = (v, amount = 1.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        const a = 1
+        const n = -3
         return p5.createVector(
-            2 * amount * theta,
-            (2 * amount) / p5.sqrt(theta) + 1
+            amount * -Math.sqrt(theta) * Math.cos(theta),
+            amount * -Math.sqrt(theta) * Math.sin(theta)
         )
     }
 
-    const archimedean_spiral = (v, amount = 3.0) => {
-        const theta = p5.atan2(v.x, v.y)
-        return p5.createVector(amount * p5.cos(theta), amount * p5.sin(theta))
-    }
-
     const astroid = (v, amount = 2.0) => {
-        const theta = p5.atan2(v.x, v.y)
+        const theta = Math.atan2(v.x, v.y)
         return p5.createVector(
-            p5.pow(p5.cos(theta), 3),
-            p5.pow(p5.sin(theta), 3)
+            Math.pow(Math.cos(theta), 3),
+            Math.pow(Math.sin(theta), 3)
         )
     }
 
     const cardioid_pedal = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
+        const theta = Math.atan2(v.x, v.y)
         return p5.createVector(
-            amount * (1 + p5.cos(theta)) * p5.cos(theta),
-            amount * (1 + p5.cos(theta)) * p5.sin(theta)
+            amount * (1 + Math.cos(theta)) * Math.cos(theta),
+            amount * (1 + Math.cos(theta)) * Math.sin(theta)
         )
     }
 
-    const catenary = (v, amount = 1.5) => {
-        const theta = p5.atan2(v.x, v.y)
-        return p5.createVector(v.x, Math.cosh(v.y / theta))
+    const catenary = (v, amount = 1.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        return p5.createVector(theta, Math.cosh(theta / 2.0))
     }
 
-    const cochlioid = (v, amount = 1.2) => {
-        const theta = p5.atan2(v.x, v.y)
-        const sinc = p5.sin(v.y) / v.y
+    const cochleoid = (v, amount = 1.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        const sinc = ((Math.sin(theta) * p5.PI) / theta) * p5.PI
+
         return p5.createVector(
-            amount * sinc * p5.cos(theta),
-            amount * sinc * p5.sin(theta)
+            amount * sinc * Math.cos(theta),
+            amount * sinc * Math.sin(theta)
         )
     }
 
-    const conchoid = (v, amount = 1.5) => {
-        const theta = p5.atan2(v.x, v.y)
-        const sec = 1 / p5.cos(theta)
-        const A = p5.ceil(p5.random(1, 2))
-        const B = p5.random(0, 2)
+    const conchoid_of_nicomedes = (v, amount = 4.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        const sec = 1 / Math.cos(theta)
         return p5.createVector(
-            p5.cos(theta) * (A * sec * theta + B),
-            p5.sin(theta) * (A * sec * theta + B)
+            amount * Math.cos(theta) * (Math.cos(theta) + sec),
+            amount * Math.sin(theta) * (Math.cos(theta) + sec)
         )
     }
 
     const eight = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
+        const theta = Math.atan2(v.x, v.y)
         return p5.createVector(
-            amount * p5.sin(theta),
-            amount * p5.sin(theta) * p5.cos(theta)
+            amount * Math.sin(theta),
+            amount * Math.sin(theta) * Math.cos(theta)
         )
     }
 
     const folium = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
+        const theta = Math.atan2(v.x, v.y)
         return p5.createVector(
-            (3 * theta) / (1 + Math.pow(theta, 3)),
-            (3 * Math.pow(theta, 2)) / (1 + Math.pow(theta, 3))
+            amount *
+                Math.pow(Math.cos(theta), 2) *
+                (4 * Math.pow(Math.sin(theta), 2) - 1),
+            amount *
+                Math.sin(theta) *
+                Math.cos(theta) *
+                (4 * Math.pow(Math.sin(theta), 2) - 1)
         )
     }
 
-    const hippias_quadratix = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
-        const sinc = p5.sin(v.y) / v.y
-
-        return p5.createVector(
-            (2 * amount * p5.cos(theta)) / (p5.PI * sinc * theta),
-            (2 * amount * p5.sin(theta)) / (p5.PI * sinc * theta)
-        )
-    }
-
+    // unknown source
     const hyperbolic = (v, amount = 2.0) => {
         const r = v.mag() + 1.0e-10
-        const theta = p5.atan2(v.x, v.y)
-        const x = (amount * p5.sin(theta)) / r
-        const y = amount * p5.cos(theta) * r
-        return p5.createVector(x, y)
+        const theta = Math.atan2(v.x, v.y)
+        return p5.createVector(
+            (amount * Math.sin(theta)) / r,
+            amount * Math.cos(theta) * r
+        )
     }
 
+    // unknown source
     const julia = (v, amount = 2.0) => {
         const r = amount * p5.sqrt(v.mag())
         const theta =
-            0.5 * p5.atan2(v.x, v.y) + p5.round(2.0 * p5.random(0, 1)) * p5.PI
-        const x = r * p5.cos(theta)
-        const y = r * p5.sin(theta)
-        return p5.createVector(x, y)
+            0.5 * Math.atan2(v.x, v.y) +
+            Math.round(2.0 * Math.random()) * Math.PI
+        return p5.createVector(
+            amount * r * Math.cos(theta),
+            amount * r * Math.sin(theta)
+        )
     }
 
-    const kampyle = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
-        const sec = 1 / p5.cos(theta)
+    const kampyle_of_euxodus = (v, amount = 1.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        const sec = 1 / Math.cos(theta)
 
-        return p5.createVector(sec * v.x, p5.tan(v.y) * sec * v.y)
+        return p5.createVector(amount * sec, amount * Math.tan(theta) * sec)
     }
 
     const kilroy_curve = (v, amount = 1.0) => {
-        const sinc = p5.sin(v.y) / v.y
-        return p5.createVector(v.x, p5.log(sinc * v.y))
+        const theta = Math.atan2(v.x, v.y)
+        const sinc = Math.sin(theta) / theta
+        return p5.createVector(
+            amount * theta,
+            amount * Math.abs(Math.log(sinc))
+        )
     }
 
     const maltese_cross = (v, amount = 1.5) => {
+        const theta = Math.atan2(v.x, v.y)
         return p5.createVector(
-            (2 * p5.cos(v.x)) / p5.sqrt(p5.sin(4 * v.x)),
-            (2 * p5.sin(v.y)) / p5.sqrt(p5.sin(4 * v.y))
+            (amount * (2 * Math.cos(theta))) / Math.sqrt(Math.sin(4 * theta)),
+            (amount * (2 * Math.sin(theta))) / Math.sqrt(Math.sin(4 * theta))
         )
     }
 
     const parallel_parabola = (v, amount = 1.0) => {
-        const theta = p5.atan2(v.x, v.y)
+        const theta = Math.atan2(v.x, v.y)
         const offset = 1
         return p5.createVector(
-            2 * amount * theta + (offset * theta) / p5.sqrt(theta * theta + 1),
-            amount * theta * theta - offset / p5.sqrt(theta * theta + 1)
+            amount *
+                (2 * theta +
+                    (offset * theta) / Math.sqrt(Math.pow(theta, 2) + 1)),
+            amount *
+                (Math.pow(theta, 2) -
+                    offset / Math.sqrt(Math.pow(theta, 2) + 1))
         )
     }
 
-    const rect_hyperbola = (v, amount = 0.4) => {
-        const theta = p5.atan2(v.x, v.y)
-        const sec = 1 / p5.cos(theta)
-        return p5.createVector(sec * theta * amount, p5.tan(theta) * amount)
+    const quadratix_of_hippias = (v, amount = 1.0) => {
+        const theta = Math.atan2(v.x, v.y)
+        const sinc = Math.sin(theta) / theta
+
+        return p5.createVector(
+            amount * ((2 * Math.cos(theta)) / (Math.PI * sinc)),
+            amount * ((2 * Math.sin(theta)) / (Math.PI * sinc))
+        )
+    }
+
+    const rectangular_hyperbola = (v, amount = 0.4) => {
+        const theta = Math.atan2(v.x, v.y)
+        const sec = 1 / Math.cos(theta)
+
+        return p5.createVector(sec, Math.tan(theta))
     }
 
     const sech = (v, amount = 0.2) => {
@@ -179,27 +195,34 @@ export default function (p5) {
             p5.sin(theta) * fr * amount
         )
     }
+    const witch_of_agnesi = (v, amount = 0.5) => {
+        const theta = p5.atan2(v.x, v.y)
+        return p5.createVector(
+            2 * amount * theta,
+            (2 * amount) / Math.pow(theta, 2) + 1
+        )
+    }
 
     return {
-        agnesi_witch,
         archimedean_spiral,
         astroid,
         cardioid_pedal,
         catenary,
-        cochlioid,
-        conchoid,
+        cochleoid,
+        conchoid_of_nicomedes,
         eight,
-        hippias_quadratix,
+        folium,
         hyperbolic,
         julia,
-        kampyle,
+        kampyle_of_euxodus,
         kilroy_curve,
         maltese_cross,
         parallel_parabola,
-        rect_hyperbola,
+        quadratix_of_hippias,
+        rectangular_hyperbola,
         sech,
         sinusoidal,
         superformula,
-        folium
+        witch_of_agnesi
     }
 }
