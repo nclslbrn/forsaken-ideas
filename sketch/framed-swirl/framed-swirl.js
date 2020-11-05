@@ -49,7 +49,7 @@ const sketch = (p5) => {
     } = joinVector(p5)
 
     const strFromVar = (variable) => {
-        return variable.replace('_', ' ').toUpperCase()
+        return variable.replaceAll('_', ' ').toUpperCase()
     }
     // draw function
     const drawVariation = (x, y) => {

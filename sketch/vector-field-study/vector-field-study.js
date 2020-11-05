@@ -20,7 +20,7 @@ const sketch = (p5) => {
         // loop through functions in func
         Object.entries(funcs).forEach((func) => {
             // create option for each them
-            const funcName = func[0].replace('_', ' ')
+            const funcName = func[0].replaceAll('_', ' ')
             const funcOption = document.createElement('option')
             funcOption.appendChild(document.createTextNode(funcName))
             funcOption.value = func[0]
