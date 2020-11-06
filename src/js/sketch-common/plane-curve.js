@@ -52,7 +52,7 @@ export default function (p5) {
         )
     }
 
-    const conchoid_of_nicomedes = (v, amount = 4.0) => {
+    const conchoid_of_nicomedes = (v, amount = 1.0) => {
         const theta = Math.atan2(v.x, v.y)
         const sec = 1 / Math.cos(theta)
         return p5.createVector(
@@ -81,8 +81,7 @@ export default function (p5) {
                 (4 * Math.pow(Math.sin(theta), 2) - 1)
         )
     }
-
-    // unknown source
+    // from @tsulej https://generateme.wordpress.com/2016/04/11/folds/
     const hyperbolic = (v, amount = 2.0) => {
         const r = v.mag() + 1.0e-10
         const theta = Math.atan2(v.x, v.y)
@@ -91,8 +90,7 @@ export default function (p5) {
             amount * Math.cos(theta) * r
         )
     }
-
-    // unknown source
+    // from @tsulej https://generateme.wordpress.com/2016/04/11/folds/
     const julia = (v, amount = 2.0) => {
         const r = amount * p5.sqrt(v.mag())
         const theta =
@@ -157,8 +155,8 @@ export default function (p5) {
 
         return p5.createVector(sec, Math.tan(theta))
     }
-
-    const sech = (v, amount = 0.2) => {
+    // from @tsulej https://generateme.wordpress.com/2016/04/11/folds/
+    const sech = (v, amount = 6.0) => {
         const cosh = (x) => {
             return 0.5 * (p5.exp(x) + p5.exp(-x))
         }
@@ -174,7 +172,7 @@ export default function (p5) {
     }
 
     const sinusoidal = (v, amount = 1.0) => {
-        return p5.createVector(amount * p5.sin(v.x), amount * p5.sin(v.y))
+        return p5.createVector(amount * Math.sin(v.x), amount * Math.sin(v.y))
     }
 
     const superformula = (v, amount = 1.0) => {

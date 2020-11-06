@@ -1,16 +1,18 @@
 import * as tome from 'chromotome'
 import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 import paramSlider from '../../src/js/sketch-common/param-slider'
-import planeFunctionScale from './planeFunctionScale'
 import darkPalettes from './darkPalettes'
 
 let canvas
 
 const sketch = (p5) => {
-    let selectedFunc, sample, palette, points, colors, colorsId
+    let selectedFunc, palette, points, colors, colorsId
 
-    const scale = 0.001
-    const alpha = 25
+    const scale = 0.07
+    const alpha = 100
+    const margin = 0.1
+    const sample = 3
+
     const funcs = planeCurveFuncs(p5)
     // A4 150dpi width
     const sketchWidth = 1280
@@ -38,7 +40,7 @@ const sketch = (p5) => {
         const functions = Object.keys(funcs)
         const randomFunc =
             functions[Math.floor(functions.length * Math.random())]
-        // const randomFunc = 'hyperbola'
+        //const randomFunc = 'sinusoidal'
         // loop through functions in func
         Object.entries(funcs).forEach((func) => {
             // create option for each them
@@ -53,14 +55,11 @@ const sketch = (p5) => {
             }
             funcSelector.appendChild(funcOption)
         })
-        console.log(selectedFunc)
-        sample = planeFunctionScale[selectedFunc]
 
         paramBox.appendChild(funcSelector)
         // change selected function when user change it
         funcSelector.addEventListener('change', (event) => {
             selectedFunc = funcSelector.value
-            sample = planeFunctionScale[selectedFunc]
             sketch.init()
         })
     }
@@ -96,14 +95,8 @@ const sketch = (p5) => {
     sketch.resetPoint = () => {
         points = []
         colorsId = []
-        for (let a = -1; a <= 1; a += 0.0005) {
-            const point = p5.createVector(
-                p5.randomGaussian() * Math.cos(a),
-                p5.randomGaussian() * Math.sin(a)
-            )
-            // point.normalize()
-            const v = funcs[selectedFunc](point)
-            points.push(v)
+        for (let a = 0; a <= Math.PI * 8; a += 0.01) {
+            points.push(p5.createVector(Math.cos(a), Math.sin(a)))
             colorsId.push(Math.floor(Math.random() * palette.colors.length))
         }
     }
@@ -126,7 +119,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
-        canvas.elt.setAttribute('style', `max-width: 50vw; max-height: 50vw;`)
+        canvas.elt.setAttribute('style', `max-width: 40vw; max-height: 40vw;`)
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
@@ -142,20 +135,30 @@ const sketch = (p5) => {
             const v1 = funcs[selectedFunc](points[p])
             const a1 = Math.atan2(v1.x, v1.y)
             const a2 =
-                p5.map(p5.noise(Math.cos(v1.x), Math.sin(v1.y)), 0, 1, -1, 1) *
-                150
+                p5.map(p5.noise(Math.cos(a1), Math.sin(a1)), 0, 1, -1, 1) * 300
+            const v2 = p5.createVector(Math.cos(a2), Math.sin(a2))
+            const v3 = v1.lerp(v2, 0.5)
+            const v4 = funcs['sinusoidal'](v3, sample)
 
-            const v3 = p5.createVector(Math.cos(a1 * a2), Math.sin(a1 * a2))
-            const v4 = funcs['sinusoidal'](v3)
+            const xx = p5.map(
+                v4.x,
+                -sample,
+                sample,
+                p5.width * margin,
+                p5.width - p5.width * margin
+            )
+            const yy = p5.map(
+                v4.y,
+                -sample,
+                sample,
+                p5.height * margin,
+                p5.height - p5.height * margin
+            )
+            p5.stroke(colors[colorsId[p]])
+            p5.point(xx, yy)
 
             points[p].x += v4.x * scale
             points[p].y += v4.y * scale
-
-            const xx = p5.map(points[p].x, -sample, sample, 0, p5.width)
-            const yy = p5.map(points[p].y, -sample, sample, 0, p5.height)
-
-            p5.stroke(colors[colorsId[p]])
-            p5.point(xx, yy)
         }
     }
 
