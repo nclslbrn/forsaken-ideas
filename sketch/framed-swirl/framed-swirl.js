@@ -60,14 +60,14 @@ const sketch = (p5) => {
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
             const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
-                fv.x, // + 0.003 * p5.randomGaussian(),
+                fv.x + 0.0003 * p5.randomGaussian(),
                 x1,
                 x2,
                 margin,
                 p5.width - margin
             )
             const yy = p5.map(
-                fv.y, // + 0.003 * p5.randomGaussian(),
+                fv.y + 0.0003 * p5.randomGaussian(),
                 y1,
                 y2,
                 margin,
@@ -78,7 +78,7 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         const sketchDim = sketchSize(sketchWidth, sketchHeight)
-        margin = sketchDim.w / 8
+        margin = sketchDim.w / 16
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
 
         canvas.elt.setAttribute(
@@ -89,7 +89,7 @@ const sketch = (p5) => {
         //p5.strokeWeight(0.5)
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
-        step = (p5.sqrt(n) * (x2 - x1)) / (1.356 * p5.width)
+        step = (p5.sqrt(n) * (x2 - x1)) / (p5.width * 0.8)
         cartel = document.createElement('div')
         cartel.id = 'cartel'
         document.body.appendChild(cartel)
@@ -99,11 +99,7 @@ const sketch = (p5) => {
         if (drawing) {
             for (let i = 0; (i < 20) & drawing; i++) {
                 for (let x = x1; x <= x2; x += step) {
-                    const color = p5.lerpColor(
-                        colors[0],
-                        colors[1],
-                        (x * y) / 9
-                    )
+                    const color = colors[i % colors.length]
                     p5.stroke(color)
                     drawVariation(x, y)
                 }
@@ -140,11 +136,11 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(84, 42, 8, 2).map((c, index) => {
+        colors = generateHslaColors(84, 42, 70, 2).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '
-            style += `background-color: hsl(${c[0]}, ${c[1]}%, ${c[2]}%);`
+            style += `background-color: hsla(${c[0]}, ${c[1]}%, ${c[2]}%, ${c[3]}%);`
             color.setAttribute('style', style)
             colorBlock.appendChild(color)
 
