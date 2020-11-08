@@ -16,8 +16,8 @@ export default class AutomataGrid {
      */
     init(percent = 0.5) {
         this.value = []
-        for (let x = 0; x <= this.cols; x++) {
-            for (let y = 0; y <= this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+            for (let y = 0; y < this.rows; y++) {
                 this.value.push(Math.random() < percent)
             }
         }
@@ -33,40 +33,40 @@ export default class AutomataGrid {
         const lastValue = [...this.value]
         const nextValue = []
 
-        for (let x = 0; x <= this.cols; x++) {
-            for (let y = 0; y <= this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+            for (let y = 0; y < this.rows; y++) {
                 // Cell index in the flat array of this.value
-                const i = y * this.cols + x
+                const i = this.cols * x + y
                 // Alive cell around count
                 let aliveAround = 0
 
                 // top
-                if (x > 0 && lastValue[i - this.rows]) {
-                    aliveAround++
-                }
-
-                // bottom
-                if (x > this.cols && lastValue[i + this.rows]) {
-                    aliveAround++
-                }
-
-                // left
                 if (y > 0 && lastValue[i - 1]) {
                     aliveAround++
                 }
 
+                // bottom
+                if (y > this.rows && lastValue[i + 1]) {
+                    aliveAround++
+                }
+
+                // left
+                if (x > 0 && lastValue[i - this.cols]) {
+                    aliveAround++
+                }
+
                 // right
-                if (y < this.rows && lastValue[i + 1]) {
+                if (x < this.cols && lastValue[i + this.cols]) {
                     aliveAround++
                 }
 
                 // top left
-                if (x > 0 && y > 0 && lastValue[i - this.rows - 1]) {
+                if (x > 0 && y > 0 && lastValue[i - this.cols - 1]) {
                     aliveAround++
                 }
 
-                // top left
-                if (x > 0 && y < this.rows && lastValue[i - this.rows + 1]) {
+                // top right
+                if (x < this.cols && y > 0 && lastValue[i + this.cols - 1]) {
                     aliveAround++
                 }
 
@@ -74,13 +74,13 @@ export default class AutomataGrid {
                 if (
                     x < this.cols &&
                     y < this.rows &&
-                    lastValue[i + this.rows + 1]
+                    lastValue[i + this.cols + 1]
                 ) {
                     aliveAround++
                 }
 
                 // bottom left
-                if (x > 0 && y < this.rows && lastValue[i + this.rows - 1]) {
+                if (x > 0 && y < this.rows && lastValue[i - this.rows + 1]) {
                     aliveAround++
                 }
 

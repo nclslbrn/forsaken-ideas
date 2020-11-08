@@ -1,6 +1,7 @@
 import AutomataGrid from '../../src/js/sketch-common/AutomataGrid'
-const cols = 10
-const rows = 10
+import MirrorShape from './MirrorShape'
+import * as tome from 'chromotome'
+
 const sketchSize = () => {
     const side = Math.min(window.innerWidth, window.innerHeight)
     return {
@@ -8,63 +9,181 @@ const sketchSize = () => {
         h: side > 800 ? 800 : side * 0.85
     }
 }
-const sketch = (p5) => {
-    const mataGrid = new AutomataGrid(cols, rows)
-    const canvasSize = sketchSize()
+let canvas
 
-    const cellSize = {
-        w: canvasSize.w / (cols * 2),
-        h: canvasSize.h / (rows * 2)
+const sketch = (p5) => {
+    const g = new AutomataGrid(9, 9)
+    const mirror = new MirrorShape(g.cols, g.rows)
+    let canvasSize, cellSize, palette, colors
+    canvasSize = sketchSize()
+    cellSize = {
+        w: canvasSize.w / (1 + g.cols * 2),
+        h: canvasSize.h / (1 + g.rows * 2)
     }
 
-    const drawCell = (x, y, w, h) => {
-        p5.rect(x * w, y * h, w, h)
+    const fillCell = (x, y) => {
+        mirror.allCorners(x, y).forEach((p) => {
+            p5.rect(
+                p[0] * cellSize.w,
+                p[1] * cellSize.h,
+                cellSize.w,
+                cellSize.h
+            )
+        })
+    }
+
+    const topLeftTriangle = (x, y) => {
+        mirror.topLeftCorner(x, y).forEach((p) => {
+            p5.triangle(
+                p[0] * cellSize.w,
+                p[1] * cellSize.h,
+                p[2] * cellSize.w,
+                p[3] * cellSize.h,
+                p[4] * cellSize.w,
+                p[5] * cellSize.h
+            )
+        })
+    }
+
+    const topRightTriangle = (x, y) => {
+        mirror.topRightCorner(x, y).forEach((p) => {
+            p5.triangle(
+                p[0] * cellSize.w,
+                p[1] * cellSize.h,
+                p[2] * cellSize.w,
+                p[3] * cellSize.h,
+                p[4] * cellSize.w,
+                p[5] * cellSize.h
+            )
+        })
+    }
+
+    const bottomRightTriangle = (x, y) => {
+        mirror.bottomRightCorner(x, y).forEach((p) => {
+            p5.triangle(
+                p[0] * cellSize.w,
+                p[1] * cellSize.h,
+                p[2] * cellSize.w,
+                p[3] * cellSize.h,
+                p[4] * cellSize.w,
+                p[5] * cellSize.h
+            )
+        })
+    }
+
+    const bottomLeftTriangle = (x, y) => {
+        mirror.bottomLeftCorner(x, y).forEach((p) => {
+            p5.triangle(
+                p[0] * cellSize.w,
+                p[1] * cellSize.h,
+                p[2] * cellSize.w,
+                p[3] * cellSize.h,
+                p[4] * cellSize.w,
+                p[5] * cellSize.h
+            )
+        })
+    }
+
+    sketch.init = () => {
+        palette = tome.get()
+        colors = palette.colors.map((c) => p5.color(c))
+        g.init()
+        g.update()
     }
 
     p5.setup = () => {
-        p5.createCanvas(canvasSize.w, canvasSize.h)
-        mataGrid.init()
-        mataGrid.update()
+        canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
+        p5.noStroke()
+        sketch.init()
+
+        canvas.elt.addEventListener('click', (event) => {
+            event.preventDefault()
+            sketch.update()
+        })
     }
 
     p5.draw = () => {
-        p5.background(255)
-        for (let x = 0; x <= cols; x++) {
-            for (let y = 0; y <= rows; y++) {
-                const i = y * cols + x
-                if (mataGrid.value[i]) {
-                    // top left
-                    drawCell(x, y, cellSize.w, cellSize.h)
-                    // top right
-                    drawCell(cols + cols - x, y, cellSize.w, cellSize.h)
-                    // bottom left
-                    drawCell(x, rows + rows - y, cellSize.w, cellSize.h)
-                    // bottom right
-                    drawCell(
-                        cols + cols - x,
-                        rows + rows - y,
-                        cellSize.w,
-                        cellSize.h
-                    )
+        p5.background(p5.color(palette.background || palette.stroke || 100))
+
+        for (let x = 0; x < g.cols; x++) {
+            for (let y = 0; y < g.rows; y++) {
+                const i = x * g.cols + y
+
+                //if (g.value[i]) {
+                p5.fill(colors[i % colors.length])
+                // top & bottom
+                if (
+                    //y > 0 &&
+                    //y < g.rows &&
+                    g.value[i - g.rows] &&
+                    g.value[i + g.rows]
+                ) {
+                    fillCell(x, y)
                 }
+                // left & right
+                if (
+                    //x > 0 &&
+                    //x > g.cols &&
+                    g.value[i + g.cols] &&
+                    g.value[i - g.cols]
+                ) {
+                    fillCell(x, y)
+                }
+                if (g.value[i - 1] && g.value[i - g.cols]) {
+                    fillCell(x, y - 1)
+                    fillCell(x - 1, y)
+                    topLeftTriangle(x, y)
+                }
+                if (g.value[i - 1] && g.value[i + g.cols]) {
+                    fillCell(x, y - 1)
+                    fillCell(x + 1, y)
+                    topRightTriangle(x, y)
+                }
+                if (g.value[i + 1] && g.value[i + g.cols]) {
+                    fillCell(x, y + 1)
+                    fillCell(x + 1, y)
+                    bottomRightTriangle(x, y)
+                }
+                if (g.value[i + 1] && g.value[i - g.cols]) {
+                    fillCell(x, y + 1)
+                    fillCell(x - 1, y)
+                    bottomLeftTriangle(x, y)
+                }
+                //}
             }
         }
     }
 
-    p5.mousePressed = () => {
-        mataGrid.update()
-        const aliveCellInGrid = mataGrid.value.reduce((stock, cell) => {
+    sketch.update = () => {
+        g.update()
+        const aliveCellInGrid = g.value.reduce((stock, cell) => {
             return cell || stock ? true : false
         })
         if (!aliveCellInGrid) {
-            console.log(
-                'All cells are dead. Press mouse button to reinit the grid.'
-            )
+            text('All cells are dead. Press mouse button to reinit the grid.')
         }
     }
 
     p5.windowResized = () => {
-        p5.resizeCanvas(window.innerWidth, window.innerHeight)
+        canvasSize = sketchSize()
+        cellSize = {
+            w: canvasSize.w / (1 + g.cols * 2),
+            h: canvasSize.h / (1 + g.rows * 2)
+        }
+        p5.resizeCanvas(canvasSize.w, canvasSize.h)
+    }
+
+    sketch.download_PNG = () => {
+        const date = new Date()
+        const filename =
+            'Cellular-Automata.' +
+            date.getHours() +
+            '.' +
+            date.getMinutes() +
+            '.' +
+            date.getSeconds() +
+            '--copyright_Nicolas_Lebrun_CC-by-3.0'
+        p5.save(canvas, filename, 'png')
     }
 }
 export default sketch

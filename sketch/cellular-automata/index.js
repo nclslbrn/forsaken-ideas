@@ -10,10 +10,7 @@ const loader = document.getElementById('loading')
 
 const P5 = new p5(sketch, containerElement)
 document.body.removeChild(loader)
-
-/*
 window.init = sketch.init
-window.export_PNG = sketch.exportPNG
-*/
+window.download_PNG = sketch.download_PNG
 window.infobox = infobox
 handleAction()
