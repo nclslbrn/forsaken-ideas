@@ -12,7 +12,7 @@ const sketchSize = () => {
 let canvas
 
 const sketch = (p5) => {
-    const g = new AutomataGrid(9, 9)
+    const g = new AutomataGrid(7, 7)
     const mirror = new MirrorShape(g.cols, g.rows)
     let canvasSize, cellSize, palette, colors
     canvasSize = sketchSize()
@@ -20,6 +20,17 @@ const sketch = (p5) => {
         w: canvasSize.w / (1 + g.cols * 2),
         h: canvasSize.h / (1 + g.rows * 2)
     }
+
+    const updateButton = document.createElement('button')
+    updateButton.innerText = 'Update the grid'
+    document.body.appendChild(updateButton)
+    updateButton.addEventListener(
+        'click',
+        (event) => {
+            sketch.update()
+        },
+        false
+    )
 
     const fillCell = (x, y) => {
         mirror.allCorners(x, y).forEach((p) => {
@@ -95,11 +106,6 @@ const sketch = (p5) => {
         canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
         p5.noStroke()
         sketch.init()
-
-        canvas.elt.addEventListener('click', (event) => {
-            event.preventDefault()
-            sketch.update()
-        })
     }
 
     p5.draw = () => {
@@ -155,12 +161,15 @@ const sketch = (p5) => {
     }
 
     sketch.update = () => {
+        console.log('update')
         g.update()
         const aliveCellInGrid = g.value.reduce((stock, cell) => {
             return cell || stock ? true : false
         })
         if (!aliveCellInGrid) {
-            text('All cells are dead. Press mouse button to reinit the grid.')
+            p5.text(
+                'All cells are dead. Press mouse button to reinit the grid.'
+            )
         }
     }
 
