@@ -30,7 +30,6 @@ export default class AutomataGrid {
      * (exact match, not more, not less)
      */
     update(neededAliveNeighboors = 2) {
-        const lastValue = [...this.value]
         const nextValue = []
 
         for (let x = 0; x <= this.cols; x++) {
@@ -41,32 +40,32 @@ export default class AutomataGrid {
                 let aliveAround = 0
 
                 // top
-                if (y > 0 && lastValue[i - 1]) {
+                if (y > 0 && this.value[i - 1]) {
                     aliveAround++
                 }
 
                 // bottom
-                if (y < this.rows && lastValue[i + 1]) {
+                if (y < this.rows && this.value[i + 1]) {
                     aliveAround++
                 }
 
                 // left
-                if (x > 0 && lastValue[i - this.cols]) {
+                if (x > 0 && this.value[i - this.cols]) {
                     aliveAround++
                 }
 
                 // right
-                if (x < this.cols && lastValue[i + this.cols]) {
+                if (x < this.cols && this.value[i + this.cols]) {
                     aliveAround++
                 }
 
                 // top left
-                if (x > 0 && y > 0 && lastValue[i - this.cols - 1]) {
+                if (x > 0 && y > 0 && this.value[i - this.cols - 1]) {
                     aliveAround++
                 }
 
                 // top right
-                if (x < this.cols && y > 0 && lastValue[i + this.cols - 1]) {
+                if (x < this.cols && y > 0 && this.value[i + this.cols - 1]) {
                     aliveAround++
                 }
 
@@ -74,13 +73,13 @@ export default class AutomataGrid {
                 if (
                     x < this.cols &&
                     y < this.rows &&
-                    lastValue[i + this.cols + 1]
+                    this.value[i + this.cols + 1]
                 ) {
                     aliveAround++
                 }
 
                 // bottom left
-                if (x > 0 && y < this.rows && lastValue[i - this.rows + 1]) {
+                if (x > 0 && y < this.rows && this.value[i - this.rows + 1]) {
                     aliveAround++
                 }
 
