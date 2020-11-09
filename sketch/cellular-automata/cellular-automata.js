@@ -110,73 +110,67 @@ const sketch = (p5) => {
 
     p5.draw = () => {
         p5.background(p5.color(palette.background || palette.stroke || 100))
-        // p5.stroke(palette.stroke || 100)
         for (let x = 0; x <= g.cols; x++) {
             for (let y = 0; y <= g.rows; y++) {
                 const i = x * g.cols + y
-                fillCell(x, y)
+                //fillCell(x, y)
 
-                if (g.value[i]) {
-                    p5.fill(colors[i % colors.length])
-                    // top & bottom
-                    if (
-                        y > 0 &&
-                        y < g.rows &&
-                        g.value[i - g.rows] &&
-                        g.value[i + g.rows]
-                    ) {
-                        fillCell(x, y)
-                    }
-                    // left & right
-                    if (
-                        x > 0 &&
-                        x > g.cols &&
-                        g.value[i + g.cols] &&
-                        g.value[i - g.cols]
-                    ) {
-                        fillCell(x, y)
-                    }
-                    if (
-                        x > 0 &&
-                        y > 0 &&
-                        g.value[i - 1] &&
-                        g.value[i - g.cols]
-                    ) {
-                        fillCell(x, y - 1)
-                        fillCell(x - 1, y)
-                        topLeftTriangle(x, y)
-                    }
-                    if (
-                        x < g.cols &&
-                        y > 0 &&
-                        g.value[i - 1] &&
-                        g.value[i + g.cols]
-                    ) {
-                        fillCell(x, y - 1)
-                        fillCell(x + 1, y)
-                        topRightTriangle(x, y)
-                    }
-                    if (
-                        x < g.cols &&
-                        y < g.rows &&
-                        g.value[i + 1] &&
-                        g.value[i + g.cols]
-                    ) {
-                        fillCell(x, y + 1)
-                        fillCell(x + 1, y)
-                        bottomRightTriangle(x, y)
-                    }
-                    if (
-                        x > 0 &&
-                        y < g.rows &&
-                        g.value[i + 1] &&
-                        g.value[i - g.cols]
-                    ) {
-                        fillCell(x, y + 1)
-                        fillCell(x - 1, y)
-                        bottomLeftTriangle(x, y)
-                    }
+                //if (g.value[i]) {
+                p5.fill(colors[i % colors.length])
+                // top & bottom
+                if (
+                    y > 0 &&
+                    y < g.rows &&
+                    g.value[i - g.rows] &&
+                    g.value[i + g.rows]
+                ) {
+                    fillCell(x, y)
                 }
+                // left & right
+                if (
+                    x > 0 &&
+                    x < g.cols &&
+                    g.value[i + g.cols] &&
+                    g.value[i - g.cols]
+                ) {
+                    fillCell(x, y)
+                }
+                if (x > 0 && y > 0 && g.value[i - 1] && g.value[i - g.cols]) {
+                    //fillCell(x, y - 1)
+                    //fillCell(x - 1, y)
+                    topLeftTriangle(x, y)
+                }
+                if (
+                    x < g.cols &&
+                    y > 0 &&
+                    g.value[i - 1] &&
+                    g.value[i + g.cols]
+                ) {
+                    //fillCell(x, y - 1)
+                    //fillCell(x + 1, y)
+                    topRightTriangle(x, y)
+                }
+                if (
+                    x < g.cols &&
+                    y < g.rows &&
+                    g.value[i + 1] &&
+                    g.value[i + g.cols]
+                ) {
+                    //fillCell(x, y + 1)
+                    //fillCell(x + 1, y)
+                    bottomRightTriangle(x, y)
+                }
+                if (
+                    x > 0 &&
+                    y < g.rows &&
+                    g.value[i + 1] &&
+                    g.value[i - g.cols]
+                ) {
+                    //fillCell(x, y + 1)
+                    //fillCell(x - 1, y)
+                    bottomLeftTriangle(x, y)
+                }
+                //}
             }
         }
     }
