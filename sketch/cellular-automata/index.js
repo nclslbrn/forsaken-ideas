@@ -1,6 +1,7 @@
 'use strict'
 import '../../src/sass/project.scss'
 import '../../src/sass/frame-canvas.scss'
+import './cellular-automata.scss'
 import sketch from './cellular-automata'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'

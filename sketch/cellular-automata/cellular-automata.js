@@ -12,7 +12,7 @@ const sketchSize = () => {
 let canvas
 
 const sketch = (p5) => {
-    const g = new AutomataGrid(7, 7)
+    const g = new AutomataGrid(8, 8)
     const mirror = new MirrorShape(g.cols, g.rows)
     let canvasSize, cellSize, palette, colors
     canvasSize = sketchSize()
@@ -20,17 +20,6 @@ const sketch = (p5) => {
         w: canvasSize.w / (1 + g.cols * 2),
         h: canvasSize.h / (1 + g.rows * 2)
     }
-
-    const updateButton = document.createElement('button')
-    updateButton.innerText = 'Update the grid'
-    document.body.appendChild(updateButton)
-    updateButton.addEventListener(
-        'click',
-        (event) => {
-            sketch.update()
-        },
-        false
-    )
 
     const fillCell = (x, y) => {
         mirror.allCorners(x, y).forEach((p) => {
@@ -104,72 +93,101 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
+
+        const updateButton = document.createElement('button')
+        updateButton.innerText = 'Update the grid'
+        document.body.appendChild(updateButton)
+        updateButton.addEventListener(
+            'click',
+            (event) => {
+                sketch.update()
+            },
+            false
+        )
         p5.noStroke()
         sketch.init()
     }
 
     p5.draw = () => {
         p5.background(p5.color(palette.background || palette.stroke || 100))
-
-        for (let x = 0; x < g.cols; x++) {
-            for (let y = 0; y < g.rows; y++) {
+        // p5.stroke(palette.stroke || 100)
+        for (let x = 0; x <= g.cols; x++) {
+            for (let y = 0; y <= g.rows; y++) {
                 const i = x * g.cols + y
+                fillCell(x, y)
 
-                //if (g.value[i]) {
-                p5.fill(colors[i % colors.length])
-                // top & bottom
-                if (
-                    //y > 0 &&
-                    //y < g.rows &&
-                    g.value[i - g.rows] &&
-                    g.value[i + g.rows]
-                ) {
-                    fillCell(x, y)
+                if (g.value[i]) {
+                    p5.fill(colors[i % colors.length])
+                    // top & bottom
+                    if (
+                        y > 0 &&
+                        y < g.rows &&
+                        g.value[i - g.rows] &&
+                        g.value[i + g.rows]
+                    ) {
+                        fillCell(x, y)
+                    }
+                    // left & right
+                    if (
+                        x > 0 &&
+                        x > g.cols &&
+                        g.value[i + g.cols] &&
+                        g.value[i - g.cols]
+                    ) {
+                        fillCell(x, y)
+                    }
+                    if (
+                        x > 0 &&
+                        y > 0 &&
+                        g.value[i - 1] &&
+                        g.value[i - g.cols]
+                    ) {
+                        fillCell(x, y - 1)
+                        fillCell(x - 1, y)
+                        topLeftTriangle(x, y)
+                    }
+                    if (
+                        x < g.cols &&
+                        y > 0 &&
+                        g.value[i - 1] &&
+                        g.value[i + g.cols]
+                    ) {
+                        fillCell(x, y - 1)
+                        fillCell(x + 1, y)
+                        topRightTriangle(x, y)
+                    }
+                    if (
+                        x < g.cols &&
+                        y < g.rows &&
+                        g.value[i + 1] &&
+                        g.value[i + g.cols]
+                    ) {
+                        fillCell(x, y + 1)
+                        fillCell(x + 1, y)
+                        bottomRightTriangle(x, y)
+                    }
+                    if (
+                        x > 0 &&
+                        y < g.rows &&
+                        g.value[i + 1] &&
+                        g.value[i - g.cols]
+                    ) {
+                        fillCell(x, y + 1)
+                        fillCell(x - 1, y)
+                        bottomLeftTriangle(x, y)
+                    }
                 }
-                // left & right
-                if (
-                    //x > 0 &&
-                    //x > g.cols &&
-                    g.value[i + g.cols] &&
-                    g.value[i - g.cols]
-                ) {
-                    fillCell(x, y)
-                }
-                if (g.value[i - 1] && g.value[i - g.cols]) {
-                    fillCell(x, y - 1)
-                    fillCell(x - 1, y)
-                    topLeftTriangle(x, y)
-                }
-                if (g.value[i - 1] && g.value[i + g.cols]) {
-                    fillCell(x, y - 1)
-                    fillCell(x + 1, y)
-                    topRightTriangle(x, y)
-                }
-                if (g.value[i + 1] && g.value[i + g.cols]) {
-                    fillCell(x, y + 1)
-                    fillCell(x + 1, y)
-                    bottomRightTriangle(x, y)
-                }
-                if (g.value[i + 1] && g.value[i - g.cols]) {
-                    fillCell(x, y + 1)
-                    fillCell(x - 1, y)
-                    bottomLeftTriangle(x, y)
-                }
-                //}
             }
         }
     }
 
     sketch.update = () => {
-        console.log('update')
         g.update()
         const aliveCellInGrid = g.value.reduce((stock, cell) => {
             return cell || stock ? true : false
         })
         if (!aliveCellInGrid) {
-            p5.text(
-                'All cells are dead. Press mouse button to reinit the grid.'
-            )
+            sketch.init()
         }
     }
 
