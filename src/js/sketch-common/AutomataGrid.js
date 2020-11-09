@@ -33,8 +33,8 @@ export default class AutomataGrid {
         const lastValue = [...this.value]
         const nextValue = []
 
-        for (let x = 0; x < this.cols; x++) {
-            for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x <= this.cols; x++) {
+            for (let y = 0; y <= this.rows; y++) {
                 // Cell index in the flat array of this.value
                 const i = this.cols * x + y
                 // Alive cell around count
@@ -46,7 +46,7 @@ export default class AutomataGrid {
                 }
 
                 // bottom
-                if (y > this.rows && lastValue[i + 1]) {
+                if (y < this.rows && lastValue[i + 1]) {
                     aliveAround++
                 }
 
