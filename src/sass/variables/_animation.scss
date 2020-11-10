@@ -1,1 +1,3 @@
-$transition: all 0.15s ease-in-out;
+$transition_duration: 0.15s;
+$transition_timing: linear;
+$transition: all $transition_duration $transition_timing;

@@ -36,7 +36,7 @@ aside {
             background-color: $color_body;
             z-index: -1;
             right: 0;
-            box-shadow: $shadows_default;
+            border: 1px solid $color_body;
             transition: $transition;
             //transition: right 0.15s ease-in-out;
         }
@@ -49,15 +49,17 @@ aside {
             line-height: 0.5rem;
             border: 0;
             opacity: 0;
-            transition: all 0.15s ease-in-out;
+            background: $color_body;
+            border: 1px solid $color_body;
+            transition: $transition;
         }
         &:hover::before {
             z-index: -1;
             right: -1em;
-            // background-color: $color_hover;
-            box-shadow: $shadows_hover;
+            border: 1px solid $color_hover;
         }
         &:hover button.button {
+            border: 1px solid $color_hover;
             opacity: 1;
         }
     }
@@ -112,10 +114,7 @@ aside.column.about {
     }
     ul li a {
         padding: 0.5em 0.25em;
-        box-shadow: $shadows_default;
-        transition: $transition;
         &:hover {
-            box-shadow: $shadows_hover;
             text-decoration: underline;
         }
     }

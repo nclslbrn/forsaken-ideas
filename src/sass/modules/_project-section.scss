@@ -31,9 +31,15 @@ section.projects {
 }
 section.projects ul {
     display: flex;
-    flex-flow: row wrap;
+    @include breakpoint(xs) {
+        flex-flow: column;
+    }
+    @include breakpoint(md) {
+        flex-flow: row wrap;
+    }
     margin: 0;
 }
+
 @include breakpoint(md) {
     section.projects ul li {
         flex: 1 0 50%;
@@ -57,23 +63,68 @@ section.projects ul li {
 }
 section.projects ul li a {
     display: block;
+    position: relative;
     padding: 4px;
-    max-width: 90%;
+    @include breakpoint(xs) {
+        max-width: 100%;
+    }
+    @include breakpoint(md) {
+        max-width: 90%;
+    }
     text-transform: capitalize;
     background-color: $color_body;
-    box-shadow: $shadows_default;
     transition: $transition;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        right: 50%;
+        bottom: 50%;
+        background: $color_body;
+        z-index: -1;
+        transition: left $transition_duration $transition_timing,
+            bottom $transition_duration $transition_timing
+                ($transition_duration * 0.5),
+            right $transition_duration $transition_timing
+                ($transition_duration * 1.5),
+            top $transition_duration $transition_timing
+                ($transition_duration * 2);
+    }
+    &:hover::before {
+        background: $color_hover;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+    }
+
     h3,
     small {
+        position: relative;
         margin: 0.25em;
     }
-    &:hover {
-        //background-color: $color_hover;
-        box-shadow: $shadows_hover;
+    h3 {
+        display: inline-block;
+        float: none;
+        clear: both;
+        width: auto;
     }
-    &:hover h3 {
-        color: #666;
-        text-decoration: underline;
+    small {
+        display: block;
+    }
+    h3::after {
+        content: '';
+        display: block;
+        width: 0;
+        height: 1px;
+        background: $color_body;
+        transition: all $transition_duration * 2 $transition_timing;
+    }
+    &:hover h3::after {
+        width: 100%;
+        background: $color_hover;
     }
 }
 div#orderButtons {
@@ -92,28 +143,40 @@ div#orderButtons button {
     padding: 0;
     margin: 0 0.25em;
     transform: translate(0, 4em);
-    border: 0;
+    border: 1px solid $color_body;
+
     background: none;
     cursor: pointer;
     transition: $transition;
 
     span {
-        display: block;
-        padding: 1em 1em 0 0;
-        line-height: 1em;
-        transform: translate(0, 4em);
-        box-shadow: $shadows_default;
-        transition: $transition;
-        z-index: -1;
+        @include breakpoint(xs) {
+            display: none;
+        }
+        @include breakpoint(md) {
+            display: block;
+            padding: 1em 1em 0 0;
+            margin: 0 0 0 0.5em;
+            line-height: 1em;
+            transform: translate(0, 4em);
+            transition: $transition;
+            z-index: -1;
+        }
     }
+
     svg {
         padding: 0.5em;
         width: 2em;
         height: 2em;
-        background-color: $color_body;
+        fill: $color_text;
+        background: $color_body;
+        transition: $transition;
     }
     &:hover {
-        box-shadow: $shadows_hover;
+        border: 1px solid $color_hover;
+    }
+    &.active svg {
+        background: $color_hover;
     }
     &.active span {
         text-decoration: underline;

@@ -1,7 +1,10 @@
 header.headimg {
     position: relative;
     padding-bottom: 50vh;
+    opacity: 1;
     overflow: hidden;
+    transition: all 0.15s ease-in-out;
+
     button.button {
         position: absolute;
         right: 0.5em;
@@ -17,14 +20,14 @@ header.headimg {
         background: $color_body;
         font-weight: 400;
         font-family: sans-serif;
-        box-shadow: $shadows_default;
+        border: 1px solid $color_hover;
+        border-bottom-color: $color_body;
         transition: $transition;
     }
     &:hover {
-        box-shadow: inset $shadows_hover;
+        opacity: 0.95;
     }
     &:hover button.button {
-        box-shadow: $shadows_hover;
         cursor: pointer;
     }
     button.button:hover {
