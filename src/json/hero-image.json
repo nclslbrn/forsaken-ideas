@@ -1,6 +1,22 @@
 [
     {
-        "url": "Double-curve.sinusoidal-sub-maltese_cross.16.57.54--copyright_Nicolas_Lebrun_CC-by-3.0.png",
+        "url": "Polar-curve.astroid.16.41.12--copyright_Nicolas_Lebrun_CC-by-3.0.png",
+        "style": "50%/contain"
+    },
+    {
+        "url": "Polar-curve.folium.16.41.32--copyright_Nicolas_Lebrun_CC-by-3.0.png",
+        "style": "50%/contain"
+    },
+    {
+        "url": "Polar-curve.sech.16.41.0--copyright_Nicolas_Lebrun_CC-by-3.0.png",
+        "style": "50%/contain"
+    },
+    {
+        "url": "Polar-curve.julia.16.43.56--copyright_Nicolas_Lebrun_CC-by-3.0.png",
+        "style": "50%/contain"
+    },
+    {
+        "url": "Polar-curve.julia.16.42.12--copyright_Nicolas_Lebrun_CC-by-3.0.png",
         "style": "50%/contain"
     },
     {
@@ -20,31 +36,11 @@
         "style": "50%/contain"
     },
     {
-        "url": "Clifford-Attractor.2020-7-0_16.24.57--Nicolas_Lebrun.svg",
+        "url": "Noise-landscape.2020-10-2_19.17.50--copyright_Nicolas_Lebrun_CC-by-3.0.png",
         "style": "50%/cover"
     },
     {
-        "url": "Clifford-Attractor.2020-7-0_16.26.37--Nicolas_Lebrun.svg",
-        "style": "50%/cover"
-    },
-    {
-        "url": "Clifford-Attractor.2020-7-0_16.26.28--Nicolas_Lebrun.svg",
-        "style": "50%/cover"
-    },
-    {
-        "url": "Clifford-Attractor.2020-7-0_16.26.18--Nicolas_Lebrun.svg",
-        "style": "50%/cover"
-    },
-    {
-        "url": "Noise-landscape.2020-7-3_11.7.44--copyright_Nicolas_Lebrun_CC-by-3.0.png",
-        "style": "50%/cover"
-    },
-    {
-        "url": "Noise-landscape.2020-7-3_11.10.23--copyright_Nicolas_Lebrun_CC-by-3.0.png",
-        "style": "50%/cover"
-    },
-    {
-        "url": "Moving-light.2020-7-4_16.26.5--copyright_Nicolas_Lebrun_CC-by-3.00.jpg",
+        "url": "Noise-landscape.2020-10-2_19.18.4--copyright_Nicolas_Lebrun_CC-by-3.0.png",
         "style": "50%/cover"
     }
 ]
