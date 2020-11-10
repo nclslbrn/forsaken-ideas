@@ -9,14 +9,14 @@ const sketch = (p5) => {
     let selectedFunc, palette, points, colors, colorsId
 
     const scale = 0.07
-    const alpha = 100
+    const alpha = 50
     const margin = 0.1
     const sample = 3
 
     const funcs = planeCurveFuncs(p5)
     // A4 150dpi width
-    const sketchWidth = 1280
-    const sketchHeight = 1280
+    const sketchWidth = 800
+    const sketchHeight = 800
     const paramBox = document.createElement('div')
     paramBox.id = 'interactiveParameter'
     document.body.appendChild(paramBox)
@@ -119,7 +119,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
-        canvas.elt.setAttribute('style', `max-width: 40vw; max-height: 40vw;`)
+        //canvas.elt.setAttribute('style', `max-width: 40vw; max-height: 40vw;`)
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
