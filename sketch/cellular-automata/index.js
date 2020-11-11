@@ -14,4 +14,5 @@ document.body.removeChild(loader)
 window.init = sketch.init
 // window.download_PNG = sketch.download_PNG
 window.infobox = infobox
+window.downloadSVG = sketch.downloadSVG
 handleAction()
