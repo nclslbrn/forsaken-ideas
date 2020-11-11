@@ -12,7 +12,7 @@ const sketchSize = () => {
 let canvas
 
 const sketch = (p5) => {
-    const g = new AutomataGrid(8, 8)
+    const g = new AutomataGrid(5, 5)
     const mirror = new MirrorShape(g.cols, g.rows)
     let canvasSize, cellSize, palette, colors
     canvasSize = sketchSize()
@@ -20,8 +20,8 @@ const sketch = (p5) => {
         w: canvasSize.w / (1 + g.cols * 2),
         h: canvasSize.h / (1 + g.rows * 2)
     }
-
-    const fillCell = (x, y) => {
+    const fillCell = (x, y, color) => {
+        p5.fill(color)
         mirror.allCorners(x, y).forEach((p) => {
             p5.rect(
                 p[0] * cellSize.w,
@@ -32,7 +32,8 @@ const sketch = (p5) => {
         })
     }
 
-    const topLeftTriangle = (x, y) => {
+    const topLeftTriangle = (x, y, color) => {
+        p5.fill(color)
         mirror.topLeftCorner(x, y).forEach((p) => {
             p5.triangle(
                 p[0] * cellSize.w,
@@ -45,7 +46,8 @@ const sketch = (p5) => {
         })
     }
 
-    const topRightTriangle = (x, y) => {
+    const topRightTriangle = (x, y, color) => {
+        p5.fill(color)
         mirror.topRightCorner(x, y).forEach((p) => {
             p5.triangle(
                 p[0] * cellSize.w,
@@ -58,7 +60,8 @@ const sketch = (p5) => {
         })
     }
 
-    const bottomRightTriangle = (x, y) => {
+    const bottomRightTriangle = (x, y, color) => {
+        p5.fill(color)
         mirror.bottomRightCorner(x, y).forEach((p) => {
             p5.triangle(
                 p[0] * cellSize.w,
@@ -71,7 +74,8 @@ const sketch = (p5) => {
         })
     }
 
-    const bottomLeftTriangle = (x, y) => {
+    const bottomLeftTriangle = (x, y, color) => {
+        p5.fill(color)
         mirror.bottomLeftCorner(x, y).forEach((p) => {
             p5.triangle(
                 p[0] * cellSize.w,
@@ -113,62 +117,35 @@ const sketch = (p5) => {
         for (let x = 0; x <= g.cols; x++) {
             for (let y = 0; y <= g.rows; y++) {
                 const i = x * g.cols + y
-                //fillCell(x, y)
 
                 //if (g.value[i]) {
-                p5.fill(colors[i % colors.length])
                 // top & bottom
-                if (
-                    y > 0 &&
-                    y < g.rows &&
-                    g.value[i - g.rows] &&
-                    g.value[i + g.rows]
-                ) {
-                    fillCell(x, y)
+                if (g.value[i - g.rows] && g.value[i + g.rows]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    fillCell(x, y - 1, colors[i % colors.length])
+                    fillCell(x, y + 1, colors[i % colors.length])
                 }
                 // left & right
-                if (
-                    x > 0 &&
-                    x < g.cols &&
-                    g.value[i + g.cols] &&
-                    g.value[i - g.cols]
-                ) {
-                    fillCell(x, y)
+                if (g.value[i + g.cols] && g.value[i - g.cols]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    fillCell(x - 1, y, colors[i % colors.length])
+                    fillCell(x + 1, y, colors[i % colors.length])
                 }
-                if (x > 0 && y > 0 && g.value[i - 1] && g.value[i - g.cols]) {
-                    //fillCell(x, y - 1)
-                    //fillCell(x - 1, y)
-                    topLeftTriangle(x, y)
+                if (g.value[i - 1] && g.value[i - g.cols]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    bottomRightTriangle(x - 1, y - 1, colors[i % colors.length])
                 }
-                if (
-                    x < g.cols &&
-                    y > 0 &&
-                    g.value[i - 1] &&
-                    g.value[i + g.cols]
-                ) {
-                    //fillCell(x, y - 1)
-                    //fillCell(x + 1, y)
-                    topRightTriangle(x, y)
+                if (g.value[i - 1] && g.value[i + g.cols]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    bottomLeftTriangle(x + 1, y - 1, colors[i % colors.length])
                 }
-                if (
-                    x < g.cols &&
-                    y < g.rows &&
-                    g.value[i + 1] &&
-                    g.value[i + g.cols]
-                ) {
-                    //fillCell(x, y + 1)
-                    //fillCell(x + 1, y)
-                    bottomRightTriangle(x, y)
+                if (g.value[i + 1] && g.value[i + g.cols]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    topLeftTriangle(x + 1, y + 1, colors[i % colors.length])
                 }
-                if (
-                    x > 0 &&
-                    y < g.rows &&
-                    g.value[i + 1] &&
-                    g.value[i - g.cols]
-                ) {
-                    //fillCell(x, y + 1)
-                    //fillCell(x - 1, y)
-                    bottomLeftTriangle(x, y)
+                if (g.value[i + 1] && g.value[i - g.cols]) {
+                    fillCell(x, y, colors[i % colors.length])
+                    topRightTriangle(x - 1, y + 1, colors[i % colors.length])
                 }
                 //}
             }
@@ -195,7 +172,7 @@ const sketch = (p5) => {
     }
 
     sketch.download_PNG = () => {
-        const date = new Date()
+        /* const date = new Date()
         const filename =
             'Cellular-Automata.' +
             date.getHours() +
@@ -204,7 +181,7 @@ const sketch = (p5) => {
             '.' +
             date.getSeconds() +
             '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        p5.save(canvas, filename, 'png')
+        p5.save(canvas, filename, 'png') */
     }
 }
 export default sketch
