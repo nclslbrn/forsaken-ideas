@@ -30,3 +30,14 @@ canvas {
     }
     z-index: -1;
 }
+
+#interactiveParameter {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 1em;
+
+    input,
+    button {
+        margin-bottom: 1em;
+    }
+}
