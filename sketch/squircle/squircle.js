@@ -47,7 +47,7 @@ const squircle = (p5) => {
                 framesPerSecond: framesPerSecond
             })
         }
-        radius = Math.min(p5.width, p5.height) / 6
+        radius = Math.min(p5.width, p5.height) / 8
         const paramBox = document.createElement('form')
         paramBox.id = 'interactiveParameter'
         for (const i in params) {
