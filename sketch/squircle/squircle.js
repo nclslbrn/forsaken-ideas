@@ -2,7 +2,7 @@ import ease from '../../src/js/sketch-common/ease'
 import paramSlider from '../../src/js/sketch-common/param-slider'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
 
-let radiuses = { outer: 0, inner: 0 }
+let radius
 let colors, isRecording
 const framesPerSecond = 24
 const numFrame = 60
@@ -47,8 +47,7 @@ const squircle = (p5) => {
                 framesPerSecond: framesPerSecond
             })
         }
-        radiuses.outer = Math.min(p5.width, p5.height) / 6
-        radiuses.inner = radiuses.outer
+        radius = Math.min(p5.width, p5.height) / 6
         const paramBox = document.createElement('form')
         paramBox.id = 'interactiveParameter'
         for (const i in params) {
@@ -59,14 +58,14 @@ const squircle = (p5) => {
         }
         const exportButton = document.createElement('input')
         exportButton.type = 'submit'
-        exportButton.value = 'Download as a GIF'
+        exportButton.value = isRecording
+            ? 'GIF is processing'
+            : 'Download as a GIF'
         paramBox.appendChild(exportButton)
         document.body.appendChild(paramBox)
         squircle.init()
 
         p5.noFill()
-        //p5.stroke(255, 100)
-        //p5.noStroke()
     }
     p5.draw = () => {
         p5.background(0)
@@ -77,34 +76,31 @@ const squircle = (p5) => {
         for (let i = 0; i < 1; i += params['resolution'].value / 4) {
             const theta1 = Math.PI * 2 * i
             const rR =
-                radiuses.outer *
+                radius *
                 Math.min(
                     1 / Math.abs(Math.cos(theta1)),
                     1 / Math.abs(Math.sin(theta1))
                 )
 
-            const r = p5.lerp(radiuses.outer, rR, ease(tt))
+            const r = p5.lerp(radius, rR, ease(tt))
 
             const x = p5.width / 2 + r * Math.cos(theta1 + rot)
             const y = p5.height / 2 + r * Math.sin(theta1 + rot)
 
-            const colorIndex = Math.round(
-                (1 / params['resolution'].value) * i * 4
-            )
+            const colorIndex = Math.round((1 / params['resolution'].value) * i)
             p5.stroke(colors[colorIndex % colors.length])
             p5.fill(colors[colorIndex % colors.length])
             p5.beginShape()
-            for (let j = 0; j <= 1; j += params['resolution'].value / 4) {
+            for (let j = 0; j < 1; j += params['resolution'].value / 4) {
                 const theta2 = Math.PI * 2 * j
-                const _rR =
-                    radiuses.inner *
-                    Math.min(
-                        1 / Math.abs(Math.cos(theta2)),
-                        1 / Math.abs(Math.sin(theta2))
-                    )
+                const _rR = radius
+                Math.min(
+                    1 / Math.abs(Math.cos(theta2)),
+                    1 / Math.abs(Math.sin(theta2))
+                )
                 const _r = p5.lerp(
-                    radiuses.inner,
-                    _rR,
+                    _rR * 0.5,
+                    radius * 1.15,
                     ease(tt, params['transition'].value)
                 )
                 const _x = x + _r * Math.cos(theta2 + rot)
@@ -119,15 +115,12 @@ const squircle = (p5) => {
         colors = generateHslaColors(
             80,
             60,
-            15,
+            50,
             Math.round(1 / params['resolution'].value)
         ).map((c) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
         p5.strokeWeight(p5.map(params['resolution'].value, 0.1, 0.5, 1.5, 3))
-    }
-    squircle.export_GIF = () => {
-        isRecording != isRecording
     }
 }
 
