@@ -3,9 +3,8 @@ import paramSlider from '../../src/js/sketch-common/param-slider'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
 
 let radiuses = { outer: 0, inner: 0 }
-let colors
+let colors, isRecording
 const framesPerSecond = 24
-const isRecording = false
 const numFrame = 60
 const sketchSize = () => {
     const side = Math.min(window.innerWidth, window.innerHeight)
@@ -14,13 +13,17 @@ const sketchSize = () => {
         h: side > 800 ? 800 : side * 0.85
     }
 }
+
+const urlParams = new URLSearchParams(location.search)
+isRecording = urlParams.get('resolution') && urlParams.get('transition')
+
 const params = {
     transition: {
-        value: 5,
+        value: urlParams.get('transition') || 5,
         options: { min: 1, max: 15, step: 0.1, label: 'Morphing smoothing' }
     },
     resolution: {
-        value: 0.5,
+        value: urlParams.get('resolution') || 0.5,
         options: { min: 0.1, max: 0.5, step: 0.1, label: 'Resolution' }
     }
 }
@@ -46,15 +49,18 @@ const squircle = (p5) => {
         }
         radiuses.outer = Math.min(p5.width, p5.height) / 6
         radiuses.inner = radiuses.outer
-        const paramBox = document.createElement('div')
+        const paramBox = document.createElement('form')
         paramBox.id = 'interactiveParameter'
-        paramBox.style = 'display: flex; flex-flow: column nowrap; margin: 1em;'
         for (const i in params) {
-            const elems = paramSlider(params[i])
+            const elems = paramSlider(params[i], i)
             elems.forEach((elem) => {
                 paramBox.appendChild(elem)
             })
         }
+        const exportButton = document.createElement('input')
+        exportButton.type = 'submit'
+        exportButton.value = 'Download as a GIF'
+        paramBox.appendChild(exportButton)
         document.body.appendChild(paramBox)
         squircle.init()
 
