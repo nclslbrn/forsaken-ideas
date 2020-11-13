@@ -14,7 +14,7 @@
  * If you want to call a function after param change,
  * you have to set a sketch.init function
  */
-const paramSlider = (param) => {
+const paramSlider = (param, paramName = false) => {
     let label = ''
     if (param.options.label) {
         label = document.createElement('label')
@@ -26,6 +26,9 @@ const paramSlider = (param) => {
     slider.max = param.options.max
     slider.step = param.options.step
     slider.value = param.value
+    if (paramName) {
+        slider.name = paramName
+    }
     const value = document.createElement('input')
     value.type = 'text'
     value.value = param.value
