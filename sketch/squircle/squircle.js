@@ -71,7 +71,7 @@ const squircle = (p5) => {
         p5.background(0)
         const t = (p5.frameCount % numFrame) / numFrame
         const tt = t <= 0.5 ? t + t : 2 - (t + t)
-        const rot = 2 * Math.PI * ease(t * t, params['transition'].value)
+        const rot = 2 * Math.PI * ease(1 - t * t, params['transition'].value)
 
         for (let i = 0; i < 1; i += params['resolution'].value / 4) {
             const theta1 = Math.PI * 2 * i
@@ -82,7 +82,7 @@ const squircle = (p5) => {
                     1 / Math.abs(Math.sin(theta1))
                 )
 
-            const r = p5.lerp(radius, rR, ease(tt))
+            const r = p5.lerp(radius, rR, ease(tt, params['transition'].value))
 
             const x = p5.width / 2 + r * Math.cos(theta1 + rot)
             const y = p5.height / 2 + r * Math.sin(theta1 + rot)
@@ -98,11 +98,7 @@ const squircle = (p5) => {
                     1 / Math.abs(Math.cos(theta2)),
                     1 / Math.abs(Math.sin(theta2))
                 )
-                const _r = p5.lerp(
-                    _rR * 0.5,
-                    radius * 1.15,
-                    ease(tt, params['transition'].value)
-                )
+                const _r = p5.lerp(radius, _rR / 2, ease(tt))
                 const _x = x + _r * Math.cos(theta2 + rot)
                 const _y = y + _r * Math.sin(theta2 + rot)
 
