@@ -25,6 +25,9 @@ aside {
             min-height: 2em;
             z-index: 2;
         }
+        &:hover #acronym {
+            color: $color_hover;
+        }
         &::before {
             content: '';
             display: block;
@@ -49,7 +52,8 @@ aside {
             line-height: 0.5rem;
             border: 0;
             opacity: 0;
-            background: $color_body;
+            background: $color_hover;
+            color: $color_body;
             border: 1px solid $color_body;
             transition: $transition;
         }
