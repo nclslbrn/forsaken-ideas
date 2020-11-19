@@ -1,8 +1,9 @@
 header.headimg {
     position: relative;
-    padding-bottom: 50vh;
+    padding-bottom: 27%;
     opacity: 1;
     overflow: hidden;
+    box-shadow: inset 0 -1px 1px transparentize($color_text, 0.75);
     transition: all 0.15s ease-in-out;
 
     button.button {
@@ -20,7 +21,7 @@ header.headimg {
         background: $color_body;
         font-weight: 400;
         font-family: sans-serif;
-        border: 1px solid $color_hover;
+        box-shadow: 0 -1px 1px transparentize($color_text, 0.75);
         border-bottom-color: $color_body;
         transition: $transition;
     }
@@ -29,6 +30,7 @@ header.headimg {
     }
     &:hover button.button {
         cursor: pointer;
+        color: $color_hover;
     }
     button.button:hover {
         text-decoration: underline;

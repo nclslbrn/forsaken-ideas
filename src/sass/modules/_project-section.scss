@@ -64,7 +64,7 @@ section.projects ul li {
 section.projects ul li a {
     display: block;
     position: relative;
-    padding: 4px;
+    //padding: 4px;
     @include breakpoint(xs) {
         max-width: 100%;
     }
@@ -74,31 +74,6 @@ section.projects ul li a {
     text-transform: capitalize;
     background-color: $color_body;
     transition: $transition;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        right: 50%;
-        bottom: 50%;
-        background: $color_body;
-        z-index: -1;
-        transition: left $transition_duration $transition_timing,
-            bottom $transition_duration $transition_timing
-                ($transition_duration * 0.5),
-            right $transition_duration $transition_timing
-                ($transition_duration * 1.5),
-            top $transition_duration $transition_timing
-                ($transition_duration * 2);
-    }
-    &:hover::before {
-        background: $color_hover;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-    }
 
     h3,
     small {
@@ -111,6 +86,9 @@ section.projects ul li a {
         clear: both;
         width: auto;
     }
+    &:hover {
+        color: $color_hover;
+    }
     small {
         display: block;
     }
@@ -118,9 +96,9 @@ section.projects ul li a {
         content: '';
         display: block;
         width: 0;
-        height: 1px;
+        height: 2px;
         background: $color_body;
-        transition: all $transition_duration * 2 $transition_timing;
+        transition: width $transition_duration $transition_timing;
     }
     &:hover h3::after {
         width: 100%;
@@ -157,9 +135,12 @@ div#orderButtons button {
             display: block;
             padding: 1em 1em 0 0;
             margin: 0 0 0 0.5em;
-            line-height: 1em;
+            font-size: 0.8em;
+            line-height: 2em;
             transform: translate(0, 4em);
             transition: $transition;
+            text-decoration: underline;
+            text-transform: uppercase;
             z-index: -1;
         }
     }
@@ -177,12 +158,12 @@ div#orderButtons button {
     }
     &.active svg {
         background: $color_hover;
+        fill: $color_body;
     }
-    &.active span {
-        text-decoration: underline;
-    }
+
     &.active span,
     &:hover span {
+        color: $color_hover;
         transform: translate(0, 0);
     }
 }
