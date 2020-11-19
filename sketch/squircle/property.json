@@ -1,6 +1,6 @@
 {
     "libs": ["p5", "p5.createloop"],
-    "info": "A squircle is a shape interpolation between a square and a circle.The squircle is obtained by drawing a circle and changing its radius using the formula below. <br> min(1/abs(cos(theta)),1/abs(sin(theta))))",
+    "info": "A squircle is a shape interpolation between a square and a circle.The squircle is obtained by drawing a circle and changing its radius using the formula below. <br><br> min(1/abs(cos(theta)),1/abs(sin(theta))))",
     "date": "2020-11-13",
     "action": []
 }
