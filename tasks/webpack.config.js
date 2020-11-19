@@ -1,6 +1,8 @@
 const path = require('path')
 const sketchConfig = require('./sketchConfig')
 const unescapeTitle = require('./unescapeTitle')
+const fileList = require('./fileList')
+const projects = fileList(path.resolve('sketch/'))
 
 module.exports = (env, process) => {
     const project = process.entry[0]
@@ -15,6 +17,21 @@ module.exports = (env, process) => {
     console.log('<', output)
 
     const property = require(project + '/property.json')
+    const current = projects.indexOf(folder)
+    const prevProject = current > 0 ? projects[current - 1] : false
+    const nextProject =
+        current < projects.length - 1 ? projects[current + 1] : false
+
+    console.log(projects, project + ' = ' + current, prevProject, nextProject)
+
+    property.previous = {
+        title: prevProject ? unescapeTitle(prevProject) : false,
+        link: prevProject ? `../${prevProject}/` : false
+    }
+    property.next = {
+        title: nextProject ? unescapeTitle(nextProject) : false,
+        link: nextProject ? `../${nextProject}/` : false
+    }
     const mode = process.mode == 'production' ? 'production' : 'development'
 
     if (project && entry && property && title && mode) {

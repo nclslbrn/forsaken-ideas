@@ -27,9 +27,24 @@ mixin iconav(property)
                                     else
                                         use(xlink:href="#icon-settings")
 
-
             li
                 a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ folder title="CODE")
                     span.screen-reader-text Code
                     svg.icon.icon-forward
                         use(xlink:href="#icon-repo")
+
+            if property.previous.link && property.previous.title
+                li 
+                    a(href=property.previous.link title=property.previous.title)
+                        span.screen-reader-text Previous
+                        svg.icon.icon-chevron-left
+                            use(xlink:href="#icon-chevron-left")
+
+            if property.next.link && property.next.title
+                li 
+                    a(href=property.next.link title=property.next.title)
+                        span.screen-reader-text Next
+                        svg.icon.icon-chevron-right
+                            use(xlink:href="#icon-chevron-right")
+            
+
