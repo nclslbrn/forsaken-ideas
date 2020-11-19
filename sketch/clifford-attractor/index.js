@@ -7,11 +7,11 @@ import exportSVG from '../../src/js/sketch-common/exportSVG'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
-const containerElement = document.body
+const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, containerElement)
-document.body.removeChild(loader)
+const P5 = new p5(sketch, windowFrame)
+windowFrame.removeChild(loader)
 
 const downloadSVG = () => {
     if (

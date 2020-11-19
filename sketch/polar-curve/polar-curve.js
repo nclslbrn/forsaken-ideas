@@ -17,9 +17,10 @@ const sketch = (p5) => {
     // A4 150dpi width
     const sketchWidth = 800
     const sketchHeight = 800
+    const windowFrame = document.getElementById('windowFrame')
     const paramBox = document.createElement('div')
     paramBox.id = 'interactiveParameter'
-    document.body.appendChild(paramBox)
+    windowFrame.appendChild(paramBox)
     const colorBlocks = document.createElement('div')
     colorBlocks.id = 'colorBlocks'
     const paletteNameElem = document.createElement('p')

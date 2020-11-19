@@ -31,7 +31,7 @@ const sketch = (p5) => {
             }
             funcSelector.appendChild(funcOption)
         })
-        document.body.appendChild(funcSelector)
+        document.getElementById('windowFrame').appendChild(funcSelector)
         // change selected function when user change it
         funcSelector.addEventListener('change', (event) => {
             sketch.init_pos()

@@ -2,7 +2,7 @@ import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import joinVector from './joinVector'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
-
+const container = document.getElementById('windowFrame')
 const sketch = (p5) => {
     const n = 2
     const x1 = -3
@@ -92,7 +92,7 @@ const sketch = (p5) => {
         step = (p5.sqrt(n) * (x2 - x1)) / (p5.width * 0.8)
         cartel = document.createElement('div')
         cartel.id = 'cartel'
-        document.body.appendChild(cartel)
+        container.appendChild(cartel)
         init_sketch()
     }
     p5.draw = () => {

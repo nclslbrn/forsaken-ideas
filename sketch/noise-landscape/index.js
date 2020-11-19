@@ -6,11 +6,11 @@ import sketch from './noise-landscape'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
-const containerElement = document.body
+const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
 const P5 = new p5(sketch, containerElement)
-document.body.removeChild(loader)
+containerElement.removeChild(loader)
 
 window.init = sketch.init
 window.export_PNG = sketch.exportPNG
