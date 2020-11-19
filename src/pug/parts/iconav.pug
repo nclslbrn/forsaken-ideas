@@ -3,17 +3,17 @@ mixin iconav(property)
     nav#iconav
         ul
             li
-                a(href="../../" title="HOME") 
-                    span.screen-reader-text Back
-                    svg.icon.icon-home
-                        use(xlink:href="#icon-home")
-            li
-                a(href="#" data-action="infobox" title="INFO")
+                a(href="#" data-action="openOffWindowBar" title="INFO")
                     span.screen-reader-text Info
                     svg.icon.icon-info
                         use(xlink:href="#icon-info")
 
-
+            li
+                a(href="../../" title="HOME") 
+                    span.screen-reader-text Back
+                    svg.icon.icon-home
+                        use(xlink:href="#icon-home")
+            
 
             if property.action != null
                 each action in property.action
@@ -26,25 +26,3 @@ mixin iconav(property)
                                         use(xlink:href="#icon-"+ action.icon)
                                     else
                                         use(xlink:href="#icon-settings")
-
-            li
-                a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ folder title="CODE")
-                    span.screen-reader-text Code
-                    svg.icon.icon-forward
-                        use(xlink:href="#icon-repo")
-
-            if property.previous.link && property.previous.title
-                li 
-                    a(href=property.previous.link title=property.previous.title)
-                        span.screen-reader-text Previous
-                        svg.icon.icon-chevron-left
-                            use(xlink:href="#icon-chevron-left")
-
-            if property.next.link && property.next.title
-                li 
-                    a(href=property.next.link title=property.next.title)
-                        span.screen-reader-text Next
-                        svg.icon.icon-chevron-right
-                            use(xlink:href="#icon-chevron-right")
-            
-

@@ -1,6 +1,5 @@
 section.projects {
     display: block;
-    float: right;
     @include breakpoint(xs) {
         margin-top: 1.5rem;
         width: 100%;
@@ -26,9 +25,6 @@ section.projects {
     }
 }
 
-section.projects {
-    padding-top: 0.5em;
-}
 section.projects ul {
     display: flex;
     @include breakpoint(xs) {
@@ -40,31 +36,28 @@ section.projects ul {
     margin: 0;
 }
 
-@include breakpoint(md) {
-    section.projects ul li {
+section.projects ul li {
+    text-align: left;
+    @include breakpoint(md) {
         flex: 1 0 50%;
         max-width: 50%;
+        text-align: right;
     }
-}
-@include breakpoint(lg) {
-    section.projects ul li {
+    @include breakpoint(lg) {
         flex: 1 0 33%;
         max-width: 33%;
     }
-}
-@include breakpoint(lg) {
-    section.projects ul li {
+    @include breakpoint(lg) {
         flex: 1 0 25%;
         max-width: 25%;
     }
 }
 section.projects ul li {
-    padding: 0.5em 0;
+    padding: 0 0 1em 0;
 }
 section.projects ul li a {
     display: block;
     position: relative;
-    //padding: 4px;
     @include breakpoint(xs) {
         max-width: 100%;
     }
@@ -103,79 +96,5 @@ section.projects ul li a {
     &:hover h3::after {
         width: 100%;
         background: $color_hover;
-    }
-}
-div#orderButtons {
-    display: block;
-    padding: 1em 0 0 0;
-    margin: 0 3em 0 0;
-    height: 3em;
-    max-height: 3em;
-    line-height: 0;
-    text-align: center;
-    overflow-y: hidden;
-}
-div#orderButtons button {
-    display: inline-flex;
-    position: relative;
-    padding: 0;
-    margin: 0 0.25em;
-    transform: translate(0, 4em);
-    border: 1px solid $color_body;
-
-    background: none;
-    cursor: pointer;
-    transition: $transition;
-
-    span {
-        @include breakpoint(xs) {
-            display: none;
-        }
-        @include breakpoint(md) {
-            display: block;
-            padding: 1em 1em 0 0;
-            margin: 0 0 0 0.5em;
-            font-size: 0.8em;
-            line-height: 2em;
-            transform: translate(0, 4em);
-            transition: $transition;
-            text-decoration: underline;
-            text-transform: uppercase;
-            z-index: -1;
-        }
-    }
-
-    svg {
-        padding: 0.5em;
-        width: 2em;
-        height: 2em;
-        fill: $color_text;
-        background: $color_body;
-        transition: $transition;
-    }
-    &:hover {
-        border: 1px solid $color_hover;
-    }
-    &.active svg {
-        background: $color_hover;
-        fill: $color_body;
-    }
-
-    &.active span,
-    &:hover span {
-        color: $color_hover;
-        transform: translate(0, 0);
-    }
-}
-div#orderButtons button svg,
-div#orderButtons button span {
-    position: static;
-    z-index: 2;
-}
-
-section.projects:hover,
-section.projects:focus {
-    div#orderButtons button {
-        transform: translate(0, 0);
     }
 }

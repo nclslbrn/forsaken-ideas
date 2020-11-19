@@ -16,17 +16,14 @@ html(lang="en")
 body.project
     include parts/svg-defs.pug
     include parts/offFrame.pug
-    //include parts/iconav.pug
-    //+iconav(property)
+    include parts/iconav.pug
 
     +offFrame(title, property)
-    button(data-action="openOffWindowBar")
-        svg.icon.icon-chevron-left
-            use(xlink:href="#icon-chevron-left")
-
+    +iconav(property)   
     div#windowFrame
 
         include parts/spinner.pug
+    
     //include parts/infobox.pug
 
     //+infobox(title, property)

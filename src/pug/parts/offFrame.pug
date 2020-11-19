@@ -8,12 +8,7 @@ mixin offFrame(title, property)
                 span #{property.date}
                 
             p.description !{property.info}
-
-            
-            a(href="../../" title="HOME") 
-                svg.icon.icon-home
-                    use(xlink:href="#icon-home")
-                span Back to list
+                
             if property.path 
                 a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ property.path title="CODE")
                     svg.icon.icon-forward

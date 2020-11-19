@@ -9,7 +9,6 @@ main {
     padding: 2em 3em 0 3em;
 }
 
-aside,
 section.projects {
     ul {
         margin-left: 0;
@@ -21,10 +20,19 @@ section.projects {
         }
         list-style-type: none;
         max-width: 100%;
-
-        a {
-            text-decoration: none;
-            color: $color_text;
-        }
+    }
+}
+section.projects ul a,
+aside ul a {
+    text-decoration: none;
+    color: $color_text;
+}
+@include breakpoint(md) {
+    aside.column.info,
+    aside.column.about {
+        float: right;
+    }
+    section.projects {
+        float: left;
     }
 }

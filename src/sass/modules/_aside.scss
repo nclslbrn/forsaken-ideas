@@ -1,7 +1,9 @@
 aside {
     @include breakpoint(md) {
-        * {
-            padding-right: 6rem;
+        box-shadow: inset 1px 0 transparentize($color_text, 0.5);
+        > *,
+        ul {
+            padding: 0 0 0 2em;
         }
     }
     h1 {
@@ -10,14 +12,9 @@ aside {
     .acronym-block {
         display: block;
         position: relative;
-        padding: 0 3rem 0 0;
         margin-right: 1.5em;
         margin-bottom: 1.5rem;
         cursor: pointer;
-
-        * {
-            padding: 0;
-        }
         #acronym {
             position: static;
             text-transform: capitalize;
@@ -95,20 +92,15 @@ aside {
 
 aside.column.about {
     position: relative;
-    @include breakpoint(xs) {
-        clear: both;
-        float: none;
-        border-top: 1px solid $color_text;
-        padding-top: 4em;
-    }
-    @include breakpoint(sm) {
-        clear: left;
-        float: left;
-        border-top: none;
-    }
+
     ul {
         position: relative;
         max-width: 100%;
+        padding: 0;
+        @include breakpoint(md) {
+            padding: 0 0 0 2em;
+        }
+
         li {
             display: block;
             float: left;
