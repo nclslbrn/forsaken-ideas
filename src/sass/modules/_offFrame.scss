@@ -1,0 +1,64 @@
+body {
+    overflow: hidden;
+    button[data-action='openOffWindowBar'] {
+        position: absolute;
+        top: 1em;
+        left: 2rem;
+        z-index: 999;
+        svg {
+            width: 1em;
+            height: 1em;
+        }
+        transform: translate(0, 0);
+        transition: transform 0.25s ease-in-out;
+    }
+    #windowFrame {
+        width: 100vw;
+        transition: transform 0.25s ease-in-out;
+    }
+    #offWindowBar {
+        position: absolute;
+        width: 20vw;
+        max-width: 20vw;
+        height: 100vh;
+        background: $color_hover;
+        z-index: 2;
+        transform: translate(-20vw, 0);
+        transition: transform 0.15s ease-in-out;
+    }
+    &.openedOffWindow {
+        button[data-action='openOffWindowBar'] {
+            transform: translate(20vw, 0);
+        }
+        #windowFrame {
+            transform: perspective(600px) translate(20vw, 0) rotateY(-5deg)
+                scale(1.1, 1.1);
+        }
+        #offWindowBar {
+            transform: translate(0, 0);
+        }
+    }
+}
+
+#offWindowBar > div {
+    padding: 3em;
+}
+
+#offWindowBar .date,
+#offWindowBar a {
+    svg {
+        width: 1em;
+        height: 1em;
+        margin-right: 0.25em;
+    }
+}
+#offWindowBar a {
+    color: inherit;
+}
+#offWindowBar p.description {
+    font-size: 1.2em;
+}
+#offWindowBar > div > a {
+    display: block;
+    margin: 0 0 1em 0;
+}

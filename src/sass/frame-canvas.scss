@@ -1,13 +1,14 @@
 @import 'variables';
 @import 'mixins';
 
-body {
+#windowFrame {
     position: relative;
     display: flex;
     flex-flow: column nowrap;
     @include breakpoint(md) {
         flex-flow: row nowrap;
     }
+    width: 100vw;
     height: 100vh;
     margin: 0;
     align-items: center;
@@ -28,7 +29,7 @@ canvas {
         background: linear-gradient(to bottom, #222, #000);
         box-shadow: -15px 15px 15px rgba(0, 0, 0, 0.15);
     }
-    z-index: -1;
+    //z-index: -1;
 }
 
 #interactiveParameter {

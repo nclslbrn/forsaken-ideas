@@ -1,0 +1,36 @@
+mixin offFrame(title, property)
+    #offWindowBar
+        div
+            h1 #{title}
+            .date 
+                svg.icon.icon-calendar
+                    use(xlink:href="#icon-calendar")
+                span #{property.date}
+                
+            p.description !{property.info}
+
+            
+            a(href="../../" title="HOME") 
+                svg.icon.icon-home
+                    use(xlink:href="#icon-home")
+                span Back to list
+            if property.path 
+                a(href="https://github.com/nclslbrn/make/tree/master/sketch/"+ property.path title="CODE")
+                    svg.icon.icon-forward
+                        use(xlink:href="#icon-repo") 
+                    span Get the code
+
+            if property.previous.link && property.previous.title
+                
+                a(href=property.previous.link title=property.previous.title)
+                    svg.icon.icon-chevron-left
+                        use(xlink:href="#icon-chevron-left")
+                    span #{property.previous.title}
+                    
+
+            if property.next.link && property.next.title
+
+                a(href=property.next.link title=property.next.title)
+                    svg.icon.icon-chevron-right
+                        use(xlink:href="#icon-chevron-right")
+                    span #{property.next.title}

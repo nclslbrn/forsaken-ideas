@@ -1,17 +1,20 @@
 const handleAction = (possibles_action) => {
-
+    window['openOffWindowBar'] = () => {
+        document.body.classList.toggle('openedOffWindow')
+    }
     const buttons = document.querySelectorAll('[data-action]')
 
-    if (typeof (buttons) != 'undefined') {
+    if (typeof buttons != 'undefined') {
         for (let b = 0; b < buttons.length; b++) {
-
             const action = buttons[b].getAttribute('data-action')
-            buttons[b].addEventListener('click', function (event) {
-
-                const calledFunction = window[action]
-                calledFunction()
-
-            }, false)
+            buttons[b].addEventListener(
+                'click',
+                function (event) {
+                    const calledFunction = window[action]
+                    calledFunction()
+                },
+                false
+            )
         }
     }
 }

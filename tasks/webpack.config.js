@@ -32,6 +32,7 @@ module.exports = (env, process) => {
         title: nextProject ? unescapeTitle(nextProject) : false,
         link: nextProject ? `../${nextProject}/` : false
     }
+    property.path = folder
     const mode = process.mode == 'production' ? 'production' : 'development'
 
     if (project && entry && property && title && mode) {

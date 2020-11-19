@@ -24,6 +24,7 @@ for (let p = 0; p < projects.length; p++) {
     ))
     property.next = next
     property.previous = previous
+    property.path = projects[p]
 
     const title = unescapeTitle(projects[p])
     const output = path.resolve('public/sketch', projects[p])

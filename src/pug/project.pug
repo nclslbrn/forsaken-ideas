@@ -13,12 +13,22 @@ doctype html
 html(lang="en")
     include parts/head.pug
     +head(title, srcPath)
-body
+body.project
     include parts/svg-defs.pug
-    include parts/iconav.pug
-    +iconav(property)
-    include parts/spinner.pug
-    include parts/infobox.pug
-    +infobox(title, property)
+    include parts/offFrame.pug
+    //include parts/iconav.pug
+    //+iconav(property)
+
+    +offFrame(title, property)
+    button(data-action="openOffWindowBar")
+        svg.icon.icon-chevron-left
+            use(xlink:href="#icon-chevron-left")
+
+    div#windowFrame
+
+        include parts/spinner.pug
+    //include parts/infobox.pug
+
+    //+infobox(title, property)
     include parts/libs.pug
     +libs(property)

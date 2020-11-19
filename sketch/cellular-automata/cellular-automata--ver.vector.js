@@ -97,7 +97,8 @@ mainSVG.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
 mainSVG.setAttribute('width', svgFrameSize.w)
 mainSVG.setAttribute('height', svgFrameSize.h)
 svgContainer.appendChild(mainSVG)
-document.body.appendChild(svgContainer)
+const windowFrame = document.getElementById('windowFrame')
+windowFrame.appendChild(svgContainer)
 // Setup automata
 
 const g = new AutomataGrid(5, 5)
@@ -130,7 +131,7 @@ colorButton.addEventListener(
     },
     false
 )
-document.body.appendChild(paramBox)
+windowFrame.appendChild(paramBox)
 
 const print = () => {
     mainSVG.childNodes.forEach((child) => child.remove())

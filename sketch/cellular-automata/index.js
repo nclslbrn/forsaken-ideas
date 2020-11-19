@@ -6,11 +6,11 @@ import sketch from './cellular-automata--ver.vector'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
-const containerElement = document.body
+const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 // const P5 = new p5(sketch, containerElement)
 sketch.init()
-document.body.removeChild(loader)
+windowFrame.removeChild(loader)
 window.init = sketch.init
 // window.download_PNG = sketch.download_PNG
 window.infobox = infobox
