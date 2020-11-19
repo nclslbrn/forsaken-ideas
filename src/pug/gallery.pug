@@ -38,28 +38,13 @@ html(lang="en")
 
           each project in projects
         
-            li(
-                data-date=project.date,
-                data-path=project.name,
-                data-name=unescapeTitle(project.name)
-              )
-
+            li
               a(
                 href="./sketch/" + project.name,
               ) 
                 h3 #{unescapeTitle(project.name)}
                 small #{project.date}
         
-        #orderButtons
-          button.active(data-order='name')
-            svg.icon.icon-sort-alphabetically
-              use(xlink:href="#icon-sort-alphabetically")
-            span Order by name
-          
-          button(data-order='date')
-            svg.icon.icon-sort-numerically
-              use(xlink:href="#icon-sort-numerically")
-            span Order by date
         
       aside.column.about
         ul
