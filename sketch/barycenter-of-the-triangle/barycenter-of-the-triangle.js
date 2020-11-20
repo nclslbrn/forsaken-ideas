@@ -43,7 +43,7 @@ const sketch = (p5) => {
                     grid.outerYMargin + grid.cellWidth / 2 + y * grid.cellWidth
 
                 for (let t = 0; t < numTrianglePerCircle; t++) {
-                    const points = getRandomPoints(_x, _y, grid.cellWidth / 2)
+                    const points = getRandomPoints(_x, _y, grid.cellWidth / 3)
 
                     const color = p5.int(p5.random(1) * colors.length)
 
