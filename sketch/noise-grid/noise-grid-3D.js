@@ -5,7 +5,7 @@ import { makeNoise3D } from 'open-simplex-noise'
 
 const recording = true
 const numFrame = 60
-const numLayer = 30
+const numLayer = 15
 const noiseThreshold = 0.35
 const gifOptions = {
     quality: 10,
@@ -25,7 +25,7 @@ const sketch = (p5) => {
      * grid with noise value
      */
     sketch.init = () => {
-        size = p5.floor(p5.random(6, 8)) * 8
+        size = p5.floor(p5.random(6, 8)) * 12
         width = 800
         height = 800
         hSize = height / numLayer

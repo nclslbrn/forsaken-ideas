@@ -3,9 +3,9 @@ import Layer from './Layer'
 import { makeNoise3D } from 'open-simplex-noise'
 
 const recording = false
-const numFrame = 60
-const numLayer = 100
-const noiseThreshold = 0.35
+const numFrame = 360
+const numLayer = 80
+const noiseThreshold = 0.45
 const gifOptions = {
     quality: 10,
     render: true,
@@ -31,7 +31,7 @@ const sketch = (p5) => {
      * grid with noise value
      */
     sketch.init = () => {
-        size = 8 * p5.floor(p5.random(4, 8))
+        size = 16 * p5.floor(p5.random(4, 8))
         sketchDim = sketchSize()
         cols = p5.floor(sketchDim.w / size)
         rows = p5.floor(sketchDim.h / size)
@@ -61,7 +61,7 @@ const sketch = (p5) => {
 
     p5.draw = () => {
         const t = (p5.frameCount % numFrame) / numFrame
-        const tt = (t < 0.5 ? t : 1 - t) * 2
+        // const tt = (t < 0.5 ? t : 1 - t) * 2
         p5.background(15)
         p5.push()
         p5.translate(
@@ -69,13 +69,13 @@ const sketch = (p5) => {
             p5.height * 0.5 - depthStep,
             -p5.height * 0.5
         )
-        //p5.rotateX(p5.QUARTER_PI)
+        // p5.rotateX(p5.QUARTER_PI)
         p5.rotateX(p5.HALF_PI)
 
         for (let i = 0; i < layers.length; i++) {
             layers[i].depth++
             if (layers[i].depth >= numLayer) {
-                layers[i] = new Layer(cols, rows, 1, t + i)
+                layers[i] = new Layer(cols, rows, 1, i)
             } else {
                 layers[i].computePoints(t + i)
             }
