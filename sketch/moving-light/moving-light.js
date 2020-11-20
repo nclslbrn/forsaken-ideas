@@ -2,12 +2,12 @@ let canvas = null
 
 const sketch = (p5) => {
     let roads = []
-    const roadNum = 256
+    const roadNum = 32
     const numFrames = 40
     const initRoad = (x = false, y = false) => {
         return {
             x: x ? x : p5.random(p5.width) - p5.width / 2,
-            y: y ? y : p5.random(p5.height) - p5.width / 2,
+            y: y ? y : p5.random(p5.height) - p5.height / 2,
             direction: Math.floor(Math.random() * 4) + 1,
             size: Math.random() * (p5.width / 8),
             particeSize: Math.random() * 4 + 0.5
@@ -56,7 +56,12 @@ const sketch = (p5) => {
         const offRoads = []
         const newRoads = []
         p5.push()
-        p5.translate(0, (p5.width - p5.height) / 2)
+        p5.translate(
+            0,
+            p5.width > p5.height
+                ? (-p5.height * 2) / p5.width
+                : (-p5.width * 2) / p5.height
+        )
         p5.rotateX(p5.PI / 3.5)
 
         for (let i = 0; i < roads.length; i++) {
