@@ -5,51 +5,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "watch this sketch (current Vscode Tab)",
+            "label": "watch this sketch",
             "type": "npm",
             "script": "watch-sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "export this sketch (current Vscode Tab)",
+            "label": "export this sketch",
             "type": "npm",
             "script": "export-sketch ${fileDirname}",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "export all sketches",
-            "type": "npm",
-            "script": "export-all-sketches",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "clean exported sketches",
-            "type": "npm",
-            "script": "clean-exports",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "export gallery",
-            "type": "npm",
-            "script": "export-gallery",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "watch gallery",
-            "type": "npm",
-            "script": "watch-gallery",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "Send it online",
-            "type": "npm",
-            "script": "deploy",
             "group": "build",
             "problemMatcher": []
         }
