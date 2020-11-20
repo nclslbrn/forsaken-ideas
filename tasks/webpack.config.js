@@ -22,8 +22,6 @@ module.exports = (env, process) => {
     const nextProject =
         current < projects.length - 1 ? projects[current + 1] : false
 
-    console.log(projects, project + ' = ' + current, prevProject, nextProject)
-
     property.previous = {
         title: prevProject ? unescapeTitle(prevProject) : false,
         link: prevProject ? `../${prevProject}/` : false

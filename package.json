@@ -4,16 +4,15 @@
     "description": "A tool to write p5js sketch",
     "main": "index.js",
     "scripts": {
-        "watch-sketch": "webpack serve --config tasks/webpack.config.js --entry",
-        "export-sketch": "webpack --mode production --config tasks/webpack.config.js --entry",
-        "clean-exports": "node tasks/node-clean.js",
-        "export-all-sketches": "webpack --mode production --config tasks/webpack.export-all.js",
-        "watch-gallery": "webpack serve --config tasks/webpack.gallery.js",
-        "export-gallery": "webpack --mode production --config tasks/webpack.gallery.js --entry ./src/js/gallery.js",
-        "export-all": "npm run clean-exports && npm run export-all-sketches && npm run export-gallery",
+        "watch:sketch": "webpack serve --config tasks/webpack.config.js --entry",
+        "build:sketch": "webpack --mode production --config tasks/webpack.config.js --entry",
+        "build:clean": "node tasks/node-clean.js",
+        "build:sketches": "webpack --mode production --config tasks/webpack.export-all.js",
+        "watch:gallery": "webpack serve --config tasks/webpack.gallery.js",
+        "build:gallery": "webpack --mode production --config tasks/webpack.gallery.js --entry ./src/js/gallery.js",
+        "build": "npm run build:clean && npm run build:sketches && npm run build:gallery",
         "primer": "node tasks/primer",
-        "deploy": "node tasks/node-deploy",
-        "build": "npm run clean-exports && npm run export-all-sketches && npm run export-gallery"
+        "deploy": "node tasks/node-deploy"
     },
     "keywords": [
         "p5js",

@@ -7,14 +7,14 @@
         {
             "label": "watch this sketch",
             "type": "npm",
-            "script": "watch-sketch ${fileDirname}",
+            "script": "watch:sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "export this sketch",
             "type": "npm",
-            "script": "export-sketch ${fileDirname}",
+            "script": "build:sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         }
