@@ -20,14 +20,23 @@ canvas {
     position: static;
     display: block;
     @include breakpoint(xs) {
-        padding: 0;
-        background: transparent;
-        box-shadow: 0 4px 2px rgba(0, 0, 0, 0.15);
+        padding: 4px;
+        background: linear-gradient(to bottom, #222, #000);
+        box-shadow: 0 7px 21px #dadada;
     }
     @include breakpoint(md) {
         padding: 20px;
         background: linear-gradient(to bottom, #222, #000);
         box-shadow: -15px 15px 15px rgba(0, 0, 0, 0.15);
+    }
+    svg {
+        float: left;
+        &::after {
+            content: '';
+            display: table;
+            clear: both;
+            float: none;
+        }
     }
     //z-index: -1;
 }

@@ -38,20 +38,24 @@ aside {
         }
 
         button.button {
-            position: absolute;
-            top: 50%;
-            left: -2em;
-            margin-top: -1.25rem;
+            display: none;
+            @include breakpoint(md) {
+                display: block;
+                position: absolute;
+                top: 50%;
+                left: -2em;
+                margin-top: -1.25rem;
 
-            float: left;
-            padding: 1rem;
-            line-height: 0.5rem;
-            border: 0;
-            opacity: 0;
-            background: $color_hover;
-            color: $color_body;
-            border: 1px solid $color_body;
-            transition: $transition;
+                float: left;
+                padding: 1rem;
+                line-height: 0.5rem;
+                border: 0;
+                opacity: 0;
+                background: $color_hover;
+                color: $color_body;
+                border: 1px solid $color_body;
+                transition: $transition;
+            }
         }
 
         &:hover::before {
