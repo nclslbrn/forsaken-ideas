@@ -1,13 +1,10 @@
 aside {
     @include breakpoint(md) {
-        box-shadow: inset 1px 0 transparentize($color_text, 0.5);
+        box-shadow: inset 2px 0 0 transparentize($color_text, 0.75);
         > *,
         ul {
-            padding: 0 0 0 2em;
+            padding: 0 0 0 2rem;
         }
-    }
-    h1 {
-        margin: 0 0 1em 0;
     }
     .acronym-block {
         display: block;
@@ -16,11 +13,11 @@ aside {
         margin-bottom: 1.5rem;
         cursor: pointer;
         #acronym {
-            position: static;
+            position: relative;
             text-transform: capitalize;
             margin: 0;
             min-height: 2em;
-            z-index: 2;
+            z-index: 3;
         }
         &:hover #acronym {
             color: $color_hover;
@@ -33,18 +30,20 @@ aside {
             left: -1em;
             right: 100%;
             bottom: -1em;
-            background-color: $color_body;
-            z-index: -1;
+            background-color: rgba(255, 255, 255, 0);
+            z-index: 0;
             right: 0;
-            border: 1px solid $color_body;
+            border: 1px solid rgba(255, 255, 255, 0);
             transition: $transition;
-            //transition: right 0.15s ease-in-out;
         }
+
         button.button {
             position: absolute;
             top: 50%;
-            right: 0;
+            left: -2em;
             margin-top: -1.25rem;
+
+            float: left;
             padding: 1rem;
             line-height: 0.5rem;
             border: 0;
@@ -54,9 +53,10 @@ aside {
             border: 1px solid $color_body;
             transition: $transition;
         }
+
         &:hover::before {
-            z-index: -1;
             right: -1em;
+            background: $color_body;
             border: 1px solid $color_hover;
         }
         &:hover button.button {

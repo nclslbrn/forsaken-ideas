@@ -32,6 +32,7 @@ section.projects ul {
     }
     @include breakpoint(md) {
         flex-flow: row wrap;
+        justify-content: flex-end;
     }
     margin: 0;
 }
@@ -68,13 +69,15 @@ section.projects ul li a {
     background-color: $color_body;
     transition: $transition;
 
-    h3,
+    span,
     small {
         position: relative;
         margin: 0.25em;
     }
-    h3 {
+    span {
         display: inline-block;
+        font-weight: 500;
+        font-family: $heading_font_family;
         float: none;
         clear: both;
         width: auto;
@@ -85,7 +88,7 @@ section.projects ul li a {
     small {
         display: block;
     }
-    h3::after {
+    span::after {
         content: '';
         display: block;
         width: 0;
@@ -93,7 +96,7 @@ section.projects ul li a {
         background: $color_body;
         transition: width $transition_duration $transition_timing;
     }
-    &:hover h3::after {
+    &:hover span::after {
         width: 100%;
         background: $color_hover;
     }
