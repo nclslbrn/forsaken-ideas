@@ -1,5 +1,5 @@
 const handleAction = (possibles_action) => {
-    window['openOffWindowBar'] = () => {
+    window['openOffFrame'] = () => {
         document.body.classList.toggle('openedOffWindow')
     }
     const buttons = document.querySelectorAll('[data-action]')

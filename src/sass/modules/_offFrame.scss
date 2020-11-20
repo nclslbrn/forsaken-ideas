@@ -11,7 +11,7 @@ body {
         width: 100vw;
         transition: transform 0.25s ease-in-out;
     }
-    #offWindowBar {
+    #offFrame {
         position: absolute;
         height: 90vh;
         width: 100vw;
@@ -24,11 +24,11 @@ body {
             width: 20vw;
             max-width: 20vw;
             transform: translate(-20vw, 0);
-            background: $color_text;
+            background: darken($color_text, 10%);
         }
         transition: transform 0.15s ease-in-out;
 
-        color: $color_body;
+        color: darken($color_body, 10%);
         z-index: 2;
     }
     &.openedOffWindow {
@@ -39,7 +39,7 @@ body {
             transform: perspective(600px) translate(0, 5vh) rotateX(-5deg)
                 scale(1.1, 1.1);
         }
-        #offWindowBar {
+        #offFrame {
             transform: translate(0, 5vh);
         }
         @include breakpoint(md) {
@@ -50,19 +50,19 @@ body {
                 transform: perspective(600px) translate(20vw, 0) rotateY(-5deg)
                     scale(1.1, 1.1);
             }
-            #offWindowBar {
+            #offFrame {
                 transform: translate(0, 0);
             }
         }
     }
 }
 
-#offWindowBar > div {
+#offFrame > div {
     padding: 3em;
 }
 
-#offWindowBar .date,
-#offWindowBar a {
+#offFrame .date,
+#offFrame a {
     svg {
         width: 1em;
         height: 1em;
@@ -70,13 +70,13 @@ body {
         fill: $color_body;
     }
 }
-#offWindowBar a {
+#offFrame a {
     color: inherit;
 }
-#offWindowBar p.description {
+#offFrame p.description {
     font-size: 1.2em;
 }
-#offWindowBar > div > a {
+#offFrame > div > a {
     display: block;
     margin: 0 0 1em 0;
 }

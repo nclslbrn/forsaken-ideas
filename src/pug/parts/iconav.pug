@@ -3,7 +3,7 @@ mixin iconav(property)
     nav#iconav
         ul
             li
-                a(href="#" data-action="openOffWindowBar" title="INFO")
+                a(href="#" data-action="openOffFrame" title="INFO")
                     span.screen-reader-text Info
                     svg.icon.icon-info
                         use(xlink:href="#icon-info")
@@ -20,7 +20,7 @@ mixin iconav(property)
                     if action.name != null
                         li
                             a(href="#" data-action=action.name title=action.name.replace('_', ' ').toUpperCase())
-                                span.screen-reader-text action.name.toUpperCase()
+                                span.screen-reader-text #{action.name.toUpperCase()}
                                 svg.icon.icon-cog
                                     if action.icon != null
                                         use(xlink:href="#icon-"+ action.icon)
