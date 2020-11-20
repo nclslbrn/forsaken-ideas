@@ -33,6 +33,7 @@ const gifOptions = {
     download: true,
     fileName: 'squircle.gif'
 }
+const windowFrame = document.getElementById('windowFrame')
 const squircle = (p5) => {
     p5.setup = () => {
         const canvasSize = sketchSize()
@@ -62,7 +63,7 @@ const squircle = (p5) => {
             ? 'GIF is processing'
             : 'Download as a GIF'
         paramBox.appendChild(exportButton)
-        document.body.appendChild(paramBox)
+        windowFrame.appendChild(paramBox)
         squircle.init()
 
         p5.noFill()
