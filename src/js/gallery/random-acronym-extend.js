@@ -16,7 +16,6 @@ const makeAcronym = () => {
                 if (index !== textStockKey.length - 1) randomAcronym += ' '
             }
         })
-        //acronymElem.setAttribute('data-text', randomAcronym)
         acronymElem.innerHTML = randomAcronym
         const d = new GlitchText({
             element: acronymElem,
