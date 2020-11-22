@@ -1,4 +1,5 @@
 import textStock from '../../json/e-m-g-words.json'
+import GlitchText from './glitchText'
 
 const makeAcronym = () => {
     const acronymElement = document.getElementById('acronym')
@@ -12,11 +13,15 @@ const makeAcronym = () => {
                         Math.floor(Math.random() * textStock[letter].length)
                     ]
                 randomAcronym += randomWord
-
                 if (index !== textStockKey.length - 1) randomAcronym += ' '
             }
         })
+        //acronymElem.setAttribute('data-text', randomAcronym)
         acronymElem.innerHTML = randomAcronym
+        const d = new GlitchText({
+            element: acronymElem,
+            effect: 'replace'
+        })
     }
     if (acronymElement && textStock) {
         insertRandomAcronym(acronymElement)
