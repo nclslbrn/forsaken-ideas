@@ -1,7 +1,9 @@
 'use strict'
 import '../../src/sass/project.scss'
 import '../../src/sass/frame-canvas.scss'
-import 'p5.createLoop'
+// Uncomment to export anim into GIF
+// Add "p5.createloop" into property.json libs
+// import 'p5.createLoop'
 import zoneOccupancy from './zone-occupancy'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
