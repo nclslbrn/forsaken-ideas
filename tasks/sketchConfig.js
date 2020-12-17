@@ -99,9 +99,9 @@ module.exports = (project, entry, output, title, property, mode) => {
                                 loader: 'sass-loader',
                                 options: {
                                     implementation: require('sass'),
-                                    sassOptions: {
+                                    /* sassOptions: {
                                         fiber: require('fibers')
-                                    },
+                                    }, */
                                     sourceMap:
                                         mode == 'production' ? false : true
                                 }

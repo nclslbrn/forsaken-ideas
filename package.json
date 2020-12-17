@@ -68,8 +68,6 @@
         "eslint-plugin-standard": "^4.0.2",
         "exports-loader": "^1.1.1",
         "expose-loader": "^1.0.1",
-        "fiber": "^1.0.4",
-        "fibers": "^5.0.0",
         "file-loader": "^6.2.0",
         "fs": "0.0.1-security",
         "ftp-deploy": "^2.3.8",
