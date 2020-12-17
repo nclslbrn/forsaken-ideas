@@ -1,28 +1,29 @@
 import ease from '../../src/js/sketch-common/ease'
+import Pool from '../../src/js/sketch-common/Pool'
 
 const sketch = (p5) => {
-    const interval = { min: 4, max: 64 }
-    const numFrame = 60
-    const numRow = 6
-    let cols, nextCols, heights, nextHeights
-
-    const randomNumber = () => {
-        return Math.floor(
-            Math.random() * (interval.max - interval.min + 1) + interval.min
-        )
+    const frameRange = { min: 60, max: 80 }
+    const easeRange = { min: 1, max: 50 }
+    const N = 6
+    const margin = 0.05
+    let cols, nextCols, rows, nextRows
+    const xPool = new Pool(N)
+    let yPool = []
+    for (let i = 0; i < N; i++) {
+        yPool.push(new Pool(N))
     }
+    let numFrame = Math.round(p5.random(frameRange.min, frameRange.max))
+    let easeValue = p5.random(easeRange.min, easeRange.max)
     const next = () => {
-        const newCols = []
-        const newHeights = []
-        for (let i = 0; i < numRow; i++) {
-            newCols.push(randomNumber())
-            newHeights.push(randomNumber())
+        xPool.update()
+        const newCols = xPool.getItems()
+        let newRows = []
+        for (let i = 0; i < N; i++) {
+            yPool[i].update()
+            newRows.push(yPool[i].getItems())
         }
-        const sumH = newHeights.reduce((sum, h) => sum + h)
-        const hFactor = sumH / p5.height
-        const resizedHeights = newHeights.map((height) => height / hFactor)
 
-        return [newCols, resizedHeights]
+        return [newCols, newRows]
     }
     const sketchSize = () => {
         const side = Math.min(window.innerWidth, window.innerHeight)
@@ -32,13 +33,14 @@ const sketch = (p5) => {
         }
     }
     sketch.init = () => {
-        ;[cols, heights] = next()
-        ;[nextCols, nextHeights] = next()
+        ;[cols, rows] = next()
+        ;[nextCols, nextRows] = next()
     }
     p5.setup = () => {
         const size = sketchSize()
         p5.createCanvas(size.w, size.h)
         p5.fill(255)
+        p5.ellipseMode(p5.CORNERS)
         p5.noStroke()
         sketch.init()
     }
@@ -46,31 +48,37 @@ const sketch = (p5) => {
         if (p5.frameCount % numFrame !== 0) {
             p5.background(0)
 
-            const t = (p5.frameCount % numFrame) / numFrame
-            let y = 0
-            for (let i = 0; i < numRow; i++) {
-                const height = Math.round(
-                    p5.lerp(heights[i], nextHeights[i], ease(t))
-                )
-                const tCols = Math.round(p5.lerp(cols[i], nextCols[i], ease(t)))
-
-                for (let x = 0; x < tCols; x++) {
-                    const l = p5.map(x, 0, tCols, -0.5, 2)
-                    const width = Math.asin(l) * (p5.width / tCols)
-
+            const t = ease((p5.frameCount % numFrame) / numFrame, easeValue)
+            let dx = p5.width * margin
+            for (let i = 0; i < N; i++) {
+                const x =
+                    p5.lerp(cols[i], nextCols[i], t) * p5.width * (0.5 - margin)
+                let dy = p5.height * margin
+                for (let j = 0; j < N; j++) {
+                    const y =
+                        p5.lerp(rows[i][j], nextRows[i][j], t) *
+                        p5.height *
+                        (0.5 - margin)
+                    p5.ellipse(dx, dy, dx + x, dy + y)
+                    p5.ellipse(p5.width - dx, dy, p5.width - (x + dx), y + dy)
+                    p5.ellipse(dx, p5.height - dy, dx + x, p5.height - (dy + y))
                     p5.ellipse(
-                        x * width + width / 2,
-                        y + height / 2,
-                        width,
-                        height
+                        p5.width - dx,
+                        p5.height - dy,
+                        p5.width - (dx + x),
+                        p5.height - (dy + y)
                     )
+
+                    dy += y
                 }
-                y += height
+                dx += x
             }
         } else {
             cols = nextCols
-            heights = nextHeights
-            ;[nextCols, nextHeights] = next()
+            rows = nextRows
+            ;[nextCols, nextRows] = next()
+            numFrame = Math.round(p5.random(frameRange.min, frameRange.max))
+            easeValue = p5.random(easeRange.min, easeRange.max)
         }
     }
 

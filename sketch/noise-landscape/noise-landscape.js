@@ -3,28 +3,28 @@ import paramSlider from '../../src/js/sketch-common/param-slider'
 let canvas = null
 const params = {
     strenght: {
-        value: 35.0,
-        options: { min: 20.0, max: 50, step: 0.1, label: 'Strength' }
+        value: 50.0,
+        options: { min: 0.1, max: 100, step: 0.1, label: 'Strength' }
     },
     noiseScale: {
-        value: 1.0,
-        options: { min: 0.1, max: 2.1, step: 0.05, label: 'Noise scale' }
+        value: 0.25,
+        options: { min: 0.01, max: 0.5, step: 0.01, label: 'Noise scale' }
     },
 
     noiseSample: {
-        value: 5,
-        options: { min: 1, max: 11, step: 1, label: 'Noise sample' }
+        value: 20,
+        options: { min: 1, max: 40, step: 1, label: 'Noise sample' }
     },
 
     opacity: {
-        value: 25,
-        options: { min: 1, max: 50, step: 1, label: 'Opacity' }
+        value: 5,
+        options: { min: 1, max: 9, step: 1, label: 'Opacity' }
     }
 }
 
 const sketch = (p5) => {
     let topoPoints, pTransform
-    const numPoints = 6000
+    const numPoints = 3000
     const squeeze_y = 0.45
     const perspective_x = 0.75
 
@@ -36,10 +36,10 @@ const sketch = (p5) => {
         for (let i = 0; i < numPoints; i++) {
             topoPoints.push({
                 pos: p5.createVector(
-                    p5.randomGaussian(p5.width / 2, p5.width / 3),
-                    p5.randomGaussian(p5.height / 2, p5.height / 3)
+                    p5.width * 0.5 + p5.randomGaussian() * p5.width * 0.25,
+                    p5.height * 0.5 + p5.randomGaussian() * p5.height * 0.25
                 ),
-                angle: p5.random(p5.TWO_PI),
+                angle: Math.random() * Math.PI,
                 height: 0
             })
         }
@@ -120,25 +120,30 @@ const sketch = (p5) => {
                     ) * params['noiseScale'].value
                 const n2 =
                     p5.noise(
-                        nx * params['noiseSample'].value * 3,
-                        ny * params['noiseSample'].value * 3
+                        nx * params['noiseSample'].value * 5,
+                        ny * params['noiseSample'].value * 5
                     ) *
-                    (params['noiseScale'].value / 300)
+                    (params['noiseScale'].value / 100)
                 const n3 =
                     p5.noise(
-                        nx * params['noiseSample'].value * 6,
-                        ny * params['noiseSample'].value * 6
+                        nx * params['noiseSample'].value * 30,
+                        ny * params['noiseSample'].value * 30
                     ) *
-                    (params['noiseScale'].value / 50)
+                    (params['noiseScale'].value / 500)
 
                 const n = (n1 + n2 + n3) / 3
 
                 topoPoints[i].height = n + 1
                 topoPoints[i].pos.x +=
-                    p5.cos(topoPoints[i].angle) * params['strenght'].value
+                    p5.cos(topoPoints[i].angle) *
+                    params['strenght'].value *
+                    0.01
                 topoPoints[i].pos.y +=
-                    p5.sin(topoPoints[i].angle) * params['strenght'].value
-                topoPoints[i].angle += n
+                    p5.sin(topoPoints[i].angle) *
+                    params['strenght'].value *
+                    0.01
+
+                topoPoints[i].angle += n * 0.1
             }
         }
     }
