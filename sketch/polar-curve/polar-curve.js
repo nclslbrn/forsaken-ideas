@@ -8,10 +8,10 @@ let canvas
 const sketch = (p5) => {
     let selectedFunc, palette, points, colors, colorsId
 
-    const scale = 0.07
+    const scale = 0.05
     const alpha = 50
-    const margin = 0.1
-    const sample = 3
+    const margin = 0.05
+    const sample = 12
 
     const funcs = planeCurveFuncs(p5)
     // A4 150dpi width
