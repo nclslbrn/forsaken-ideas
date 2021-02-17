@@ -6,15 +6,15 @@
     "tasks": [
         {
             "label": "watch this sketch",
-            "type": "npm",
-            "script": "watch:sketch ${fileDirname}",
+            "type": "shell",
+            "command": "npm run watch:sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "export this sketch",
-            "type": "npm",
-            "script": "build:sketch ${fileDirname}",
+            "type": "shell",
+            "command": "npm run build:sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
         }
