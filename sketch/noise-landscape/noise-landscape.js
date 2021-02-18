@@ -3,22 +3,17 @@ import paramSlider from '../../src/js/sketch-common/param-slider'
 let canvas = null
 const params = {
     strenght: {
-        value: 50.0,
-        options: { min: 0.1, max: 100, step: 0.1, label: 'Strength' }
+        value: 0.5,
+        options: { min: 0.01, max: 0.99, step: 0.01, label: 'Strength' }
     },
     noiseScale: {
-        value: 0.25,
-        options: { min: 0.01, max: 0.5, step: 0.01, label: 'Noise scale' }
-    },
-
-    noiseSample: {
-        value: 20,
-        options: { min: 1, max: 40, step: 1, label: 'Noise sample' }
+        value: 50,
+        options: { min: 10, max: 90, step: 1, label: 'Noise scale' }
     },
 
     opacity: {
-        value: 5,
-        options: { min: 1, max: 9, step: 1, label: 'Opacity' }
+        value: 10,
+        options: { min: 1, max: 19, step: 1, label: 'Opacity' }
     }
 }
 
@@ -113,37 +108,22 @@ const sketch = (p5) => {
                 /**
                  * Compute vectors
                  */
-                const n1 =
-                    p5.noise(
-                        nx * params['noiseSample'].value,
-                        ny * params['noiseSample'].value
-                    ) * params['noiseScale'].value
-                const n2 =
-                    p5.noise(
-                        nx * params['noiseSample'].value * 5,
-                        ny * params['noiseSample'].value * 5
-                    ) *
-                    (params['noiseScale'].value / 100)
-                const n3 =
-                    p5.noise(
-                        nx * params['noiseSample'].value * 30,
-                        ny * params['noiseSample'].value * 30
-                    ) *
-                    (params['noiseScale'].value / 500)
-
-                const n = (n1 + n2 + n3) / 3
+                const n1 = p5.noise(nx, ny, 0) * params['noiseScale'].value
+                const n2 = p5.noise(0, nx, ny) * params['noiseScale'].value
+                const n3 = p5.noise(nx, 0, ny) * params['noiseScale'].value
+                const n = p5.noise(
+                    Math.cos(n3) * Math.cos(n1) * params['strenght'].value,
+                    Math.cos(n3) * Math.sin(n2) * params['strenght'].value,
+                    Math.sin(n3)
+                )
 
                 topoPoints[i].height = n + 1
                 topoPoints[i].pos.x +=
-                    p5.cos(topoPoints[i].angle) *
-                    params['strenght'].value *
-                    0.01
+                    Math.cos(topoPoints[i].angle) * (window.innerWidth / 16)
                 topoPoints[i].pos.y +=
-                    p5.sin(topoPoints[i].angle) *
-                    params['strenght'].value *
-                    0.01
+                    Math.sin(topoPoints[i].angle) * (window.innerHeight / 10)
 
-                topoPoints[i].angle += n * 0.1
+                topoPoints[i].angle += n
             }
         }
     }
