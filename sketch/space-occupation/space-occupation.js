@@ -2,8 +2,8 @@ import ease from '../../src/js/sketch-common/ease'
 import Pool from '../../src/js/sketch-common/Pool'
 
 const sketch = (p5) => {
-    const frameRange = { min: 60, max: 80 }
-    const easeRange = { min: 1, max: 50 }
+    const frameRange = { min: 60, max: 120 }
+    const easeRange = { min: 1, max: 4 }
     const N = 6
     const margin = 0.05
     let cols, nextCols, rows, nextRows
