@@ -1,7 +1,7 @@
 'use strict'
 import '../../src/sass/project.scss'
 import '../../src/sass/frame-canvas.scss'
-import sketch from './rubiks-curves'
+import sketch from './swap-circle'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
