@@ -1,0 +1,14 @@
+'use strict'
+import '../../src/sass/project.scss'
+import '../../src/sass/full-canvas.scss'
+import alKhwarizmi from './al-khwarizmi'
+import infobox from '../../src/js/sketch-common/infobox'
+import handleAction from '../../src/js/sketch-common/handle-action'
+
+const windowFrame = document.getElementById('windowFrame')
+const loader = document.getElementById('loading')
+
+alKhwarizmi.launch()
+windowFrame.removeChild(loader)
+window.infobox = infobox
+handleAction()
