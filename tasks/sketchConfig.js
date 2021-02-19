@@ -110,6 +110,15 @@ module.exports = (project, entry, output, title, property, mode) => {
                             path.resolve(__dirname, 'src/sass'),
                             path.resolve(__dirname, '../')
                         ]
+                    },
+                    {
+                        // shader
+                        test: /\.(glsl|frag|vert)$/,
+                        use: [
+                            'glslify-import-loader',
+                            'raw-loader',
+                            'glslify-loader'
+                        ]
                     }
                 ]
             },
