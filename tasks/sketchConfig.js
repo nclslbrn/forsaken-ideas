@@ -55,9 +55,11 @@ module.exports = (project, entry, output, title, property, mode) => {
                 rules: [
                     {
                         // js
-                        test: /\.m?js$/,
-                        //exclude: /(node_modules|bower_components)/,
-                        use: ['babel-loader']
+                        test: /\.(js|jsx)$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: 'babel-loader'
+                        }
                     },
                     {
                         // pug
@@ -115,9 +117,9 @@ module.exports = (project, entry, output, title, property, mode) => {
                         // shader
                         test: /\.(glsl|frag|vert)$/,
                         use: [
-                            'glslify-import-loader',
-                            'raw-loader',
-                            'glslify-loader'
+                            require.resolve('glslify-import-loader'),
+                            require.resolve('raw-loader'),
+                            require.resolve('glslify-loader')
                         ]
                     }
                 ]
