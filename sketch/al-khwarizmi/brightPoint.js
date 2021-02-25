@@ -1,11 +1,19 @@
 // Based on interactive particles from Bruno Imbrizi
 // https://github.com/brunoimbrizi/interactive-particles/blob/master/src/scripts/webgl/particles/Particles.js
+
+// May help
+// https://stackoverflow.com/questions/58051887/three-webglshader-shader-couldnt-compile-s-noise-1-2-no-matching-overload
+
 import * as THREE from 'three'
 const glslify = require('glslify')
-
+/*
+const vertShader = require('raw-loader!glslify-loader!/assets/particle.vert')
+const fragShader = require('raw-loader!glslify-loader!/assets/particle.frag')
+*/
 export default class brightPoint {
     constuctor(app) {
         this.app = app
+        //this.container = new THREE.Object3D()
         // console.log(this.container)
     }
     fromImg(src) {
@@ -45,7 +53,7 @@ export default class brightPoint {
             if (originalColors[i * 4 + 0] > threshold) numVisible++
         }
 
-        console.log('numVisible', numVisible, this.numPoints)
+        // console.log('numVisible', numVisible, this.numPoints)
 
         // Map to geometry
         const uniforms = {
@@ -62,8 +70,10 @@ export default class brightPoint {
 
         const material = new THREE.RawShaderMaterial({
             uniforms,
-            vertexShader: glslify(require('./assets/particle.vert')),
-            fragmentShader: glslify(require('./assets/particle.frag')),
+            vertexShader: glslify('./assets/particle.vert'),
+            fragmentShader: glslify('./assets/particle.frag'),
+            /* vertexShader: vertShader,
+            fragmentShader: fragShader, */
             depthTest: false,
             transparent: true
             // blending: THREE.AdditiveBlending
@@ -121,18 +131,34 @@ export default class brightPoint {
             new THREE.InstancedBufferAttribute(angles, 1, false)
         )
 
-        /*         
         this.object3D = new THREE.Mesh(geometry, material)
-        if (this.object3D && this.container) {
-            this.container.add(this.object3D)
-        } 
-        */
+        this.container.add(this.object3D)
     }
 
     update(delta) {
         if (!this.object3D) return
         // if (this.touch) this.touch.update();
-
         this.object3D.material.uniforms.uTime.value += delta
+        //console.log('brightPoint.update() done')
+    }
+    show(time = 1.0) {
+        // reset
+        TweenLite.fromTo(
+            this.object3D.material.uniforms.uSize,
+            time,
+            { value: 0.5 },
+            { value: 1.5 }
+        )
+        TweenLite.to(this.object3D.material.uniforms.uRandom, time, {
+            value: 2.0
+        })
+        TweenLite.fromTo(
+            this.object3D.material.uniforms.uDepth,
+            time * 1.5,
+            { value: 40.0 },
+            { value: 4.0 }
+        )
+
+        //this.addListeners();
     }
 }

@@ -8,7 +8,7 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-app.launch()
+app.init()
 windowFrame.removeChild(loader)
 window.infobox = infobox
 handleAction()
