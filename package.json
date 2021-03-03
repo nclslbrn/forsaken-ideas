@@ -90,7 +90,7 @@
         "postcss-loader": "^4.1.0",
         "progress-bar-webpack-plugin": "^2.1.0",
         "promise-ftp-common": "^1.1.5",
-        "pug": "^3.0.0",
+        "pug": "^3.0.1",
         "raw-loader": "^4.0.2",
         "sass-dart": "^1.0.0-alpha.1",
         "sass-loader": "^10.1.1",
