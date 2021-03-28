@@ -117,7 +117,7 @@ module.exports = (project, entry, output, title, property, mode) => {
                         // shader
                         test: /\.(glsl|frag|vert)$/,
                         use: [
-                            require.resolve('glslify-import-loader'),
+                            //require.resolve('glslify-import-loader'),
                             require.resolve('raw-loader'),
                             require.resolve('glslify-loader')
                         ]
@@ -161,7 +161,6 @@ module.exports = (project, entry, output, title, property, mode) => {
                 historyApiFallback: true,
                 contentBase: path.resolve(__dirname, '../public/'),
                 port: 8080,
-                open: true,
                 compress: true,
                 hot: true
             }
