@@ -1,0 +1,6 @@
+{
+    "libs": ["p5"],
+    "info": "Experiment with a kind of attractor, a 2D to 2D mapping function and a reference: Lenna. Follow her eyes, follow coordinnates.",
+    "date": "2021-04-27",
+    "action": []
+}
