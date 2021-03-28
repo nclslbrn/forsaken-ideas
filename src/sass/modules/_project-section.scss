@@ -2,10 +2,11 @@ section.projects {
     display: block;
     @include breakpoint(xs) {
         margin-top: 1.5rem;
-        width: 100%;
+        width: auto;
     }
     @include breakpoint(sm) {
         width: 50%;
+        float: left;
     }
     @include breakpoint(md) {
         margin-top: 0;
@@ -29,6 +30,7 @@ section.projects ul {
     display: flex;
     @include breakpoint(xs) {
         flex-flow: column;
+        float: right;
     }
     @include breakpoint(md) {
         flex-flow: row wrap;
@@ -39,6 +41,7 @@ section.projects ul {
 
 section.projects ul li {
     text-align: left;
+
     @include breakpoint(md) {
         flex: 1 0 50%;
         max-width: 50%;
@@ -48,7 +51,7 @@ section.projects ul li {
         flex: 1 0 33%;
         max-width: 33%;
     }
-    @include breakpoint(lg) {
+    @include breakpoint(xl) {
         flex: 1 0 25%;
         max-width: 25%;
     }

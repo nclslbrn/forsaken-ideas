@@ -109,7 +109,15 @@ aside.column.about {
             display: block;
             float: left;
             margin: 0.5em 0;
-            width: 42%;
+            @include breakpoint(xs) {
+                width: 44%;
+            }
+            @include breakpoint(md) {
+                width: 100%;
+            }
+            @include breakpoint(lg) {
+                width: 42%;
+            }
         }
     }
     ul li a {
