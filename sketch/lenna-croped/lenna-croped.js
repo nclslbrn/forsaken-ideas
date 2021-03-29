@@ -39,7 +39,6 @@ const sketch = (p5) => {
         p5.background(270, 50, 15, 75)
         p5.push()
         p5.translate(p5.width * 0.5, p5.height * 0.5)
-        //p5.image(img, 0, 0, p5.width, p5.height)
 
         for (let i = -s; i <= s; i += res) {
             for (let j = -s; j <= s; j += res) {
@@ -59,17 +58,6 @@ const sketch = (p5) => {
                 )
                 p5.text(`[x: ${i.toFixed(2)} | y: ${j.toFixed(2)}]`, m.x, m.y)
 
-                /*  p5.image(
-                    img,
-                    Math.abs(i) * p5.width,
-                    Math.abs(j) * p5.height,
-                    r.w,
-                    r.h,
-                    m.x,
-                    m.y,
-                    r.w,
-                    r.h
-                ) */
                 p5.image(
                     img,
                     m.x,
@@ -78,10 +66,9 @@ const sketch = (p5) => {
                     r.h * 3,
                     _x(Math.abs(i) * img.width),
                     _y(Math.abs(j) * img.height),
-                    r.w * 4,
-                    r.h * 4
+                    r.w * (2400 / p5.width),
+                    r.h * (2400 / p5.height)
                 )
-                //p5.rect(m.x, m.y, r.w, r.h)
             }
         }
 
