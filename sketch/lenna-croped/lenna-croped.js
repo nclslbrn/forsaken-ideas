@@ -66,8 +66,8 @@ const sketch = (p5) => {
                     r.h * 3,
                     _x(Math.abs(i) * img.width),
                     _y(Math.abs(j) * img.height),
-                    r.w * (2400 / p5.width),
-                    r.h * (2400 / p5.height)
+                    r.w * (2800 / p5.width),
+                    r.h * (2800 / p5.height)
                 )
             }
         }
