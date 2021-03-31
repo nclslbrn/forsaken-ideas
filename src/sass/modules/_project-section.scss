@@ -30,11 +30,11 @@ section.projects ul {
     display: flex;
     @include breakpoint(xs) {
         flex-flow: column;
-        float: right;
+        //float: right;
     }
     @include breakpoint(md) {
         flex-flow: row wrap;
-        justify-content: flex-end;
+        justify-content: flex-start;
     }
     margin: 0;
 }
