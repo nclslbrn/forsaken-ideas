@@ -25,7 +25,6 @@ const sketch = (p5) => {
         const res = 8
         const a = [3, 5, 6, 7, 9, 10, 11, 12, 13, 15]
         const g = a[Math.floor(Math.random() * a.length)]
-        console.log('g', g)
         for (let x = 0; x <= canvasSide; x += scale) {
             for (let y = 0; y <= canvasSide; y += scale) {
                 if ((x ^ y) % g) {
@@ -47,14 +46,8 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         canvasSide = sketchSize()
-        palette = tome.get()
-
         canvas = p5.createCanvas(canvasSide, canvasSide)
-        p5.stroke(255)
-
-        trigoFunc = randomTrigoFunc()
-        points = initPoint()
-        p5.background(0)
+        sketch.init_sketch()
     }
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
@@ -76,13 +69,20 @@ const sketch = (p5) => {
         }
     }
     p5.windowResized = () => {
-        p5.resizeCanvas(window.innerWidth, window.innerHeight)
+        canvasSide = sketchSize()
+        p5.resizeCanvas(canvasSide, canvasSide)
+        sketch.init_sketch()
     }
-
-    sketch.download_PNG = () => {
+    sketch.init_sketch = () => {
+        palette = tome.get()
+        trigoFunc = randomTrigoFunc()
+        points = initPoint()
+        p5.background(0)
+    }
+    sketch.exportPNG = () => {
         const date = new Date()
         const filename =
-            'untitled.' +
+            'grow-from-pattern.' +
             trigoFunc +
             '.' +
             date.getHours() +
