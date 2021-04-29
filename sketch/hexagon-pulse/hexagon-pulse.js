@@ -8,24 +8,37 @@ const sketch = (p5) => {
         const side = Math.min(window.innerWidth, window.innerHeight)
         return side > 800 ? 800 : side * 0.85
     }
-    p5.hexagon = (center, radius, angle) => {
-        p5.beginShape()
-        for (let theta = 0; theta < Math.PI * 2; theta += Math.PI / 3) {
+    p5.hexagon = (center, radius, angle, side, t) => {
+        const _t = (t < 0.5 ? t : 1 - t) * 2
+        for (let theta = 0; theta < Math.PI * 2; theta += Math.PI / side) {
+            p5.beginShape()
+            // p5.vertex(center.x, center.y)
+            p5.vertex(
+                center.x + radius * _t * Math.cos(theta),
+                center.y + radius * _t * Math.sin(theta)
+            )
             p5.vertex(
                 center.x + radius * Math.cos(theta + angle),
                 center.y + radius * Math.sin(theta + angle)
             )
+            p5.endShape(p5.CLOSE)
+            /*  p5.line(
+                center.x + radius * t * Math.cos(theta - angle),
+                center.y + radius * t * Math.sin(theta - angle),
+                center.x + radius * Math.cos(theta + angle),
+                center.y + radius * Math.sin(theta + angle)
+            ) */
         }
-        p5.endShape(p5.CLOSE)
     }
     p5.setup = () => {
         canvasSize = sketchSize()
         p5.createCanvas(canvasSize, canvasSize)
-        step = canvasSize / 12
+        step = canvasSize / 24
         numRow = canvasSize / step
         middle = canvasSize / (step * 2)
         p5.stroke(255)
         p5.fill(255)
+        p5.strokeWeight(2)
         //p5.noStroke()
     }
     p5.draw = () => {
@@ -49,8 +62,14 @@ const sketch = (p5) => {
                         5
                     ) *
                     Math.PI *
-                    (1 / 3)
-                p5.hexagon(p, size, rot)
+                    (1 / 3.0)
+                p5.hexagon(
+                    p,
+                    size,
+                    Math.PI * 2 * t,
+                    3,
+                    t > 0.5 ? 0.5 + t : 1.5 - t
+                )
             }
         }
     }
