@@ -2,28 +2,30 @@
 import ease from '../../src/js/sketch-common/ease'
 
 const sketch = (p5) => {
-    const numFrame = 120
-    let canvasSize, middle, numRow, step
+    const numFrame = 300
+    let p5Canvas, canvasSize, middle, numRow, step
     const sketchSize = () => {
-        const side = Math.min(window.innerWidth, window.innerHeight)
-        return side > 800 ? 800 : side * 0.85
+        return Math.max(window.innerWidth, window.innerHeight)
     }
-    p5.hexagon = (center, radius, angle, side, t) => {
-        //const _t = (t < 0.5 ? 0.5 + t : 1.5 - t) * 2
+    p5.hexagon = (center, radius, t) => {
+        const side = p5.map(t < 0.5 ? t : 1 - t, 0, 0.5, 1.5, 3.0)
         p5.beginShape()
         for (let theta = 0; theta < Math.PI * 2; theta += Math.PI / side) {
-            //const r = theta + Math.PI * t
+            const r = theta //+ Math.PI * t
             p5.vertex(
-                center.x + radius * Math.cos(theta + angle),
-                center.y + radius * Math.sin(theta + angle)
+                center.x + radius * Math.cos(r),
+                center.y + radius * Math.sin(r)
             )
         }
         p5.endShape(p5.CLOSE)
     }
     p5.setup = () => {
         canvasSize = sketchSize()
-        p5.createCanvas(canvasSize, canvasSize)
-        step = canvasSize / 50
+        p5Canvas = p5.createCanvas(canvasSize, canvasSize)
+        p5Canvas.elt.style = `margin-top: -${
+            (window.innerWidth - window.innerHeight) * 0.5
+        }px;`
+        step = canvasSize / 48
         numRow = canvasSize / step
         middle = canvasSize / (step * 2)
         p5.stroke(255)
@@ -36,17 +38,16 @@ const sketch = (p5) => {
         const t = (p5.frameCount % numFrame) / numFrame
         for (let x = 0; x <= p5.width / step; x++) {
             for (let y = 0; y <= p5.height / step; y++) {
-                const j = Math.sin(
-                    t * middle * 0.5 -
-                        Math.sqrt((x - middle) ** 2 + (y - middle) ** 2)
-                )
+                const i =
+                    t * 3 * middle -
+                    Math.sqrt((x - middle) ** 2 + (y - middle) ** 2)
+                const j = Math.sin(i)
                 const p = {
                     x: x * step,
                     y: (x % 2 == 0 ? y : y + 0.5) * step
                 }
-                const size = step * 0.5 * Math.max(Math.abs(j), 0.15)
-                const rot = (Math.PI / 3) * ease(t, 5)
-                p5.hexagon(p, size, rot, 3, t)
+                const size = step * Math.max(Math.abs(j / 3), 0.15)
+                p5.hexagon(p, size, t)
             }
         }
     }
