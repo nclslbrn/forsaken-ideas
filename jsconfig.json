@@ -1,6 +1,0 @@
-{
-    "include": ["*.js", "src/*.js", "node_modules/@types/p5/global.d.ts"],
-    "typeAcquisition": {
-        "include": ["node_modules/@types/p5/global.d.ts"]
-    }
-}
