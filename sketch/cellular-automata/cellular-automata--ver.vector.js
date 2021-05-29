@@ -1,15 +1,19 @@
-import * as tome from 'chromotome'
 import AutomataGrid from '../../src/js/sketch-common/AutomataGrid'
 import MirrorShape from './MirrorShape'
 import exportSVG from '../../src/js/sketch-common/exportSVG'
+import {
+    getRandomPalette,
+    getColorCombination
+} from '../../src/js/sketch-common/stabilo68-colors'
 
 let palette, cellSize
 
 const svgSize = () => {
-    const side = Math.min(window.innerWidth, window.innerHeight)
+    // optimized for landscape screen
+    // Give it A0 aspect ratio
     return {
-        w: side > 800 ? 800 : side * 0.85,
-        h: side > 800 ? 800 : side * 0.85
+        w: window.innerHeight * 1.414,
+        h: window.innerHeight
     }
 }
 const rect = (x = 0, y = 0, width = 0, height = 0, color) => {
@@ -89,6 +93,11 @@ const bottomLeftTriangle = (x, y, color) => {
 // Create container
 const svgContainer = document.createElement('div')
 svgContainer.id = 'frame'
+svgContainer.setAttribute(
+    'style',
+    'height: 90vh; width: auto; padding: 0; background: #fff;'
+)
+
 const svgFrameSize = svgSize()
 const mainSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 mainSVG.setAttribute('version', '1.1')
@@ -96,12 +105,14 @@ mainSVG.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 mainSVG.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
 mainSVG.setAttribute('width', svgFrameSize.w)
 mainSVG.setAttribute('height', svgFrameSize.h)
+mainSVG.setAttribute('viewBox', `0 0 ${svgFrameSize.w} ${svgFrameSize.h}`)
+mainSVG.setAttribute('style', 'height: 90%; width: auto; padding: 60px;')
 svgContainer.appendChild(mainSVG)
 const windowFrame = document.getElementById('windowFrame')
 windowFrame.appendChild(svgContainer)
-// Setup automata
 
-const g = new AutomataGrid(5, 5)
+// Setup automata
+const g = new AutomataGrid(8, 5)
 cellSize = {
     w: svgFrameSize.w / (1 + g.cols * 2),
     h: svgFrameSize.h / (1 + g.rows * 2)
@@ -135,13 +146,9 @@ windowFrame.appendChild(paramBox)
 
 const print = () => {
     mainSVG.childNodes.forEach((child) => child.remove())
-    rect(
-        0,
-        0,
-        svgFrameSize.w,
-        svgFrameSize.h,
-        palette.background || palette.stroke || 100
-    )
+
+    rect(0, 0, svgFrameSize.w, svgFrameSize.h, 'white')
+
     for (let x = 0; x <= g.cols; x++) {
         for (let y = 0; y <= g.rows; y++) {
             const i = x * g.cols + y
@@ -152,9 +159,9 @@ const print = () => {
                 g.value[i - g.rows] &&
                 g.value[i + g.rows]
             ) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
-                fillCell(x, y - 1, palette.colors[i % palette.colors.length])
-                fillCell(x, y + 1, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
+                fillCell(x, y - 1, palette[i % palette.length]['value'])
+                fillCell(x, y + 1, palette[i % palette.length]['value'])
             }
             // left & right
             if (
@@ -163,24 +170,24 @@ const print = () => {
                 g.value[i + g.cols] &&
                 g.value[i - g.cols]
             ) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
-                fillCell(x - 1, y, palette.colors[i % palette.colors.length])
-                fillCell(x + 1, y, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
+                fillCell(x - 1, y, palette[i % palette.length]['value'])
+                fillCell(x + 1, y, palette[i % palette.length]['value'])
             }
             if (x > 0 && y > 0 && g.value[i - 1] && g.value[i - g.cols]) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
                 bottomRightTriangle(
                     x - 1,
                     y - 1,
-                    palette.colors[i % palette.colors.length]
+                    palette[i % palette.length]['value']
                 )
             }
             if (x < g.cols && y > 0 && g.value[i - 1] && g.value[i + g.cols]) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
                 bottomLeftTriangle(
                     x + 1,
                     y - 1,
-                    palette.colors[i % palette.colors.length]
+                    palette[i % palette.length]['value']
                 )
             }
             if (
@@ -189,19 +196,19 @@ const print = () => {
                 g.value[i + 1] &&
                 g.value[i + g.cols]
             ) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
                 topLeftTriangle(
                     x + 1,
                     y + 1,
-                    palette.colors[i % palette.colors.length]
+                    palette[i % palette.length]['value']
                 )
             }
             if (x > 0 && y < g.rows && g.value[i + 1] && g.value[i - g.cols]) {
-                fillCell(x, y, palette.colors[i % palette.colors.length])
+                fillCell(x, y, palette[i % palette.length]['value'])
                 topRightTriangle(
                     x - 1,
                     y + 1,
-                    palette.colors[i % palette.colors.length]
+                    palette[i % palette.length]['value']
                 )
             }
         }
@@ -226,7 +233,8 @@ const sketch = {
         print()
     },
     changeColor: () => {
-        palette = tome.get()
+        palette = getRandomPalette(3)
+        // palette = getColorCombination(false, 'Mondrian').colors
         print()
     },
     downloadSVG: () => {
