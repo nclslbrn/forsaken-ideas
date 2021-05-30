@@ -6,7 +6,9 @@ import {
     getColorCombination
 } from '../../src/js/sketch-common/stabilo68-colors'
 
-let palette, cellSize
+let palette,
+    cellSize,
+    colorsGroups = []
 
 const svgSize = () => {
     // optimized for landscape screen
@@ -22,8 +24,9 @@ const rect = (x = 0, y = 0, width = 0, height = 0, color) => {
     r.setAttribute('y', y)
     r.setAttribute('width', width)
     r.setAttribute('height', height)
-    r.setAttribute('fill', color)
-    mainSVG.appendChild(r)
+    colorsGroups[color].appendChild(r)
+    //r.setAttribute('fill', color)
+    //mainSVG.appendChild(r)
 }
 const triangle = (p = [], color) => {
     const _x = (v) => {
@@ -52,8 +55,9 @@ const triangle = (p = [], color) => {
                 'Z'
         )
     )
-    t.setAttribute('fill', color)
-    mainSVG.appendChild(t)
+    //t.setAttribute('fill', color)
+    //mainSVG.appendChild(t)
+    colorsGroups[color].appendChild(t)
 }
 const fillCell = (x, y, color) => {
     mirror.allCorners(x, y).forEach((p) => {
@@ -90,6 +94,66 @@ const bottomLeftTriangle = (x, y, color) => {
     })
 }
 
+const print = () => {
+    if (colorsGroups[0] !== undefined) {
+        colorsGroups.forEach((g) => {
+            g.childNodes.forEach((child) => {
+                child.remove()
+            })
+        })
+    }
+
+    for (let x = 0; x <= g.cols; x++) {
+        for (let y = 0; y <= g.rows; y++) {
+            const i = x * g.cols + y
+            const colorNum = i % palette.length
+            // top and bootom
+            if (
+                y > 0 &&
+                y < g.rows &&
+                g.value[i - g.rows] &&
+                g.value[i + g.rows]
+            ) {
+                fillCell(x, y, colorNum)
+                fillCell(x, y - 1, colorNum)
+                fillCell(x, y + 1, colorNum)
+            }
+            // left & right
+            if (
+                x > 0 &&
+                x < g.cols &&
+                g.value[i + g.cols] &&
+                g.value[i - g.cols]
+            ) {
+                fillCell(x, y, colorNum)
+                fillCell(x - 1, y, colorNum)
+                fillCell(x + 1, y, colorNum)
+            }
+            if (x > 0 && y > 0 && g.value[i - 1] && g.value[i - g.cols]) {
+                fillCell(x, y, colorNum)
+                bottomRightTriangle(x - 1, y - 1, colorNum)
+            }
+            if (x < g.cols && y > 0 && g.value[i - 1] && g.value[i + g.cols]) {
+                fillCell(x, y, colorNum)
+                bottomLeftTriangle(x + 1, y - 1, colorNum)
+            }
+            if (
+                x < g.cols &&
+                y < g.rows &&
+                g.value[i + 1] &&
+                g.value[i + g.cols]
+            ) {
+                fillCell(x, y, i % palette.length)
+                topLeftTriangle(x + 1, y + 1, colorNum)
+            }
+            if (x > 0 && y < g.rows && g.value[i + 1] && g.value[i - g.cols]) {
+                fillCell(x, y, i % palette.length)
+                topRightTriangle(x - 1, y + 1, colorNum)
+            }
+        }
+    }
+}
+
 // Create container
 const svgContainer = document.createElement('div')
 svgContainer.id = 'frame'
@@ -112,7 +176,7 @@ const windowFrame = document.getElementById('windowFrame')
 windowFrame.appendChild(svgContainer)
 
 // Setup automata
-const g = new AutomataGrid(8, 5)
+const g = new AutomataGrid(12, 8)
 cellSize = {
     w: svgFrameSize.w / (1 + g.cols * 2),
     h: svgFrameSize.h / (1 + g.rows * 2)
@@ -139,81 +203,11 @@ colorButton.addEventListener(
     'click',
     (event) => {
         sketch.changeColor()
+        print()
     },
     false
 )
 windowFrame.appendChild(paramBox)
-
-const print = () => {
-    mainSVG.childNodes.forEach((child) => child.remove())
-
-    rect(0, 0, svgFrameSize.w, svgFrameSize.h, 'white')
-
-    for (let x = 0; x <= g.cols; x++) {
-        for (let y = 0; y <= g.rows; y++) {
-            const i = x * g.cols + y
-            // top and bootom
-            if (
-                y > 0 &&
-                y < g.rows &&
-                g.value[i - g.rows] &&
-                g.value[i + g.rows]
-            ) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                fillCell(x, y - 1, palette[i % palette.length]['value'])
-                fillCell(x, y + 1, palette[i % palette.length]['value'])
-            }
-            // left & right
-            if (
-                x > 0 &&
-                x < g.cols &&
-                g.value[i + g.cols] &&
-                g.value[i - g.cols]
-            ) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                fillCell(x - 1, y, palette[i % palette.length]['value'])
-                fillCell(x + 1, y, palette[i % palette.length]['value'])
-            }
-            if (x > 0 && y > 0 && g.value[i - 1] && g.value[i - g.cols]) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                bottomRightTriangle(
-                    x - 1,
-                    y - 1,
-                    palette[i % palette.length]['value']
-                )
-            }
-            if (x < g.cols && y > 0 && g.value[i - 1] && g.value[i + g.cols]) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                bottomLeftTriangle(
-                    x + 1,
-                    y - 1,
-                    palette[i % palette.length]['value']
-                )
-            }
-            if (
-                x < g.cols &&
-                y < g.rows &&
-                g.value[i + 1] &&
-                g.value[i + g.cols]
-            ) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                topLeftTriangle(
-                    x + 1,
-                    y + 1,
-                    palette[i % palette.length]['value']
-                )
-            }
-            if (x > 0 && y < g.rows && g.value[i + 1] && g.value[i - g.cols]) {
-                fillCell(x, y, palette[i % palette.length]['value'])
-                topRightTriangle(
-                    x - 1,
-                    y + 1,
-                    palette[i % palette.length]['value']
-                )
-            }
-        }
-    }
-}
 
 const sketch = {
     init: () => {
@@ -228,14 +222,30 @@ const sketch = {
             return cell || stock ? true : false
         })
         if (!aliveCellInGrid) {
-            sketch.init()
+            g.init()
         }
         print()
     },
     changeColor: () => {
         palette = getRandomPalette(3)
         // palette = getColorCombination(false, 'Mondrian').colors
-        print()
+
+        mainSVG
+            .querySelectorAll('g')
+            .forEach((group) => mainSVG.removeChild(group))
+        colorsGroups = []
+
+        // create group for every color in palette
+        palette.forEach((color) => {
+            const group = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g'
+            )
+            group.setAttribute('fill', color.value)
+            group.setAttribute('id', color.name.replace(' ', '_').toLowerCase())
+            mainSVG.appendChild(group)
+            colorsGroups.push(group)
+        })
     },
     downloadSVG: () => {
         if (window.confirm('Do you want to download the SVG file ?')) {
