@@ -1,5 +1,4 @@
 import AutomataGrid from '../../src/js/sketch-common/AutomataGrid'
-import MirrorShape from './MirrorShape'
 import exportSVG from '../../src/js/sketch-common/exportSVG'
 import {
     getRandomPalette,
@@ -60,44 +59,66 @@ const triangle = (p = [], color) => {
     colorsGroups[color].appendChild(t)
 }
 const fillCell = (x, y, color) => {
-    mirror.allCorners(x, y).forEach((p) => {
-        rect(
-            p[0] * cellSize.w,
-            p[1] * cellSize.h,
-            cellSize.w,
-            cellSize.h,
-            color
-        )
-    })
+    rect(x * cellSize.w, y * cellSize.h, cellSize.w, cellSize.h, color)
 }
 const topLeftTriangle = (x, y, color) => {
-    mirror.topLeftCorner(x, y).forEach((p) => {
-        triangle(p, color)
-    })
+    triangle([x, y, x + 1, y, x, y + 1], color)
 }
-
 const topRightTriangle = (x, y, color) => {
-    mirror.topRightCorner(x, y).forEach((p) => {
-        triangle(p, color)
-    })
+    triangle([x, y, x + 1, y, x + 1, y + 1], color)
 }
-
 const bottomRightTriangle = (x, y, color) => {
-    mirror.bottomRightCorner(x, y).forEach((p) => {
-        triangle(p, color)
-    })
+    triangle([x + 1, y, x + 1, y + 1, x, y + 1], color)
 }
-
 const bottomLeftTriangle = (x, y, color) => {
-    mirror.bottomLeftCorner(x, y).forEach((p) => {
-        triangle(p, color)
+    triangle([x + 1, y + 1, x, y + 1, x, y], color)
+}
+const mirrorClone = () => {
+    const dx = svgFrameSize.w / 2
+    const dy = svgFrameSize.h / 2
+    const mirrors = [
+        {
+            name: 'topLeft',
+            transform: false
+        },
+        {
+            name: 'topRight',
+            transform: `scale(-1 1) translate(${dx} 0)`
+        },
+        {
+            name: 'bottomLeft',
+            transform: `scale(1 -1) translate(0 ${dy})`
+        },
+        {
+            name: 'bottomRight',
+            transform: `scale(-1 -1) translate(${dx} ${dy})`
+        }
+    ]
+    colorsGroups.forEach((group, i) => {
+        const shapes = group.childNodes
+        shapes.forEach((shape) => {
+            group.removeChild(shape)
+        })
+        mirrors.forEach((mirror) => {
+            const mirorGroup = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g'
+            )
+            mirorGroup.setAttribute('id', group.id + '-' + mirror.name)
+            if (mirror.transform)
+                mirorGroup.setAttribute('transform', mirror.transform)
+
+            shapes.forEach((node) => {
+                mirorGroup.appendChild(node)
+            })
+            group.appendChild(mirorGroup)
+        })
     })
 }
-
 const print = () => {
     if (colorsGroups[0] !== undefined) {
-        colorsGroups.forEach((g) => {
-            g.childNodes.forEach((child) => {
+        colorsGroups.forEach((group) => {
+            group.childNodes.forEach((child) => {
                 child.remove()
             })
         })
@@ -152,6 +173,8 @@ const print = () => {
             }
         }
     }
+    // clone mirror
+    mirrorClone()
 }
 
 // Create container
@@ -176,12 +199,11 @@ const windowFrame = document.getElementById('windowFrame')
 windowFrame.appendChild(svgContainer)
 
 // Setup automata
-const g = new AutomataGrid(12, 8)
+const g = new AutomataGrid(8, 8)
 cellSize = {
     w: svgFrameSize.w / (1 + g.cols * 2),
     h: svgFrameSize.h / (1 + g.rows * 2)
 }
-const mirror = new MirrorShape(g.cols, g.rows)
 const paramBox = document.createElement('div')
 paramBox.id = 'interactiveParameter'
 
@@ -227,8 +249,8 @@ const sketch = {
         print()
     },
     changeColor: () => {
-        palette = getRandomPalette(3)
-        // palette = getColorCombination(false, 'Mondrian').colors
+        //palette = getRandomPalette(3)
+        palette = getColorCombination(false, 'Mondrian').colors
 
         mainSVG
             .querySelectorAll('g')

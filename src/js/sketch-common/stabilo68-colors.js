@@ -96,7 +96,6 @@ const getRandomPalette = (colorNum = 1) => {
 const getColorCombination = (colorNum = 2, combinationName = false) => {
     let selectedCombination = false
     let selectedCombinationName = null
-    console.log('ColorNum', colorNum, 'combinationName', combinationName)
 
     // Check if user want multiple colors
     if (colorNum && colorNum < 2) {
@@ -127,7 +126,6 @@ const getColorCombination = (colorNum = 2, combinationName = false) => {
                     }
                 }
             }
-            console.log('numColor', numColor, 'combinations', combinations)
         }
     }
     // User want a random combination
