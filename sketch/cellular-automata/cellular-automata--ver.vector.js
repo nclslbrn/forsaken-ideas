@@ -175,7 +175,7 @@ const svgContainer = document.createElement('div')
 svgContainer.id = 'frame'
 svgContainer.setAttribute(
     'style',
-    'height: 90vh; width: auto; padding: 0; background: #fff;'
+    'height: 85vh; width: auto; padding: 5vh; background: #fff;'
 )
 
 const svgFrameSize = svgSize()
@@ -186,13 +186,13 @@ mainSVG.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
 mainSVG.setAttribute('width', svgFrameSize.w)
 mainSVG.setAttribute('height', svgFrameSize.h)
 mainSVG.setAttribute('viewBox', `0 0 ${svgFrameSize.w} ${svgFrameSize.h}`)
-mainSVG.setAttribute('style', 'height: 90%; width: auto;')
+mainSVG.setAttribute('style', 'height: 85vh; width: auto;')
 svgContainer.appendChild(mainSVG)
 const windowFrame = document.getElementById('windowFrame')
 windowFrame.appendChild(svgContainer)
 
 // Setup automata
-const g = new AutomataGrid(32, 32)
+const g = new AutomataGrid(24, 24)
 cellSize = {
     w: svgFrameSize.w / (1 + g.cols * 2),
     h: svgFrameSize.h / (1 + g.rows * 2)
