@@ -36,7 +36,11 @@ const colorsCombinations = {
         'Fluo dream': [13, 44, 26],
         Mondrian: [44, 48, 32]
     },
-    4: undefined
+    4: {
+        'Cyan meet tomato': [32, 59, 48, 13],
+        'Yellow starship': [44, 95, 46, 24],
+        'Sausage and mustard': [51, 48, 44, 26]
+    }
 }
 
 /**
@@ -85,6 +89,7 @@ const getRandomPalette = (colorNum = 1) => {
             colors.push(newcolors)
         }
     }
+    console.log(colors)
     return colors
 }
 /**
