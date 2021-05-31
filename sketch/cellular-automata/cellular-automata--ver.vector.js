@@ -23,7 +23,7 @@ const rect = (x = 0, y = 0, width = 0, height = 0, color) => {
     r.setAttribute('y', y)
     r.setAttribute('width', width)
     r.setAttribute('height', height)
-    colorsGroups[color].appendChild(r)
+    colorsGroups[color].shapes.push(r)
     //r.setAttribute('fill', color)
     //mainSVG.appendChild(r)
 }
@@ -34,7 +34,6 @@ const triangle = (p = [], color) => {
     const _y = (v) => {
         return v * cellSize.h
     }
-
     const t = document.createElementNS('http://www.w3.org/2000/svg', 'path')
     t.setAttribute(
         'd',
@@ -54,9 +53,7 @@ const triangle = (p = [], color) => {
                 'Z'
         )
     )
-    //t.setAttribute('fill', color)
-    //mainSVG.appendChild(t)
-    colorsGroups[color].appendChild(t)
+    colorsGroups[color].shapes.push(t)
 }
 const fillCell = (x, y, color) => {
     rect(x * cellSize.w, y * cellSize.h, cellSize.w, cellSize.h, color)
@@ -74,56 +71,52 @@ const bottomLeftTriangle = (x, y, color) => {
     triangle([x + 1, y + 1, x, y + 1, x, y], color)
 }
 const mirrorClone = () => {
-    const dx = svgFrameSize.w / 2
-    const dy = svgFrameSize.h / 2
     const mirrors = [
         {
             name: 'topLeft',
-            transform: false
+            transform: 'scale(1, 1)'
         },
         {
             name: 'topRight',
-            transform: `scale(-1 1) translate(${dx} 0)`
+            transform: 'scale(-1, 1)'
         },
         {
             name: 'bottomLeft',
-            transform: `scale(1 -1) translate(0 ${dy})`
+            transform: 'scale(1, -1)'
         },
         {
             name: 'bottomRight',
-            transform: `scale(-1 -1) translate(${dx} ${dy})`
+            transform: 'scale(-1, -1)'
         }
     ]
-    colorsGroups.forEach((group, i) => {
-        const shapes = group.childNodes
-        shapes.forEach((shape) => {
-            group.removeChild(shape)
-        })
+    while (mainSVG.firstChild) {
+        mainSVG.removeChild(mainSVG.firstChild)
+    }
+    colorsGroups.forEach((group) => {
+        const domGroup = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'g'
+        )
+        domGroup.setAttribute('id', group.colorName)
+        domGroup.setAttribute('fill', group.colorValue)
         mirrors.forEach((mirror) => {
-            const mirorGroup = document.createElementNS(
+            const mirrorGroup = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'g'
             )
-            mirorGroup.setAttribute('id', group.id + '-' + mirror.name)
-            if (mirror.transform)
-                mirorGroup.setAttribute('transform', mirror.transform)
-
-            shapes.forEach((node) => {
-                mirorGroup.appendChild(node)
+            mirrorGroup.setAttribute('id', group.colorName + '-' + mirror.name)
+            mirrorGroup.setAttribute('transform', mirror.transform)
+            mirrorGroup.setAttribute('transform-origin', 'center')
+            group.shapes.forEach((node) => {
+                mirrorGroup.appendChild(node.cloneNode(true))
             })
-            group.appendChild(mirorGroup)
+            domGroup.appendChild(mirrorGroup)
         })
+        mainSVG.appendChild(domGroup)
     })
 }
 const print = () => {
-    if (colorsGroups[0] !== undefined) {
-        colorsGroups.forEach((group) => {
-            group.childNodes.forEach((child) => {
-                child.remove()
-            })
-        })
-    }
-
+    for (let i = 0; i < colorsGroups.length; i++) colorsGroups[i].shapes = []
     for (let x = 0; x <= g.cols; x++) {
         for (let y = 0; y <= g.rows; y++) {
             const i = x * g.cols + y
@@ -193,13 +186,13 @@ mainSVG.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
 mainSVG.setAttribute('width', svgFrameSize.w)
 mainSVG.setAttribute('height', svgFrameSize.h)
 mainSVG.setAttribute('viewBox', `0 0 ${svgFrameSize.w} ${svgFrameSize.h}`)
-mainSVG.setAttribute('style', 'height: 90%; width: auto; padding: 60px;')
+mainSVG.setAttribute('style', 'height: 90%; width: auto;')
 svgContainer.appendChild(mainSVG)
 const windowFrame = document.getElementById('windowFrame')
 windowFrame.appendChild(svgContainer)
 
 // Setup automata
-const g = new AutomataGrid(8, 8)
+const g = new AutomataGrid(32, 32)
 cellSize = {
     w: svgFrameSize.w / (1 + g.cols * 2),
     h: svgFrameSize.h / (1 + g.rows * 2)
@@ -249,24 +242,16 @@ const sketch = {
         print()
     },
     changeColor: () => {
-        //palette = getRandomPalette(3)
-        palette = getColorCombination(false, 'Mondrian').colors
-
-        mainSVG
-            .querySelectorAll('g')
-            .forEach((group) => mainSVG.removeChild(group))
+        palette = getRandomPalette(4)
+        //palette = getColorCombination(3, false).colors
         colorsGroups = []
-
         // create group for every color in palette
         palette.forEach((color) => {
-            const group = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'g'
-            )
-            group.setAttribute('fill', color.value)
-            group.setAttribute('id', color.name.replace(' ', '_').toLowerCase())
-            mainSVG.appendChild(group)
-            colorsGroups.push(group)
+            colorsGroups.push({
+                colorValue: color.value,
+                colorName: color.name.replace(' ', '_').toLowerCase(),
+                shapes: []
+            })
         })
     },
     downloadSVG: () => {
