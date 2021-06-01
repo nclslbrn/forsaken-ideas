@@ -106,7 +106,10 @@ const mirrorClone = () => {
             )
             mirrorGroup.setAttribute('id', group.colorName + '-' + mirror.name)
             mirrorGroup.setAttribute('transform', mirror.transform)
-            mirrorGroup.setAttribute('transform-origin', 'center')
+            mirrorGroup.setAttribute(
+                'transform-origin',
+                `${svgFrameSize.w / 2}px ${svgFrameSize.h / 2}px`
+            )
             group.shapes.forEach((node) => {
                 mirrorGroup.appendChild(node.cloneNode(true))
             })
