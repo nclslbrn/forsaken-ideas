@@ -1,4 +1,4 @@
-import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import funcs from '../../src/js/sketch-common/plane-curve'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import joinVector from './joinVector'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
@@ -33,7 +33,7 @@ const sketch = (p5) => {
     }
 
     // displacement functions
-    const funcs = planeCurveFuncs(p5)
+
     const attractors = strangeAttractors(p5).attractors
 
     const functionNames = Object.entries(funcs).map((func_name) => {
@@ -42,11 +42,8 @@ const sketch = (p5) => {
     const attractorNames = Object.entries(attractors).map((attr_name) => {
         return attr_name[0]
     })
-    const {
-        joinVectorFuncs,
-        joinVectorFuncsNames,
-        getOperatorSymbol
-    } = joinVector(p5)
+    const { joinVectorFuncs, joinVectorFuncsNames, getOperatorSymbol } =
+        joinVector(p5)
 
     const strFromVar = (variable) => {
         return variable.replaceAll('_', ' ').toUpperCase()
@@ -60,14 +57,14 @@ const sketch = (p5) => {
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
             const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
-                fv.x + 0.0003 * p5.randomGaussian(),
+                fv.x, // + 0.0003 * p5.randomGaussian(),
                 x1,
                 x2,
                 margin,
                 p5.width - margin
             )
             const yy = p5.map(
-                fv.y + 0.0003 * p5.randomGaussian(),
+                fv.y, // + 0.0003 * p5.randomGaussian(),
                 y1,
                 y2,
                 margin,

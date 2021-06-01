@@ -1,11 +1,10 @@
 import * as tome from 'chromotome'
-import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import funcs from '../../src/js/sketch-common/plane-curve'
 
 const sketch = (p5) => {
     const res = 0.05
     const scale = 0.01
     const alpha = 50
-    const funcs = planeCurveFuncs(p5)
     let selectedFunc, palette, points, canvas
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)

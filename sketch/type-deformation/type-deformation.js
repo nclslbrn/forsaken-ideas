@@ -1,6 +1,6 @@
 import words from '../../src/json/e-m-g-words.json'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
-import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import planarFuncs from '../../src/js/sketch-common/plane-curve'
 
 const eWords = words.e
 let canvas
@@ -9,7 +9,6 @@ const sketch = (p5) => {
     const numFrame = 400
     const initScale = 0.003
     const backgroundCol = 12
-    const planarFuncs = planeCurveFuncs(p5)
     const everyFunction = Object.entries(planarFuncs).map((name) => name[0])
     let font,
         word,

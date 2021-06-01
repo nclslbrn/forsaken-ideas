@@ -1,5 +1,5 @@
 import * as tome from 'chromotome'
-import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import funcs from '../../src/js/sketch-common/plane-curve'
 import paramSlider from '../../src/js/sketch-common/param-slider'
 import darkPalettes from './darkPalettes'
 
@@ -13,7 +13,6 @@ const sketch = (p5) => {
     const margin = 0.05
     const sample = 12
 
-    const funcs = planeCurveFuncs(p5)
     // A4 150dpi width
     const sketchWidth = 800
     const sketchHeight = 800
@@ -31,8 +30,8 @@ const sketch = (p5) => {
         const ratio = sketchWidth / sketchHeight
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
-            w: side > 800 ? sketchWidth : side * ratio,
-            h: side > 800 ? sketchHeight : side
+            w: side > 1440 ? sketchWidth : side * ratio,
+            h: side > 1440 ? sketchHeight : side
         }
     }
 
@@ -120,7 +119,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
-        //canvas.elt.setAttribute('style', `max-width: 40vw; max-height: 40vw;`)
+        canvas.elt.setAttribute('style', `max-height: 60vw; width: auto;`)
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
@@ -133,7 +132,8 @@ const sketch = (p5) => {
 
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
-            const v1 = funcs[selectedFunc](points[p])
+            const v0 = funcs[selectedFunc](points[p])
+            const v1 = p5.createVector(v0.x, v0.y)
             const a1 = Math.atan2(v1.x, v1.y)
             const a2 =
                 p5.map(p5.noise(Math.cos(a1), Math.sin(a1)), 0, 1, -1, 1) * 300
