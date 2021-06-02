@@ -85,7 +85,8 @@ const folium = (v, amount = 1.0) => {
 }
 // from @tsulej https://generateme.wordpress.com/2016/04/11/folds/
 const hyperbolic = (v, amount = 2.0) => {
-    const r = v.mag() + 1.0e-10
+    const mag = Math.sqrt(Math.pow(v.x, 2), Math.pow(v.y, 2))
+    const r = mag + 1.0e-10
     const theta = Math.atan2(v.x, v.y)
     return {
         x: (amount * Math.sin(theta)) / r,
