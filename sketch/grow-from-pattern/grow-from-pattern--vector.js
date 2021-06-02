@@ -19,13 +19,14 @@ const circle = (theta) => {
 // Main sketch object
 const sketch = {
     nIter: 0,
-    iterations: 5,
+    iterations: 15,
     patternNum: [3, 5, 6, 7, 9, 10, 11, 12, 13, 15],
-    width: 1280, //5031,
-    height: 1280, //3579,
+    width: 5031,
+    height: 3579,
     trigoFunc: false,
-    scale: 256,
-    res: 64,
+    scale: 0.005,
+    step: 360,
+    res: 32,
     points: [],
     lines: [],
     root: document.getElementById('windowFrame'),
@@ -56,11 +57,11 @@ const sketch = {
         sketch.points = []
         sketch.lines = []
 
-        for (let x = 0; x <= sketch.width; x += sketch.scale) {
-            for (let y = 0; y <= sketch.height; y += sketch.scale) {
+        for (let x = 0; x <= sketch.width; x += sketch.step) {
+            for (let y = 0; y <= sketch.height; y += sketch.step) {
                 if ((x ^ y) % g) {
-                    for (let dx = 0; dx <= sketch.scale; dx += sketch.res) {
-                        for (let dy = 0; dy <= sketch.scale; dy += sketch.res) {
+                    for (let dx = 0; dx <= sketch.step; dx += sketch.res) {
+                        for (let dy = 0; dy <= sketch.step; dy += sketch.res) {
                             sketch.points.push({
                                 x: ((x + dx) / sketch.width) * 6 - 3,
                                 y: ((y + dy) / sketch.height) * 6 - 3
@@ -94,11 +95,13 @@ const sketch = {
 
             sketch.lines[p].push([xx, yy])
         }
+        sketch.print()
 
         if (sketch.nIter < sketch.iterations) {
             requestAnimationFrame(sketch.update)
             sketch.nIter++
         } else {
+            sketch.notify('Done')
             sketch.print()
         }
     },
@@ -117,13 +120,47 @@ const sketch = {
                 d += ` L${sketch.lines[i][j][0]} ${sketch.lines[i][j][1]}`
             }
             path.setAttribute('d', d)
+            path.setAttribute('fill', 'none')
+            path.setAttribute('stroke', '#333')
             sketch.svg.appendChild(path)
         }
+    },
+    notify: (message) => {
+        const p = document.createElement('p')
+        p.setAttribute('style', 'padding: 1em;')
+        p.innerHTML = message
+        sketch.root.appendChild(p)
+        window.setTimeout(() => {
+            sketch.root.removeChild(p)
+        }, 5000)
     },
     reset: () => {
         sketch.trigoFunc = randomTrigoFunc()
         sketch.init_points()
         sketch.update()
+    },
+    export: () => {
+        const date = new Date(),
+            Y = date.getFullYear(),
+            m = date.getMonth(),
+            d = date.getDay(),
+            H = date.getHours(),
+            i = date.getMinutes(),
+            filename = `Grow-from-pattern.${Y}-${m}-${d}.${H}-${i}.svg`,
+            content = new Blob([sketch.root.innerHTML], {
+                type: 'text/plain'
+            })
+
+        let svgFile = null
+        if (svgFile !== null) {
+            window.URL.revokeObjectURL(svgFile)
+        }
+        svgFile = window.URL.createObjectURL(content)
+
+        const link = document.createElement('a')
+        link.href = svgFile
+        link.download = filename
+        link.click()
     }
 }
 export default sketch
