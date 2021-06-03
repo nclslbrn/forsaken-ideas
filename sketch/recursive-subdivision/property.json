@@ -1,0 +1,15 @@
+{
+    "libs": [],
+    "info": "Why not",
+    "date": "2021-06-03",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
