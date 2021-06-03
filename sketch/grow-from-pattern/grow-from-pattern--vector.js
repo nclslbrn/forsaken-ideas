@@ -16,31 +16,35 @@ const circle = (theta) => {
     return { x: Math.cos(theta), y: Math.sin(theta) }
 }
 
+// Value from Inkscape (document properties)
+const size = {
+    a3: { w: 1587.40157, h: 1122.51969 },
+    a4: { w: 1122.51969, h: 793.70079 }
+}
+
 // Main sketch object
 const sketch = {
     nIter: 0,
-    iterations: 15,
+    iterations: 40,
     patternNum: [3, 5, 6, 7, 9, 10, 11, 12, 13, 15],
-    width: 5031,
-    height: 3579,
+    size: size.a4,
     trigoFunc: false,
-    scale: 0.005,
-    step: 360,
-    res: 32,
+    scale: 0.001,
+    step: 96,
+    res: 6,
     points: [],
     lines: [],
     root: document.getElementById('windowFrame'),
     svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-    requestId: false,
     init: () => {
         sketch.svg.setAttribute('version', '1.1')
         sketch.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
         sketch.svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        sketch.svg.setAttribute('width', sketch.width)
-        sketch.svg.setAttribute('height', sketch.height)
+        sketch.svg.setAttribute('width', sketch.size.w)
+        sketch.svg.setAttribute('height', sketch.size.h)
         sketch.svg.setAttribute(
             'viewBox',
-            `0 0 ${sketch.width} ${sketch.height}`
+            `0 0 ${sketch.size.w} ${sketch.size.h}`
         )
         sketch.svg.setAttribute(
             'style',
@@ -57,14 +61,14 @@ const sketch = {
         sketch.points = []
         sketch.lines = []
 
-        for (let x = 0; x <= sketch.width; x += sketch.step) {
-            for (let y = 0; y <= sketch.height; y += sketch.step) {
+        for (let x = 0; x <= sketch.size.w; x += sketch.step) {
+            for (let y = 0; y <= sketch.size.h; y += sketch.step) {
                 if ((x ^ y) % g) {
                     for (let dx = 0; dx <= sketch.step; dx += sketch.res) {
                         for (let dy = 0; dy <= sketch.step; dy += sketch.res) {
                             sketch.points.push({
-                                x: ((x + dx) / sketch.width) * 6 - 3,
-                                y: ((y + dy) / sketch.height) * 6 - 3
+                                x: ((x + dx) / sketch.size.w) * 6 - 3,
+                                y: ((y + dy) / sketch.size.h) * 6 - 3
                             })
                         }
                     }
@@ -75,8 +79,8 @@ const sketch = {
     },
     update: () => {
         for (let p = 0; p < sketch.points.length; p++) {
-            const xx = map(sketch.points[p].x, -4, 4, 0, sketch.width)
-            const yy = map(sketch.points[p].y, -4, 4, 0, sketch.height)
+            const xx = map(sketch.points[p].x, -4, 4, 0, sketch.size.w)
+            const yy = map(sketch.points[p].y, -4, 4, 0, sketch.size.h)
             const n1 =
                 500 *
                 map(
@@ -130,6 +134,7 @@ const sketch = {
         p.setAttribute('style', 'padding: 1em;')
         p.innerHTML = message
         sketch.root.appendChild(p)
+        console.log(message)
         window.setTimeout(() => {
             sketch.root.removeChild(p)
         }, 5000)
@@ -146,7 +151,7 @@ const sketch = {
             d = date.getDay(),
             H = date.getHours(),
             i = date.getMinutes(),
-            filename = `Grow-from-pattern.${Y}-${m}-${d}.${H}-${i}.svg`,
+            filename = `Grow-from-pattern.${Y}-${m}-${d}_${H}.${i}.svg`,
             content = new Blob([sketch.root.innerHTML], {
                 type: 'text/plain'
             })
