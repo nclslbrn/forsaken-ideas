@@ -14,7 +14,7 @@ export default class AutomataGrid {
      * Fill the grid with random value
      * @param {number} percent of chance that cell is alive
      */
-    init(percent = 0.5) {
+    init(percent = 0.35) {
         this.value = []
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
