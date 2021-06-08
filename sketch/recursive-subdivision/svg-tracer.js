@@ -20,6 +20,7 @@ export default class SvgTracer {
      */
     constructor(parentElem, size) {
         this.parentElem = parentElem
+        this.groups = []
 
         if (printFormat[size] == undefined) {
             console.log(
@@ -69,6 +70,17 @@ export default class SvgTracer {
         }
     }
     /**
+     * Remove everything in group elemts
+     */
+    clearGroups() {
+        for (let i = 0; i < this.groups.length; i++) {
+            while (this.groups[i].firstChild) {
+                this.groups[i].removeChild(this.groups[i].firstChild)
+            }
+        }
+    }
+
+    /**
      * Rect drawing function
      * @typedef {rect} props rectangle values
      * @param {number} props.x top left x coordinate of the rectangle
@@ -77,8 +89,17 @@ export default class SvgTracer {
      * @param {number} props.h height of the rectangle
      * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
      * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
+     * @param {string} props.group group name if you want to add rect to a specific group
      */
-    rect(props = { x: 0, y: 0, w: 0, h: 0, fill: false, stroke: false }) {
+    rect(props) {
+        props.x = props.x === undefined ? 0 : props.x
+        props.y = props.y === undefined ? 0 : props.y
+        props.w = props.w === undefined ? 0 : props.w
+        props.h = props.h === undefined ? 0 : props.h
+        props.fill = props.fill === undefined ? false : props.fill
+        props.stroke = props.stroke === undefined ? false : props.stroke
+        props.group = props.group === undefined ? false : props.group
+
         const rect = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'rect'
@@ -91,7 +112,11 @@ export default class SvgTracer {
         if (props.fill) rect.setAttribute('fill', props.fill)
         if (props.stroke) rect.setAttribute('stroke', props.stroke)
 
-        this.elem.appendChild(rect)
+        if (props.group) {
+            this.groups[props.group].appendChild(rect)
+        } else {
+            this.elem.appendChild(rect)
+        }
     }
     /**
      * Line drawing function
@@ -99,8 +124,19 @@ export default class SvgTracer {
      * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])
      * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
      * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
+     * @param {boolean} props.close determine if path is closed or open
+     * @param {string} props.group group name if you want to add path to a specific group
      */
-    line(props = { points: [], fill: false, stroke: false }) {
+    line(props) {
+        if (props.points === undefined) {
+            console.error('You must specify points property to draw a line')
+            return
+        }
+        props.fill = props.fill === undefined ? false : props.fill
+        props.stroke = props.stroke === undefined ? false : props.stroke
+        props.close = props.close === undefined ? false : props.close
+        props.group = props.group === undefined ? false : props.group
+
         const path = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'path'
@@ -110,10 +146,16 @@ export default class SvgTracer {
         for (let i = 1; i < props.points.length; i++) {
             d += ` L${props.points[i][0]} ${props.points[i][1]}`
         }
+        if (props.close) d += ` L${props.points[0][0]} ${props.points[0][1]}`
         path.setAttribute('d', d)
         if (props.fill) path.setAttribute('fill', props.fill)
         if (props.stroke) path.setAttribute('stroke', props.stroke)
-        this.elem.appendChild(path)
+
+        if (props.group) {
+            this.groups[props.group].appendChild(path)
+        } else {
+            this.elem.appendChild(path)
+        }
     }
     /**
      * Text drawing function
@@ -123,10 +165,27 @@ export default class SvgTracer {
      * @param {string} props.text the text to draw
      * @param {string} props.fontFamily font family name of the text
      * @param {number} props.fontSize font size of the text
+     * @param {string} props.group group name if you want to add path to a specific group
      */
-    text(
-        props = { x: 0, y: 0, text: '', fontFamily: 'sans-serif', fontSize: 16 }
-    ) {
+    text(props) {
+        if (props.x === undefined) {
+            console.error('You need to specify x property')
+            return
+        }
+        if (props.y === undefined) {
+            console.error('You need to specify y property')
+            return
+        }
+        if (props.text === undefined) {
+            console.error('You need to specify the text that will be displayed')
+            return
+        }
+        props.fontFamily =
+            props.fontFamily === undefined ? 'sans-serif' : props.fontFamily
+        props.fontSize = props.fontSize === undefined ? 16 : props.fontSize
+        props.fill = props.fill === undefined ? 'black' : props.fill
+        props.group = props.group === undefined ? false : props.group
+
         const text = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'text'
@@ -134,8 +193,44 @@ export default class SvgTracer {
         text.setAttribute('x', props.x)
         text.setAttribute('y', props.y)
         text.setAttribute('font-family', props.fontFamily)
-        text.setAttribute('font-size', props.frontSize)
-        text.innerText = props.text
-        this.elem.appendChild(text)
+        text.setAttribute('font-size', props.fontSize)
+        text.setAttribute('fill', props.fill)
+        text.innerHTML = props.text
+
+        if (props.group) {
+            this.groups[props.group].appendChild(text)
+        } else {
+            this.elem.appendChild(text)
+        }
+    }
+    /**
+     * Group function
+     * @typedef {group} props group definition
+     * @param {string} props.name the name attribute of the group
+     * @param {string} props.fill color value of the fill attribute
+     * @param {string} props.group group name an other group to nest the new one
+     */
+    group(props) {
+        if (props.name === undefined) {
+            console.error(
+                'You must specified a name because you need it to fill group after created it'
+            )
+            return
+        }
+        props.fill = props.fill === undefined ? false : props.fill
+        props.group = props.group === undefined ? false : props.group
+
+        const groupElem = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'g'
+        )
+        if (props.name) groupElem.setAttribute('name', props.name)
+        if (props.fill) groupElem.setAttribute('fill', props.fill)
+        if (props.group) {
+            this.groups[props.group].appendChild(groupElem)
+        } else {
+            this.elem.appendChild(groupElem)
+        }
+        this.groups[props.name] = groupElem
     }
 }
