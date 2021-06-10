@@ -1,6 +1,4 @@
 import SvgTracer from './svg-tracer'
-// Based on a processing sketch of Roni Kaufman
-// https://github.com/ronikaufman/mondrian_generator/blob/master/mondrian_generator.pde
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
@@ -8,13 +6,13 @@ const randomBetween = (interval = { min: 0, max: 1 }) => {
 
 const sketch = {
     // Main sketch variables
-    thickness: 1,
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
+    margin: 4,
     decrease: 0.7,
-    iterations: 54,
-    subSize: { min: 0.15, max: 0.85 },
+    iterations: 16,
+    subSize: { min: 0.3, max: 0.7 },
     nIter: 0,
     divisions: [],
+    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
     /**
      * Run once after page load (similar to processing setup())
      */
@@ -29,10 +27,15 @@ const sketch = {
         // Replace previous divisions with a full size rectangle
         sketch.divisions = [
             {
-                w: sketch.svg.width - sketch.thickness,
-                h: sketch.svg.height - sketch.thickness,
-                x: sketch.thickness / 2,
-                y: sketch.thickness / 2,
+                p: [
+                    [sketch.margin / 2, sketch.margin / 2],
+                    [sketch.svg.width - sketch.margin, sketch.margin / 2],
+                    [
+                        sketch.svg.width - sketch.margin,
+                        sketch.svg.height - sketch.margin
+                    ],
+                    [sketch.margin / 2, sketch.svg.height - sketch.margin]
+                ],
                 pos: 1
             }
         ]
@@ -43,54 +46,66 @@ const sketch = {
     /**
      * Main division computing
      * @typedef {division} props defines next possible division
-     * @param {number} props.w width
-     * @param {number} props.h height
-     * @param {number} props.x top left x position
-     * @param {number} props.y top left y position,
+     * @param {number} props.p an two dimension array of point
      * @param {number} props.chanceprobability between 0 and 1 to split,
      * @param {bool} props.isVert define vertical or horizontal split
      * @param {int} props.pos number of cut to create this shape
      */
     subdivision: (props) => {
         if (props) {
-            const { w, h, x, y, chance, isVert } = props
+            const { p, chance, isVert } = props
+            const hlfMarg = sketch.margin / 2
             if (chance > Math.random()) {
                 if (isVert) {
-                    const xDiv = Math.round(randomBetween(sketch.subSize) * w)
+                    const xDiv = Math.round(
+                        randomBetween(sketch.subSize) * (p[1][0] - p[0][0])
+                    )
+                    console.log(xDiv)
                     sketch.subdivision({
-                        w: xDiv,
-                        h: h,
-                        x: x,
-                        y: y,
+                        p: [
+                            [p[0][0], p[0][1]],
+                            [p[0][0] + xDiv - hlfMarg, p[1][1]],
+                            [p[0][0] + xDiv - hlfMarg, p[2][1]],
+                            [p[3][0], p[3][1]]
+                        ],
                         chance: chance * sketch.decrease,
                         isVert: false,
                         pos: props.pos + 1
                     })
                     sketch.subdivision({
-                        w: w - xDiv,
-                        h: h,
-                        x: x + xDiv,
-                        y: y,
+                        p: [
+                            [p[0][0] + xDiv + hlfMarg, p[0][1]],
+                            [p[1][0], p[1][1]],
+                            [p[2][0], p[2][1]],
+                            [p[0][0] + xDiv + hlfMarg, p[3][1]]
+                        ],
                         chance: chance * sketch.decrease,
                         isVert: false,
                         pos: props.pos + 1
                     })
                 } else {
-                    const yDiv = Math.round(randomBetween(sketch.subSize) * h)
+                    const yDiv = Math.round(
+                        randomBetween(sketch.subSize) * (p[3][1] - p[0][1])
+                    )
+                    console.log(yDiv)
                     sketch.subdivision({
-                        w: w,
-                        h: yDiv,
-                        x: x,
-                        y: y,
+                        p: [
+                            [p[0][0], p[0][1]],
+                            [p[1][0], p[1][1]],
+                            [p[2][0], p[1][1] + yDiv - hlfMarg],
+                            [p[3][0], p[0][1] + yDiv - hlfMarg]
+                        ],
                         chance: chance * sketch.decrease,
                         isVert: true,
                         pos: props.pos + 1
                     })
                     sketch.subdivision({
-                        w: w,
-                        h: h - yDiv,
-                        x: x,
-                        y: y + yDiv,
+                        p: [
+                            [p[0][0], p[0][1] + yDiv + hlfMarg],
+                            [p[1][0], p[1][1] + yDiv + hlfMarg],
+                            [p[2][0], p[2][1]],
+                            [p[3][0], p[3][1]]
+                        ],
                         chance: chance * sketch.decrease,
                         isVert: true,
                         pos: props.pos + 1
@@ -98,10 +113,7 @@ const sketch = {
                 }
             } else {
                 sketch.divisions.push({
-                    x: x + sketch.thickness / 2,
-                    y: y + sketch.thickness / 2,
-                    w: Math.abs(w - sketch.thickness),
-                    h: Math.abs(h - sketch.thickness),
+                    p: [...p],
                     pos: props.pos
                 })
             }
@@ -114,18 +126,21 @@ const sketch = {
     print: () => {
         //console.log(sketch.divisions)
         sketch.svg.clear()
-        const fontSize = 32
+        //const fontSize = 128
         for (let i = 0; i < sketch.divisions.length; i++) {
-            sketch.svg.rect({
-                ...sketch.divisions[i],
-                fill: 'white',
-                stroke: 'black'
+            console.log(sketch.divisions[i].p)
+            sketch.svg.path({
+                points: sketch.divisions[i].p,
+                fill: 'tomato',
+                stroke: 'rgba(0,0,0,0)'
             })
+            /*             const fs = fontSize * (1 / sketch.divisions[i].pos)
             sketch.svg.text({
-                ...sketch.divisions[i],
-                fontSize: fontSize * (1 / sketch.divisions[i].pos),
-                text: sketch.divisions[i].pos
-            })
+                x: sketch.divisions[i].x + sketch.divisions[i].w / 2 - fs / 2,
+                y: sketch.divisions[i].y + sketch.divisions[i].h / 2 + fs / 2,
+                fontSize: fs,
+                text: String(sketch.divisions[i].pos)
+            }) */
         }
     },
 
