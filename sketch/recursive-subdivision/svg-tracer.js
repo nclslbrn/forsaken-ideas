@@ -68,14 +68,17 @@ export default class SvgTracer {
         while (this.elem.firstChild) {
             this.elem.removeChild(this.elem.firstChild)
         }
+        this.groups = []
     }
     /**
      * Remove everything in group elemts
      */
     clearGroups() {
-        for (let i = 0; i < this.groups.length; i++) {
-            while (this.groups[i].firstChild) {
-                this.groups[i].removeChild(this.groups[i].firstChild)
+        for (const group_name in this.groups) {
+            while (this.groups[group_name].firstChild) {
+                this.groups[group_name].removeChild(
+                    this.groups[group_name].firstChild
+                )
             }
         }
     }
@@ -120,14 +123,15 @@ export default class SvgTracer {
     }
     /**
      * Line drawing function
-     * @typedef {line} props line value
+     * @typedef {path} props path value
      * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])
      * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
      * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
      * @param {boolean} props.close determine if path is closed or open
+     * @param {string} props.name a name attribute
      * @param {string} props.group group name if you want to add path to a specific group
      */
-    line(props) {
+    path(props) {
         if (props.points === undefined) {
             console.error('You must specify points property to draw a line')
             return
@@ -135,6 +139,7 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.close = props.close === undefined ? false : props.close
+        props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
         const path = document.createElementNS(
@@ -142,7 +147,6 @@ export default class SvgTracer {
             'path'
         )
         let d = `M ${props.points[0][0]} ${props.points[0][1]}`
-
         for (let i = 1; i < props.points.length; i++) {
             d += ` L${props.points[i][0]} ${props.points[i][1]}`
         }
@@ -150,7 +154,7 @@ export default class SvgTracer {
         path.setAttribute('d', d)
         if (props.fill) path.setAttribute('fill', props.fill)
         if (props.stroke) path.setAttribute('stroke', props.stroke)
-
+        if (props.name) path.setAttribute('name', props.name)
         if (props.group) {
             this.groups[props.group].appendChild(path)
         } else {
@@ -165,6 +169,7 @@ export default class SvgTracer {
      * @param {string} props.text the text to draw
      * @param {string} props.fontFamily font family name of the text
      * @param {number} props.fontSize font size of the text
+     * @param {string} props.name a name attribute
      * @param {string} props.group group name if you want to add path to a specific group
      */
     text(props) {
@@ -184,6 +189,7 @@ export default class SvgTracer {
             props.fontFamily === undefined ? 'sans-serif' : props.fontFamily
         props.fontSize = props.fontSize === undefined ? 16 : props.fontSize
         props.fill = props.fill === undefined ? 'black' : props.fill
+        props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
         const text = document.createElementNS(
@@ -195,6 +201,7 @@ export default class SvgTracer {
         text.setAttribute('font-family', props.fontFamily)
         text.setAttribute('font-size', props.fontSize)
         text.setAttribute('fill', props.fill)
+        if (props.name) text.setAttribute('name', props.name)
         text.innerHTML = props.text
 
         if (props.group) {
