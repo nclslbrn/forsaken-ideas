@@ -1,7 +1,7 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import SimplexNoise from 'simplex-noise'
 import remap from './remap'
-import Ptransform from './Ptransform'
+import Ptransform from '../../src/js/sketch-common/Ptransform'
 import funcs from '../../src/js/sketch-common/plane-curve'
 
 const simplex = new SimplexNoise('seed')
@@ -14,14 +14,14 @@ const planeFunctionsNames = Object.entries(funcs).map((func_name) => {
 const sketch = {
     margin: 20,
     res: 0.2,
-    scale: 0.1,
-    moves: 50,
-    downscale: 2,
+    scale: 0,
+    moves: 300,
+    downscale: 1,
     nMov: 0,
     points: [],
     lines: [],
-    nFreq: 50,
-    nAmp: 1200,
+    nFreq: 4000,
+    nAmp: 10,
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
     planeFunctionsNames: 'astroid',
     perspTrans: new Ptransform(0.5, 0.5),
@@ -62,18 +62,25 @@ const sketch = {
             const v = funcs[sketch.planeFunctionsNames]({ x: nx, y: ny })
             const a =
                 Math.atan2(v.x / sketch.nFreq, v.y / sketch.nFreq) * sketch.nAmp
+
             const n1 =
-                simplex.noise3D(nx / sketch.nFreq, ny / sketch.nFreq, 0) *
-                sketch.nAmp *
-                a
+                simplex.noise3D(
+                    nx / sketch.nFreq,
+                    ny / sketch.nFreq,
+                    sketch.points[i].height / sketch.nFreq
+                ) * sketch.nAmp
             const n2 =
-                simplex.noise3D(0, nx / sketch.nFreq, ny / sketch.nFreq) *
-                sketch.nAmp *
-                a
+                simplex.noise3D(
+                    sketch.points[i].height / sketch.nFreq,
+                    nx / sketch.nFreq,
+                    ny / sketch.nFreq
+                ) * sketch.nAmp
             const n3 =
-                simplex.noise3D(nx / sketch.nFreq, 0, ny / sketch.nFreq) *
-                sketch.nAmp *
-                a
+                simplex.noise3D(
+                    nx / sketch.nFreq,
+                    sketch.points[i].height / sketch.nFreq,
+                    ny / sketch.nFreq
+                ) * sketch.nAmp
             //console.log('n1 ', n1, ' n2 ', n2, ' n3 ', n3)
             const n =
                 simplex.noise3D(
@@ -82,10 +89,12 @@ const sketch = {
                     Math.sin(n3) / sketch.nFreq
                 ) * sketch.nAmp
 
-            sketch.points[i].x += Math.cos(sketch.points[i].angle) * 0.03
-            sketch.points[i].y += Math.sin(sketch.points[i].angle) * 0.03
+            sketch.points[i].x +=
+                Math.cos(sketch.points[i].angle) * sketch.scale
+            sketch.points[i].y +=
+                Math.sin(sketch.points[i].angle) * sketch.scale
             sketch.points[i].height = n + 1
-            sketch.points[i].angle += n * sketch.scale
+            sketch.points[i].angle += n
 
             const _p = sketch.perspTrans.do['transform'](
                 remap(

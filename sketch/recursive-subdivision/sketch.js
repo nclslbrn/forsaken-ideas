@@ -1,4 +1,5 @@
-import SvgTracer from './svg-tracer'
+import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import Ptransform from '../../src/js/sketch-common/Ptransform'
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
@@ -11,12 +12,14 @@ const sketch = {
     expectedDivisions: 12,
     subSize: { min: 0.3, max: 0.7 },
     divisions: [],
+    perspTrans: new Ptransform(0.5, 0.5),
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
     /**
      * Run once after page load (similar to processing setup())
      */
     launch: () => {
         sketch.svg.init()
+        sketch.perspTrans.init(sketch.svg.width, sketch.svg.height)
         sketch.init()
     },
     /**
@@ -131,29 +134,20 @@ const sketch = {
     print: () => {
         sketch.svg.clearGroups()
         for (let i = 0; i < sketch.divisions.length; i++) {
+            const points = sketch.divisions[i].p.map((p) => {
+                return sketch.perspTrans.do['transform'](p[0], p[1])
+            })
             const width = Math.round(
-                Math.max(
-                    sketch.divisions[i].p[1][0],
-                    sketch.divisions[i].p[2][0]
-                ) -
-                    Math.min(
-                        sketch.divisions[i].p[0][0],
-                        sketch.divisions[i].p[3][0]
-                    )
+                Math.max(points[1][0], points[2][0]) -
+                    Math.min(points[0][0], points[3][0])
             )
 
             const height = Math.round(
-                Math.max(
-                    sketch.divisions[i].p[2][1],
-                    sketch.divisions[i].p[3][1]
-                ) -
-                    Math.min(
-                        sketch.divisions[i].p[0][1],
-                        sketch.divisions[i].p[1][1]
-                    )
+                Math.max(points[2][1], points[3][1]) -
+                    Math.min(points[0][1], points[1][1])
             )
             sketch.svg.path({
-                points: sketch.divisions[i].p,
+                points: points,
                 fill: 'tomato',
                 stroke: 'rgba(0,0,0,0)',
                 close: true,
@@ -161,8 +155,8 @@ const sketch = {
             })
 
             sketch.svg.text({
-                x: sketch.divisions[i].p[0][0] + width / 2,
-                y: sketch.divisions[i].p[0][1] + height / 2,
+                x: points[0][0] + width / 2,
+                y: points[0][1] + height / 2,
                 fontSize: 72 * (1 / sketch.divisions[i].pos),
                 text: i,
                 name: i,
