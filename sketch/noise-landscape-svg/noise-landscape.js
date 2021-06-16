@@ -2,28 +2,21 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import SimplexNoise from 'simplex-noise'
 import remap from './remap'
 import Ptransform from '../../src/js/sketch-common/Ptransform'
-import funcs from '../../src/js/sketch-common/plane-curve'
 
-const simplex = new SimplexNoise('seed')
-const planeFunctionsNames = Object.entries(funcs).map((func_name) => {
-    if ('archimedean_spiral' !== func_name[0]) {
-        return func_name[0]
-    }
-})
+const simplex = new SimplexNoise(Math.random() * 99999)
 
 const sketch = {
     margin: 20,
     res: 0.2,
-    scale: 0,
+    scale: 1,
     moves: 300,
-    downscale: 1,
     nMov: 0,
     points: [],
     lines: [],
-    nFreq: 4000,
-    nAmp: 10,
+    nFreq: 0.01,
+    nAmp: 4.5,
+    stepSize: 0.015,
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
-    planeFunctionsNames: 'astroid',
     perspTrans: new Ptransform(0.5, 0.5),
     launch: () => {
         sketch.svg.init()
@@ -34,21 +27,24 @@ const sketch = {
         sketch.points = []
         sketch.lines = []
         sketch.nMov = 0
-        sketch.planeFunction =
-            planeFunctionsNames[
-                Math.round(Math.random() * planeFunctionsNames.length)
-            ]
         for (let x = -3; x < 3; x += sketch.res) {
             for (let y = -3; y < 3; y += sketch.res) {
                 sketch.points.push({
                     x: (Math.random() - 0.5) * sketch.res + x,
                     y: (Math.random() - 0.5) * sketch.res + y,
-                    angle: Math.random() * Math.PI,
-                    height: 0
+                    z: (Math.random() - 0.5) * sketch.res,
+                    angle: 0
                 })
                 sketch.lines.push([])
             }
         }
+        sketch.points.push({
+            x: 0,
+            y: 0,
+            angle: Math.random() * Math.PI,
+            height: 1
+        })
+        sketch.lines.push([])
         console.log('Sketch initialized')
         console.log(sketch.planeFunction)
         sketch.update()
@@ -59,55 +55,34 @@ const sketch = {
 
             const nx = sketch.points[i].x
             const ny = sketch.points[i].y
-            const v = funcs[sketch.planeFunctionsNames]({ x: nx, y: ny })
-            const a =
-                Math.atan2(v.x / sketch.nFreq, v.y / sketch.nFreq) * sketch.nAmp
+            const nz = sketch.points[i].z
 
-            const n1 =
-                simplex.noise3D(
-                    nx / sketch.nFreq,
-                    ny / sketch.nFreq,
-                    sketch.points[i].height / sketch.nFreq
-                ) * sketch.nAmp
-            const n2 =
-                simplex.noise3D(
-                    sketch.points[i].height / sketch.nFreq,
-                    nx / sketch.nFreq,
-                    ny / sketch.nFreq
-                ) * sketch.nAmp
-            const n3 =
-                simplex.noise3D(
-                    nx / sketch.nFreq,
-                    sketch.points[i].height / sketch.nFreq,
-                    ny / sketch.nFreq
-                ) * sketch.nAmp
-            //console.log('n1 ', n1, ' n2 ', n2, ' n3 ', n3)
             const n =
                 simplex.noise3D(
-                    (Math.cos(n3) * Math.cos(n1)) / sketch.nFreq,
-                    (Math.cos(n3) * Math.sin(n2)) / sketch.nFreq,
-                    Math.sin(n3) / sketch.nFreq
+                    nx * sketch.nFreq,
+                    ny * sketch.nFreq,
+                    nz * sketch.nFreq
                 ) * sketch.nAmp
 
             sketch.points[i].x +=
-                Math.cos(sketch.points[i].angle) * sketch.scale
+                Math.cos(sketch.points[i].angle) * sketch.stepSize
             sketch.points[i].y +=
-                Math.sin(sketch.points[i].angle) * sketch.scale
-            sketch.points[i].height = n + 1
-            sketch.points[i].angle += n
+                Math.sin(sketch.points[i].angle) * sketch.stepSize
+            sketch.points[i].z = n * 300
+            sketch.points[i].angle = n
 
             const _p = sketch.perspTrans.do['transform'](
                 remap(
                     sketch.points[i].x,
-                    -sketch.downscale,
-                    sketch.downscale,
+                    -sketch.scale,
+                    sketch.scale,
                     sketch.margin,
                     sketch.svg.width - sketch.margin
                 ),
                 remap(
                     sketch.points[i].y,
-                    -sketch.downscale,
-                    sketch.downscale,
+                    -sketch.scale,
+                    sketch.scale,
                     sketch.margin,
                     sketch.svg.height - sketch.margin
                 ),
