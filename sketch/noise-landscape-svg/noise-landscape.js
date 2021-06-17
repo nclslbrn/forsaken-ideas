@@ -1,23 +1,20 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import SimplexNoise from 'simplex-noise'
 import remap from './remap'
 import Ptransform from '../../src/js/sketch-common/Ptransform'
-
-const simplex = new SimplexNoise(Math.random() * 99999)
+import Fbm from './Fbm'
 
 const sketch = {
-    margin: 20,
-    res: 0.2,
-    scale: 1,
-    moves: 300,
-    nMov: 0,
-    points: [],
-    lines: [],
-    nFreq: 0.01,
-    nAmp: 4.5,
-    stepSize: 0.015,
+    margin: 20, // sketch margin
+    res: 0.2, // space between points (within the grid)
+    scale: 1, // scale the plane of the grid
+    moves: 200, // how many moves a point can do
+    nMov: 0, // move count
+    points: [], // store points positions at t
+    lines: [], // store every points pos
+    stepSize: 0.01, // distance between each move
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
     perspTrans: new Ptransform(0.5, 0.5),
+    fbm: new Fbm({ frequency: 0.015, amplitude: 1.5, seed: Math.random() }),
     launch: () => {
         sketch.svg.init()
         sketch.perspTrans.init(sketch.svg.width, sketch.svg.height)
@@ -30,10 +27,11 @@ const sketch = {
         for (let x = -3; x < 3; x += sketch.res) {
             for (let y = -3; y < 3; y += sketch.res) {
                 sketch.points.push({
-                    x: (Math.random() - 0.5) * sketch.res + x,
-                    y: (Math.random() - 0.5) * sketch.res + y,
-                    z: (Math.random() - 0.5) * sketch.res,
-                    angle: 0
+                    x: (Math.random() / 2 - 0.25) * sketch.res + x,
+                    y: (Math.random() / 2 - 0.25) * sketch.res + y,
+                    z: (Math.random() / 2 - 0.25) * sketch.res,
+                    angle: Math.random() * Math.PI * 2,
+                    isLiving: true
                 })
                 sketch.lines.push([])
             }
@@ -46,59 +44,56 @@ const sketch = {
         })
         sketch.lines.push([])
         console.log('Sketch initialized')
-        console.log(sketch.planeFunction)
+        console.log('Noise seed', sketch.fbm.seed)
         sketch.update()
     },
     update: () => {
         for (let i = 0; i < sketch.points.length; i++) {
             if (sketch.lines[i] === undefined) return
-
-            const nx = sketch.points[i].x
-            const ny = sketch.points[i].y
-            const nz = sketch.points[i].z
-
-            const n =
-                simplex.noise3D(
-                    nx * sketch.nFreq,
-                    ny * sketch.nFreq,
-                    nz * sketch.nFreq
-                ) * sketch.nAmp
-
-            sketch.points[i].x +=
-                Math.cos(sketch.points[i].angle) * sketch.stepSize
-            sketch.points[i].y +=
-                Math.sin(sketch.points[i].angle) * sketch.stepSize
-            sketch.points[i].z = n * 300
-            sketch.points[i].angle = n
-
-            const _p = sketch.perspTrans.do['transform'](
-                remap(
+            if (sketch.points[i].isLiving) {
+                const n = sketch.fbm.f(
                     sketch.points[i].x,
-                    -sketch.scale,
-                    sketch.scale,
-                    sketch.margin,
-                    sketch.svg.width - sketch.margin
-                ),
-                remap(
                     sketch.points[i].y,
-                    -sketch.scale,
-                    sketch.scale,
-                    sketch.margin,
-                    sketch.svg.height - sketch.margin
-                ),
-                sketch.svg.height - sketch.points[i].height * sketch.svg.height
-            )
-            if (
-                _p[0] > sketch.margin &&
-                _p[0] < sketch.svg.width - sketch.margin &&
-                _p[1] > sketch.margin &&
-                _p[1] < sketch.svg.height - sketch.margin
-            ) {
-                sketch.lines[i].push(_p)
+                    sketch.points[i].z
+                )
+
+                sketch.points[i].x +=
+                    Math.cos(sketch.points[i].angle) * sketch.stepSize
+                sketch.points[i].y +=
+                    Math.sin(sketch.points[i].angle) * sketch.stepSize
+                sketch.points[i].z = n + 1 * 90
+                sketch.points[i].angle = n
+
+                const _p = sketch.perspTrans.do['transform'](
+                    remap(
+                        sketch.points[i].x,
+                        -sketch.scale,
+                        sketch.scale,
+                        sketch.margin,
+                        sketch.svg.width - sketch.margin
+                    ),
+                    remap(
+                        sketch.points[i].y,
+                        -sketch.scale,
+                        sketch.scale,
+                        sketch.margin,
+                        sketch.svg.height - sketch.margin
+                    ),
+                    sketch.svg.height - sketch.points[i].z * sketch.svg.height
+                )
+                if (
+                    _p[0] > sketch.margin &&
+                    _p[0] < sketch.svg.width - sketch.margin &&
+                    _p[1] > sketch.margin &&
+                    _p[1] < sketch.svg.height - sketch.margin
+                ) {
+                    sketch.lines[i].push(_p)
+                } else {
+                    sketch.points[i].isLiving = false
+                }
             }
         }
         sketch.nMov++
-
         sketch.draw()
 
         if (sketch.nMov < sketch.moves) {
@@ -127,7 +122,7 @@ const sketch = {
             d = date.getDay(),
             H = date.getHours(),
             i = date.getMinutes(),
-            filename = `recursive-division.${Y}-${m}-${d}_${H}.${i}.svg`,
+            filename = `noise-landscape.${Y}-${m}-${d}_${H}.${i}.svg`,
             content = new Blob([sketch.svg.parentElem.innerHTML], {
                 type: 'text/plain'
             })
