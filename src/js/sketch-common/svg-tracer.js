@@ -62,7 +62,7 @@ export default class SvgTracer {
         }
     }
     /**
-     * Remove every element in SVG element
+     * Remove every element in the <svg> element
      */
     clear() {
         while (this.elem.firstChild) {
@@ -71,7 +71,7 @@ export default class SvgTracer {
         this.groups = []
     }
     /**
-     * Remove everything in group elemts
+     * Remove everything in <group>s elements
      */
     clearGroups() {
         for (const group_name in this.groups) {
@@ -239,5 +239,34 @@ export default class SvgTracer {
             this.elem.appendChild(groupElem)
         }
         this.groups[props.name] = groupElem
+    }
+    /**
+     * Export <svg> as file
+     * @typedef {export} props svf file export definition
+     * @param {string} props.name filename prefix (will be suffixed by a timestamp)
+     */
+    export(props) {
+        props.name = props.name === undefined ? 'untitled' : props.name
+        let svgFile = null
+        const date = new Date(),
+            Y = date.getFullYear(),
+            m = date.getMonth(),
+            d = date.getDay(),
+            H = date.getHours(),
+            i = date.getMinutes()
+
+        const filename = `${props.name}.${Y}-${m}-${d}_${H}.${i}.svg`
+        const data = new Blob([this.parentElem.innerHTML], {
+            type: 'text/plain'
+        })
+        if (svgFile !== null) {
+            window.URL.revokeObjectURL(svgFile)
+        }
+        svgFile = window.URL.createObjectURL(data)
+
+        const link = document.createElement('a')
+        link.href = svgFile
+        link.download = filename
+        link.click()
     }
 }
