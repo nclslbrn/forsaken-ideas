@@ -1,5 +1,3 @@
-import SvgTracer from './svg-tracer'
-
 /**
  * Simple function to save inline (html) Svg into .SVG file
  * @param {string|object} svgContainer the svg parent element id or node element
