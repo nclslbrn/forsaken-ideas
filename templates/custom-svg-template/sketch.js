@@ -1,5 +1,4 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import exportSVG from '../../src/js/sketch-common/exportSVG'
 
 const sketch = {
     iterations: 100,
@@ -25,7 +24,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        exportSVG(sketch.svg.parentElem.innerHTML, 'sketchname')
+        sketch.svg.export({ name: 'sketchname' })
     }
 }
 
