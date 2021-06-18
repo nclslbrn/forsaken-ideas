@@ -16,19 +16,26 @@ export default class SvgTracer {
     /**
      * Define svg size
      * @param {object} parentElem the HTML dom element where include the SVG
-     * @param {string} size one of printFormat's key
+     * @param {string|object} size format name listed above or size object {w: width, h: height}
      */
     constructor(parentElem, size) {
         this.parentElem = parentElem
         this.groups = []
 
-        if (printFormat[size] == undefined) {
+        if (
+            printFormat[size] == undefined &&
+            (size.w === undefined || size.h === undefined)
+        ) {
             console.log(
                 'Wrong format passed, possible options are : ',
-                Object.keys(printFormat)
+                Object.keys(printFormat),
+                ' or custom size object {w: width, h: height}'
             )
             return
-        } else {
+        } else if (size.w && size.h) {
+            this.width = size.w
+            this.height = size.h
+        } else if (printFormat[size]) {
             this.width = printFormat[size].w
             this.height = printFormat[size].h
         }

@@ -1,12 +1,20 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import SimplexNoise from 'simplex-noise'
-
+import ease from '../../src/js/sketch-common/ease'
+import isPointInsidePolygon from './isPointInsidePolygon'
+// print in 24 * 32 cm
+// from inkscape it correspond to 1209,44885 * 907,08661
 const sketch = {
-    step: 8,
-    margin: 20,
+    step: 5,
+    margin: 50,
     points: [],
+    noiseFrequency: 150,
+    noiseAmplitude: 60,
     lines: [],
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
+    svg: new SvgTracer(document.getElementById('windowFrame'), {
+        w: 1209.44885,
+        h: 907.08661
+    }),
     seed: undefined,
     simplex: undefined,
     isDone: undefined,
@@ -38,21 +46,46 @@ const sketch = {
     },
     // compute change
     update: () => {
-        console.log('update')
+        const radius = 320
+        const center = { x: sketch.svg.width / 2, y: sketch.svg.height / 2 }
+        const polygon = []
+        for (let theta = 0; theta < Math.PI * 2; theta += Math.PI * (2 / 3)) {
+            const r =
+                radius *
+                Math.min(
+                    1 / Math.abs(Math.cos(theta)),
+                    1 / Math.abs(Math.sin(theta))
+                )
+            polygon.push({
+                x: center.x + r * Math.cos(theta),
+                y: center.y + r * Math.sin(theta)
+            })
+        }
+
         for (let i = 0; i < sketch.points.length; i++) {
+            let amplitude = 0
+            const dist =
+                Math.abs(sketch.points[i].x - center.x) ** 2 +
+                Math.abs(sketch.points[i].y - center.y) ** 2
+            const _d = Math.sin(1 - Math.sqrt(dist) / radius)
+
+            if (isPointInsidePolygon(sketch.points[i], polygon)) {
+                amplitude = ease(_d * _d, 0.5) * sketch.noiseAmplitude
+            }
+
             sketch.points[i].x += sketch.step
             let y = sketch.points[i].y
             y +=
                 sketch.simplex.noise3D(
-                    sketch.points[i].x / sketch.svg.width,
-                    sketch.points[i].y / sketch.svg.height,
-                    Math.sin(Math.atan2(sketch.points[i].x, sketch.points[i].y))
-                ) * 2000
+                    sketch.points[i].x / (sketch.noiseFrequency * (_d * 2)),
+                    sketch.points[i].y / (sketch.noiseFrequency * (_d * 2)),
+                    Math.sin(_d) / sketch.noiseFrequency
+                ) * amplitude
 
             if (sketch.lines[i]) {
                 sketch.lines[i].push([sketch.points[i].x, y])
             }
-            if (sketch.points[i].x >= sketch.svg.width - sketch.margin * 2) {
+            if (sketch.points[i].x >= sketch.svg.width - sketch.margin) {
                 sketch.isDone = true
             }
         }
