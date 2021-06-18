@@ -8,8 +8,8 @@ const sketch = {
     step: 5,
     margin: 50,
     points: [],
-    noiseFrequency: 150,
-    noiseAmplitude: 60,
+    noiseFrequency: 105,
+    noiseAmplitude: 40,
     lines: [],
     svg: new SvgTracer(document.getElementById('windowFrame'), {
         w: 1209.44885,
@@ -49,7 +49,8 @@ const sketch = {
         const radius = 320
         const center = { x: sketch.svg.width / 2, y: sketch.svg.height / 2 }
         const polygon = []
-        for (let theta = 0; theta < Math.PI * 2; theta += Math.PI * (2 / 3)) {
+        const rot = Math.PI / 2 //* (2 / 3)
+        for (let theta = 0; theta < Math.PI * 2; theta += rot) {
             const r =
                 radius *
                 Math.min(
@@ -64,13 +65,23 @@ const sketch = {
 
         for (let i = 0; i < sketch.points.length; i++) {
             let amplitude = 0
-            const dist =
-                Math.abs(sketch.points[i].x - center.x) ** 2 +
-                Math.abs(sketch.points[i].y - center.y) ** 2
-            const _d = Math.sin(1 - Math.sqrt(dist) / radius)
+            let dist = sketch.svg.width
+
+            let _d = 1.5
 
             if (isPointInsidePolygon(sketch.points[i], polygon)) {
-                amplitude = ease(_d * _d, 0.5) * sketch.noiseAmplitude
+                for (let j = 0; j < polygon.length; j++) {
+                    let pointToJ = Math.abs(
+                        Math.sqrt(
+                            Math.pow(polygon[j].x - sketch.points[i].x, 2) +
+                                Math.pow(polygon[j].y - sketch.points[i].y, 2)
+                        )
+                    )
+
+                    if (pointToJ < dist) dist = pointToJ
+                }
+                _d = 1 - dist / (radius * 4)
+                amplitude = ease(_d * _d, 50) * sketch.noiseAmplitude
             }
 
             sketch.points[i].x += sketch.step
