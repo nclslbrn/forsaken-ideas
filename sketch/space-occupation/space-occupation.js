@@ -2,18 +2,15 @@ import ease from '../../src/js/sketch-common/ease'
 import Pool from '../../src/js/sketch-common/Pool'
 
 const sketch = (p5) => {
-    const frameRange = { min: 60, max: 120 }
-    const easeRange = { min: 1, max: 4 }
-    const N = 6
-    const margin = 0.05
+    const N = 16
+    const margin = 0.07
     let cols, nextCols, rows, nextRows
     const xPool = new Pool(N)
     let yPool = []
     for (let i = 0; i < N; i++) {
         yPool.push(new Pool(N))
     }
-    let numFrame = Math.round(p5.random(frameRange.min, frameRange.max))
-    let easeValue = p5.random(easeRange.min, easeRange.max)
+    const numFrame = 60
     const next = () => {
         xPool.update()
         const newCols = xPool.getItems()
@@ -48,7 +45,7 @@ const sketch = (p5) => {
         if (p5.frameCount % numFrame !== 0) {
             p5.background(0)
 
-            const t = ease((p5.frameCount % numFrame) / numFrame, easeValue)
+            const t = ease((p5.frameCount % numFrame) / numFrame, 5)
             let dx = p5.width * margin
             for (let i = 0; i < N; i++) {
                 const x =
@@ -77,8 +74,6 @@ const sketch = (p5) => {
             cols = nextCols
             rows = nextRows
             ;[nextCols, nextRows] = next()
-            numFrame = Math.round(p5.random(frameRange.min, frameRange.max))
-            easeValue = p5.random(easeRange.min, easeRange.max)
         }
     }
 
