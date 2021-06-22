@@ -7,14 +7,19 @@ const sketch = {
     margin: 20, // sketch margin
     res: 0.2, // space between points (within the grid)
     scale: 1, // scale the plane of the grid
-    moves: 200, // how many moves a point can do
+    moves: 300, // how many moves a point can do
     nMov: 0, // move count
     points: [], // store points positions at t
     lines: [], // store every points pos
     stepSize: 0.01, // distance between each move
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
     perspTrans: new Ptransform(0.5, 0.5),
-    fbm: new Fbm({ frequency: 0.015, amplitude: 1.5, seed: Math.random() }),
+    fbm: new Fbm({
+        frequency: 0.15,
+        octaves: 9,
+        amplitude: 0.15,
+        seed: Math.random()
+    }),
     launch: () => {
         sketch.svg.init()
         sketch.perspTrans.init(sketch.svg.width, sketch.svg.height)
@@ -57,12 +62,11 @@ const sketch = {
                     sketch.points[i].z
                 )
 
-                sketch.points[i].x +=
-                    Math.cos(sketch.points[i].angle) * sketch.stepSize
-                sketch.points[i].y +=
-                    Math.sin(sketch.points[i].angle) * sketch.stepSize
-                sketch.points[i].z = n + 1 * 90
-                sketch.points[i].angle = n
+                const theta = sketch.points[i].angle
+                sketch.points[i].x += Math.cos(theta) * sketch.stepSize
+                sketch.points[i].y += Math.sin(theta) * sketch.stepSize
+                sketch.points[i].z = n + 1 * 10
+                sketch.points[i].angle = 1 / n
 
                 const _p = sketch.perspTrans.do['transform'](
                     remap(
