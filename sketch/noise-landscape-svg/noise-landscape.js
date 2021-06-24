@@ -7,7 +7,7 @@ const sketch = {
     margin: 20, // sketch margin
     res: 0.2, // space between points (within the grid)
     scale: 1, // scale the plane of the grid
-    moves: 300, // how many moves a point can do
+    moves: 500, // how many moves a point can do
     nMov: 0, // move count
     points: [], // store points positions at t
     lines: [], // store every points pos
@@ -82,8 +82,8 @@ const sketch = {
                         sketch.scale,
                         sketch.margin,
                         sketch.svg.height - sketch.margin
-                    ),
-                    sketch.svg.height - sketch.points[i].z * sketch.svg.height
+                    ) +
+                        (sketch.points[i].z - 0.5) * 40
                 )
                 if (
                     _p[0] > sketch.margin &&

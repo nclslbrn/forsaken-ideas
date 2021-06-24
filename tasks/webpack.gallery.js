@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const unescapeTitle = require('./unescapeTitle')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+//const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
@@ -127,6 +128,9 @@ module.exports = (env, process) => {
                     ]
                 }
             ]
+        },
+        optimization: {
+            minimizer: [new CssMinimizerPlugin()]
         },
         resolve: {
             extensions: ['.js', '.pug', '.json']

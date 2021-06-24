@@ -4,7 +4,8 @@ const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+//const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
@@ -31,7 +32,6 @@ module.exports = (project, entry, output, title, property, mode) => {
                 path: output,
                 filename: '[name]-bundle.js'
             },
-
             plugins: [
                 new webpack.ProgressPlugin(),
                 new ProgressBarPlugin(),
@@ -50,7 +50,6 @@ module.exports = (project, entry, output, title, property, mode) => {
                     filename: 'css/[name].css'
                 })
             ],
-
             module: {
                 rules: [
                     {
@@ -124,9 +123,15 @@ module.exports = (project, entry, output, title, property, mode) => {
                     }
                 ]
             },
-
+            optimization: {
+                minimizer: [new CssMinimizerPlugin()]
+            },
             resolve: {
-                extensions: ['.js', '.pug', '.json']
+                extensions: ['.js', '.pug', '.json'],
+                fallback: {
+                    fs: false,
+                    assert: false
+                }
             },
 
             externals: {
@@ -143,6 +148,7 @@ module.exports = (project, entry, output, title, property, mode) => {
 
             stats: 'errors-only'
         }
+
         if (HaveToCopyData) {
             config.plugins.push(
                 new CopyWebpackPlugin({
