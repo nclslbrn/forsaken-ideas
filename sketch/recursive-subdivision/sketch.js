@@ -1,171 +1,154 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import Ptransform from '../../src/js/sketch-common/Ptransform'
+import * as THREE from 'three'
+import { SVGRenderer } from 'three/examples/jsm/renderers/SVGRenderer'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
 }
-
 const sketch = {
     // Main sketch variables
-    margin: 2,
+    size: { w: 1587.40157, h: 1122.51969 },
+    thickness: 0.05,
     decrease: 0.7,
     expectedDivisions: 12,
     subSize: { min: 0.3, max: 0.7 },
     divisions: [],
-    perspTrans: new Ptransform(0.5, 0.5),
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
+    camera: new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth / window.innerHeight,
+        0.001,
+        200
+    ),
+    scene: new THREE.Scene(),
+    renderer: new SVGRenderer({ overdraw: 2 }),
+    faceMat: new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        opacity: 0.5,
+        transparent: true
+    }),
+    edgeMat: new THREE.LineBasicMaterial({
+        color: 0x000000
+    }),
+    controls: false,
+    exporter: new OBJExporter(),
     /**
      * Run once after page load (similar to processing setup())
      */
     launch: () => {
-        sketch.svg.init()
-        sketch.perspTrans.init(sketch.svg.width, sketch.svg.height)
+        sketch.camera.position.z = sketch.expectedDivisions
+        sketch.scene.background = new THREE.Color(255, 255, 255)
+        sketch.renderer.setSize(sketch.size.w, sketch.size.h)
+        document
+            .getElementById('windowFrame')
+            .appendChild(sketch.renderer.domElement)
+
+        // sketch.renderer.domElement.style = 'max-width: 95vh; height: auto;'
+        sketch.controls = new OrbitControls(
+            sketch.camera,
+            sketch.renderer.domElement
+        )
+        sketch.controls.screenSpacePanning = true
+
         sketch.init()
     },
     /**
      * Used before first update or when user reset the sketch
      */
     init: () => {
+        sketch.clean()
+
         // Replace previous divisions with a full size rectangle
         sketch.divisions = [
             {
-                p: [
-                    [sketch.margin / 2, sketch.margin / 2],
-                    [sketch.svg.width - sketch.margin, sketch.margin / 2],
-                    [
-                        sketch.svg.width - sketch.margin,
-                        sketch.svg.height - sketch.margin
-                    ],
-                    [sketch.margin / 2, sketch.svg.height - sketch.margin]
-                ],
-                pos: 1
+                w: 4,
+                h: 4,
+                x: 0,
+                y: 0,
+                pos: 0
             }
         ]
-        console.clear()
-        sketch.svg.clear()
-        sketch.svg.group({ name: 'shape' })
-        sketch.svg.group({ name: 'text' })
+        // on click subdivide
+        // document.addEventListener('keydown', sketch.update, false)
+
         sketch.update()
+        sketch.render()
     },
 
     /**
-     * Main division computing
+     * Main division computation
      * @typedef {division} props defines next possible division
-     * @param {number} props.p an two dimension array of point
-     * @param {number} props.chance probability between 0 and 1 to split,
-     * @param {bool} props.isVert define vertical or horizontal split
-     * @param {int} props.pos number of cut to create this shape
+     *  @property w: width
+     *  @property h: height:
+     *  @property x: top left x position
+     *  @property y: top left y position,
+     *  @property chance: probability between 0 and 1 to split,
+     *  @property isVert: boolean define vertical or horizontal split
+     *  @property pos: total split to create this shape
      */
     subdivision: (props) => {
         if (props) {
-            const { p, chance, isVert } = props
-            const m = sketch.margin / 2
+            const { w, h, x, y, chance, isVert, pos } = props
             if (chance > Math.random()) {
                 if (isVert) {
-                    const _x = [
-                        Math.abs(
-                            randomBetween(sketch.subSize) * (p[1][0] - p[0][0])
-                        ),
-                        Math.abs(
-                            randomBetween(sketch.subSize) * (p[2][0] - p[3][0])
-                        )
-                    ]
+                    const nW = randomBetween(sketch.subSize).toPrecision(4) * w
                     sketch.subdivision({
-                        p: [
-                            [p[0][0], p[0][1]],
-                            [p[0][0] + (_x[0] - m), p[1][1]],
-                            [p[3][0] + (_x[0] - m), p[2][1]],
-                            [p[3][0], p[3][1]]
-                        ],
+                        w: nW,
+                        h: h,
+                        x: x - (w - nW) / 2,
+                        y: y,
                         chance: chance * sketch.decrease,
                         isVert: false,
-                        pos: props.pos + 1
+                        pos: pos + 1
                     })
                     sketch.subdivision({
-                        p: [
-                            [p[0][0] + _x[0] + m, p[0][1]],
-                            [p[1][0], p[1][1]],
-                            [p[2][0], p[2][1]],
-                            [p[0][0] + _x[0] + m, p[3][1]]
-                        ],
+                        w: w - nW,
+                        h: h,
+                        x: x + nW / 2,
+                        y: y,
                         chance: chance * sketch.decrease,
                         isVert: false,
-                        pos: props.pos + 1
+                        pos: pos + 1
                     })
                 } else {
-                    const _y = Math.round(
-                        randomBetween(sketch.subSize) * (p[3][1] - p[0][1])
-                    )
+                    const nH = randomBetween(sketch.subSize).toPrecision(4) * h
                     sketch.subdivision({
-                        p: [
-                            [p[0][0], p[0][1]],
-                            [p[1][0], p[1][1]],
-                            [p[2][0], p[1][1] + _y - m],
-                            [p[3][0], p[0][1] + _y - m]
-                        ],
+                        w: w,
+                        h: nH,
+                        x: x,
+                        y: y - (h - nH) / 2,
                         chance: chance * sketch.decrease,
                         isVert: true,
-                        pos: props.pos + 1
+                        pos: pos + 1
                     })
                     sketch.subdivision({
-                        p: [
-                            [p[0][0], p[0][1] + _y + m],
-                            [p[1][0], p[1][1] + _y + m],
-                            [p[2][0], p[2][1]],
-                            [p[3][0], p[3][1]]
-                        ],
+                        w: w,
+                        h: h - nH,
+                        x: x,
+                        y: y + nH / 2,
                         chance: chance * sketch.decrease,
                         isVert: true,
-                        pos: props.pos + 1
+                        pos: pos + 1
                     })
                 }
             } else {
-                sketch.divisions.push({
-                    p: [...p],
-                    pos: props.pos
-                })
+                const newDivision = {
+                    x: x, //+ sketch.thickness * 0.5,
+                    y: y, //+ sketch.thickness * 0.5,
+                    w: w - sketch.thickness,
+                    h: h - sketch.thickness,
+                    pos: pos
+                }
+                sketch.divisions.push(newDivision)
             }
         }
     },
-
-    /**
-     * Put element in the window (kind of processing draw())
-     */
-    print: () => {
-        sketch.svg.clearGroups()
-        for (let i = 0; i < sketch.divisions.length; i++) {
-            const points = sketch.divisions[i].p.map((p) => {
-                return sketch.perspTrans.do['transform'](p[0], p[1])
-            })
-            const width = Math.round(
-                Math.max(points[1][0], points[2][0]) -
-                    Math.min(points[0][0], points[3][0])
-            )
-
-            const height = Math.round(
-                Math.max(points[2][1], points[3][1]) -
-                    Math.min(points[0][1], points[1][1])
-            )
-            sketch.svg.path({
-                points: points,
-                fill: 'tomato',
-                stroke: 'rgba(0,0,0,0)',
-                close: true,
-                group: 'shape'
-            })
-
-            sketch.svg.text({
-                x: points[0][0] + width / 2,
-                y: points[0][1] + height / 2,
-                fontSize: 72 * (1 / sketch.divisions[i].pos),
-                text: i,
-                name: i,
-                fill: 'white',
-                group: 'text'
-            })
-        }
+    clean: () => {
+        sketch.scene.children.forEach((child) => {
+            // console.log(child)
+            sketch.scene.remove(child)
+        })
     },
-
     /**
      * Function to iterate over a new subdivision
      */
@@ -173,21 +156,60 @@ const sketch = {
         const randDivisionIndex = Math.floor(
             Math.random() * sketch.divisions.length
         )
-        let nextDivisionProps = sketch.divisions[randDivisionIndex]
+        let nextDivisionProps = { ...sketch.divisions[randDivisionIndex] }
+
         nextDivisionProps.chance = Math.random()
         nextDivisionProps.isVert = Math.random() < 0.5
 
         sketch.divisions.splice(randDivisionIndex, 1)
-        sketch.subdivision({ ...nextDivisionProps })
-        sketch.print()
+        sketch.subdivision(nextDivisionProps)
+        sketch.draw()
 
         if (sketch.divisions.length < sketch.expectedDivisions) {
             requestAnimationFrame(sketch.update)
         } else {
-            // sketch.notify('Done')
             console.log('We got ', sketch.divisions.length, ' divisions')
-            console.log('Done')
+            //sketch.notify('Done')
         }
+    },
+    /**
+     * Put element in the window (kind of processing draw())
+     */
+    draw: () => {
+        // remove previously created cubes
+        sketch.clean()
+
+        const depth = 0.2
+        for (let i = 0; i < sketch.divisions.length; i++) {
+            const geometry = new THREE.BoxGeometry(
+                sketch.divisions[i].w,
+                sketch.divisions[i].h,
+                depth
+            )
+
+            const cube = new THREE.Mesh(geometry, sketch.faceMat)
+            cube.position.set(sketch.divisions[i].x, sketch.divisions[i].y, 0)
+            sketch.scene.add(cube)
+
+            const edgesGeometry = new THREE.EdgesGeometry(geometry)
+            const wireframe = new THREE.LineSegments(
+                edgesGeometry,
+                sketch.edgeMat
+            )
+            wireframe.position.set(
+                sketch.divisions[i].x,
+                sketch.divisions[i].y,
+                0
+            )
+            sketch.scene.add(wireframe)
+        }
+
+        sketch.renderer.render(sketch.scene, sketch.camera)
+    },
+
+    render: () => {
+        requestAnimationFrame(sketch.render)
+        sketch.renderer.render(sketch.scene, sketch.camera)
     },
 
     /**
@@ -197,24 +219,25 @@ const sketch = {
         const p = document.createElement('p')
         p.setAttribute('style', 'padding: 1em;')
         p.innerHTML = message
-        sketch.svg.parentElem.appendChild(p)
+        document.getElementById('windowFrame').appendChild(p)
         console.log(message)
         window.setTimeout(() => {
-            sketch.svg.parentElem.removeChild(p)
+            document.getElementById('windowFrame').removeChild(p)
         }, 5000)
     },
     /**
      * Function to download the svg as file
      */
     export: () => {
+        const data = sketch.exporter.parse(sketch.scene)
         const date = new Date(),
             Y = date.getFullYear(),
             m = date.getMonth(),
             d = date.getDay(),
             H = date.getHours(),
             i = date.getMinutes(),
-            filename = `recursive-division.${Y}-${m}-${d}_${H}.${i}.svg`,
-            content = new Blob([sketch.svg.parentElem.innerHTML], {
+            filename = `recursive-division.${Y}-${m}-${d}_${H}.${i}.obj`,
+            content = new Blob([data], {
                 type: 'text/plain'
             })
 
