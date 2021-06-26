@@ -1,14 +1,35 @@
 import * as THREE from 'three'
 import { SVGRenderer } from 'three/examples/jsm/renderers/SVGRenderer'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
+// import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
+import {
+    getRandomPalette,
+    getColorCombination
+} from '../../src/js/sketch-common/stabilo68-colors'
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
 }
+const save = (blob, filename) => {
+    link.href = URL.createObjectURL(blob)
+    link.download = filename
+    link.click()
+    // URL.revokeObjectURL( url ); breaks Firefox...
+}
+const saveString = (text, filename) => {
+    save(new Blob([text], { type: 'text/plain' }), filename)
+}
+const saveArrayBuffer = (buffer, filename) => {
+    save(new Blob([buffer], { type: 'application/octet-stream' }), filename)
+}
+const link = document.createElement('a')
+link.style.display = 'none'
+document.body.appendChild(link)
+
 const sketch = {
     // Main sketch variables
-    size: { w: 1587.40157, h: 1122.51969 },
+    size: { w: window.innerWidth, h: window.innerHeight }, //{ w: 1587.40157, h: 1122.51969 },
     thickness: 0.05,
     decrease: 0.7,
     expectedDivisions: 12,
@@ -21,17 +42,14 @@ const sketch = {
         200
     ),
     scene: new THREE.Scene(),
-    renderer: new SVGRenderer({ overdraw: 2 }),
-    faceMat: new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        opacity: 0.5,
-        transparent: true
-    }),
+    renderer: new THREE.WebGLRenderer(), // new SVGRenderer({ overdraw: 2 }),
+    faceMat: [],
     edgeMat: new THREE.LineBasicMaterial({
         color: 0x000000
     }),
     controls: false,
-    exporter: new OBJExporter(),
+    exporter: new GLTFExporter(),
+    palette: getRandomPalette(4), // getColorCombination(4, false).colors
     /**
      * Run once after page load (similar to processing setup())
      */
@@ -49,6 +67,16 @@ const sketch = {
             sketch.renderer.domElement
         )
         sketch.controls.screenSpacePanning = true
+        sketch.palette.forEach((color) => {
+            console.log(color)
+            sketch.faceMat.push(
+                new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(color.value),
+                    //opacity: 0.5,
+                    transparent: true
+                })
+            )
+        })
 
         sketch.init()
     },
@@ -186,12 +214,12 @@ const sketch = {
                 sketch.divisions[i].h,
                 depth
             )
-
-            const cube = new THREE.Mesh(geometry, sketch.faceMat)
+            const faceMatId = sketch.divisions[i].pos % sketch.faceMat.length
+            const cube = new THREE.Mesh(geometry, sketch.faceMat[faceMatId])
             cube.position.set(sketch.divisions[i].x, sketch.divisions[i].y, 0)
             sketch.scene.add(cube)
 
-            const edgesGeometry = new THREE.EdgesGeometry(geometry)
+            /* const edgesGeometry = new THREE.EdgesGeometry(geometry)
             const wireframe = new THREE.LineSegments(
                 edgesGeometry,
                 sketch.edgeMat
@@ -201,9 +229,8 @@ const sketch = {
                 sketch.divisions[i].y,
                 0
             )
-            sketch.scene.add(wireframe)
+            sketch.scene.add(wireframe) */
         }
-
         sketch.renderer.render(sketch.scene, sketch.camera)
     },
 
@@ -229,28 +256,15 @@ const sketch = {
      * Function to download the svg as file
      */
     export: () => {
-        const data = sketch.exporter.parse(sketch.scene)
-        const date = new Date(),
-            Y = date.getFullYear(),
-            m = date.getMonth(),
-            d = date.getDay(),
-            H = date.getHours(),
-            i = date.getMinutes(),
-            filename = `recursive-division.${Y}-${m}-${d}_${H}.${i}.obj`,
-            content = new Blob([data], {
-                type: 'text/plain'
-            })
-
-        let svgFile = null
-        if (svgFile !== null) {
-            window.URL.revokeObjectURL(svgFile)
-        }
-        svgFile = window.URL.createObjectURL(content)
-
-        const link = document.createElement('a')
-        link.href = svgFile
-        link.download = filename
-        link.click()
+        sketch.exporter.parse(sketch.scene, (result) => {
+            if (result instanceof ArrayBuffer) {
+                saveArrayBuffer(result, 'scene.glb')
+            } else {
+                const output = JSON.stringify(result, null, 2)
+                console.log(output)
+                saveString(output, 'scene.gltf')
+            }
+        })
     }
 }
 
