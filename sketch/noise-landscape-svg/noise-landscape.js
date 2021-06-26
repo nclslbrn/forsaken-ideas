@@ -1,18 +1,18 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import remap from './remap'
+import remap from '../../src/js/sketch-common/remap'
 import Ptransform from '../../src/js/sketch-common/Ptransform'
 import Fbm from './Fbm'
+import SimplexNoise from 'simplex-noise'
 
+const simplex = new SimplexNoise()
 const sketch = {
-    margin: 20, // sketch margin
+    margin: 30, // sketch margin
     res: 0.2, // space between points (within the grid)
     scale: 1, // scale the plane of the grid
-    moves: 500, // how many moves a point can do
-    nMov: 0, // move count
     points: [], // store points positions at t
     lines: [], // store every points pos
     stepSize: 0.01, // distance between each move
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
+    svg: new SvgTracer(document.getElementById('windowFrame'), 'a3portrait'),
     perspTrans: new Ptransform(0.5, 0.5),
     fbm: new Fbm({
         frequency: 0.15,
@@ -34,7 +34,7 @@ const sketch = {
                 sketch.points.push({
                     x: (Math.random() / 2 - 0.25) * sketch.res + x,
                     y: (Math.random() / 2 - 0.25) * sketch.res + y,
-                    z: (Math.random() / 2 - 0.25) * sketch.res,
+                    z: simplex.noise2D(x / 3, y / 3),
                     angle: Math.random() * Math.PI * 2,
                     isLiving: true
                 })
@@ -65,7 +65,7 @@ const sketch = {
                 const theta = sketch.points[i].angle
                 sketch.points[i].x += Math.cos(theta) * sketch.stepSize
                 sketch.points[i].y += Math.sin(theta) * sketch.stepSize
-                sketch.points[i].z = n + 1 * 10
+                sketch.points[i].z = n - 1 * 10
                 sketch.points[i].angle = 1 / n
 
                 const _p = sketch.perspTrans.do['transform'](
@@ -82,8 +82,7 @@ const sketch = {
                         sketch.scale,
                         sketch.margin,
                         sketch.svg.height - sketch.margin
-                    ) +
-                        (sketch.points[i].z - 0.5) * 40
+                    ) - sketch.points[i].z
                 )
                 if (
                     _p[0] > sketch.margin &&
@@ -99,8 +98,11 @@ const sketch = {
         }
         sketch.nMov++
         sketch.draw()
-
-        if (sketch.nMov < sketch.moves) {
+        const livingPointCount = sketch.points.reduce((prev, curr) => {
+            return prev + (curr.isLiving ? 1 : 0)
+        }, 0)
+        if (livingPointCount > 0) {
+            console.log(livingPointCount + ' living points')
             requestAnimationFrame(sketch.update)
         } else {
             console.log('Sketch done')
