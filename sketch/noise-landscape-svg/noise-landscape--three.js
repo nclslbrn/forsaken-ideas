@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import SVGRenderer from './renderer/SVGRenderer'
-import Projector from './renderer/Projector'
-import remap from './remap'
+import SVGRenderer from '../../src/js/sketch-common/three-renderer/SVGRenderer'
+import Projector from '../../src/js/sketch-common/three-renderer/Projector'
+import remap from '../../src/js/sketch-common/remap'
 import SimplexNoise from 'simplex-noise'
 import Fbm from './Fbm'
 const simplex = new SimplexNoise(Math.random() * 99999)
