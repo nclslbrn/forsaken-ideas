@@ -7,6 +7,7 @@
 // Define main SVG width, height & viewBox
 const printFormat = {
     a3: { w: 1587.40157, h: 1122.51969 },
+    a3portrait: { w: 1122.51969, h: 1587.40157 },
     a3Square: { w: 1122.51969, h: 1122.51969 },
     a4: { w: 1122.51969, h: 793.70079 },
     a4Square: { w: 793.70079, h: 793.70079 }
