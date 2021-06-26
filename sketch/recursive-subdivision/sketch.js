@@ -1,12 +1,6 @@
 import * as THREE from 'three'
-import { SVGRenderer } from 'three/examples/jsm/renderers/SVGRenderer'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-// import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
-import {
-    getRandomPalette,
-    getColorCombination
-} from '../../src/js/sketch-common/stabilo68-colors'
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
@@ -15,7 +9,6 @@ const save = (blob, filename) => {
     link.href = URL.createObjectURL(blob)
     link.download = filename
     link.click()
-    // URL.revokeObjectURL( url ); breaks Firefox...
 }
 const saveString = (text, filename) => {
     save(new Blob([text], { type: 'text/plain' }), filename)
@@ -28,11 +21,11 @@ link.style.display = 'none'
 document.body.appendChild(link)
 
 const sketch = {
-    // Main sketch variables
-    size: { w: window.innerWidth, h: window.innerHeight }, //{ w: 1587.40157, h: 1122.51969 },
+    size: { w: window.innerWidth, h: window.innerHeight },
     thickness: 0.05,
-    decrease: 0.7,
-    expectedDivisions: 12,
+    decrease: 0.9,
+    expectedDivisions: 24,
+    cubeDimension: 4,
     subSize: { min: 0.3, max: 0.7 },
     divisions: [],
     camera: new THREE.PerspectiveCamera(
@@ -42,78 +35,52 @@ const sketch = {
         200
     ),
     scene: new THREE.Scene(),
-    renderer: new THREE.WebGLRenderer(), // new SVGRenderer({ overdraw: 2 }),
-    faceMat: [],
-    edgeMat: new THREE.LineBasicMaterial({
-        color: 0x000000
+    renderer: new THREE.WebGLRenderer(),
+    material: new THREE.MeshPhongMaterial({
+        color: 0xffffff
     }),
     controls: false,
     exporter: new GLTFExporter(),
-    palette: getRandomPalette(4), // getColorCombination(4, false).colors
-    /**
-     * Run once after page load (similar to processing setup())
-     */
     launch: () => {
-        sketch.camera.position.z = sketch.expectedDivisions
-        sketch.scene.background = new THREE.Color(255, 255, 255)
+        sketch.camera.position.z = sketch.cubeDimension * 2
+        sketch.scene.background = new THREE.Color(0, 0, 0)
+        sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
+        const dirLights = [
+            new THREE.DirectionalLight(0xffffff, 0.6),
+            new THREE.DirectionalLight(0xffffff, 0.6)
+        ]
+        dirLights[0].position.set(-10, -10, 10)
+        dirLights[1].position.set(10, 10, 10)
+        dirLights.forEach((light) => {
+            sketch.scene.add(light)
+        })
         sketch.renderer.setSize(sketch.size.w, sketch.size.h)
         document
             .getElementById('windowFrame')
             .appendChild(sketch.renderer.domElement)
 
-        // sketch.renderer.domElement.style = 'max-width: 95vh; height: auto;'
         sketch.controls = new OrbitControls(
             sketch.camera,
             sketch.renderer.domElement
         )
         sketch.controls.screenSpacePanning = true
-        sketch.palette.forEach((color) => {
-            console.log(color)
-            sketch.faceMat.push(
-                new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(color.value),
-                    //opacity: 0.5,
-                    transparent: true
-                })
-            )
-        })
-
+        window.addEventListener('resize', sketch.onWindowResize, false)
         sketch.init()
     },
-    /**
-     * Used before first update or when user reset the sketch
-     */
     init: () => {
         sketch.clean()
-
-        // Replace previous divisions with a full size rectangle
         sketch.divisions = [
             {
-                w: 4,
-                h: 4,
+                w: sketch.cubeDimension,
+                h: sketch.cubeDimension,
                 x: 0,
                 y: 0,
                 pos: 0
             }
         ]
-        // on click subdivide
-        // document.addEventListener('keydown', sketch.update, false)
-
         sketch.update()
         sketch.render()
     },
-
-    /**
-     * Main division computation
-     * @typedef {division} props defines next possible division
-     *  @property w: width
-     *  @property h: height:
-     *  @property x: top left x position
-     *  @property y: top left y position,
-     *  @property chance: probability between 0 and 1 to split,
-     *  @property isVert: boolean define vertical or horizontal split
-     *  @property pos: total split to create this shape
-     */
     subdivision: (props) => {
         if (props) {
             const { w, h, x, y, chance, isVert, pos } = props
@@ -161,8 +128,8 @@ const sketch = {
                 }
             } else {
                 const newDivision = {
-                    x: x, //+ sketch.thickness * 0.5,
-                    y: y, //+ sketch.thickness * 0.5,
+                    x: x,
+                    y: y,
                     w: w - sketch.thickness,
                     h: h - sketch.thickness,
                     pos: pos
@@ -172,65 +139,94 @@ const sketch = {
         }
     },
     clean: () => {
+        const toKeep = ['DirectionalLight', 'AmbientLight']
         sketch.scene.children.forEach((child) => {
-            // console.log(child)
-            sketch.scene.remove(child)
+            if (!toKeep.includes(child.type)) {
+                sketch.scene.remove(child)
+            }
         })
     },
-    /**
-     * Function to iterate over a new subdivision
-     */
     update: () => {
         const randDivisionIndex = Math.floor(
             Math.random() * sketch.divisions.length
         )
         let nextDivisionProps = { ...sketch.divisions[randDivisionIndex] }
-
         nextDivisionProps.chance = Math.random()
         nextDivisionProps.isVert = Math.random() < 0.5
-
         sketch.divisions.splice(randDivisionIndex, 1)
         sketch.subdivision(nextDivisionProps)
-        sketch.draw()
 
         if (sketch.divisions.length < sketch.expectedDivisions) {
             requestAnimationFrame(sketch.update)
         } else {
-            console.log('We got ', sketch.divisions.length, ' divisions')
-            //sketch.notify('Done')
+            sketch.notify(`We got ${sketch.divisions.length} divisions`)
+            sketch.draw()
         }
     },
-    /**
-     * Put element in the window (kind of processing draw())
-     */
     draw: () => {
-        // remove previously created cubes
         sketch.clean()
-
-        const depth = 0.2
+        const depth = 0.5
+        const frontGroup = new THREE.Group()
         for (let i = 0; i < sketch.divisions.length; i++) {
+            const cubeDepth = depth * (1 / sketch.divisions[i].pos)
             const geometry = new THREE.BoxGeometry(
                 sketch.divisions[i].w,
                 sketch.divisions[i].h,
-                depth
+                cubeDepth
             )
-            const faceMatId = sketch.divisions[i].pos % sketch.faceMat.length
-            const cube = new THREE.Mesh(geometry, sketch.faceMat[faceMatId])
-            cube.position.set(sketch.divisions[i].x, sketch.divisions[i].y, 0)
-            sketch.scene.add(cube)
-
-            /* const edgesGeometry = new THREE.EdgesGeometry(geometry)
-            const wireframe = new THREE.LineSegments(
-                edgesGeometry,
-                sketch.edgeMat
-            )
-            wireframe.position.set(
+            const cube = new THREE.Mesh(geometry, sketch.material)
+            cube.position.set(
                 sketch.divisions[i].x,
                 sketch.divisions[i].y,
-                0
+                cubeDepth / 2
             )
-            sketch.scene.add(wireframe) */
+            frontGroup.add(cube)
         }
+        const baseGeo = new THREE.BoxGeometry(
+            sketch.cubeDimension,
+            sketch.cubeDimension,
+            sketch.cubeDimension
+        )
+        const base = new THREE.Mesh(baseGeo, sketch.material)
+        const leftGroup = frontGroup.clone(true)
+        const rightGroup = frontGroup.clone(true)
+        const topGroup = frontGroup.clone(true)
+        const bottomGroup = frontGroup.clone(true)
+        const backGroup = frontGroup.clone(true)
+
+        frontGroup.position.set(0, 0, sketch.cubeDimension / 2)
+        topGroup.position.set(0, sketch.cubeDimension / 2, 0)
+        topGroup.rotateOnWorldAxis(
+            new THREE.Vector3(1, 0, 0),
+            THREE.Math.degToRad(-90)
+        )
+        bottomGroup.position.set(0, -sketch.cubeDimension / 2, 0)
+        bottomGroup.rotateOnWorldAxis(
+            new THREE.Vector3(1, 0, 0),
+            THREE.Math.degToRad(90)
+        )
+        leftGroup.position.set(-sketch.cubeDimension / 2, 0, 0)
+        leftGroup.rotateOnWorldAxis(
+            new THREE.Vector3(0, 1, 0),
+            THREE.Math.degToRad(-90)
+        )
+        rightGroup.position.set(sketch.cubeDimension / 2, 0, 0)
+        rightGroup.rotateOnWorldAxis(
+            new THREE.Vector3(0, 1, 0),
+            THREE.Math.degToRad(90)
+        )
+        backGroup.position.set(0, 0, -sketch.cubeDimension / 2)
+        backGroup.rotateOnWorldAxis(
+            new THREE.Vector3(1, 0, 0),
+            THREE.Math.degToRad(-180)
+        )
+        sketch.scene.add(base)
+        sketch.scene.add(frontGroup)
+        sketch.scene.add(topGroup)
+        sketch.scene.add(bottomGroup)
+        sketch.scene.add(leftGroup)
+        sketch.scene.add(rightGroup)
+        sketch.scene.add(backGroup)
         sketch.renderer.render(sketch.scene, sketch.camera)
     },
 
@@ -244,27 +240,25 @@ const sketch = {
      */
     notify: (message) => {
         const p = document.createElement('p')
-        p.setAttribute('style', 'padding: 1em;')
+        p.id = 'notification'
         p.innerHTML = message
         document.getElementById('windowFrame').appendChild(p)
-        console.log(message)
         window.setTimeout(() => {
             document.getElementById('windowFrame').removeChild(p)
         }, 5000)
     },
-    /**
-     * Function to download the svg as file
-     */
     export: () => {
         sketch.exporter.parse(sketch.scene, (result) => {
             if (result instanceof ArrayBuffer) {
                 saveArrayBuffer(result, 'scene.glb')
             } else {
                 const output = JSON.stringify(result, null, 2)
-                console.log(output)
                 saveString(output, 'scene.gltf')
             }
         })
+    },
+    onWindowResize: () => {
+        sketch.renderer.setSize(window.innerWidth, window.innerHeight)
     }
 }
 
