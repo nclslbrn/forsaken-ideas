@@ -22,11 +22,11 @@ document.body.appendChild(link)
 
 const sketch = {
     size: { w: window.innerWidth, h: window.innerHeight },
-    thickness: 0.05,
+    thickness: 0.01,
     decrease: 0.9,
-    expectedDivisions: 24,
+    expectedDivisions: 124,
     cubeDimension: 4,
-    subSize: { min: 0.3, max: 0.7 },
+    subSize: { min: 0.25, max: 0.75 },
     divisions: [],
     camera: new THREE.PerspectiveCamera(
         70,
@@ -36,9 +36,7 @@ const sketch = {
     ),
     scene: new THREE.Scene(),
     renderer: new THREE.WebGLRenderer(),
-    material: new THREE.MeshPhongMaterial({
-        color: 0xffffff
-    }),
+    material: new THREE.MeshPhongMaterial({ color: 0xffffff }),
     controls: false,
     exporter: new GLTFExporter(),
     launch: () => {
@@ -200,21 +198,41 @@ const sketch = {
             new THREE.Vector3(1, 0, 0),
             THREE.Math.degToRad(-90)
         )
+        topGroup.rotateOnWorldAxis(
+            new THREE.Vector3(0, 1, 0),
+            THREE.Math.degToRad(-90)
+        )
+
         bottomGroup.position.set(0, -sketch.cubeDimension / 2, 0)
         bottomGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
             THREE.Math.degToRad(90)
         )
+        bottomGroup.rotateOnWorldAxis(
+            new THREE.Vector3(0, 1, 0),
+            THREE.Math.degToRad(-90)
+        )
+
         leftGroup.position.set(-sketch.cubeDimension / 2, 0, 0)
         leftGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
             THREE.Math.degToRad(-90)
         )
+        leftGroup.rotateOnWorldAxis(
+            new THREE.Vector3(1, 0, 0),
+            THREE.Math.degToRad(90)
+        )
+
         rightGroup.position.set(sketch.cubeDimension / 2, 0, 0)
         rightGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
             THREE.Math.degToRad(90)
         )
+        rightGroup.rotateOnWorldAxis(
+            new THREE.Vector3(1, 0, 0),
+            THREE.Math.degToRad(90)
+        )
+
         backGroup.position.set(0, 0, -sketch.cubeDimension / 2)
         backGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
