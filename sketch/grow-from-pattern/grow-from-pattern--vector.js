@@ -30,8 +30,8 @@ const sketch = {
     size: size.a4,
     trigoFunc: false,
     scale: 0.001,
-    step: 96,
-    res: 6,
+    step: 64, // print version 96
+    res: 8, // print version 6
     points: [],
     lines: [],
     root: document.getElementById('windowFrame'),
