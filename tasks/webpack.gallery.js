@@ -151,7 +151,7 @@ module.exports = (env, process) => {
     } else {
         config.optimization = {
             minimize: true,
-            minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()],
+            minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
             runtimeChunk: {
                 name: 'runtime'
             }
