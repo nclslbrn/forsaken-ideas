@@ -175,7 +175,7 @@ module.exports = (project, entry, output, title, property, mode) => {
             config.plugins.push(new CleanWebpackPlugin())
             config.optimization = {
                 minimize: true,
-                minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()],
+                minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
                 runtimeChunk: {
                     name: 'runtime'
                 }
