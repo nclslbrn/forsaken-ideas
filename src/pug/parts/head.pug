@@ -1,10 +1,37 @@
-mixin head(title, path) 
-  - const metatitle = typeof(title) == "undefined" ? "N.Lebrun" : title + " | N.Lebrun"
+mixin head(title, property, path) 
+
+  - const metatitle = typeof(title) === "undefined" ? "N.Lebrun" : title + " | N.Lebrun"
+  - const metalink = typeof(property) === "undefined" ? "https://artemg.com/" : "https://artmeg.com/" + property.path
+  - const imageUrl = "https://artemg.com/img/Polar-curve.folium.16.41.32--copyright_Nicolas_Lebrun_CC-by-3.0.png"
+  - const description = typeof(property) === "undefined" ? "Generative coding projects" : property.info
+
   head
     title= metatitle
     meta( charset="utf-8" )
-    meta( http-equiv="x-ua-compatible" content="ie=edge" )
-    meta( name="author" content="Nicolas Lebrun" )
-    meta( name="robots" content="all,follow" )
-    meta( name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" )
-    link( rel="icon" href= path + "img/favicon.ico")
+    meta( http-equiv="x-ua-compatible"   content="ie=edge" )
+    meta( name="author"                  content="Nicolas Lebrun" )
+    meta( name="robots"                  content="all,follow" )
+    meta( name="viewport"                content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" )
+    link( rel="icon"                     href= path + "img/favicon.ico")
+
+    meta( property="og:title"            content=metatitle )
+    meta( property="og:type"             content="image" )
+    meta( property="og:url"              content=metalink )
+    meta( property="og:site_name"        content="artemg.com" )
+    meta( property="og:image"            content=imageUrl )
+    meta( property="og:image:width"      content="800" )
+    meta( property="og:image:height"     content="800" )
+    meta( property="og:description"      content=description ) 
+
+    meta( property="twitter:card"        content="summary_large_image")
+    meta( property="twitter:title"       content=metatitle )
+    meta( property="twitter:description" content=description )
+    meta( property="twitter:site"        content="@nicolas_lebrun_" )
+    meta( property="twitter:creator"     content="@nicolas_lebrun_" )
+    meta( property="twitter:image"       content=imageUrl)
+
+
+
+
+
+
