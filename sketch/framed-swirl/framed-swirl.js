@@ -21,8 +21,8 @@ const sketch = (p5) => {
         cartel
 
     // A4 150dpi canvas = p5.createCanvas(1754, 1280)
-    const sketchWidth = 1280
-    const sketchHeight = 1500
+    const sketchWidth = 1200
+    const sketchHeight = 630
     const sketchSize = (sketchWidth, sketchHeight) => {
         const ratio = sketchWidth / sketchHeight
         const side = p5.min(window.innerWidth, window.innerHeight)
@@ -75,12 +75,12 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         const sketchDim = sketchSize(sketchWidth, sketchHeight)
-        margin = sketchDim.w / 16
+        margin = sketchDim.w / 64
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
 
         canvas.elt.setAttribute(
             'style',
-            `max-width: ${sketchWidth / 2}px; max-height: ${sketchHeight / 2}px`
+            'display: block; width: 80vw; height: auto;'
         )
 
         //p5.strokeWeight(0.5)
@@ -133,7 +133,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(84, 42, 70, 2).map((c, index) => {
+        colors = generateHslaColors(100, 30, 25, 2).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '
@@ -149,7 +149,7 @@ const sketch = (p5) => {
     sketch.download_PNG = () => {
         const date = new Date()
         const filename =
-            'Double-curve.' +
+            'Framed-swirl.' +
             planeFunction +
             '-' +
             choosenJoinFunc +
