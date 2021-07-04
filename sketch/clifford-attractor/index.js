@@ -41,7 +41,7 @@ const downloadSVG = () => {
         exportSVG(svgContainerId, filename)
     }
 }
-
+window.downloadJPG = sketch.downloadJPG
 window.download_SVG = downloadSVG
 window.init = sketch.init
 window.infobox = infobox

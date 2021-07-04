@@ -1,4 +1,3 @@
-import { newExpression } from 'babel-types'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 
 const sketch = (p5) => {
@@ -7,6 +6,7 @@ const sketch = (p5) => {
     let points = []
     let pointsHistory = []
     let newLineCrossRef = []
+    let canvas
     const strokeColor = p5.color(0, 25)
     const width = window.innerWidth * 0.75
     const height = window.innerHeight * 0.75
@@ -15,7 +15,7 @@ const sketch = (p5) => {
     const cliffordAttractor = strangeAttractors(p5).attractors['clifford']
 
     p5.setup = () => {
-        p5.createCanvas(width, height)
+        canvas = p5.createCanvas(width, height)
         p5.stroke(strokeColor)
 
         for (let x = 0; x < width; x += res) {
@@ -32,11 +32,11 @@ const sketch = (p5) => {
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
             const x = (points[p].x - width / 2) * scale
-            const y = (points[p].x - height / 2) * scale
+            const y = (points[p].y - height / 2) * scale
             const v = cliffordAttractor(p5.createVector(x, y))
-            const angle = p5.atan2(v.x - x, v.y - y)
-            points[p].vx += p5.cos(angle) * 0.3
-            points[p].vy += p5.sin(angle) * 0.3
+            const angle = p5.atan2(v.x - x, v.y - y) * 5
+            points[p].vx += p5.cos(angle) * 0.1
+            points[p].vy += p5.sin(angle) * 0.1
 
             p5.line(
                 points[p].x,
@@ -84,6 +84,9 @@ const sketch = (p5) => {
         }))
         pointsHistory = []
         p5.background(255, 250, 245)
+    }
+    sketch.downloadJPG = () => {
+        p5.saveCanvas(canvas, 'capture', 'jpg')
     }
     sketch.getSketchProperties = () => {
         p5.noLoop()
