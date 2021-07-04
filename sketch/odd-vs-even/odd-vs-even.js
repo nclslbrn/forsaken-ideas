@@ -23,9 +23,8 @@ const sketch = (p5) => {
         p5.beginShape()
 
         for (let theta = 0; theta <= p5.TWO_PI; theta += step) {
-            const rot = odd
-                ? theta + step * (t * i) + p5.HALF_PI * (tt * i)
-                : theta + step * (t * i) + p5.HALF_PI * (tt * i)
+            const rot =
+                theta + step * (t * i) + p5.HALF_PI * tt * (odd ? i : 1 - i)
             const current = {
                 x: posX + displace + size * p5.cos(rot),
                 y: posY + displace + size * p5.sin(rot)
