@@ -6,37 +6,37 @@ export default class MirrorShape {
     allCorners(x, y) {
         return [
             [x, y],
-            [this.cols + this.cols - x, y],
-            [x, this.rows + this.rows - y],
-            [this.cols + this.cols - x, this.rows + this.rows - y]
+            [this.cols * 2 - x, y],
+            [x, this.rows * 2 - y],
+            [this.cols * 2 - x, this.rows * 2 - y]
         ]
     }
     topLeftCorner(x, y) {
         return [
             [x, y, x + 1, y, x, y + 1],
             [
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y,
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y,
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y + 1
             ],
             [
                 x,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x + 1,
-                this.rows + this.rows - y + 1,
+                this.rows * 2 - y + 1,
                 x,
-                this.rows + this.rows - y + 1
+                this.rows * 2 - y + 1
             ],
             [
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y,
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y + 1,
-                this.cols + this.cols - x,
-                this.rows + this.rows - y + 1
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y,
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y + 1,
+                this.cols * 2 - x,
+                this.rows * 2 - y + 1
             ]
         ]
     }
@@ -44,28 +44,28 @@ export default class MirrorShape {
         return [
             [x, y, x + 1, y, x + 1, y + 1],
             [
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y,
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y,
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y + 1
             ],
             [
                 x,
-                this.rows + this.rows - y + 1,
+                this.rows * 2 - y + 1,
                 x + 1,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x + 1,
-                this.rows + this.rows - y + 1
+                this.rows * 2 - y + 1
             ],
             [
-                this.cols + this.cols - x,
-                this.rows + this.rows - y,
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y + 1,
-                this.cols + this.cols - x,
-                this.rows + this.rows - y + 1
+                this.cols * 2 - x,
+                this.rows * 2 - y,
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y + 1,
+                this.cols * 2 - x,
+                this.rows * 2 - y + 1
             ]
         ]
     }
@@ -73,28 +73,28 @@ export default class MirrorShape {
         return [
             [x + 1, y, x + 1, y + 1, x, y + 1],
             [
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y,
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y + 1,
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y + 1
             ],
             [
                 x,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x + 1,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x + 1,
-                this.rows + this.rows - y + 1
+                this.rows * 2 - y + 1
             ],
             [
-                this.cols + this.cols - x,
-                this.rows + this.rows - y + 1,
-                this.cols + this.cols - x,
-                this.rows + this.rows - y,
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y
+                this.cols * 2 - x,
+                this.rows * 2 - y + 1,
+                this.cols * 2 - x,
+                this.rows * 2 - y,
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y
             ]
         ]
     }
@@ -102,30 +102,30 @@ export default class MirrorShape {
         return [
             [x + 1, y + 1, x, y + 1, x, y],
             [
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y,
-                this.cols + this.cols - x + 1,
+                this.cols * 2 - x + 1,
                 y + 1,
-                this.cols + this.cols - x,
+                this.cols * 2 - x,
                 y + 1,
-                this.cols + this.cols - x,
-                this.rows + this.rows - y
+                this.cols * 2 - x,
+                this.rows * 2 - y
             ],
             [
                 x,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x + 1,
-                this.rows + this.rows - y,
+                this.rows * 2 - y,
                 x,
-                this.rows + this.rows - y + 1
+                this.rows * 2 - y + 1
             ],
             [
-                this.cols + this.cols - x,
-                this.rows + this.rows - y,
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y,
-                this.cols + this.cols - x + 1,
-                this.rows + this.rows - y + 1
+                this.cols * 2 - x,
+                this.rows * 2 - y,
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y,
+                this.cols * 2 - x + 1,
+                this.rows * 2 - y + 1
             ]
         ]
     }

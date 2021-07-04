@@ -8,10 +8,12 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
-// const P5 = new p5(sketch, containerElement)
+// Raster version
+// P5 = new p5(sketch, windowFrame)
 sketch.init()
 windowFrame.removeChild(loader)
 window.init = sketch.init
+// Raster version
 // window.download_PNG = sketch.download_PNG
 window.infobox = infobox
 window.downloadSVG = sketch.downloadSVG
