@@ -1,8 +1,7 @@
 import * as tome from 'chromotome'
-import planeCurveFuncs from '../../src/js/sketch-common/plane-curve'
+import funcs from '../../src/js/sketch-common/plane-curve'
 
 const sketch = (p5) => {
-    const funcs = planeCurveFuncs(p5)
     const alpha = 50
     const scale = 0.00085
 
@@ -10,7 +9,7 @@ const sketch = (p5) => {
     const numFrame = 400
     const sketchSize = () => {
         const side = Math.min(window.innerWidth, window.innerHeight)
-        return side > 800 ? 800 : side * 0.85
+        return { w: 1200, h: 630 } // side > 800 ? { w: 800,  h: 800} : {w: side * 0.85, h: side * 0.85}
     }
     const randomTrigoFunc = () => {
         const funcsName = []
@@ -25,14 +24,14 @@ const sketch = (p5) => {
         const res = 8
         const a = [3, 5, 6, 7, 9, 10, 11, 12, 13, 15]
         const g = a[Math.floor(Math.random() * a.length)]
-        for (let x = 0; x <= canvasSide; x += scale) {
-            for (let y = 0; y <= canvasSide; y += scale) {
+        for (let x = 0; x <= canvasSide.w; x += scale) {
+            for (let y = 0; y <= canvasSide.h; y += scale) {
                 if ((x ^ y) % g) {
                     for (let dx = 0; dx <= scale; dx += res) {
                         for (let dy = 0; dy <= scale; dy += res) {
                             points.push({
-                                x: ((x + dx) / canvasSide) * 6 - 3,
-                                y: ((y + dy) / canvasSide) * 6 - 3
+                                x: ((x + dx) / canvasSide.w) * 6 - 3,
+                                y: ((y + dy) / canvasSide.h) * 6 - 3
                             })
                         }
                     }
@@ -46,7 +45,7 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         canvasSide = sketchSize()
-        canvas = p5.createCanvas(canvasSide, canvasSide)
+        canvas = p5.createCanvas(canvasSide.w, canvasSide.h)
         sketch.init_sketch()
     }
     p5.draw = () => {
@@ -70,7 +69,7 @@ const sketch = (p5) => {
     }
     p5.windowResized = () => {
         canvasSide = sketchSize()
-        p5.resizeCanvas(canvasSide, canvasSide)
+        p5.resizeCanvas(canvasSide.w, canvasSide.h)
         sketch.init_sketch()
     }
     sketch.init_sketch = () => {
@@ -79,19 +78,8 @@ const sketch = (p5) => {
         points = initPoint()
         p5.background(0)
     }
-    sketch.exportPNG = () => {
-        const date = new Date()
-        const filename =
-            'grow-from-pattern.' +
-            trigoFunc +
-            '.' +
-            date.getHours() +
-            '.' +
-            date.getMinutes() +
-            '.' +
-            date.getSeconds() +
-            '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        p5.save(canvas, filename, 'png')
+    sketch.exportJPG = () => {
+        p5.save(canvas, 'capture', 'jpg')
     }
 }
 export default sketch
