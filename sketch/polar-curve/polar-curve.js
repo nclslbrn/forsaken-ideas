@@ -8,14 +8,14 @@ let canvas
 const sketch = (p5) => {
     let selectedFunc, palette, points, colors, colorsId
 
-    const scale = 0.05
-    const alpha = 50
-    const margin = 0.05
-    const sample = 12
+    const scale = 0.1
+    const alpha = 35
+    const margin = 0.08
+    const sample = 4
 
     // A4 150dpi width
-    const sketchWidth = 800
-    const sketchHeight = 800
+    const sketchWidth = 1080
+    const sketchHeight = 1080
     const windowFrame = document.getElementById('windowFrame')
     const paramBox = document.createElement('div')
     paramBox.id = 'interactiveParameter'
@@ -30,8 +30,8 @@ const sketch = (p5) => {
         const ratio = sketchWidth / sketchHeight
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
-            w: side > 1440 ? sketchWidth : side * ratio,
-            h: side > 1440 ? sketchHeight : side
+            w: side > 1080 ? sketchWidth : side * ratio,
+            h: side > 1080 ? sketchHeight : side
         }
     }
 
@@ -81,21 +81,23 @@ const sketch = (p5) => {
 
             const colorElem = document.createElement('div')
             colorElem.classList.add('color')
-            let style =
-                'width:' + 100 / palette.colors.length + '%; height: 24px; '
+            let style = 'width:' + 100 / palette.colors.length + '%; '
+            style += 'height: 24px; '
             style += `background-color: ${c};`
             colorElem.setAttribute('style', style)
             colorBlocks.appendChild(colorElem)
 
             return color
         })
-        paletteNameElem.innerText = `Palette : ${palette.name}`
+        paletteNameElem.innerHTML = `Palette : ${palette.name} `
+        paletteNameElem.innerHTML +=
+            'from <a href="https://kgolid.github.io/chromotome-site/">Chromotome</a>'
     }
 
     sketch.resetPoint = () => {
         points = []
         colorsId = []
-        for (let a = 0; a <= Math.PI * 8; a += 0.01) {
+        for (let a = 0; a <= Math.PI * 2; a += 0.001) {
             points.push(p5.createVector(Math.cos(a), Math.sin(a)))
             colorsId.push(Math.floor(Math.random() * palette.colors.length))
         }
@@ -119,7 +121,10 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketch.size(sketchWidth, sketchHeight)
         canvas = p5.createCanvas(size.w, size.h)
-        canvas.elt.setAttribute('style', `max-height: 60vw; width: auto;`)
+        canvas.elt.setAttribute(
+            'style',
+            `display: block; max-height: 60vw; width: auto;`
+        )
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
@@ -136,7 +141,7 @@ const sketch = (p5) => {
             const v1 = p5.createVector(v0.x, v0.y)
             const a1 = Math.atan2(v1.x, v1.y)
             const a2 =
-                p5.map(p5.noise(Math.cos(a1), Math.sin(a1)), 0, 1, -1, 1) * 300
+                p5.map(p5.noise(Math.cos(a1), Math.sin(a1)), 0, 1, -1, 1) * 1000
             const v2 = p5.createVector(Math.cos(a2), Math.sin(a2))
             const v3 = v1.lerp(v2, 0.5)
             const v4 = funcs['sinusoidal'](v3, sample)
