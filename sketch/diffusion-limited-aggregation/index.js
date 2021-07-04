@@ -10,7 +10,7 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, windowFrame)
+new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 
 let resizeTimeout
@@ -31,12 +31,8 @@ const downloadSVG = () => {
         )
     ) {
         const svgContainerId = 'svg-clipboard'
-        const {
-            lines,
-            width,
-            height,
-            strokeWidth
-        } = sketch.getSketchProperties()
+        const { lines, width, height, strokeWidth } =
+            sketch.getSketchProperties()
         const date = new Date()
         const filename =
             'Diffusion-limited-aggregation.' +
@@ -59,6 +55,7 @@ const downloadSVG = () => {
 }
 
 window.download_SVG = downloadSVG
+window.downloadJPG = sketch.downloadJPG
 window.init = sketch.init
 window.infobox = infobox
 handleAction()
