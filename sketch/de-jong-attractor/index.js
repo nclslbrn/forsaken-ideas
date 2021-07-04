@@ -10,7 +10,7 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, windowFrame)
+new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 
 let resizeTimeout
@@ -52,7 +52,7 @@ const downloadSVG = () => {
         exportSVG(svgContainerId, filename)
     }
 }
-
+window.downloadJPG = sketch.downloadJPG
 window.download_SVG = downloadSVG
 window.init = sketch.init
 window.infobox = infobox

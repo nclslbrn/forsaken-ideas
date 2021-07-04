@@ -10,7 +10,7 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, windowFrame)
+new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 
 const downloadSVG = () => {

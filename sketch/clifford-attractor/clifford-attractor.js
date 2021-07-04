@@ -8,9 +8,9 @@ const sketch = (p5) => {
     let newLineCrossRef = []
     let canvas
     const strokeColor = p5.color(0, 25)
-    const width = window.innerWidth * 0.75
-    const height = window.innerHeight * 0.75
-    const scale = 0.008
+    const width = 1200 //window.innerWidth * 0.75
+    const height = 630 //window.innerHeight * 0.75
+    const scale = 0.01
     const margin = window.innerWidth / 56
     const cliffordAttractor = strangeAttractors(p5).attractors['clifford']
 
@@ -18,10 +18,10 @@ const sketch = (p5) => {
         canvas = p5.createCanvas(width, height)
         p5.stroke(strokeColor)
 
-        for (let x = 0; x < width; x += res) {
+        for (let x = margin; x < width - margin; x += res) {
             initPoints.push({
                 x: x,
-                y: 0,
+                y: margin,
                 vx: 0,
                 vy: 5
             })
@@ -34,9 +34,9 @@ const sketch = (p5) => {
             const x = (points[p].x - width / 2) * scale
             const y = (points[p].y - height / 2) * scale
             const v = cliffordAttractor(p5.createVector(x, y))
-            const angle = p5.atan2(v.x - x, v.y - y) * 5
-            points[p].vx += p5.cos(angle) * 0.1
-            points[p].vy += p5.sin(angle) * 0.1
+            const angle = p5.atan2(v.x - x, v.y - y) * 0.5
+            points[p].vx += p5.cos(angle) * 0.01
+            points[p].vy += p5.sin(angle) * 0.01
 
             p5.line(
                 points[p].x,
@@ -82,7 +82,9 @@ const sketch = (p5) => {
         points = initPoints.map((p) => ({
             ...p
         }))
-        pointsHistory = []
+        pointsHistory = initPoints.map((point) => {
+            return []
+        })
         p5.background(255, 250, 245)
     }
     sketch.downloadJPG = () => {
