@@ -4,7 +4,7 @@ import * as tome from 'chromotome'
 const sketch = (p5) => {
     const N = 6
     const offset = 2
-    let w, h, palette
+    let w, h, palette, canvas
     const numFrame = 120
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
@@ -39,7 +39,7 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         const size = sketchSize()
-        p5.createCanvas(size.w, size.h, p5.WEBGL)
+        canvas = p5.createCanvas(size.w, size.h, p5.WEBGL)
         p5.ortho()
         p5.noStroke()
         palette = tome.get()
@@ -76,6 +76,9 @@ const sketch = (p5) => {
     p5.windowResized = () => {
         const size = sketchSize()
         p5.resizeCanvas(size.w, size.h)
+    }
+    sketch.downloadJPG = () => {
+        p5.saveCanvas(canvas, 'capture', 'jpg')
     }
 }
 export default sketch
