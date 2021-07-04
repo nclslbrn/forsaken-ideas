@@ -1,6 +1,6 @@
 {
     "libs": ["three"],
-    "info": "Why not",
+    "info": "New version of noise landscpae without p5js and using a custom svg library to create axidraw plottable SVG drawings.",
     "date": "2021-06-15",
     "action": [
         {
