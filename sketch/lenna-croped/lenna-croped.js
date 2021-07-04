@@ -1,12 +1,14 @@
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
 
 const sketch = (p5) => {
-    let rectSize, canvasSize, palette, img
+    let rectSize, canvas, canvasSize, palette, img
     const numFrame = 460
     const res = 1 / 3
     const sketchSize = () => {
         const side = Math.min(window.innerWidth, window.innerHeight)
-        return side > 800 ? 800 : side * 0.85
+        return side > 800
+            ? { w: 1200, h: 630 }
+            : { w: side * 0.85, h: side * 0.85 }
     }
     const _x = (x) => {
         return (x / p5.width) * img.width
@@ -21,7 +23,7 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         canvasSize = sketchSize()
-        p5.createCanvas(canvasSize, canvasSize)
+        canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
         p5.rectMode(p5.CENTER)
         p5.imageMode(p5.CENTER)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
@@ -73,6 +75,9 @@ const sketch = (p5) => {
         }
 
         p5.pop()
+    }
+    sketch.exportJPG = () => {
+        p5.save(canvas, 'capture', 'jpg')
     }
 }
 
