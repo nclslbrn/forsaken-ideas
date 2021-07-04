@@ -3,7 +3,7 @@ mixin head(title, property, path)
   - const metatitle = typeof(title) === "undefined" ? "N.Lebrun" : title + " | N.Lebrun"
   - const metalink = typeof(property) === "undefined" ? "https://artemg.com/" : "https://artmeg.com/" + property.path
   - const imageUrl = "https://artemg.com/img/Polar-curve.folium.16.41.32--copyright_Nicolas_Lebrun_CC-by-3.0.png"
-  - const description = typeof(property) === "undefined" ? "Generative coding projects" : property.info
+  - const description = typeof(property) === "undefined" ? "Generative coding projects" : stripTags(property.info)
 
   head
     title= metatitle
@@ -18,8 +18,8 @@ mixin head(title, property, path)
     link(rel="manifest"                  href=path + "img/manifest.json")
     link(rel="icon" type="image/svg+xml" href=path + "img/favicon.svg")
     link(rel="icon" type="image/png"     href=path + "img/favicon.png")
-    link(rel="mask-icon"                 href=path + "mask-icon.svg" color="#000000")
-    link(rel="apple-touch-icon"          href=path + "apple-touch-icon.png")
+    link(rel="mask-icon"                 href=path + "img/mask-icon.svg" color="#000000")
+    link(rel="apple-touch-icon"          href=path + "img/apple-touch-icon.png")
 
     meta(property="og:title"            content=metatitle)
     meta(property="og:type"             content="image")

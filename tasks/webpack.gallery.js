@@ -4,12 +4,12 @@ const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const unescapeTitle = require('./unescapeTitle')
-//const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const unescapeTitle = require('./unescapeTitle')
+const stripTags = require('./stripTags')
 
 const publicFolder = path.resolve('public/sketch/')
 
@@ -49,7 +49,8 @@ module.exports = (env, process) => {
                 templateParameters: {
                     projects: projectWithMeta,
                     srcPath: './',
-                    unescapeTitle: unescapeTitle
+                    unescapeTitle: unescapeTitle,
+                    stripTags: stripTags
                 },
                 filename: './index.html',
                 template: './src/pug/gallery.pug'

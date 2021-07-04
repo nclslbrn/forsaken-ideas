@@ -9,6 +9,8 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const unescapeTitle = require('./unescapeTitle')
+const stripTags = require('./stripTags')
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -41,7 +43,9 @@ module.exports = (project, entry, output, title, property, mode) => {
                         project: project,
                         title: title,
                         property: property,
-                        srcPath: '../../'
+                        srcPath: '../../',
+                        unescapeTitle: unescapeTitle,
+                        stripTags: stripTags
                     },
                     filename: './index.html',
                     template: './src/pug/project.pug'
