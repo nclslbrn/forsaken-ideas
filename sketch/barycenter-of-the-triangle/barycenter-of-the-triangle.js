@@ -33,7 +33,11 @@ const sketch = (p5) => {
     const numTrianglePerCircle = 4
     sketch.initSketch = () => {
         triangles = []
-        grid = makeGrid(Math.floor(p5.random(120, 300)))
+        grid = makeGrid(
+            Math.floor(p5.random(160, 220)),
+            window.innerWidth,
+            window.innerHeight
+        )
 
         for (let x = 0; x < grid.cols; x++) {
             for (let y = 0; y < grid.rows; y++) {
@@ -150,7 +154,7 @@ const sketch = (p5) => {
         )
     }
 
-    sketch.exportPNG = () => {
+    sketch.exportJPG = () => {
         const date = new Date()
         const filename =
             'Point-in-triangle.' +
@@ -166,7 +170,7 @@ const sketch = (p5) => {
             '.' +
             date.getSeconds() +
             '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        p5.saveCanvas(cacheCanvas, filename, 'png')
+        p5.saveCanvas(cacheCanvas, filename, 'jpg')
     }
 }
 

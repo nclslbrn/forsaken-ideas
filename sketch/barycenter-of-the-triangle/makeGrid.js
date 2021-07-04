@@ -1,8 +1,8 @@
-const makeGrid = (cellWidth) => {
-    const cols = Math.floor(window.innerWidth / cellWidth) - 1
-    const rows = Math.floor(window.innerHeight / cellWidth) - 1
-    const outerXMargin = Math.floor(window.innerWidth - cellWidth * cols)
-    const outerYMargin = Math.floor(window.innerHeight - cellWidth * rows)
+const makeGrid = (cellWidth, width, height) => {
+    const cols = Math.floor(width / cellWidth) - 1
+    const rows = Math.floor(height / cellWidth) - 1
+    const outerXMargin = Math.floor(width - cellWidth * cols)
+    const outerYMargin = Math.floor(height - cellWidth * rows)
 
     const grid = {
         cols: cols,
