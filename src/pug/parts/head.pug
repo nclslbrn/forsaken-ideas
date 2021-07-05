@@ -26,18 +26,17 @@ mixin head(title, property, path)
     meta(property="og:site_name"        content="artemg.com")
 
     if property && property.capture
-      meta(property="og:image"            content="https://artmeg.com/sketch/" + property.path + "/capture.jpg")
+      meta(property="og:image"            content="https://artemg.com/sketch/" + property.path + "/capture.jpg")
       meta(property="og:image:width"      content="1200")
       meta(property="og:image:height"     content="630")
 
       meta(property="twitter:card"        content="summary_large_image")
-      meta(property="twitter:image"       content="https://artmeg.com/sketch/" + property.path + "/capture.jpg")
+      meta(property="twitter:image"       content="https://artemg.com/sketch/" + property.path + "/capture.jpg")
 
-    meta(property="test" content=property.capture)
     
     meta(property="og:description"      content=description) 
     
-    if property.date
+    if property && property.date
       meta(property="og:date"           content=property.date)
 
     meta(property="twitter:title"       content=metatitle)
