@@ -23,9 +23,13 @@ const stripTags = require('./stripTags')
  */
 module.exports = (project, entry, output, title, property, mode) => {
     const sketchConfig = (project, entry, output, title, property, mode) => {
-        const HaveToCopyData = fs.existsSync(
+        const haveToCopyData = fs.existsSync(
             path.join(project.toString(), 'assets')
         )
+        const haveToCopyCapture = fs.existsSync(
+            path.join(project.toString(), 'capture.jpg')
+        )
+        property['capture'] = haveToCopyCapture ? 'capture.jpg' : false
 
         const config = {
             mode: mode,
@@ -153,7 +157,7 @@ module.exports = (project, entry, output, title, property, mode) => {
             stats: 'errors-only'
         }
 
-        if (HaveToCopyData) {
+        if (haveToCopyData) {
             config.plugins.push(
                 new CopyWebpackPlugin({
                     patterns: [
@@ -188,6 +192,21 @@ module.exports = (project, entry, output, title, property, mode) => {
                 hints: false,
                 maxEntrypointSize: 512000,
                 maxAssetSize: 512000
+            }
+            if (haveToCopyCapture) {
+                config.plugins.push(
+                    new CopyWebpackPlugin({
+                        patterns: [
+                            {
+                                from: path.join(
+                                    project.toString(),
+                                    '/capture.jpg'
+                                ),
+                                to: path.join('./')
+                            }
+                        ]
+                    })
+                )
             }
         }
         return config
