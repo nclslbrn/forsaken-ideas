@@ -2,39 +2,49 @@ import ease from '../../src/js/sketch-common/ease'
 import * as tome from 'chromotome'
 
 const numFrame = 15
-const cellByLine = 16
+const cellSize = 32
 
 const sketch = (p5) => {
-    let cellSize, palette, radii, nextRadii, colors, nextColors
+    let cellByLine, palette, radii, nextRadii, colors, nextColors
     const sketchSize = () => {
-        const side = p5.min(window.innerWidth, window.innerHeight)
         return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
+            w: window.innerWidth * 0.85,
+            h: window.innerHeight * 0.85
         }
     }
     const switchLine = () => {
         let switchRadii = [...radii]
         let switchColors = [...colors]
 
-        const lineNum = p5.floor(p5.random() * cellByLine)
+        const colNum = p5.floor(p5.random() * cellByLine.w)
+        const rowNum = p5.floor(p5.random() * cellByLine.h)
         const isVerticalLine = p5.random() > 0.5
         let switchNext = p5.random() > 0.5
 
-        if (lineNum == 0) switchNext = true
-        if (lineNum == cellByLine - 1) switchNext = false
-
-        for (let i = 0; i < cellByLine; i++) {
+        if (
+            (colNum == 0 && isVerticalLine) ||
+            (rowNum == 0 && !isVerticalLine)
+        ) {
+            switchNext = true
+        }
+        if (
+            (colNum == cellByLine.w - 1 && isVerticalLine) ||
+            (rowNum == cellByLine.h - 1 && !isVerticalLine)
+        ) {
+            switchNext = false
+        }
+        for (let i = 0; i < cellByLine[isVerticalLine ? 'h' : 'w']; i++) {
             let cellIndex, switchWith
             if (isVerticalLine) {
-                cellIndex = lineNum + i * cellByLine
+                cellIndex = colNum + cellByLine.w * i
                 switchWith =
-                    (switchNext ? lineNum + 1 : lineNum - 1) + i * cellByLine
+                    (switchNext ? colNum + 1 : colNum - 1) + cellByLine.w * i
             } else {
-                cellIndex = lineNum * cellByLine + i
+                cellIndex = rowNum * cellByLine.h + i
                 switchWith =
-                    (switchNext ? lineNum + 1 : lineNum - 1) * cellByLine + i
+                    (switchNext ? rowNum + 1 : rowNum - 1) * cellByLine.h + i
             }
+
             switchRadii[cellIndex] = radii[switchWith]
             switchRadii[switchWith] = radii[cellIndex]
             switchColors[cellIndex] = colors[switchWith]
@@ -45,28 +55,35 @@ const sketch = (p5) => {
     p5.setup = () => {
         const size = sketchSize()
         p5.createCanvas(size.w, size.h)
-        p5.noStroke()
+        cellByLine = {
+            w: Math.round(size.w / cellSize),
+            h: Math.round(size.h / cellSize)
+        }
         sketch.init_sketch()
+        p5.noStroke()
     }
-    sketch.init_sketch = () => {
+    sketch.initCircle = () => {
         radii = []
         colors = []
-
-        palette = tome.get()
-        cellSize = p5.min(p5.width / cellByLine, p5.height / cellByLine)
 
         const radiusChoices = [1, 2, 3, 5, 8, 13, 21].map((factor) => {
             return cellSize / factor
         })
-        for (let i = 0; i < p5.sq(cellByLine); i++) {
+        for (let i = 0; i < cellByLine.w * cellByLine.h; i++) {
             radii.push(
-                radiusChoices[p5.floor(p5.random() * radiusChoices.length)]
+                radiusChoices[Math.floor(Math.random() * radiusChoices.length)]
             )
             colors.push(
-                palette.colors[p5.floor(p5.random() * palette.colors.length)]
+                palette.colors[
+                    Math.floor(Math.random() * palette.colors.length)
+                ]
             )
         }
         ;[nextRadii, nextColors] = switchLine()
+    }
+    sketch.init_sketch = () => {
+        palette = tome.get()
+        sketch.initCircle()
     }
     p5.draw = () => {
         if (p5.frameCount % numFrame !== 0) {
@@ -74,9 +91,11 @@ const sketch = (p5) => {
             p5.background(palette.background || palette.stroke || '248')
             p5.push()
             p5.translate(cellSize / 2, cellSize / 2)
-            for (let x = 0; x < cellByLine; x++) {
-                for (let y = 0; y < cellByLine; y++) {
-                    const cellIndex = y * cellByLine + x
+
+            for (let x = 0; x < cellByLine.w; x++) {
+                for (let y = 0; y < cellByLine.h; y++) {
+                    const cellIndex = x * cellByLine.h + y
+
                     const cellColor = p5.lerpColor(
                         p5.color(colors[cellIndex]),
                         p5.color(nextColors[cellIndex]),
@@ -102,7 +121,11 @@ const sketch = (p5) => {
     p5.windowResized = () => {
         const size = sketchSize()
         p5.resizeCanvas(size.w, size.h)
-        sketch.init_sketch()
+        cellByLine = {
+            w: Math.round(size.w / cellSize),
+            h: Math.round(size.h / cellSize)
+        }
+        sketch.initCircle()
     }
 }
 export default sketch
