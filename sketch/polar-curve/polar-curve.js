@@ -8,7 +8,7 @@ let canvas
 const sketch = (p5) => {
     let selectedFunc, palette, points, colors, colorsId
 
-    const scale = 0.1
+    const scale = 0.01
     const alpha = 35
     const margin = 0.08
     const sample = 4
