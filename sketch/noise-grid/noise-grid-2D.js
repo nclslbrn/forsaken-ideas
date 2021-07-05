@@ -4,7 +4,7 @@ import { makeNoise3D } from 'open-simplex-noise'
 
 const recording = false
 const numFrame = 360
-const numLayer = 80
+const numLayer = 220
 const noiseThreshold = 0.45
 const gifOptions = {
     quality: 10,
@@ -18,7 +18,7 @@ const sketch = (p5) => {
     // Layer need these two functions
     //window.noise = p5.noise
     window.noise = noise3D
-    let size, cols, rows, layers, depthStep, hSize, sketchDim
+    let size, cols, rows, layers, depthStep, hSize, sketchDim, canvas
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
@@ -45,7 +45,7 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         init()
-        p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
+        canvas = p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
         p5.stroke(125)
         p5.noFill()
         p5.smooth()
@@ -100,6 +100,9 @@ const sketch = (p5) => {
     p5.windowResized = () => {
         init()
         p5.resizeCanvas(sketchDim.w, sketchDim.h)
+    }
+    sketch.exportJPG = () => {
+        p5.saveFrames('capture', 'jpg', 1, 1)
     }
 }
 export default sketch

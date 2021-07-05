@@ -4,6 +4,7 @@ const palette = {
 }
 let roads = []
 let builds = []
+let canvas
 
 const sketch = (p5) => {
     const maxRoad = 32
@@ -15,8 +16,8 @@ const sketch = (p5) => {
         const halfHeight = window.innerHeight / 2
 
         const property = {
-            x: halfWidth + p5.random(-0.25, 0.25) * window.innerWidth,
-            y: halfHeight + p5.random(-0.25, 0.25) * window.innerWidth,
+            x: halfWidth + p5.random(-1, 1) * window.innerWidth,
+            y: halfHeight + p5.random(-1, 1) * window.innerWidth,
             width: parseInt(p5.random(minWidth, maxWidth)),
             height: parseInt(p5.random(minHeight, maxHeight)),
             orientation: Math.random() < 0.5
@@ -73,7 +74,7 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        p5.createCanvas(window.innerWidth, window.innerHeight)
+        canvas = p5.createCanvas(window.innerWidth, window.innerHeight)
         //p5.angleMode(p5.DEGREES)
         p5.noStroke()
         p5.collideDebug(false)
@@ -95,8 +96,8 @@ const sketch = (p5) => {
     p5.computeRoad = () => {
         p5.fill(palette.background)
         const roadProperty = blockProperty(
-            window.innerWidth,
-            window.innerWidth,
+            window.innerWidth * 2,
+            window.innerWidth * 2,
             2,
             6
         )
@@ -148,6 +149,9 @@ const sketch = (p5) => {
             palette: palette,
             paperColor: paperColor
         }
+    }
+    sketch.exportJPG = () => {
+        p5.save(canvas, 'capture', 'jpg')
     }
 }
 export default sketch

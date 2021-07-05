@@ -1,7 +1,7 @@
 'use strict'
-import style from '../../src/sass/project.scss'
-import fullCanvas from '../../src/sass/full-canvas.scss'
-import dedicated_style from './mondrian-city.scss'
+import '../../src/sass/project.scss'
+import '../../src/sass/full-canvas.scss'
+import './mondrian-city.scss'
 import p5 from 'p5'
 import p5Collide2D from 'p5.collide2d'
 import sketch from './mondrian-city'
@@ -13,7 +13,7 @@ import handleAction from '../../src/js/sketch-common/handle-action'
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, containerElement)
+new p5(sketch, containerElement)
 containerElement.removeChild(loader)
 
 var resizeTimeout
@@ -23,7 +23,7 @@ window.addEventListener('resize', function (event) {
         containerElement.removeChild(
             containerElement.getElementsByClassName('p5Canvas')[0]
         )
-        let P5 = new p5(sketch, containerElement)
+        new p5(sketch, containerElement)
     }, 500)
 })
 
@@ -58,5 +58,6 @@ const downloadSVG = () => {
 
 window.download_SVG = downloadSVG
 window.init = sketch.init
+window.exportJPG = sketch.exportJPG
 window.infobox = infobox
 handleAction()
