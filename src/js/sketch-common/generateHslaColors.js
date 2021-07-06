@@ -15,7 +15,7 @@ const generateHslaColors = (
     amount
 ) => {
     const colors = []
-    const hueBegin = Math.floor(Math.random() * 90)
+    const hueBegin = Math.floor(Math.random() * 360)
     const hueDelta = Math.trunc(360 / amount)
     let hue = hueBegin
 
