@@ -1,8 +1,8 @@
-const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WebpackBar = require('webpackbar')
 
 module.exports = [
-    new webpack.ProgressPlugin(),
+    new WebpackBar(),
     new MiniCssExtractPlugin({
         filename: 'css/[name].css'
     })
