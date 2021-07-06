@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const defaultPlugins = require('./webpack.plugins')
 const getRules = require('./webpack.rules')
+const devServer = require('./webpack.devServer')
 const externals = require('./webpack.externals')
 const unescapeTitle = require('./unescapeTitle')
 /**
@@ -68,13 +69,7 @@ module.exports = (property) => {
         }
         if (property.mode !== 'production') {
             config.plugins.push(new webpack.HotModuleReplacementPlugin())
-            config.devServer = {
-                historyApiFallback: true,
-                contentBase: path.resolve(__dirname, '../public/'),
-                port: 8080,
-                compress: true,
-                hot: true
-            }
+            config.devServer = devServer
             config.devtool = 'inline-source-map'
         } else {
             config.plugins.push(new CleanWebpackPlugin())

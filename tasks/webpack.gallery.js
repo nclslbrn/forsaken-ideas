@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 // Custom modules
 const defaultPlugins = require('./webpack.plugins')
 const getRules = require('./webpack.rules')
+const devServer = require('./webpack.devServer')
 const unescapeTitle = require('./unescapeTitle')
 const stripTags = require('./stripTags')
 const fileList = require('./fileList')
@@ -80,14 +81,7 @@ module.exports = (env, process) => {
     }
     if (property.mode !== 'production') {
         config.plugins.push(new webpack.HotModuleReplacementPlugin())
-        config.devServer = {
-            historyApiFallback: true,
-            contentBase: path.resolve(__dirname, '../public/'),
-            port: 8080,
-            open: true,
-            compress: true,
-            hot: true
-        }
+        config.devServer = devServer
         config.devtool = 'inline-source-map'
     } else {
         config.optimization = {
