@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
 import { generateHslaColors } from './../../src/js/sketch-common/generateHslaColors'
 import hslToHex from './hslToHex'
-
+import Notification from '../../src/js/sketch-common/Notification'
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
 }
@@ -38,7 +38,7 @@ const sketch = {
     ),
     scene: new THREE.Scene(),
     renderer: new THREE.WebGLRenderer(),
-    material: new THREE.MeshPhongMaterial({ color: 0xffffff }),
+    material: new THREE.MeshPhongMaterial({ color: 0x111111 }),
     controls: false,
     exporter: new GLTFExporter(),
     launch: () => {
@@ -171,7 +171,7 @@ const sketch = {
             return division.pos > acc ? division.pos : acc
         }, 0)
         const posMaterials = []
-        const hslColor = generateHslaColors(100, 50, 100, maxPos)
+        const hslColor = generateHslaColors(100, 25, 100, maxPos)
 
         for (let h = 0; h < maxPos; h++) {
             const hex = hslToHex(hslColor[h][0], hslColor[h][1], hslColor[h][2])
@@ -274,13 +274,7 @@ const sketch = {
      * Fancy notification
      */
     notify: (message) => {
-        const p = document.createElement('p')
-        p.id = 'notification'
-        p.innerHTML = message
-        document.getElementById('windowFrame').appendChild(p)
-        window.setTimeout(() => {
-            document.getElementById('windowFrame').removeChild(p)
-        }, 5000)
+        new Notification(message, document.getElementById('windowFrame'))
     },
     export: () => {
         sketch.exporter.parse(sketch.scene, (result) => {
