@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
+import { generateHslaColors } from './../../src/js/sketch-common/generateHslaColors'
+import hslToHex from './hslToHex'
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
@@ -165,6 +167,18 @@ const sketch = {
         sketch.clean()
         const depth = 0.5
         const frontGroup = new THREE.Group()
+        const maxPos = sketch.divisions.reduce((acc, division) => {
+            return division.pos > acc ? division.pos : acc
+        }, 0)
+        const posMaterials = []
+        const hslColor = generateHslaColors(100, 50, 100, maxPos)
+
+        for (let h = 0; h < maxPos; h++) {
+            const hex = hslToHex(hslColor[h][0], hslColor[h][1], hslColor[h][2])
+            posMaterials[h] = sketch.material.clone()
+            posMaterials[h].color.setHex(hex)
+        }
+
         for (let i = 0; i < sketch.divisions.length; i++) {
             const cubeDepth = depth * (1 / sketch.divisions[i].pos)
             const geometry = new THREE.BoxGeometry(
@@ -172,7 +186,10 @@ const sketch = {
                 sketch.divisions[i].h,
                 cubeDepth
             )
-            const cube = new THREE.Mesh(geometry, sketch.material)
+            const cube = new THREE.Mesh(
+                geometry,
+                posMaterials[sketch.divisions[i].pos]
+            )
             cube.position.set(
                 sketch.divisions[i].x,
                 sketch.divisions[i].y,
