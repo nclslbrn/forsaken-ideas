@@ -1,62 +1,58 @@
+// Node modules
 const path = require('path')
 const webpack = require('webpack')
 const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+
+// Custom modules
+const defaultPlugins = require('./webpack.plugins')
+const getRules = require('./webpack.rules')
 const unescapeTitle = require('./unescapeTitle')
 const stripTags = require('./stripTags')
-
+const fileList = require('./fileList')
 const publicFolder = path.resolve('public/sketch/')
-
-function fileList(dir) {
-    console.log(dir)
-    return fs.readdirSync(dir).reduce(function (list, file) {
-        var name = path.join(dir, file)
-        var isDir = fs.statSync(name).isDirectory()
-        return list.concat(isDir ? [file] : null)
-    }, [])
-}
+const property = require('../src/json/site-property.json')
+const siteUrl = require('./siteUrl')
+const author = require('./author')
 
 module.exports = (env, process) => {
-    const mode = process.mode == 'production' ? 'production' : 'development'
+    property.mode = process.mode == 'production' ? 'production' : 'development'
+    property.url = siteUrl
+    property.imageCover = siteUrl + '/sketch/polar-curve/capture.jpg'
+    property.author = author
+    property.escapedInfo = property.info ? stripTags(property.info) : undefined
+    property.srcPath = './'
+
     const projects = fileList(publicFolder)
     let projectWithMeta = []
 
     projects.forEach((proj) => {
         projectWithMeta.push({
             name: proj,
+            title: unescapeTitle(proj),
             ...require(path.resolve('sketch/' + proj + '/property.json'))
         })
     })
 
     const config = {
-        mode: mode,
+        mode: property.mode,
         entry: [path.resolve('/src/js/gallery.js')],
         output: {
             path: path.resolve('public/'),
             filename: '[name]-bundle.js'
         },
         plugins: [
-            new webpack.ProgressPlugin(),
-            new ProgressBarPlugin(),
-            //new CleanWebpackPlugin(),
+            ...defaultPlugins,
             new HtmlWebpackPlugin({
                 templateParameters: {
                     projects: projectWithMeta,
-                    srcPath: './',
-                    unescapeTitle: unescapeTitle,
-                    stripTags: stripTags
+                    property: property
                 },
                 filename: './index.html',
                 template: './src/pug/gallery.pug'
-            }),
-            new MiniCssExtractPlugin({
-                filename: 'css/[name].css'
             }),
             new CopyWebpackPlugin({
                 patterns: [
@@ -72,63 +68,7 @@ module.exports = (env, process) => {
             })
         ],
         module: {
-            rules: [
-                {
-                    // js
-                    test: /\.m?js$/,
-                    exclude: /(node_modules|bower_components)/,
-                    use: ['babel-loader']
-                },
-                {
-                    // pug
-                    test: /\.pug$/,
-                    exclude: ['/node_modules/'],
-                    loader: 'pug-loader'
-                },
-                {
-                    // font
-                    test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
-                    loader: 'file-loader'
-                },
-                {
-                    // images
-                    test: /\.(png|jp(e*)g|svg)$/,
-                    use: 'file-loader'
-                },
-                {
-                    //sass
-                    test: /\.(sa|sc|c)ss$/,
-                    use: [
-                        'style-loader',
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                url: false,
-                                sourceMap: mode == 'production' ? false : true
-                            }
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                sourceMap: mode == 'production' ? false : true
-                            }
-                        },
-                        {
-                            loader: 'sass-loader',
-                            options: {
-                                implementation: require('sass'),
-                                sourceMap: mode == 'production' ? false : true
-                            }
-                        },
-                        'postcss-loader'
-                    ],
-                    include: [
-                        path.resolve(__dirname, '../node_modules'),
-                        path.resolve(__dirname, 'src/sass'),
-                        path.resolve(__dirname, '../')
-                    ]
-                }
-            ]
+            rules: getRules(property.mode)
         },
         optimization: {
             minimizer: [new CssMinimizerPlugin()]
@@ -138,7 +78,7 @@ module.exports = (env, process) => {
         }
         //stats: 'verbose' // errors-only'
     }
-    if (mode !== 'production') {
+    if (property.mode !== 'production') {
         config.plugins.push(new webpack.HotModuleReplacementPlugin())
         config.devServer = {
             historyApiFallback: true,

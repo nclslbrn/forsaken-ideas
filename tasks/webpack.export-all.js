@@ -2,6 +2,8 @@ const path = require('path')
 const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
 const sketchConfig = require('./sketchConfig')
+const siteUrl = require('./siteUrl')
+const author = require('./author')
 const projects = fileList(path.resolve('sketch/'))
 const projectsConfig = []
 
@@ -18,23 +20,24 @@ for (let p = 0; p < projects.length; p++) {
         link: nextProject ? `../${nextProject}/` : false
     }
 
-    const entry = path.join(path.resolve('sketch/'), projects[p], '/index.js')
     const property = require(path.resolve(
         'sketch/' + projects[p] + '/property.json'
     ))
+    property.title = unescapeTitle(projects[p])
+    property.mode = 'production'
     property.next = next
     property.previous = previous
     property.path = projects[p]
-
-    const title = unescapeTitle(projects[p])
-    const output = path.resolve('public/sketch', projects[p])
-    projectsConfig[p] = sketchConfig(
-        path.resolve('sketch', projects[p]),
-        entry,
-        output,
-        title,
-        property,
-        'production'
+    property.input = path.resolve('sketch', projects[p])
+    property.output = path.resolve('public/sketch', projects[p])
+    property.entry = path.join(
+        path.resolve('sketch/'),
+        projects[p],
+        '/index.js'
     )
+    property.siteUrl = siteUrl
+    property.author = author
+
+    projectsConfig[p] = sketchConfig(property)
 }
 module.exports = projectsConfig

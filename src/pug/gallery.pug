@@ -11,7 +11,7 @@
 
 html(lang="en")
   include parts/head.pug
-  +head(title, property, srcPath)
+  +head(property)
   body
   
     include parts/svg-defs.pug
@@ -26,11 +26,7 @@ html(lang="en")
         div.acronym-block
           h3#acronym
 
-        p Here you will find essays that are a way for me to discover mathematics. 
-        p 
-          |Most programs use randomness to define shapes, others are animations 
-          |that question concepts of loop and infinity.
-        
+        p #{property.info}
         
       section.projects
 
@@ -42,36 +38,36 @@ html(lang="en")
               a(
                 href="./sketch/" + project.name,
               ) 
-                span #{unescapeTitle(project.name)}
+                span #{project.title}
                 small #{project.date}
         
         
       aside.column.about
         ul
           li  
-            a(href="https://twitter.com/Nicolas_Lebrun_") 
+            a(href="https://twitter.com/" + property.author.twitter) 
               svg.icon.icon-twitter 
                 use(xlink:href="#icon-twitter")
               span Twitter
           
           li
-            a(href="https://github.com/nclslbrn") 
+            a(href="https://github.com/" + property.author.github) 
               svg.icon.icon-github
                 use(xlink:href="#icon-github")
               span Github
           li
-            a(href="https://nicolas-lebrun.fr")
+            a(href=property.author.site)
               svg.icon.icon-link
                 use(xlink:href="#icon-link")
               span Site
 
           li  
-            a(href="mailto:nl@artemg.com") 
+            a(href="mailto:" + property.author.mail) 
               svg.icon.icon-mail
                 use(xlink:href="#icon-mail")
               span Mail
 
-        p - Nicolas Lebrun 
+        p - #{property.author.name} 
       
       .clearfix
 

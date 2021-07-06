@@ -12,13 +12,14 @@
 doctype html
 html(lang="en")
     include parts/head.pug
-    +head(title, property, srcPath)
+    +head(property)
+
 body.project
     include parts/svg-defs.pug
     include parts/offFrame.pug
     include parts/iconav.pug
 
-    +offFrame(title, property)
+    +offFrame(property)
     +iconav(property)   
     div#windowFrame
 

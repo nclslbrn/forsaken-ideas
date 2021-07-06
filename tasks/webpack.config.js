@@ -1,22 +1,43 @@
+const fs = require('fs')
 const path = require('path')
 const sketchConfig = require('./sketchConfig')
 const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
 const projects = fileList(path.resolve('sketch/'))
+const siteUrl = require('./siteUrl')
+const stripTags = require('./stripTags')
+const author = require('./author')
 
 module.exports = (env, process) => {
     const project = process.entry[0]
+    const getAssetsToCoppy = fs.existsSync(
+        path.join(project.toString(), 'assets')
+    )
+    const getImageCover = fs.existsSync(
+        path.join(project.toString(), 'capture.jpg')
+    )
     const folder = JSON.parse(JSON.stringify(project))
         .toString()
         .split('/')
         .pop()
-    const title = unescapeTitle(folder)
-    const entry = path.join(project, '/index.js')
-    const output = path.resolve('public/sketch/', folder)
-
-    console.log('<', output)
 
     const property = require(project + '/property.json')
+    property.mode = process.mode == 'production' ? 'production' : 'development'
+    property.url = `${siteUrl}/sketch/${folder}`
+    property.input = project
+    property.title = unescapeTitle(folder)
+    property.entry = path.join(project, '/index.js')
+    property.output = path.resolve('public/sketch/', folder)
+    property.srcPath = '../../'
+    property.path = folder
+    property.getAssetsToCoppy = getAssetsToCoppy
+    property.imageCover = getImageCover
+        ? property.url + 'capture.jpg'
+        : undefined
+    property.escapedInfo = property.info ? stripTags(property.info) : undefined
+    property.siteUrl = siteUrl
+    property.author = author
+
     const current = projects.indexOf(folder)
     const prevProject = current > 0 ? projects[current - 1] : false
     const nextProject =
@@ -30,11 +51,9 @@ module.exports = (env, process) => {
         title: nextProject ? unescapeTitle(nextProject) : false,
         link: nextProject ? `../${nextProject}/` : false
     }
-    property.path = folder
-    const mode = process.mode == 'production' ? 'production' : 'development'
 
-    if (project && entry && property && title && mode) {
-        return sketchConfig(project, entry, output, title, property, mode)
+    if (property) {
+        return sketchConfig(property)
     } else {
         process.exitCode = 128
         throw new Error(

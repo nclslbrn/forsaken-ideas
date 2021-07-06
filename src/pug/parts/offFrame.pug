@@ -1,7 +1,7 @@
-mixin offFrame(title, property)
+mixin offFrame(property)
     #offFrame
         div
-            h1#projectTitle #{title}
+            h1#projectTitle #{property.title}
             .date 
                 svg.icon.icon-calendar
                     use(xlink:href="#icon-calendar")
