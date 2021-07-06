@@ -2,6 +2,8 @@ import funcs from '../../src/js/sketch-common/plane-curve'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import joinVector from './joinVector'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
+import Notification from '../../src/js/sketch-common/Notification'
+
 const container = document.getElementById('windowFrame')
 const sketch = (p5) => {
     const n = 2
@@ -103,9 +105,7 @@ const sketch = (p5) => {
                 y += step
                 if (y > y2) {
                     drawing = false
-                    const notification = document.createElement('p')
-                    notification.innerHTML = 'Ready'
-                    cartel.appendChild(notification)
+                    new Notification('Drawing done', cartel, 'light')
                 }
             }
         }

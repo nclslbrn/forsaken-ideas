@@ -1,5 +1,6 @@
 import SimplexNoise from 'simplex-noise'
 import funcs from '../../src/js/sketch-common/plane-curve'
+import Notification from '../../src/js/sketch-common/Notification'
 
 const simplex = new SimplexNoise()
 const randomTrigoFunc = () => {
@@ -105,7 +106,8 @@ const sketch = {
             requestAnimationFrame(sketch.update)
             sketch.nIter++
         } else {
-            sketch.notify('Done')
+            new Notification('Drawing done', sketch.root, 'light')
+            console.log('Done')
             sketch.print()
         }
     },
@@ -128,16 +130,6 @@ const sketch = {
             path.setAttribute('stroke', '#333')
             sketch.svg.appendChild(path)
         }
-    },
-    notify: (message) => {
-        const p = document.createElement('p')
-        p.setAttribute('style', 'padding: 1em;')
-        p.innerHTML = message
-        sketch.root.appendChild(p)
-        console.log(message)
-        window.setTimeout(() => {
-            sketch.root.removeChild(p)
-        }, 5000)
     },
     reset: () => {
         sketch.trigoFunc = randomTrigoFunc()

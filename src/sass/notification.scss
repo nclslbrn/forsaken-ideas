@@ -4,6 +4,12 @@
     right: 1em;
     padding: 1em;
     margin: 1em;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    &.dark {
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    &.light {
+        color: #222;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+    }
 }
