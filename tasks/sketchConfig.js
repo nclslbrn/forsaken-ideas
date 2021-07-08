@@ -22,7 +22,7 @@ module.exports = (property) => {
             entry: [property.entry],
             output: {
                 path: property.output,
-                filename: '[name]-bundle.js'
+                filename: '[name].sketch.[chunkhash].js'
             },
             plugins: [
                 ...defaultPlugins,

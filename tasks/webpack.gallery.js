@@ -40,10 +40,10 @@ module.exports = (env, process) => {
 
     const config = {
         mode: property.mode,
-        entry: [path.resolve('/src/js/gallery.js')],
+        entry: path.resolve('/src/js/gallery.js'),
         output: {
             path: path.resolve('public/'),
-            filename: '[name]-bundle.js'
+            filename: '[name].gallery.[chunkhash].js'
         },
         plugins: [
             ...defaultPlugins,
