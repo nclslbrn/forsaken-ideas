@@ -36,7 +36,7 @@ const sketch = (p5) => {
 
     // displacement functions
 
-    const attractors = strangeAttractors(p5).attractors
+    const attractors = strangeAttractors().attractors
 
     const functionNames = Object.entries(funcs).map((func_name) => {
         return func_name[0]

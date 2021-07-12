@@ -5,7 +5,7 @@ const sketch = (p5) => {
     const res = 2
     const maxBounce = 2
     const initPoints = []
-    const scale = 0.001
+    const scale = 0.003
 
     let points = []
     let pointsHistory = []
@@ -14,7 +14,7 @@ const sketch = (p5) => {
     const strokeColor = p5.color(0, 25)
     const width = 1200 //window.innerWidth * 0.75
     const height = 630 //window.innerHeight * 0.75
-    const cliffordAttractor = strangeAttractors(p5).attractors['clifford']
+    const cliffordAttractor = strangeAttractors().attractors['clifford']
 
     p5.setup = () => {
         canvas = p5.createCanvas(width, height)
@@ -37,9 +37,7 @@ const sketch = (p5) => {
             for (let p = 0; p < points.length; p++) {
                 const x = points[p].x - width / 2
                 const y = points[p].y - height / 2
-                const v = cliffordAttractor(
-                    p5.createVector(x * scale, y * scale)
-                )
+                const v = cliffordAttractor({ x: x * scale, y: y * scale })
                 const angle = Math.atan2(v.x, v.y) * 1.5
                 points[p].vx += Math.cos(angle)
                 points[p].vy += Math.sin(angle)
@@ -83,7 +81,6 @@ const sketch = (p5) => {
         pointsHistory = initPoints.map((point) => {
             return []
         })
-        console.log(points.length)
 
         p5.background(255, 250, 245)
     }

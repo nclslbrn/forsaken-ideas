@@ -3,47 +3,45 @@
  *
  * you need to setup an attractors object in the JS file which include this one
  * window.attractors = { a: 0.1, b: 1.2, c -1.2, d: -1.8 }
- * @param {vector} v a p5.vector object with x & y (z will be ignored)
+ * @param {obect} v 2D coordinates object with x & y (z will be ignored)
  * @param {float} amount the intensity of the displacement
- * @return {vector} a p5.vector object with x & y (z will be ignored)
+ * @return {object} a 2D coordinates object object with x & y
  */
 
-import p5 from 'p5'
-
-export default function (p5) {
+export default function () {
     const setConstants = (attractor) => {
         let a, b, c, d
 
         switch (attractor) {
             case 'redhead':
-                a = p5.random(-1, 1)
-                b = p5.random(-1, 1)
+                a = Math.random() * 2 - 1
+                b = Math.random() * 2 - 1
                 break
 
             case 'clifford':
-                a = p5.random(-3, 3)
-                b = p5.random(-3, 3)
-                c = p5.random(-3, 3)
-                d = p5.random(-3, 3)
+                a = Math.random() * 6 - 3
+                b = Math.random() * 6 - 3
+                c = Math.random() * 6 - 3
+                d = Math.random() * 6 - 3
                 break
 
             case 'de_jong':
-                a = p5.random(-3, 5)
-                b = p5.random(-3, 5)
-                c = p5.random(-3, 5)
-                d = p5.random(-3, 5)
+                a = Math.random() * 2 - 1
+                b = Math.random() * 2 - 1
+                c = Math.random() * 2 - 1
+                d = Math.random() * 2 - 1
                 break
 
             case 'gumowski_mira':
-                a = p5.random(-1, 1)
-                b = p5.random(-1, 1)
+                a = Math.random() * 2 - 1
+                b = Math.random() * 2 - 1
                 break
 
             case 'fractal_dream':
-                a = p5.random(-3, 5)
-                b = p5.random(-3, 5)
-                c = p5.random(-0.5, 1.5)
-                d = p5.random(-0.5, 1.5)
+                a = Math.random() * 8 - 5
+                b = Math.random() * 8 - 5
+                c = Math.random() * 2 - 0.5
+                d = Math.random() * 2 - 0.5
                 break
         }
         window.attractors = { a: a, b: b, c: c, d: d }
@@ -53,10 +51,10 @@ export default function (p5) {
         if (window.attractors) {
             let a, b
             ;({ a, b } = window.attractors)
-            return p5.createVector(
-                p5.sin((v.x * v.y) / b) * (v.y + p5.cos(a * v.x - v.y)),
-                v.x + p5.sin(v.y) / b
-            )
+            return {
+                x: Math.sin((v.x * v.y) / b) * (v.y + Math.cos(a * v.x - v.y)),
+                y: v.x + Math.sin(v.y) / b
+            }
         } else {
             console.error('You need to setup window.attractors')
             return v
@@ -66,10 +64,10 @@ export default function (p5) {
         if (window.attractors) {
             let a, b, c, d
             ;({ a, b, c, d } = window.attractors)
-            return p5.createVector(
-                p5.sin(a * v.y) - p5.cos(b * v.x),
-                p5.sin(c * v.x) - p5.cos(d * v.y)
-            )
+            return {
+                x: Math.sin(a * v.y) - Math.cos(b * v.x),
+                y: Math.sin(c * v.x) - Math.cos(d * v.y)
+            }
         } else {
             console.error('You need to setup window.attractors')
             return v
@@ -80,10 +78,10 @@ export default function (p5) {
         if (window.attractors) {
             let a, b, c, d
             ;({ a, b, c, d } = window.attractors)
-            return p5.createVector(
-                p5.sin(a * v.x) + c * p5.cos(a * v.x),
-                p5.sin(b * v.x) + d * p5.cos(b * v.y)
-            )
+            return {
+                x: Math.sin(a * v.x) + c * Math.cos(a * v.x),
+                y: Math.sin(b * v.x) + d * Math.cos(b * v.y)
+            }
         } else {
             console.error('You need to setup window.attractors')
             return v
@@ -93,10 +91,10 @@ export default function (p5) {
         if (window.attractors) {
             let a, b, c, d
             ;({ a, b, c, d } = window.attractors)
-            return p5.createVector(
-                p5.sin(v.y * b) + c * p5.sin(v.x * b),
-                p5.sin(v.x * a) + d * p5.cos(v.y * a)
-            )
+            return {
+                x: Math.sin(v.y * b) + c * Math.sin(v.x * b),
+                y: Math.sin(v.x * a) + d * Math.cos(v.y * a)
+            }
         } else {
             console.error('You need to setup window.attractors')
             return v
@@ -110,7 +108,7 @@ export default function (p5) {
 
             const t = v.x
             const w = a * v.x + ((1 - a) * 2 * v.x * v.x) / (1 + v.x + v.x)
-            return p5.createVector(b * v.y + w, w - t)
+            return { x: b * v.y + w, y: w - t }
         } else {
             console.error('You need to setup window.attractors')
             return v
