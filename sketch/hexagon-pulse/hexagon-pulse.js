@@ -2,7 +2,7 @@
 import ease from '../../src/js/sketch-common/ease'
 
 const sketch = (p5) => {
-    const numFrame = 300
+    const numFrame = 500
     let p5Canvas, canvasSize, middle, numRow, step
     const sketchSize = () => {
         return Math.max(window.innerWidth, window.innerHeight)
@@ -46,7 +46,7 @@ const sketch = (p5) => {
                     x: x * step,
                     y: (x % 2 == 0 ? y : y + 0.5) * step
                 }
-                const size = step * Math.max(Math.abs(j / 3), 0.15)
+                const size = step * Math.max(Math.abs(j / 2), 0.1)
                 p5.hexagon(p, size, t)
             }
         }

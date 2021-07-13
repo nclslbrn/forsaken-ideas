@@ -1,9 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
-import { generateHslaColors } from './../../src/js/sketch-common/generateHslaColors'
-import hslToHex from './hslToHex'
 import Notification from '../../src/js/sketch-common/Notification'
+
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
 }
@@ -26,7 +25,7 @@ const sketch = {
     size: { w: window.innerWidth, h: window.innerHeight },
     thickness: 0.01,
     decrease: 0.9,
-    expectedDivisions: 124,
+    expectedDivisions: 48,
     cubeDimension: 4,
     subSize: { min: 0.25, max: 0.75 },
     divisions: [],
@@ -38,7 +37,11 @@ const sketch = {
     ),
     scene: new THREE.Scene(),
     renderer: new THREE.WebGLRenderer(),
-    material: new THREE.MeshPhongMaterial({ color: 0x111111 }),
+    normMat: new THREE.MeshNormalMaterial({
+        transparent: true,
+        opacity: 0.99
+    }),
+    wireMat: new THREE.LineBasicMaterial({ color: 0x000000 }),
     controls: false,
     exporter: new GLTFExporter(),
     launch: () => {
@@ -159,7 +162,9 @@ const sketch = {
         if (sketch.divisions.length < sketch.expectedDivisions) {
             requestAnimationFrame(sketch.update)
         } else {
-            sketch.notify(`We got ${sketch.divisions.length} divisions`)
+            sketch.notify(
+                `We got ${sketch.divisions.length} divisions (${sketch.expectedDivisions} expected)`
+            )
             sketch.draw()
         }
     },
@@ -167,17 +172,6 @@ const sketch = {
         sketch.clean()
         const depth = 0.5
         const frontGroup = new THREE.Group()
-        const maxPos = sketch.divisions.reduce((acc, division) => {
-            return division.pos > acc ? division.pos : acc
-        }, 0)
-        const posMaterials = []
-        const hslColor = generateHslaColors(100, 25, 100, maxPos)
-
-        for (let h = 0; h < maxPos; h++) {
-            const hex = hslToHex(hslColor[h][0], hslColor[h][1], hslColor[h][2])
-            posMaterials[h] = sketch.material.clone()
-            posMaterials[h].color.setHex(hex)
-        }
 
         for (let i = 0; i < sketch.divisions.length; i++) {
             const cubeDepth = depth * (1 / sketch.divisions[i].pos)
@@ -186,23 +180,29 @@ const sketch = {
                 sketch.divisions[i].h,
                 cubeDepth
             )
-            const cube = new THREE.Mesh(
-                geometry,
-                posMaterials[sketch.divisions[i].pos]
-            )
-            cube.position.set(
+            const cubeMesh = new THREE.Mesh(geometry, sketch.normMat)
+            const wireframe = new THREE.WireframeGeometry(geometry)
+            const cubeWire = new THREE.LineSegments(wireframe, sketch.wireMat)
+
+            cubeMesh.position.set(
                 sketch.divisions[i].x,
                 sketch.divisions[i].y,
                 cubeDepth / 2
             )
-            frontGroup.add(cube)
+            cubeWire.position.set(
+                sketch.divisions[i].x,
+                sketch.divisions[i].y,
+                cubeDepth / 2
+            )
+            frontGroup.add(cubeMesh)
+            frontGroup.add(cubeWire)
         }
         const baseGeo = new THREE.BoxGeometry(
             sketch.cubeDimension,
             sketch.cubeDimension,
             sketch.cubeDimension
         )
-        const base = new THREE.Mesh(baseGeo, sketch.material)
+        const base = new THREE.Mesh(baseGeo, sketch.normMat)
         const leftGroup = frontGroup.clone(true)
         const rightGroup = frontGroup.clone(true)
         const topGroup = frontGroup.clone(true)
