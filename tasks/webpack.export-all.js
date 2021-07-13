@@ -4,6 +4,7 @@ const fileList = require('./fileList')
 const sketchConfig = require('./sketchConfig')
 const siteUrl = require('./siteUrl')
 const author = require('./author')
+const { existsSync } = require('fs')
 const projects = fileList(path.resolve('sketch/'))
 const projectsConfig = []
 
@@ -37,7 +38,12 @@ for (let p = 0; p < projects.length; p++) {
     )
     property.siteUrl = siteUrl
     property.author = author
-
+    property.getAssetsToCopy = existsSync(
+        path.join(path.resolve('sketch/'), projects[p], 'assets')
+    )
+    property.imageCover = existsSync(
+        path.join(path.resolve('sketch/'), projects[p], 'capture.jpg')
+    )
     projectsConfig[p] = sketchConfig(property)
 }
 module.exports = projectsConfig

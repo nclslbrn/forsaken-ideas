@@ -9,7 +9,6 @@ const defaultPlugins = require('./webpack.plugins')
 const getRules = require('./webpack.rules')
 const devServer = require('./webpack.devServer')
 const externals = require('./webpack.externals')
-const unescapeTitle = require('./unescapeTitle')
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -52,7 +51,8 @@ module.exports = (property) => {
             stats: 'errors-only'
         }
 
-        if (property.getAssetsToCoppy) {
+        if (property.getAssetsToCopy) {
+            console.log(property.title)
             config.plugins.push(
                 new CopyWebpackPlugin({
                     patterns: [
