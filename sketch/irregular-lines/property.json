@@ -1,6 +1,6 @@
 {
     "libs": [],
-    "info": "Coming soon",
+    "info": "This sketch draw lines from left to right and use noise to distort them if they are crossing a shape.",
     "date": "2021-06-15",
     "action": [
         {
