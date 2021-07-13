@@ -12,8 +12,8 @@ const sketch = (p5) => {
     let canvas
 
     const strokeColor = p5.color(0, 25)
-    const width = 1200 //window.innerWidth * 0.75
-    const height = 630 //window.innerHeight * 0.75
+    const width = window.innerWidth * 0.75
+    const height = window.innerHeight * 0.75
     const cliffordAttractor = strangeAttractors().attractors['clifford']
 
     p5.setup = () => {
@@ -75,14 +75,15 @@ const sketch = (p5) => {
     }
     sketch.init = () => {
         strangeAttractors(p5).init('clifford')
+        console.log(window.attractors)
+
         points = initPoints.map((p) => ({
             ...p
         }))
-        pointsHistory = initPoints.map((point) => {
-            return []
-        })
+        pointsHistory = initPoints.map((point) => [])
 
         p5.background(255, 250, 245)
+        p5.loop()
     }
     sketch.downloadJPG = () => {
         p5.saveCanvas(canvas, 'capture', 'jpg')

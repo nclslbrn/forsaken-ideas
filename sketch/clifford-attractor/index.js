@@ -1,6 +1,6 @@
 'use strict'
-import style from '../../src/sass/project.scss'
-import fullCanvas from '../../src/sass/frame-canvas.scss'
+import '../../src/sass/project.scss'
+import '../../src/sass/frame-canvas.scss'
 import sketch from './clifford-attractor'
 import computeSVG from './computeSVG'
 import exportSVG from '../../src/js/sketch-common/exportSVG'
