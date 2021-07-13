@@ -2,7 +2,9 @@ import '../sass/gallery.scss'
 import makeAcronym from './gallery/random-acronym-extend'
 import randomHeroImage from './gallery/random-hero-image'
 import GlitchText from './gallery/glitchText'
+import randomOpenGraphCover from './gallery/randomOpenGraphCover'
 
+randomOpenGraphCover()
 makeAcronym()
 randomHeroImage()
 
