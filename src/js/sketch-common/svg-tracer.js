@@ -328,10 +328,7 @@ export default class SvgTracer {
             i = date.getMinutes()
 
         const filename = `${props.name}.${Y}-${m}-${d}_${H}.${i}.svg`
-        const svgMarkup = Array.from(this.parentElem.childNodes).filter(
-            (element) => element.localName === 'svg'
-        )[0].outerHTML
-
+        const svgMarkup = this.elem.outerHTML
         const data = new Blob([svgMarkup], {
             type: 'text/plain'
         })
