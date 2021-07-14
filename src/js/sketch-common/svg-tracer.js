@@ -130,6 +130,70 @@ export default class SvgTracer {
         }
     }
     /**
+     * Triangle drawing function
+     * @typedef {*} props triangle value
+     * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])
+     * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
+     * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
+     * @param {boolean} props.close determine if path is closed or open
+     * @param {string} props.name a name attribute
+     * @param {string} props.group group name if you want to add path to a specific group
+     */
+    triangle(props) {
+        if (props.points === undefined) {
+            console.error(
+                'You must specify 3 points in property object to draw a triangle'
+            )
+            return
+        } else {
+            if (props.points.length < 3) {
+                console.error(
+                    "It seems that props.points doesn't have three points."
+                )
+                return
+            }
+            if (props.points.length > 3) {
+                console.error(
+                    'Props.point contains more than 3 coordinates, triangle will only use the three first ones.'
+                )
+            }
+        }
+        props.fill = props.fill === undefined ? false : props.fill
+        props.stroke = props.stroke === undefined ? false : props.stroke
+        props.close = props.close === undefined ? false : props.close
+        props.name = props.name === undefined ? false : props.name
+        props.group = props.group === undefined ? false : props.group
+
+        const triangle = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'path'
+        )
+        triangle.setAttribute(
+            'd',
+            'M ' +
+                props.points[0][0] +
+                ',' +
+                props.points[0][1] +
+                'L ' +
+                props.points[1][0] +
+                ',' +
+                props.points[1][1] +
+                'L ' +
+                props.points[2][0] +
+                ',' +
+                props.points[2][1] +
+                'Z'
+        )
+        if (props.fill) triangle.setAttribute('fill', props.fill)
+        if (props.stroke) triangle.setAttribute('stroke', props.stroke)
+        if (props.name) triangle.setAttribute('name', props.name)
+        if (props.group) {
+            this.groups[props.group].appendChild(triangle)
+        } else {
+            this.elem.appendChild(triangle)
+        }
+    }
+    /**
      * Line drawing function
      * @typedef {path} props path value
      * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])

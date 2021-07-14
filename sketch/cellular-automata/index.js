@@ -10,7 +10,9 @@ const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 // Raster version
 // P5 = new p5(sketch, windowFrame)
-sketch.init()
+
+// svg version only
+sketch.launch()
 windowFrame.removeChild(loader)
 window.init = sketch.init
 // Raster version
