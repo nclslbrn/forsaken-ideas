@@ -6,7 +6,7 @@
  *      value: init parameter value,
  *      options : {
  *         min: minimum parameter value,
- *         max: maximum valeu,
+ *         max: maximum value,
  *         step: step to increment value
  *         label: explicit name or false
  *      }
