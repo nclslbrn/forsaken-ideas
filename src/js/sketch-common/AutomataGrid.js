@@ -29,7 +29,7 @@ export default class AutomataGrid {
      * cell around to consider the current cell alive
      * (exact match, not more, not less)
      */
-    update(neededAliveNeighboors = 3) {
+    update(neededAliveNeighboors = 2) {
         const nextValue = []
 
         for (let x = 0; x <= this.cols; x++) {

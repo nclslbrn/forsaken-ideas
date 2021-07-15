@@ -18,7 +18,6 @@ updateButton.addEventListener(
     },
     false
 )
-
 const colorButton = document.createElement('button')
 colorButton.innerText = 'Change color'
 paramBox.appendChild(colorButton)
@@ -34,7 +33,7 @@ windowFrame.appendChild(paramBox)
 
 const sketch = {
     svg: new SvgTracer(document.getElementById('windowFrame'), 'a3'),
-    g: new AutomataGrid(6, 6),
+    g: undefined,
     mirror: false,
     palette: false,
     cellSize: undefined,
@@ -44,6 +43,10 @@ const sketch = {
     initPercentChanceAliveCell: 0.35,
     launch: () => {
         sketch.svg.init()
+        sketch.init()
+    },
+    init: () => {
+        sketch.g = new AutomataGrid(6, 6)
         sketch.cellSize = {
             w: sketch.svg.width / (1 + sketch.g.cols * 2),
             h: sketch.svg.height / (1 + sketch.g.rows * 2)
@@ -54,9 +57,6 @@ const sketch = {
             sketch.mirror,
             sketch.cellSize
         )
-        sketch.init()
-    },
-    init: () => {
         sketch.g.init(sketch.initPercentChanceAliveCell)
         sketch.changeColor()
         sketch.g.update(sketch.neededAliveNeighboors)

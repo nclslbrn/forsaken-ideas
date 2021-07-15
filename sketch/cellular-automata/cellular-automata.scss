@@ -1,10 +1,22 @@
-button {
-    margin: 1em;
+button,
+label,
+input[type='text'] {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol';
+    font-size: 1em;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+input[type='range'] {
+    padding: 1em;
+}
+label {
+    margin-top: 1em;
 }
 #interactiveParameter {
     display: flex;
     flex-flow: column nowrap;
+    padding: 1em;
 }
