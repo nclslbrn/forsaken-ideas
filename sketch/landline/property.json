@@ -1,0 +1,15 @@
+{
+    "libs": ["three"],
+    "info": "Coming soon",
+    "date": "2021-07-17",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
