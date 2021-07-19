@@ -12,4 +12,5 @@ sketch.launch()
 windowFrame.removeChild(loader)
 window.infobox = infobox
 window.export = sketch.export
+window.init = sketch.init
 handleAction()

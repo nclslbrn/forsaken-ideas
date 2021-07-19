@@ -2,9 +2,10 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
 import { generateHeight } from './generate'
+import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
 
 const sketch = {
-    meshSize: { w: 3000, h: 5000 },
+    meshSize: { w: 5000, h: 5000 },
     width: 128,
     depth: 128,
     seed: 'superseed',
@@ -21,7 +22,7 @@ const sketch = {
     init: () => {
         sketch.clock = new THREE.Clock()
         sketch.scene = new THREE.Scene()
-        sketch.scene.background = new THREE.Color(0x333333)
+        sketch.scene.background = new THREE.Color(0x2c3e50)
         sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
         const dirLights = [
             new THREE.DirectionalLight(0xffffff, 0.6),
@@ -46,9 +47,9 @@ const sketch = {
             .getElementById('windowFrame')
             .appendChild(sketch.renderer.domElement)
         sketch.camera.position.set(
-            sketch.meshSize.w,
-            sketch.meshSize.h,
-            sketch.meshSize.h
+            sketch.meshSize.w * 0.5,
+            sketch.meshSize.h * 0.5,
+            sketch.meshSize.h * 0.5
         )
         sketch.camera.lookAt(0, 0, 0)
         sketch.controls = new OrbitControls(
@@ -71,11 +72,19 @@ const sketch = {
         for (let i = 0, j = 0, l = vertices.length; i < l; i++, j += 3) {
             vertices[j + 1] = data[i] * 10
         }
-        const meshMaterial = new THREE.MeshNormalMaterial({
-            flatShading: true
-        })
+        const meshMaterial = [
+            new THREE.MeshBasicMaterial({ color: 0x2c3e50 }),
+            new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                wireframe: true,
+                transparent: true
+            })
+        ]
 
-        const mesh = new THREE.Mesh(geometry, meshMaterial)
+        const mesh = SceneUtils.createMultiMaterialObject(
+            geometry,
+            meshMaterial
+        )
         mesh.position.set(0, -1500, 0)
 
         sketch.landscape = new THREE.Object3D()

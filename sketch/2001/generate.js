@@ -24,7 +24,9 @@ const generateHeight = (width, height, seed) => {
                 Math.abs(middle.x - x) <= buildSize &&
                 Math.abs(middle.y - y) <= buildSize
             ) {
-                data[i] = width * 3
+                data[i] = data.reduce((accumulator, currentValue) =>
+                    Math.max(accumulator, currentValue)
+                )
             } else {
                 data[i] += Math.abs(
                     fbm.f(x / quality, y / quality, z) * quality * 1.75
