@@ -52,7 +52,6 @@ module.exports = (property) => {
         }
 
         if (property.getAssetsToCopy) {
-            console.log(property.title)
             config.plugins.push(
                 new CopyWebpackPlugin({
                     patterns: [

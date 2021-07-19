@@ -3,6 +3,7 @@ const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
 const sketchConfig = require('./sketchConfig')
 const siteUrl = require('./siteUrl')
+const stripTags = require('./stripTags')
 const author = require('./author')
 const { existsSync } = require('fs')
 const projects = fileList(path.resolve('sketch/'))
@@ -31,6 +32,7 @@ for (let p = 0; p < projects.length; p++) {
     property.path = projects[p]
     property.input = path.resolve('sketch', projects[p])
     property.output = path.resolve('public/sketch', projects[p])
+    property.srcPath = '../../'
     property.entry = path.join(
         path.resolve('sketch/'),
         projects[p],
@@ -44,6 +46,8 @@ for (let p = 0; p < projects.length; p++) {
     property.imageCover = existsSync(
         path.join(path.resolve('sketch/'), projects[p], 'capture.jpg')
     )
+    property.escapedInfo = property.info ? stripTags(property.info) : undefined
+
     projectsConfig[p] = sketchConfig(property)
 }
 module.exports = projectsConfig

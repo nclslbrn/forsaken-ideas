@@ -9,7 +9,7 @@ const stripTags = require('./stripTags')
 const author = require('./author')
 
 module.exports = (env, process) => {
-    const project = process.entry[0]
+    const project = path.resolve(process.entry[0])
     const getAssetsToCoppy = fs.existsSync(
         path.join(project.toString(), 'assets')
     )
@@ -57,7 +57,7 @@ module.exports = (env, process) => {
     } else {
         process.exitCode = 128
         throw new Error(
-            'Entry path is incorrect. Syntax npm run export-sketch ./<sketch>/<project-folder>'
+            'Entry path is incorrect. Syntax npm run build:sketch ./<sketch>/<project-folder>'
         )
     }
 }
