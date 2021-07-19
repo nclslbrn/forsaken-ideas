@@ -15,11 +15,8 @@ mixin head(property, path)
     meta(name="theme-color" content="#ffffff")
 
     if property && property.srcPath
-      link(rel="manifest"                  href=property.srcPath + "img/site.webmanifest")
       link(rel="icon" type="image/svg+xml" href=property.srcPath + "img/favicon.svg")
       link(rel="icon" type="image/png"     href=property.srcPath + "img/favicon.png")
-      link(rel="mask-icon"                 href=property.srcPath + "img/mask-icon.svg" color="#000000")
-      link(rel="apple-touch-icon"          href=property.srcPath + "img/apple-touch-icon.png")
     
     if property && property.title
       meta(property="og:title"            content=property.title)
