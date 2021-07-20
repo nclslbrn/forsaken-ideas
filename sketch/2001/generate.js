@@ -12,28 +12,35 @@ const generateHeight = (width, height, seed) => {
         z = Math.random() * 100
 
     let quality = 1
-    const buildSize = 3
     const middle = { x: width / 2, y: height / 2 }
 
-    for (let j = 0; j < 4; j++) {
+    const buildSize = 3
+    const buildHeight = []
+    for (let k = 0; k < buildSize ** 2; k++) {
+        buildHeight.push(-2 + Math.random())
+    }
+
+    for (let j = 0; j < 6; j++) {
         for (let i = 0; i < size; i++) {
             const x = i % width,
                 y = ~~i / width
 
             if (
-                Math.abs(middle.x - x) <= buildSize &&
-                Math.abs(middle.y - y) <= buildSize
+                Math.abs(middle.x - x + 1) <= buildSize &&
+                Math.abs(middle.y - y + 1) <= buildSize
             ) {
-                data[i] = data.reduce((accumulator, currentValue) =>
+                const higherPoint = data.reduce((accumulator, currentValue) =>
                     Math.max(accumulator, currentValue)
                 )
+                const buildElevation = buildHeight[i % buildHeight.length]
+                data[i] = Math.abs(higherPoint + buildElevation)
             } else {
                 data[i] += Math.abs(
-                    fbm.f(x / quality, y / quality, z) * quality * 1.75
+                    fbm.f(x / quality, y / quality, z) * quality * 1.25
                 )
             }
         }
-        quality *= 5
+        quality *= 3.5
     }
     return data
 }

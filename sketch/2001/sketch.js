@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
 import { generateHeight } from './generate'
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
+import Notification from '../../src/js/sketch-common/Notification'
 
 const sketch = {
     meshSize: { w: 5000, h: 5000 },
@@ -19,9 +20,7 @@ const sketch = {
     ),
     renderer: new THREE.WebGLRenderer({ antialias: true }),
     exporter: new STLExporter(),
-    init: () => {
-        sketch.clock = new THREE.Clock()
-        sketch.scene = new THREE.Scene()
+    launch: () => {
         sketch.scene.background = new THREE.Color(0x2c3e50)
         sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
         const dirLights = [
@@ -59,20 +58,35 @@ const sketch = {
         sketch.controls.screenSpacePanning = true
         document.addEventListener('keypress', sketch.onkeypress, false)
         window.addEventListener('resize', sketch.onWindowResize, false)
+        sketch.init()
+        sketch.animate()
+    },
+    init: () => {
+        // Before add new object remove previous
+        if (sketch.scene.getObjectByName('landscape')) {
+            const previous = sketch.scene.getObjectByName('landscape')
+            sketch.scene.remove(previous)
+            new Notification(
+                'Previous landscape was removed.',
+                document.getElementById('windowFrame'),
+                'dark'
+            )
+        }
+
         const data = generateHeight(sketch.width, sketch.depth, sketch.seed)
-        const geometry = new THREE.PlaneGeometry(
+        sketch.geometry = new THREE.PlaneGeometry(
             sketch.meshSize.w,
             sketch.meshSize.h,
             sketch.width - 1,
             sketch.depth - 1
         )
 
-        geometry.rotateX(-Math.PI / 2)
-        const vertices = geometry.attributes.position.array
+        sketch.geometry.rotateX(-Math.PI / 2)
+        const vertices = sketch.geometry.attributes.position.array
         for (let i = 0, j = 0, l = vertices.length; i < l; i++, j += 3) {
             vertices[j + 1] = data[i] * 10
         }
-        const meshMaterial = [
+        const meshMaterials = [
             new THREE.MeshBasicMaterial({ color: 0x2c3e50 }),
             new THREE.MeshBasicMaterial({
                 color: 0xffffff,
@@ -80,17 +94,14 @@ const sketch = {
                 transparent: true
             })
         ]
-
-        const mesh = SceneUtils.createMultiMaterialObject(
-            geometry,
-            meshMaterial
+        sketch.object = SceneUtils.createMultiMaterialObject(
+            sketch.geometry,
+            meshMaterials
         )
-        mesh.position.set(0, -1500, 0)
-
-        sketch.landscape = new THREE.Object3D()
-        sketch.landscape.add(mesh)
-
-        sketch.scene.add(sketch.landscape)
+        sketch.object.name = 'landscape'
+        sketch.object.position.set(0, -1500, 0)
+        sketch.scene.add(sketch.object)
+        //console.log(sketch.scene)
         sketch.render()
     },
     onWindowResize: () => {
@@ -108,10 +119,6 @@ const sketch = {
         requestAnimationFrame(sketch.animate)
         if (sketch.render !== undefined) sketch.render()
     },
-    launch: () => {
-        sketch.init()
-        sketch.animate()
-    },
     export: () => {
         const date = new Date(),
             Y = date.getFullYear(),
@@ -121,7 +128,21 @@ const sketch = {
             i = date.getMinutes()
 
         const filename = `landline.${Y}-${m}-${d}_${H}.${i}.stl`
-        const result = sketch.exporter.parse(sketch.landscape, { binary: true })
+
+        const land = new THREE.Mesh(
+            sketch.geometry,
+            new THREE.MeshBasicMaterial({ color: 0x000000 })
+        )
+        const landGeom = sketch.geometry.clone(true)
+
+        land.geometry = landGeom
+        land.geometry.scale(
+            100 / sketch.meshSize.w,
+            100 / sketch.meshSize.h,
+            100 / sketch.meshSize.h
+        )
+        land.geometry.rotateX(Math.PI / 2)
+        const result = sketch.exporter.parse(land, { binary: true })
         const link = document.createElement('a')
 
         link.style.display = 'none'
