@@ -1,42 +1,60 @@
-import * as three from 'three'
+import * as THREE from 'three'
 import AutomataGrid from '../../src/js/sketch-common/AutomataGrid'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
 const windowFrame = document.getElementById('windowFrame')
 
 const s = {
-    grid: new AutomataGrid(6, 6),
+    grid: new AutomataGrid(12, 12),
     neededAliveNeighboors: 2,
     initPercentChanceAliveCell: 0.35,
     //meshSize: { w: 6, h: 6, d: 6 },
-    clock: new three.Clock(),
-    scene: new three.Scene(),
-    camera: new three.PerspectiveCamera(
+    clock: new THREE.Clock(),
+    scene: new THREE.Scene(),
+    camera: new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
         1,
         20000
     ),
-    renderer: new three.WebGLRenderer({ antialias: true }),
-    init: () => {
-        s.defaulMat = new three.MeshBasicMaterial({ color: 0xffffff })
+    renderer: new THREE.WebGLRenderer({ antialias: true }),
+    launch: () => {
+        s.controls = new OrbitControls(s.camera, s.renderer.domElement)
+        s.controls.screenSpacePanning = true
+        s.defaulMat = [
+            new THREE.MeshBasicMaterial({
+                color: 0xffffff
+            }),
+            new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                wireframe: true,
+                transparent: true
+            })
+        ]
         s.defaultGeom = new THREE.BoxGeometry(
             1 / s.grid.cols,
             1 / s.grid.rows,
             1 / s.grid.rows
         )
-        s.defaultMesh = new THREE.Mesh(s.defaultGeom, s.defaulMat)
-
-        s.grid.init(s.initPercentChanceAliveCell)
-        s.grid.update()
-        //s.camera.position.y = 200
-        s.camera.position.z = 5
-
-        s.scene.background = new THREE.Color(0x333333)
-        s.scene.fog = new THREE.FogExp2(0xaaccff, 0.0007)
-
+        s.object = SceneUtils.createMultiMaterialObject(
+            s.defaultGeom,
+            s.defaulMat
+        )
         s.renderer.setPixelRatio(window.devicePixelRatio)
         s.renderer.setSize(window.innerWidth, window.innerHeight)
+        s.camera.position.z = Math.max(s.grid.cols, s.grid.rows) / 2
+        s.camera.lookAt(0, 0, 0)
         windowFrame.appendChild(s.renderer.domElement)
         window.addEventListener('resize', s.onWindowResize, false)
+
+        s.init()
+        s.animate()
+    },
+    init: () => {
+        s.grid.init(s.initPercentChanceAliveCell)
+        s.grid.update()
+        s.scene.background = new THREE.Color(0x000000)
+        s.scene.fog = new THREE.FogExp2(0xffffff, 0.07)
         s.drawgrid()
         s.render()
     },
@@ -46,17 +64,11 @@ const s = {
         s.renderer.setSize(window.innerWidth, window.innerHeight)
     },
     render: () => {
-        // const delta = s.clock.getDelta()
-        // const time = s.clock.getElapsedTime() * 10
         s.renderer.render(s.scene, s.camera)
     },
     animate: () => {
         requestAnimationFrame(s.animate)
         if (s.render !== undefined) s.render()
-    },
-    launch: () => {
-        s.init()
-        s.animate()
     },
     cleanScene: () => {
         const toKeep = ['DirectionalLight', 'AmbientLight']
@@ -67,13 +79,13 @@ const s = {
         })
     },
     addMesh: (x, y) => {
-        const mesh = s.defaultMesh.clone(true)
-        mesh.position.set((1 / s.grid.cols) * x, (1 / s.grid.rows) * y, 0)
-        s.scene.add(mesh)
+        const clone = s.object.clone(true)
+        clone.position.set((1 / s.grid.cols) * x, (1 / s.grid.rows) * y, 0)
+        return clone
     },
     drawgrid: () => {
         s.cleanScene()
-
+        const group = new THREE.Group()
         for (let x = 0; x <= s.grid.cols; x++) {
             for (let y = 0; y <= s.grid.rows; y++) {
                 const i = x * s.grid.cols + y
@@ -85,7 +97,7 @@ const s = {
                     s.grid.value[i - s.grid.rows] &&
                     s.grid.value[i + s.grid.rows]
                 ) {
-                    s.addMesh(x, y)
+                    group.add(s.addMesh(x, y))
                 }
                 // left & right
                 if (
@@ -94,7 +106,7 @@ const s = {
                     s.grid.value[i + s.grid.cols] &&
                     s.grid.value[i - s.grid.cols]
                 ) {
-                    s.addMesh(x, y)
+                    group.add(s.addMesh(x, y))
                 }
                 // top & left
                 if (
@@ -103,7 +115,7 @@ const s = {
                     s.grid.value[i - 1] &&
                     s.grid.value[i - s.grid.cols]
                 ) {
-                    s.addMesh(x - 1, y - 1)
+                    group.add(s.addMesh(x - 1, y - 1))
                 }
                 // top & right
                 if (
@@ -112,7 +124,7 @@ const s = {
                     s.grid.value[i - 1] &&
                     s.grid.value[i + s.grid.cols]
                 ) {
-                    s.addMesh(x + 1, y - 1)
+                    group.add(s.addMesh(x + 1, y - 1))
                 }
                 // bottom & right
                 if (
@@ -121,7 +133,7 @@ const s = {
                     s.grid.value[i + 1] &&
                     s.grid.value[i + s.grid.cols]
                 ) {
-                    s.addMesh(x + 1, y + 1)
+                    group.add(s.addMesh(x + 1, y + 1))
                 }
                 // bottom & left
                 if (
@@ -130,10 +142,22 @@ const s = {
                     s.grid.value[i + 1] &&
                     s.grid.value[i - s.grid.cols]
                 ) {
-                    s.addMesh(x - 1, y + 1)
+                    group.add(s.addMesh(x - 1, y + 1))
                 }
             }
         }
+        const xMirror = group.clone(true)
+        xMirror.scale.set(-1, 1, 1)
+
+        const yGroup = group.clone(true)
+        yGroup.rotateY(Math.PI / 2)
+        const yMirror = yGroup.clone(true)
+        yMirror.scale.set(1, -1, 1)
+
+        s.scene.add(group)
+        s.scene.add(xMirror)
+        s.scene.add(yGroup)
+        s.scene.add(yMirror)
     }
 }
 export default s

@@ -1,0 +1,11 @@
+{
+    "libs": ["three"],
+    "info": "Coming soon",
+    "date": "2020-11-20",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        }
+    ]
+}
