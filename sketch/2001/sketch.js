@@ -6,9 +6,10 @@ import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
 import Notification from '../../src/js/sketch-common/Notification'
 
 const sketch = {
+    zRot: 0,
     meshSize: { w: 5000, h: 5000 },
-    width: 128,
-    depth: 128,
+    width: 180,
+    depth: 180,
     seed: 'superseed',
     clock: new THREE.Clock(),
     scene: new THREE.Scene(),
@@ -117,6 +118,8 @@ const sketch = {
     },
     animate: () => {
         requestAnimationFrame(sketch.animate)
+        sketch.zRot += 0.001
+        sketch.object.rotation.set(0, sketch.zRot, 0)
         if (sketch.render !== undefined) sketch.render()
     },
     export: () => {
