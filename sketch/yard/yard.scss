@@ -1,0 +1,20 @@
+#windowFrame #interactiveParameter {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+
+    label,
+    input[type='range'],
+    input[type='text'] {
+        line-height: 32px;
+    }
+
+    label {
+        margin-left: 1.5em;
+        color: white;
+    }
+    input[type='text'] {
+        width: 3em;
+        text-align: center;
+    }
+}

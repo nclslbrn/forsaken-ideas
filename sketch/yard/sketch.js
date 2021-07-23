@@ -3,13 +3,35 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
 import { generateHeight } from './generate'
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
+import paramSlider from '../../src/js/sketch-common/param-slider'
 import Notification from '../../src/js/sketch-common/Notification'
+
+const windowFrame = document.getElementById('windowFrame')
+
+const params = {
+    resolution: {
+        value: 110,
+        options: { min: 30, max: 180, step: 1, label: 'Resolution' }
+    },
+    builds: {
+        value: 50,
+        options: { min: 1, max: 100, step: 1, label: 'Buildings' }
+    }
+}
+
+const paramBox = document.createElement('div')
+paramBox.id = 'interactiveParameter'
+for (const i in params) {
+    const elems = paramSlider(params[i])
+    elems.forEach((elem) => {
+        paramBox.appendChild(elem)
+    })
+}
+windowFrame.appendChild(paramBox)
 
 const sketch = {
     zRot: 0,
     meshSize: { w: 5000, h: 5000 },
-    width: 180,
-    depth: 180,
     seed: 'superseed',
     clock: new THREE.Clock(),
     scene: new THREE.Scene(),
@@ -43,9 +65,7 @@ const sketch = {
         })
         sketch.renderer.setPixelRatio(window.devicePixelRatio)
         sketch.renderer.setSize(window.innerWidth, window.innerHeight)
-        document
-            .getElementById('windowFrame')
-            .appendChild(sketch.renderer.domElement)
+        windowFrame.appendChild(sketch.renderer.domElement)
         sketch.camera.position.set(
             sketch.meshSize.w * 0.5,
             sketch.meshSize.h * 0.5,
@@ -69,17 +89,22 @@ const sketch = {
             sketch.scene.remove(previous)
             new Notification(
                 'Previous landscape was removed.',
-                document.getElementById('windowFrame'),
+                windowFrame,
                 'dark'
             )
         }
 
-        const data = generateHeight(sketch.width, sketch.depth, sketch.seed)
+        const data = generateHeight(
+            params['resolution'].value,
+            params['resolution'].value,
+            sketch.seed,
+            params['builds'].value
+        )
         sketch.geometry = new THREE.PlaneGeometry(
             sketch.meshSize.w,
             sketch.meshSize.h,
-            sketch.width - 1,
-            sketch.depth - 1
+            params['resolution'].value - 1,
+            params['resolution'].value - 1
         )
 
         sketch.geometry.rotateX(-Math.PI / 2)
@@ -118,7 +143,7 @@ const sketch = {
     },
     animate: () => {
         requestAnimationFrame(sketch.animate)
-        sketch.zRot += 0.001
+        sketch.zRot += 0.003
         sketch.object.rotation.set(0, sketch.zRot, 0)
         if (sketch.render !== undefined) sketch.render()
     },

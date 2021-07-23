@@ -1,6 +1,6 @@
 import Fbm from './Fbm'
 
-const generateHeight = (width, height, seed) => {
+const generateHeight = (width, height, seed, buildNum) => {
     const size = width * height,
         data = new Uint8Array(size),
         fbm = new Fbm({
@@ -13,7 +13,6 @@ const generateHeight = (width, height, seed) => {
 
     let quality = 1
     const middle = { x: width / 2, y: height / 2 }
-    const buildNum = 64
     const maxBuildSize = { w: 4, h: 4 }
     const builds = Array.from(new Array(buildNum), (a, b) => {
         return {
@@ -41,7 +40,7 @@ const generateHeight = (width, height, seed) => {
                 fbm.f(x / quality, y / quality, z) * quality * 2
             )
         }
-        quality *= 3
+        quality *= 2.5
     }
 
     // get the highest point

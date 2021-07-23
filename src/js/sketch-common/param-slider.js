@@ -34,7 +34,7 @@ const paramSlider = (param, paramName = false) => {
     value.value = param.value
 
     slider.addEventListener('change', (event) => {
-        param.value = event.target.value
+        param.value = Number(event.target.value)
         value.value = event.target.value
         if (typeof init == 'function') {
             init()
