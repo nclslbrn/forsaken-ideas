@@ -6,41 +6,66 @@ const generateHeight = (width, height, seed) => {
         fbm = new Fbm({
             frequency: 0.03,
             octaves: 7,
-            amplitude: 0.25,
+            amplitude: 0.15,
             seed: seed
         }),
         z = Math.random() * 100
 
     let quality = 1
     const middle = { x: width / 2, y: height / 2 }
+    const buildNum = 64
+    const maxBuildSize = { w: 4, h: 4 }
+    const builds = Array.from(new Array(buildNum), (a, b) => {
+        return {
+            x: Math.floor(width / 2 + (Math.random() / 4 - 0.125) * width), // x pos
+            y: Math.floor(height / 2 + (Math.random() / 4 - 0.125) * height), // y pos
+            w: Math.ceil(Math.random() * maxBuildSize.w), // width
+            h: Math.ceil(Math.random() * maxBuildSize.h), // height
+            d: Math.random() // depth
+        }
+    })
+    builds.push({
+        ...middle,
+        w: Math.ceil(Math.random() * maxBuildSize.w),
+        h: Math.ceil(Math.random() * maxBuildSize.h),
+        d: Math.random()
+    })
 
-    const buildSize = 3
-    const buildHeight = []
-    for (let k = 0; k < buildSize ** 2; k++) {
-        buildHeight.push(-2 + Math.random())
-    }
-
+    // first generate terrain
     for (let j = 0; j < 6; j++) {
         for (let i = 0; i < size; i++) {
             const x = i % width,
                 y = ~~i / width
 
+            data[i] += Math.abs(
+                fbm.f(x / quality, y / quality, z) * quality * 2
+            )
+        }
+        quality *= 3
+    }
+
+    // get the highest point
+    const highestPoint = data.reduce((accumulator, currentValue) =>
+        Math.max(accumulator, currentValue)
+    )
+    const lowestPoint = data.reduce((accumulator, currentValue) =>
+        Math.min(accumulator, currentValue)
+    )
+
+    // add buildings
+    for (let i = 0; i < size; i++) {
+        const x = i % width,
+            y = ~~i / width
+
+        for (let h = 0; h < builds.length; h++) {
             if (
-                Math.abs(middle.x - x + 1) <= buildSize &&
-                Math.abs(middle.y - y + 1) <= buildSize
+                Math.abs(builds[h].x - x) <= builds[h].w &&
+                Math.abs(builds[h].y - y) <= builds[h].h
             ) {
-                const higherPoint = data.reduce((accumulator, currentValue) =>
-                    Math.max(accumulator, currentValue)
-                )
-                const buildElevation = buildHeight[i % buildHeight.length]
-                data[i] = Math.abs(higherPoint + buildElevation)
-            } else {
-                data[i] += Math.abs(
-                    fbm.f(x / quality, y / quality, z) * quality * 1.25
-                )
+                data[i] =
+                    (highestPoint - lowestPoint) * builds[h].d + lowestPoint
             }
         }
-        quality *= 3.5
     }
     return data
 }
