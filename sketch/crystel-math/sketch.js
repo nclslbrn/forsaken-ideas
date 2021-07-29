@@ -5,6 +5,25 @@ import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
 import Notification from '../../src/js/sketch-common/Notification'
 const windowFrame = document.getElementById('windowFrame')
 
+const triangleGeometry = (width, height, depth) => {
+    const shape = new THREE.Shape()
+    shape.moveTo(0, 0)
+    shape.lineTo(width, 0)
+    shape.lineTo(0, height)
+    shape.lineTo(0, 0)
+
+    const extrudeSettings = {
+        steps: 2,
+        depth: depth,
+        evelEnabled: true,
+        bevelThickness: 0,
+        bevelSize: 0,
+        bevelOffset: 0,
+        bevelSegments: 0
+    }
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings)
+}
+
 const s = {
     grid: new AutomataGrid(12, 12),
     neededAliveNeighboors: 2,
@@ -18,6 +37,7 @@ const s = {
         1,
         20000
     ),
+
     object: new THREE.Object3D(),
     build: new THREE.Object3D(),
     zRot: 0,
@@ -35,13 +55,13 @@ const s = {
                 transparent: true
             })
         ]
-        s.defaultGeom = new THREE.BoxGeometry(
+        s.defaultGeometry = triangleGeometry(
             1 / s.grid.cols,
             1 / s.grid.rows,
             1 / s.grid.rows
         )
         s.object = SceneUtils.createMultiMaterialObject(
-            s.defaultGeom,
+            s.defaultGeometry,
             s.defaulMat
         )
         s.renderer.setPixelRatio(window.devicePixelRatio)
@@ -50,7 +70,10 @@ const s = {
         s.camera.lookAt(0, 0, 0)
         windowFrame.appendChild(s.renderer.domElement)
         window.addEventListener('resize', s.onWindowResize, false)
-
+        /* 
+        const axesHelper = new THREE.AxesHelper(5)
+        s.scene.add(axesHelper)
+        */
         s.init()
         s.animate()
     },
@@ -58,7 +81,7 @@ const s = {
         s.grid.init(s.initPercentChanceAliveCell)
         s.grid.update()
         s.scene.background = new THREE.Color(0x000000)
-        s.scene.fog = new THREE.FogExp2(0xffffff, 0.07)
+        s.scene.fog = new THREE.Fog(0x000000, 0.5, s.grid.rows)
         s.build.name = 'chrystal'
         s.drawgrid()
         s.render()
@@ -87,10 +110,11 @@ const s = {
     addMesh: (x, y) => {
         const clone = s.object.clone(true)
         clone.position.set(
-            -1 / s.grid.cols + (1 / s.grid.cols) * x,
-            -1 / s.grid.rows + (1 / s.grid.rows) * y,
-            0
+            0.5 / s.grid.cols + (1 / s.grid.cols) * x,
+            (1 / s.grid.rows) * y,
+            -0.5 / s.grid.cols
         )
+        clone.updateMatrix()
         return clone
     },
     drawgrid: () => {
