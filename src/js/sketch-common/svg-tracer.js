@@ -1,16 +1,31 @@
 /**
  * SVG TRACER
  *
- * Shorthand create svg dom element function
+ * Utility class to create <svg> element
+ *
+ * Availables methods:
+ * init: add <svg> in the parentElem
+ * clear: remove anything in <svg>
+ * clearGroups: remove anythings in <svg> <group>
+ * rect: add a rectangle
+ * triangle: add a triangle
+ * path: add a line
+ * text: add text
+ * group: add group
+ * export: export the whole <svg> markup as file
  */
 
-// Define main SVG width, height & viewBox
+/**
+ * The sizes of the formats were obtained by making
+ * a conversion from cm to px in Inkscape
+ */
 const printFormat = {
     a3: { w: 1587.40157, h: 1122.51969 },
     a3portrait: { w: 1122.51969, h: 1587.40157 },
     a3Square: { w: 1122.51969, h: 1122.51969 },
     a4: { w: 1122.51969, h: 793.70079 },
-    a4Square: { w: 793.70079, h: 793.70079 }
+    p32x24: { w: 1209.44885, h: 907.08661 },
+    p24x32: { w: 907.08661, h: 1209.44885 }
 }
 
 export default class SvgTracer {
