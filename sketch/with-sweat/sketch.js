@@ -3,7 +3,7 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 const sketch = {
     iterations: 100,
     nIter: 0,
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4'),
+    svg: new SvgTracer(document.getElementById('windowFrame'), 'p32x24'),
     margin: 50,
     step: 11,
     angle: Math.PI / 4,
