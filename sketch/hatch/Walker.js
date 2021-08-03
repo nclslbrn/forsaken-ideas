@@ -4,7 +4,6 @@ export default class Walker {
     constructor(
         props = {
             pos: [0, 0],
-            distanceBetween: 1,
             step: { min: 1, max: 12 },
             maxDirectionTries: 4,
             limit: [12, 12],
@@ -13,7 +12,6 @@ export default class Walker {
     ) {
         this.pos = props.pos
         this.triesWithCrossingAnother = 0
-        this.minDistanceBetweenEach = props.minDistanceBetween
         this.maxDirectionTries = props.maxDirectionTries
         this.step = props.step
         this.history = [[...this.pos]]
@@ -126,10 +124,8 @@ export default class Walker {
                 ) {
                     const otherPos = othersWalkers[w].history[p]
                     if (
-                        Math.abs(pos[0] - otherPos[0]) <
-                            this.minDistanceBetweenEach &&
-                        Math.abs(pos[1] - otherPos[1]) <
-                            this.minDistanceBetweenEach
+                        Math.abs(pos[0] - otherPos[0]) < 1 &&
+                        Math.abs(pos[1] - otherPos[1]) < 1
                     ) {
                         isCrossing = true
                     }
