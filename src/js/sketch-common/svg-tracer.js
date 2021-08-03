@@ -214,6 +214,7 @@ export default class SvgTracer {
      * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])
      * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
      * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
+     * @param {number} props.strokeWidth border width in pixels positive int only
      * @param {boolean} props.close determine if path is closed or open
      * @param {string} props.name a name attribute
      * @param {string} props.group group name if you want to add path to a specific group
@@ -225,6 +226,10 @@ export default class SvgTracer {
         }
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
+        props.strokeWidth =
+            props.strokeWidth === undefined || Number(props.setAttribute) > 1
+                ? false
+                : props.strokeWidth
         props.close = props.close === undefined ? false : props.close
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
@@ -241,6 +246,8 @@ export default class SvgTracer {
         path.setAttribute('d', d)
         if (props.fill) path.setAttribute('fill', props.fill)
         if (props.stroke) path.setAttribute('stroke', props.stroke)
+        if (props.strokeWidth)
+            path.setAttribute('stroke-width', props.strokeWidth)
         if (props.name) path.setAttribute('name', props.name)
         if (props.group) {
             this.groups[props.group].appendChild(path)
