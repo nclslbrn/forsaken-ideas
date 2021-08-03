@@ -83,7 +83,7 @@ const getRandomPalette = (colorNum = 1) => {
         console.log('We only have ', colorsDefs.length - 1, ' colors. Sorry.')
     }
 
-    while (colors.length <= colorNum - 1) {
+    while (colors.length < colorNum) {
         const newcolors = getSingleColors()
         if (!colorsIds.includes(newcolors.id)) {
             colors.push(newcolors)
