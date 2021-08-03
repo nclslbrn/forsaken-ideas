@@ -2,6 +2,7 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import Walker from './Walker'
 import Notification from '../../src/js/sketch-common/Notification'
 import { randomIntBetween } from './randomBetween'
+import { getRandomPalette } from './../../src/js/sketch-common/stabilo68-colors'
 
 const container = document.getElementById('windowFrame')
 const sketch = {
@@ -9,7 +10,7 @@ const sketch = {
     svg: new SvgTracer(container, 'p32x24'),
     margin: 50,
     cellSize: 16,
-    walkerNum: 36,
+    walkerNum: 64,
     grid: { cols: false, rows: false },
     // setup
     launch: () => {
@@ -25,21 +26,22 @@ const sketch = {
         // reset possible previous value
         sketch.walkers = []
         sketch.nIter = 0
-        // const movingDiagonally = Math.random() > 0.5
+        sketch.colors = getRandomPalette(3)
+
+        const movingDiagonally = Math.random() > 0.5
         for (let n = 0; n < sketch.walkerNum; n++) {
             const x = randomIntBetween({ min: 0, max: sketch.grid.cols })
             const y = randomIntBetween({ min: 0, max: sketch.grid.rows })
             sketch.walkers.push(
                 new Walker({
-                    pos: [x, y],
-                    minDistanceBetween: 1,
+                    pos: [2 * Math.round(x / 2), 2 * Math.round(y / 2)],
                     step: {
                         min: 1,
                         max: 6
                     },
-                    maxDirectionTries: 36,
+                    maxDirectionTries: 4,
                     limit: [sketch.grid.cols, sketch.grid.rows],
-                    movingDiagonally: false
+                    movingDiagonally: movingDiagonally
                 })
             )
         }
@@ -83,7 +85,7 @@ const sketch = {
             sketch.svg.path({
                 name: 'w-' + w,
                 points: line,
-                stroke: '#000',
+                stroke: sketch.colors[w % sketch.colors.length].value,
                 fill: 'rgba(0,0,0,0)',
                 strokeWidth: ~~sketch.cellSize / 2
             })
