@@ -11,5 +11,6 @@ const loader = document.getElementById('loading')
 sketch.launch()
 containerElement.removeChild(loader)
 window.export = sketch.export
+window.init = sketch.init
 window.infobox = infobox
 handleAction()

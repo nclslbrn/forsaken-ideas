@@ -7,75 +7,132 @@ export default class Walker {
             distanceBetween: 1,
             step: { min: 1, max: 12 },
             maxDirectionTries: 4,
-            limit: [12, 12]
+            limit: [12, 12],
+            movingDiagonally: false
         }
     ) {
         this.pos = props.pos
         this.triesWithCrossingAnother = 0
-        this.minDistanceBetweenEach = props.distanceBetween
+        this.minDistanceBetweenEach = props.minDistanceBetween
         this.maxDirectionTries = props.maxDirectionTries
         this.step = props.step
-        this.history = [this.pos]
-        this.isStopped = false
+        this.history = [[...this.pos]]
+        this.isStopped = [false, false]
         this.limit = props.limit
+        this.movingDiagonally = props.movingDiagonally
     }
 
     walk(othersWalkers) {
-        if (this.isStopped) {
+        if (this.isStopped[0] && this.isStopped[1]) {
             return
         }
-
-        let newPos = [...this.pos]
         const distance = randomIntBetween(this.step)
-        const direction = randomIntBetween({ min: 0, max: 4 })
-        for (let d = 0; d < distance; d++) {
-            switch (direction) {
-                case 0:
-                    newPos[0]++
-                    break
-                case 1:
-                    newPos[1]--
-                    break
-                case 2:
-                    newPos[1]++
-                    break
-                case 3:
-                    newPos[0]--
-                    break
-                default:
-                    console.log('Unexpected direction')
-            }
+        const direction = randomIntBetween({ min: 0, max: 3 })
+        let isWrongDirection = false
+        for (let d = 0; d <= distance && !isWrongDirection; d++) {
+            const newPos = this.displace([...this.pos], direction)
             const isCrossing = this.willCrossingAnother(othersWalkers, newPos)
-            if (isCrossing) {
-                this.triesWithCrossingAnother++
-                if (this.triesWithCrossingAnother >= this.maxDirectionTries) {
-                    this.isStopped = true
-                } else {
-                    this.walk(othersWalkers)
-                }
+            const isInside = this.isInside(newPos)
+
+            if (!isCrossing && isInside) {
+                this.triesWithCrossingAnother = 0
+                this.pos = [...newPos]
+                this.history.push([...newPos])
             } else {
-                if (this.isInside(newPos)) {
-                    this.triesWithCrossingAnother = 0
-                    this.pos = [...newPos]
-                    this.history.push([...newPos])
-                } else {
-                    this.walk(othersWalkers)
+                if (isWrongDirection && isCrossing) {
+                    this.triesWithCrossingAnother++
+                    if (
+                        this.triesWithCrossingAnother === this.maxDirectionTries
+                    ) {
+                        if (!this.isStopped[0]) {
+                            this.isStopped[0] = true
+                            this.triesWithCrossingAnother = 0
+                            this.pos = [...this.history[0]]
+                            this.history = [...this.history.reverse()]
+                        } else {
+                            this.isStopped[1] = true
+                        }
+                    }
                 }
+
+                if (isWrongDirection && !isInside) {
+                    if (!this.isStopped[0]) {
+                        this.isStopped[0] = true
+                        this.triesWithCrossingAnother = 0
+                        this.pos = [...this.history[0]]
+                        this.history = [...this.history.reverse()]
+                    } else {
+                        this.isStopped[1] = true
+                    }
+                }
+
+                isWrongDirection = true
             }
         }
     }
-
+    displace(position, direction) {
+        if (this.movingDiagonally) {
+            switch (direction) {
+                case 0:
+                    position[0]++
+                    position[1]--
+                    break
+                case 1:
+                    position[0]++
+                    position[1]++
+                    break
+                case 2:
+                    position[0]--
+                    position[1]++
+                    break
+                case 3:
+                    position[0]--
+                    position[1]--
+                    break
+                default:
+                    console.error('Unexpected direction')
+            }
+        } else {
+            switch (direction) {
+                case 0:
+                    position[0]++
+                    break
+                case 1:
+                    position[1]--
+                    break
+                case 2:
+                    position[1]++
+                    break
+                case 3:
+                    position[0]--
+                    break
+                default:
+                    console.error('Unexpected direction')
+            }
+        }
+        return position
+    }
     willCrossingAnother(othersWalkers, pos) {
         let isCrossing = false
-        for (let w = 0; w < othersWalkers.length; w++) {
-            for (let p = 0; p < othersWalkers[w].history.length; p++) {
-                const otherPos = othersWalkers[w].history[p]
-                if (
-                    Math.abs(pos[0] - otherPos[0]) <
-                        this.minDistanceBetweenEach &&
-                    Math.abs(pos[1] - otherPos[1]) < this.minDistanceBetweenEach
+        for (let w = 0; w < othersWalkers.length && !isCrossing; w++) {
+            if (
+                othersWalkers[w].history.length > 1 &&
+                this.history.length > 1
+            ) {
+                for (
+                    let p = 0;
+                    p < othersWalkers[w].history.length && !isCrossing;
+                    p++
                 ) {
-                    isCrossing = true
+                    const otherPos = othersWalkers[w].history[p]
+                    if (
+                        Math.abs(pos[0] - otherPos[0]) <
+                            this.minDistanceBetweenEach &&
+                        Math.abs(pos[1] - otherPos[1]) <
+                            this.minDistanceBetweenEach
+                    ) {
+                        isCrossing = true
+                    }
                 }
             }
         }
