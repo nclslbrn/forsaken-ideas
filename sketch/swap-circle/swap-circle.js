@@ -1,16 +1,15 @@
 import ease from '../../src/js/sketch-common/ease'
 import * as tome from 'chromotome'
 
+let isPlaying
 const numFrame = 15
 const cellSize = 32
 
 const sketch = (p5) => {
     let cellByLine, palette, radii, nextRadii, colors, nextColors
     const sketchSize = () => {
-        return {
-            w: window.innerWidth * 0.85,
-            h: window.innerHeight * 0.85
-        }
+        const minSide = Math.min(window.innerWidth, window.innerHeight)
+        return minSide * 0.85
     }
     const switchLine = () => {
         let switchRadii = [...radii]
@@ -54,10 +53,10 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         const size = sketchSize()
-        p5.createCanvas(size.w, size.h)
+        p5.createCanvas(size, size)
         cellByLine = {
-            w: Math.round(size.w / cellSize),
-            h: Math.round(size.h / cellSize)
+            w: Math.round(size / cellSize) - 2,
+            h: Math.round(size / cellSize) - 2
         }
         sketch.init_sketch()
         p5.noStroke()
@@ -80,12 +79,16 @@ const sketch = (p5) => {
             )
         }
         ;[nextRadii, nextColors] = switchLine()
+        isPlaying = true
     }
     sketch.init_sketch = () => {
         palette = tome.get()
         sketch.initCircle()
     }
     p5.draw = () => {
+        if (!isPlaying) {
+            return
+        }
         if (p5.frameCount % numFrame !== 0) {
             const t = (p5.frameCount % numFrame) / numFrame
             p5.background(palette.background || palette.stroke || '248')
@@ -107,7 +110,11 @@ const sketch = (p5) => {
                         ease(t)
                     )
                     p5.fill(cellColor)
-                    p5.ellipse(x * cellSize, y * cellSize, cellRadius)
+                    p5.ellipse(
+                        (1 + x) * cellSize,
+                        (1 + y) * cellSize,
+                        cellRadius
+                    )
                 }
             }
             p5.pop()
@@ -119,11 +126,12 @@ const sketch = (p5) => {
     }
 
     p5.windowResized = () => {
+        isPlaying = false
         const size = sketchSize()
-        p5.resizeCanvas(size.w, size.h)
+        p5.resizeCanvas(size, size)
         cellByLine = {
-            w: Math.round(size.w / cellSize),
-            h: Math.round(size.h / cellSize)
+            w: Math.round(size / cellSize) - 2,
+            h: Math.round(size / cellSize) - 2
         }
         sketch.initCircle()
     }
