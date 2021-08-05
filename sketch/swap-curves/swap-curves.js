@@ -1,37 +1,11 @@
 import ease from '../../src/js/sketch-common/ease'
-
+import switchMode from './switchMode'
 let canvas
 const numFrame = 45
 const cellSize = 48
 const pointByCell = 8
 
-let drawAsSingleLine = true
-const paramBox = document.createElement('div')
-const p = document.createElement('p')
-p.innerHTML = 'DRAW CURVES AS A SINGLE LINE ?'
-
-const drawModeLabel = document.createElement('label')
-drawModeLabel.classList.add('switch')
-const switchBar = document.createElement('span')
-const drawModeSwitch = document.createElement('input')
-drawModeSwitch.setAttribute('type', 'checkbox')
-drawModeSwitch.setAttribute('checked', 'checked')
-drawModeSwitch.addEventListener(
-    'change',
-    () => (drawAsSingleLine = drawModeSwitch.checked ? true : false)
-)
-const slider = document.createElement('span')
-slider.classList.add('slider', 'round')
-
-drawModeLabel.appendChild(drawModeSwitch)
-drawModeLabel.appendChild(slider)
-switchBar.appendChild(document.createTextNode('NOPE'))
-switchBar.appendChild(drawModeLabel)
-switchBar.appendChild(document.createTextNode('SURE'))
-
-paramBox.appendChild(p)
-paramBox.appendChild(switchBar)
-document.getElementById('windowFrame').appendChild(paramBox)
+window.drawAsSingleLine = switchMode()
 
 const sketch = (p5) => {
     let cellByLine, curves, nextCurves, d
@@ -99,13 +73,13 @@ const sketch = (p5) => {
             h: Math.round(p5.height / cellSize) - 2
         }
         d = {
-            x: (p5.width - cellSize * (cellByLine.w + 2)) / 2,
-            y: (p5.height - cellSize * (cellByLine.h + 2)) / 2
+            x: (p5.width % cellByLine.w) / 2,
+            y: (p5.height % cellByLine.h) / 2
         }
         curves = []
         nextCurves = []
 
-        const radiusChoices = [1, 2, 3, 5, 8].map((factor) => {
+        const radiusChoices = [2, 3, 5, 8].map((factor) => {
             const side = p5.random() > 0.5 ? -1 : 1
             return cellSize / 2 + ((cellSize / 2) * side) / factor
         })
@@ -125,15 +99,16 @@ const sketch = (p5) => {
     p5.draw = () => {
         if (p5.frameCount % numFrame !== 0) {
             const t = (p5.frameCount % numFrame) / numFrame
-            p5.background(25)
-            if (drawAsSingleLine) p5.beginShape()
+            p5.background(15)
+            if (window.drawAsSingleLine) p5.beginShape()
 
             for (let x = 0; x < cellByLine.w; x++) {
                 for (let y = 0; y < cellByLine.h; y++) {
                     // Make _y decrease if x even or increase if odd
                     const _y = x % 2 == 0 ? cellByLine.h - y - 1 : y
                     const cellIndex = x * cellByLine.h + _y
-                    if (!drawAsSingleLine) p5.beginShape()
+
+                    if (!window.drawAsSingleLine) p5.beginShape()
                     for (let n = 0; n < pointByCell; n++) {
                         const cx = p5.lerp(
                             curves[cellIndex][n].x,
@@ -145,15 +120,26 @@ const sketch = (p5) => {
                             nextCurves[cellIndex][n].y,
                             ease(t, 10)
                         )
-                        p5.curveVertex(
-                            (1 + x) * cellSize + cx + d.x,
-                            (1 + _y) * cellSize + cy + d.y
-                        )
+                        const centerCell = {
+                            x: (1 + x) * cellSize + d.x,
+                            y: (1 + _y) * cellSize + d.y
+                        }
+                        p5.curveVertex(centerCell.x + cx, centerCell.y + cy)
                     }
-                    if (!drawAsSingleLine) p5.endShape()
+                    if (!window.drawAsSingleLine) p5.endShape()
+
+                    p5.push()
+                    p5.stroke(0)
+                    p5.rect(
+                        (x + 1) * cellSize + d.x,
+                        (y + 1) * cellSize + d.y,
+                        cellSize,
+                        cellSize
+                    )
+                    p5.pop()
                 }
             }
-            if (drawAsSingleLine) p5.endShape()
+            if (window.drawAsSingleLine) p5.endShape()
         } else {
             curves = nextCurves
             nextCurves = switchLine()
@@ -161,7 +147,10 @@ const sketch = (p5) => {
     }
 
     p5.keyPressed = () => {
-        p5.save(canvas, 'capture', 'jpg')
+        // p or P
+        if (p5.keyCode === 80 || p5.keyCode == 16) {
+            p5.save(canvas, 'capture', 'jpg')
+        }
     }
 }
 export default sketch
