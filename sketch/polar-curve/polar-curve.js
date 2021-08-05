@@ -13,9 +13,6 @@ const sketch = (p5) => {
     const margin = 0.08
     const sample = 4
 
-    // A4 150dpi width
-    const sketchWidth = 1080
-    const sketchHeight = 1080
     const windowFrame = document.getElementById('windowFrame')
     const paramBox = document.createElement('div')
     paramBox.id = 'interactiveParameter'
@@ -26,13 +23,9 @@ const sketch = (p5) => {
     paramBox.appendChild(paletteNameElem)
     paramBox.appendChild(colorBlocks)
 
-    sketch.size = (sketchWidth, sketchHeight) => {
-        const ratio = sketchWidth / sketchHeight
+    sketch.size = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 1080 ? sketchWidth : side * ratio,
-            h: side > 1080 ? sketchHeight : side
-        }
+        return side > 960 ? 1080 : side
     }
 
     sketch.planeCurveFunctionSelector = () => {
@@ -119,20 +112,20 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        const size = sketch.size(sketchWidth, sketchHeight)
-        canvas = p5.createCanvas(size.w, size.h)
+        const size = sketch.size()
+        canvas = p5.createCanvas(size, size)
         canvas.elt.setAttribute(
             'style',
-            `display: block; max-height: 60vw; width: auto;`
+            'display: block; max-height: 60vh; max-width: 80vw;'
         )
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
         sketch.resetPalette()
         sketch.resetPoint()
+        sketch.init()
         if (window.devicePixelRatio > 1)
             p5.pixelDensity(window.devicePixelRatio)
-        p5.background(p5.color(palette.background || palette.stroke || 0))
     }
 
     p5.draw = () => {
@@ -169,8 +162,9 @@ const sketch = (p5) => {
     }
 
     p5.windowResized = () => {
-        const size = sketch.size(sketchWidth, sketchHeight)
-        p5.resizeCanvas(size.w, size.h)
+        const size = sketch.size()
+        p5.resizeCanvas(size, size)
+        sketch.init()
     }
 }
 export default sketch
