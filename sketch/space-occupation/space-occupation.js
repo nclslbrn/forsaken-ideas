@@ -1,5 +1,6 @@
 import ease from '../../src/js/sketch-common/ease'
 import Pool from '../../src/js/sketch-common/Pool'
+let canvasElem
 
 const sketch = (p5) => {
     const N = 16
@@ -24,10 +25,7 @@ const sketch = (p5) => {
     }
     const sketchSize = () => {
         const side = Math.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
-        }
+        return side > 800 ? 800 : side * 0.85
     }
     sketch.init = () => {
         ;[cols, rows] = next()
@@ -35,7 +33,11 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         const size = sketchSize()
-        p5.createCanvas(size.w, size.h)
+        canvasElem = p5.createCanvas(size, size)
+        canvasElem.elt.setAttribute(
+            'style',
+            'display: block; max-height: 60vh; max-width: 80vw;'
+        )
         p5.fill(255)
         p5.ellipseMode(p5.CORNERS)
         p5.noStroke()
@@ -75,11 +77,6 @@ const sketch = (p5) => {
             rows = nextRows
             ;[nextCols, nextRows] = next()
         }
-    }
-
-    p5.windowResized = () => {
-        const size = sketchSize()
-        p5.resizeCanvas(size.w, size.h)
     }
 }
 export default sketch
