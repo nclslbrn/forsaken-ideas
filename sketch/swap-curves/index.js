@@ -16,7 +16,7 @@ window.init = sketch.init_sketch
 window.infobox = infobox
 handleAction()
 
-let resizeTimeout
+/* let resizeTimeout
 window.addEventListener('resize', function (event) {
     clearTimeout(resizeTimeout)
     resizeTimeout = setTimeout(function () {
@@ -26,3 +26,4 @@ window.addEventListener('resize', function (event) {
         new p5(sketch, containerElement)
     }, 500)
 })
+ */

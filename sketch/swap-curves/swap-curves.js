@@ -2,13 +2,13 @@ import ease from '../../src/js/sketch-common/ease'
 import switchMode from './switchMode'
 let canvas
 const numFrame = 45
-const cellSize = 48
+const cellSize = 64
 const pointByCell = 8
 
 window.drawAsSingleLine = switchMode()
 
 const sketch = (p5) => {
-    let cellByLine, curves, nextCurves, d
+    let canvasSize, cellByLine, curves, nextCurves, margin
 
     const switchLine = () => {
         // Deep copy of current curves
@@ -54,31 +54,46 @@ const sketch = (p5) => {
     }
     const sketchSize = () => {
         return {
-            w: window.innerWidth * 0.7,
-            h: window.innerHeight * 0.7
+            w: ~~(window.innerWidth * 0.7),
+            h: ~~(window.innerHeight * 0.7)
         }
     }
     p5.setup = () => {
-        const size = sketchSize()
-        canvas = p5.createCanvas(size.w, size.h)
+        canvasSize = sketchSize()
+        canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
         p5.stroke(230, 230)
-        //p5.strokeWeight(2)
+        p5.strokeWeight(2)
         p5.noFill()
         sketch.init_sketch()
     }
 
     sketch.init_sketch = () => {
         cellByLine = {
-            w: Math.round(p5.width / cellSize) - 2,
-            h: Math.round(p5.height / cellSize) - 2
+            w: Math.floor(canvasSize.w / cellSize) - 2,
+            h: Math.floor(canvasSize.h / cellSize) - 2
         }
-        d = {
-            x: (p5.width % cellByLine.w) / 2,
-            y: (p5.height % cellByLine.h) / 2
+        margin = {
+            x: canvasSize.w / ((cellByLine.w + 2) * cellSize),
+            y: canvasSize.h / ((cellByLine.h + 2) * cellSize)
         }
+        console.log(
+            'wrong width computation',
+            canvasSize.w,
+            '=',
+            cellByLine.w * cellSize + margin.x,
+            '\n',
+            'wrong height computation',
+            canvasSize.h,
+            '=',
+            cellByLine.h * cellSize + margin.y
+        )
+        margin.x /= 2
+        margin.y /= 2
+
         curves = []
         nextCurves = []
-
+        console.log('d', margin)
+        console.log('cellByLine', cellByLine)
         const radiusChoices = [2, 3, 5, 8].map((factor) => {
             const side = p5.random() > 0.5 ? -1 : 1
             return cellSize / 2 + ((cellSize / 2) * side) / factor
@@ -121,8 +136,8 @@ const sketch = (p5) => {
                             ease(t, 10)
                         )
                         const centerCell = {
-                            x: (1 + x) * cellSize + d.x,
-                            y: (1 + _y) * cellSize + d.y
+                            x: (x + 1) * cellSize + margin.x,
+                            y: (_y + 1) * cellSize + margin.y
                         }
                         p5.curveVertex(centerCell.x + cx, centerCell.y + cy)
                     }
@@ -131,8 +146,8 @@ const sketch = (p5) => {
                     p5.push()
                     p5.stroke(0)
                     p5.rect(
-                        (x + 1) * cellSize + d.x,
-                        (y + 1) * cellSize + d.y,
+                        (x + 1) * cellSize + margin.x,
+                        (y + 1) * cellSize + margin.y,
                         cellSize,
                         cellSize
                     )
@@ -147,10 +162,18 @@ const sketch = (p5) => {
     }
 
     p5.keyPressed = () => {
-        // p or P
-        if (p5.keyCode === 80 || p5.keyCode == 16) {
+        // p or P == 80 (Arch Linux)
+        if (p5.keyCode === '80') {
             p5.save(canvas, 'capture', 'jpg')
+        } else {
+            console.log(p5.keyCode)
         }
+    }
+
+    p5.windowResized = () => {
+        canvasSize = sketchSize()
+        p5.resizeCanvas(canvasSize.w, canvasSize.h)
+        sketch.init_sketch()
     }
 }
 export default sketch
