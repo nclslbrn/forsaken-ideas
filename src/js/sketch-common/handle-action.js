@@ -18,7 +18,11 @@ const handleAction = (possibles_action) => {
                 'click',
                 function (event) {
                     const calledFunction = window[action]
-                    calledFunction()
+                    if (typeof calledFunction !== 'function') {
+                        console.log(action, ' is not defined')
+                    } else {
+                        calledFunction()
+                    }
                 },
                 false
             )
