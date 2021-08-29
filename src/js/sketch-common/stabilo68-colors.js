@@ -27,7 +27,19 @@ const colorsDefs = {
 
 // A list of color combination, first key is used to the number of combined colors
 const colorsCombinations = {
-    2: undefined,
+    2: {
+        Sunset: [19, 54],
+        'Nordic mist': [95, 19],
+        'Swimming Pool': [51, 46],
+        'Double blue': [13, 32],
+        Mistenta: [95, 58],
+        'Bubble Gum': [56, 46],
+        Azerty: [46, 24],
+        'Vanilla Straberry': [56, 88],
+        'Flesh and shadows': [26, 46],
+        Fall: [26, 19],
+        Toy: [31, 54]
+    },
     3: {
         'Sand and sea': [31, 32, 26],
         'Acid toy': [36, 51, 48],
