@@ -145,6 +145,41 @@ export default class SvgTracer {
         }
     }
     /**
+     * Circle drawing function
+     * @typedef {circle} props rectangle values
+     * @param {number} props.x x coordinate of the circle center
+     * @param {number} props.y y coordinate of the circle center
+     * @param {number} props.r radius of the circle
+     * @param {string} props.fill background color name or color value (HEX, RGB, HSL)
+     * @param {string} props.stroke border color name or color value (HEX, RGB, HSL)
+     * @param {string} props.group group name if you want to add rect to a specific group
+     */
+    circle(props) {
+        props.x = props.x === undefined ? 0 : props.x
+        props.y = props.y === undefined ? 0 : props.y
+        props.r = props.r === undefined ? 0 : props.r
+        props.fill = props.fill === undefined ? false : props.fill
+        props.stroke = props.stroke === undefined ? false : props.stroke
+        props.group = props.group === undefined ? false : props.group
+
+        const circle = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'circle'
+        )
+        circle.setAttribute('cx', props.x)
+        circle.setAttribute('cy', props.y)
+        circle.setAttribute('r', props.r)
+
+        if (props.fill) circle.setAttribute('fill', props.fill)
+        if (props.stroke) circle.setAttribute('stroke', props.stroke)
+
+        if (props.group) {
+            this.groups[props.group].appendChild(circle)
+        } else {
+            this.elem.appendChild(circle)
+        }
+    }
+    /**
      * Triangle drawing function
      * @typedef {*} props triangle value
      * @param {array} props.points two dimensional array (points[n] = [x coordinate, y coordinate])
@@ -221,7 +256,7 @@ export default class SvgTracer {
      */
     path(props) {
         if (props.points === undefined) {
-            console.error('You must specify points property to draw a line')
+            console.error('You must specify points coordinates to draw a line')
             return
         }
         props.fill = props.fill === undefined ? false : props.fill
@@ -263,6 +298,7 @@ export default class SvgTracer {
      * @param {string} props.text the text to draw
      * @param {string} props.fontFamily font family name of the text
      * @param {number} props.fontSize font size of the text
+     * @param {string} props.fill color of text
      * @param {string} props.name a name attribute
      * @param {string} props.group group name if you want to add path to a specific group
      */
