@@ -42,14 +42,7 @@ export default class Walker {
                     if (
                         this.triesWithCrossingAnother === this.maxDirectionTries
                     ) {
-                        if (!this.isStopped[0]) {
-                            this.isStopped[0] = true
-                            this.triesWithCrossingAnother = 0
-                            this.pos = [...this.history[0]]
-                            this.history = [...this.history.reverse()]
-                        } else {
-                            this.isStopped[1] = true
-                        }
+                        this.isStopped[1] = true
                     }
                 }
 
@@ -124,8 +117,8 @@ export default class Walker {
                 ) {
                     const otherPos = othersWalkers[w].history[p]
                     if (
-                        Math.abs(pos[0] - otherPos[0]) < 1 &&
-                        Math.abs(pos[1] - otherPos[1]) < 1
+                        Math.abs(otherPos[0] - pos[0]) === 0 &&
+                        Math.abs(otherPos[1] - pos[1]) === 0
                     ) {
                         isCrossing = true
                     }
@@ -137,10 +130,10 @@ export default class Walker {
 
     isInside(pos) {
         if (
-            pos[0] >= 0 &&
-            pos[0] <= this.limit[0] &&
-            pos[1] >= 0 &&
-            pos[1] <= this.limit[1]
+            pos[0] > 0 &&
+            pos[0] < this.limit[0] &&
+            pos[1] > 0 &&
+            pos[1] < this.limit[1]
         ) {
             return true
         } else {

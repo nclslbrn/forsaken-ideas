@@ -2,17 +2,16 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import Walker from './Walker'
 import Notification from '../../src/js/sketch-common/Notification'
 import { randomIntBetween } from './randomBetween'
-import { getRandomPalette } from './../../src/js/sketch-common/stabilo68-colors'
+import LineOffset from './LineOffset'
 
 const container = document.getElementById('windowFrame')
 const sketch = {
-    iterations: 2000,
     svg: new SvgTracer(container, 'p32x24'),
     margin: 50,
-    cellSize: 16,
-    walkerNum: 64,
+    cellSize: 8 * Math.ceil(Math.random() * 8),
+    walkerNum: 32,
     grid: { cols: false, rows: false },
-    // setup
+    // setup svg anf its params
     launch: () => {
         sketch.svg.init()
         const innerWidth = sketch.svg.width - sketch.margin * 2
@@ -25,8 +24,7 @@ const sketch = {
     init: () => {
         // reset possible previous value
         sketch.walkers = []
-        sketch.nIter = 0
-        sketch.colors = getRandomPalette(3)
+        sketch.offset = 8
 
         const movingDiagonally = Math.random() > 0.5
         for (let n = 0; n < sketch.walkerNum; n++) {
@@ -37,9 +35,9 @@ const sketch = {
                     pos: [2 * Math.round(x / 2), 2 * Math.round(y / 2)],
                     step: {
                         min: 1,
-                        max: 6
+                        max: 3
                     },
-                    maxDirectionTries: 4,
+                    maxDirectionTries: 8,
                     limit: [sketch.grid.cols, sketch.grid.rows],
                     movingDiagonally: movingDiagonally
                 })
@@ -54,44 +52,37 @@ const sketch = {
             return num + walker.isStopped
         }, 0)
 
-        if (
-            sketch.nIter < sketch.iterations &&
-            stoppedWalkersNum !== sketch.walkers.length
-        ) {
-            for (let w = 0; w < sketch.walkers.length; w++) {
-                // const othersWalkers = [...sketch.walkers]
-                // othersWalkers.splice(w, 1)
-                sketch.walkers[w].walk(sketch.walkers)
-            }
-            sketch.svg.clear()
+        if (stoppedWalkersNum !== sketch.walkers.length) {
+            sketch.walkers.forEach((walker) => walker.walk(sketch.walkers))
             sketch.draw()
-            //console.log(`Iteration ${sketch.nIter}/${sketch.iterations}`)
-            sketch.nIter++
             requestAnimationFrame(sketch.update)
         } else {
             console.log('stoppedWalkersNum', stoppedWalkersNum)
-            //sketch.walkers.forEach((w) => console.log(w.history))
-            sketch.svg.clear()
             sketch.draw()
             new Notification('Sketch done', container, 'light')
         }
     },
+    // Compute offset line and draw them
     draw: () => {
+        sketch.svg.clear()
+
         for (let w = 0; w < sketch.walkers.length; w++) {
             const line = sketch.walkers[w].history.map((pos) => [
                 sketch.margin + pos[0] * sketch.cellSize,
                 sketch.margin + pos[1] * sketch.cellSize
             ])
-            sketch.svg.path({
-                name: 'w-' + w,
-                points: line,
-                stroke: sketch.colors[w % sketch.colors.length].value,
-                fill: 'rgba(0,0,0,0)',
-                strokeWidth: ~~sketch.cellSize / 2
-            })
+            if (line.length > 2) {
+                var offset = new LineOffset({
+                    line: line,
+                    offsetCount: sketch.offset,
+                    isDiagComp: sketch.walkers[w].movingDiagonally,
+                    offsetWidth: sketch.cellSize / 2,
+                    tracer: sketch.svg
+                })
+                offset.draw(w)
+            }
         }
     },
-    // compute change
     // export inline <svg> as SVG file
     export: () => {
         sketch.svg.export({ name: 'sketchname' })
