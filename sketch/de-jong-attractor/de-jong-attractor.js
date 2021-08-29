@@ -1,100 +1,114 @@
+import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import Notification from '../../src/js/sketch-common/Notification'
+import {
+    getRandomPalette,
+    getColorCombination
+} from '../../src/js/sketch-common/stabilo68-colors'
 
-const sketch = (p5) => {
-    const res = 4
-    const maxBounce = 1 + Math.floor(Math.random() * 3)
-    const initPoints = []
+const container = document.getElementById('windowFrame')
+const tracer = new SvgTracer(container, 'p32x24')
+const pdj = strangeAttractors().attractors['de_jong']
+let points, lines, margin, scale, strokeColors
 
-    let points = []
-    let pointsHistory = []
-    let canvas
-    const scale = Math.random() * 15 - 7.5
-    const strokeColor = p5.color(0, 25)
-    const width = window.innerWidth * 0.75
-    const height = window.innerHeight * 0.75
-    const margin = Math.max(width, height) / 48
-    const deJongAttractor = strangeAttractors().attractors['de_jong']
-
-    p5.setup = () => {
-        p5.createCanvas(width, height)
-        p5.stroke(strokeColor)
-
-        for (let x = margin; x < width - margin; x += res) {
-            initPoints.push({
-                x: x,
-                y: height / 2,
-                vx: 0,
-                vy: 1,
-                bounce: 0
-            })
-            pointsHistory.push([])
-        }
+const sketch = {
+    res: 0.015,
+    maxBounce: 1,
+    setup: () => {
+        tracer.init()
         sketch.init()
-    }
-    p5.draw = () => {
-        if (points.length !== 0) {
-            for (let p = 0; p < points.length; p++) {
-                const x = points[p].x - width / 2
-                const y = points[p].y - height / 2
-                const v = deJongAttractor({ x: x, y: y })
-                const angle = Math.atan2(v.x * x, v.y * y) * scale
-                points[p].vx = Math.cos(angle) * 8
-                points[p].vy = Math.sin(angle) * 8
-
-                p5.line(
-                    points[p].x,
-                    points[p].y,
-                    points[p].x + points[p].vx,
-                    points[p].y + points[p].vy
-                )
-
-                if (points[p].x > width - margin || points[p].x < margin) {
-                    points[p].vx *= -1
-                    points[p].bounce += 1
-                }
-                if (points[p].y > height - margin || points[p].y < margin) {
-                    points[p].vy *= -1
-                    points[p].bounce += 1
-                }
-                pointsHistory[p].push({
-                    x: points[p].x,
-                    y: points[p].y
+    },
+    init: () => {
+        strangeAttractors().init('de_jong')
+        strokeColors = getColorCombination(3)
+        scale = (Math.random() - 0.5) * 12
+        points = []
+        lines = []
+        margin = { x: tracer.width * 0.1, y: tracer.height * 0.1 }
+        for (let x = -0.4; x <= 0.4; x += sketch.res) {
+            for (let y = -0.4; y <= 0.4; y += sketch.res) {
+                points.push({
+                    x: tracer.width / 2 + x * tracer.width,
+                    y: tracer.height / 2 + y * tracer.height,
+                    vx: Math.random() < 0.5 ? -1 : 1,
+                    vy: Math.random() < 0.5 ? -1 : 1,
+                    bounce: 0,
+                    stuck: false
                 })
-                points[p].x += points[p].vx
-                points[p].y += points[p].vy
+                lines.push([])
             }
-            points = points.filter((point) => point.bounce < maxBounce)
-        } else {
-            new Notification(
-                'Sketch done !',
-                document.getElementById('windowFrame'),
-                'light'
-            )
-            p5.noLoop()
         }
-    }
-    sketch.init = () => {
-        strangeAttractors(p5).init('de_jong')
-        points = initPoints.map((p) => ({
-            ...p
-        }))
-        pointsHistory = initPoints.map((point) => {
-            return []
-        })
+        tracer.elem.addEventListener('click', sketch.getActivePointNum)
+        sketch.update()
+    },
+    draw: () => {
+        tracer.clear()
+        let lineIndex = 0
+        for (const line of lines) {
+            tracer.path({
+                points: line,
+                stroke: strokeColors.colors[
+                    lineIndex % strokeColors.colors.length
+                ].value,
+                fill: 'none',
+                close: false,
+                strokeWidth: 1
+            })
+            lineIndex++
+        }
+    },
+    update: () => {
+        if (points.length > 0) {
+            for (let i = 0; i < points.length; i++) {
+                if (!points[i].stuck) {
+                    const p = {
+                        x: points[i].x / tracer.width,
+                        y: points[i].y / tracer.height
+                    }
+                    const d = pdj({ x: p.x * 25, y: p.y * 25 })
+                    const angle = Math.atan2(d.x, d.y)
 
-        p5.background(255, 250, 245)
-    }
-    sketch.downloadJPG = () => {
-        p5.saveCanvas(canvas, 'capture', 'jpg')
-    }
-    sketch.getSketchProperties = () => {
-        p5.noLoop()
-        return {
-            points: pointsHistory,
-            width: width,
-            height: height
+                    points[i].vx = Math.cos(angle)
+                    points[i].vy = Math.sin(angle)
+
+                    if (
+                        points[i].x > tracer.width - margin.x ||
+                        points[i].x < margin.x
+                    ) {
+                        points[i].vx *= -1
+                        points[i].bounce++
+                    }
+                    if (
+                        points[i].y > tracer.height - margin.y ||
+                        points[i].y < margin.y
+                    ) {
+                        points[i].vy *= -1
+                        points[i].bounce++
+                    }
+
+                    if (points[i].bounce >= sketch.maxBounce) {
+                        points[i].stuck = true
+                    }
+                    lines[i].push([points[i].x, points[i].y])
+                    points[i].x += points[i].vx * scale
+                    points[i].y += points[i].vy * scale
+                }
+            }
+            sketch.draw()
+            const activePoints = points.filter((point) => !point.stuck)
+            if (activePoints.length > 0)
+                window.requestAnimationFrame(sketch.update)
+        } else {
+            console.log('sketch done')
+            new Notification('Sketch done !', container, 'light')
         }
+    },
+    getActivePointNum: () => {
+        const activePoints = points.filter((point) => !point.stuck)
+        console.log('active points', activePoints.length)
+    },
+    export: () => {
+        tracer.export({ name: `pdj-${strokeColors.name}` })
     }
 }
 

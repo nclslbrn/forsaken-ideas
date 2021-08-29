@@ -1,19 +1,19 @@
 'use strict'
-import style from '../../src/sass/project.scss'
-import fullCanvas from '../../src/sass/frame-canvas.scss'
+import '../../src/sass/project.scss'
+import '../../src/sass/frame-canvas.scss'
 import sketch from './de-jong-attractor'
-import computeSVG from './computeSVG'
-import exportSVG from '../../src/js/sketch-common/exportSVG'
+// import exportSVG from '../../src/js/sketch-common/exportSVG'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-new p5(sketch, windowFrame)
+//new p5(sketch, windowFrame)
+sketch.setup()
 windowFrame.removeChild(loader)
 
-let resizeTimeout
+/* let resizeTimeout
 window.addEventListener('resize', function (event) {
     clearTimeout(resizeTimeout)
     resizeTimeout = setTimeout(function () {
@@ -53,7 +53,8 @@ const downloadSVG = () => {
     }
 }
 window.downloadJPG = sketch.downloadJPG
-window.download_SVG = downloadSVG
+window.download_SVG = downloadSVG */
 window.init = sketch.init
+window.download_SVG = sketch.export
 window.infobox = infobox
 handleAction()
