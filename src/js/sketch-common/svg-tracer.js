@@ -355,6 +355,7 @@ export default class SvgTracer {
             return
         }
         props.fill = props.fill === undefined ? false : props.fill
+        props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
 
         const groupElem = document.createElementNS(
@@ -363,6 +364,7 @@ export default class SvgTracer {
         )
         if (props.name) groupElem.setAttribute('name', props.name)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
+        if (props.stroke) groupElem.setAttribute('stroke', props.stroke)
         if (props.group) {
             this.groups[props.group].appendChild(groupElem)
         } else {

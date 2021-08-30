@@ -12,7 +12,7 @@ const pdj = strangeAttractors().attractors['de_jong']
 let points, lines, margin, scale, strokeColors
 
 const sketch = {
-    res: 0.015,
+    res: 0.05,
     maxBounce: 1,
     setup: () => {
         tracer.init()
@@ -21,7 +21,7 @@ const sketch = {
     init: () => {
         strangeAttractors().init('de_jong')
         strokeColors = getColorCombination(3)
-        scale = (Math.random() - 0.5) * 12
+        scale = (Math.random() - 0.5) * 48
         points = []
         lines = []
         margin = { x: tracer.width * 0.1, y: tracer.height * 0.1 }
@@ -38,21 +38,24 @@ const sketch = {
                 lines.push([])
             }
         }
-        tracer.elem.addEventListener('click', sketch.getActivePointNum)
+        tracer.clear()
+        tracer.elem.addEventListener('click', sketch.abortPlotting)
+        strokeColors.colors.forEach((color) =>
+            tracer.group({ name: color.id, stroke: color.value, fill: 'none' })
+        )
         sketch.update()
     },
     draw: () => {
-        tracer.clear()
+        tracer.clearGroups()
         let lineIndex = 0
         for (const line of lines) {
             tracer.path({
                 points: line,
-                stroke: strokeColors.colors[
-                    lineIndex % strokeColors.colors.length
-                ].value,
-                fill: 'none',
                 close: false,
-                strokeWidth: 1
+                strokeWidth: 1,
+                group: strokeColors.colors[
+                    lineIndex % strokeColors.colors.length
+                ].id
             })
             lineIndex++
         }
@@ -86,7 +89,10 @@ const sketch = {
                         points[i].bounce++
                     }
 
-                    if (points[i].bounce >= sketch.maxBounce) {
+                    if (
+                        (d.x == 0 && d.y == 0) ||
+                        points[i].bounce >= sketch.maxBounce
+                    ) {
                         points[i].stuck = true
                     }
                     lines[i].push([points[i].x, points[i].y])
@@ -102,6 +108,11 @@ const sketch = {
             console.log('sketch done')
             new Notification('Sketch done !', container, 'light')
         }
+    },
+    abortPlotting: () => {
+        sketch.getActivePointNum()
+        points.forEach((point) => (point.stuck = true))
+        sketch.getActivePointNum()
     },
     getActivePointNum: () => {
         const activePoints = points.filter((point) => !point.stuck)
