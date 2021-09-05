@@ -8,18 +8,11 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer(container, 'p32x24'),
     margin: 50,
-    cellSize: 4 * Math.ceil(Math.random() * 12),
     walkerNum: 64,
     grid: { cols: false, rows: false },
     // setup svg anf its params
     launch: () => {
         sketch.svg.init()
-        const innerWidth = sketch.svg.width - sketch.margin * 2
-        const innerHeight = sketch.svg.height - sketch.margin * 2
-
-        sketch.grid.cols = Math.floor(innerWidth / sketch.cellSize)
-        sketch.grid.rows = Math.floor(innerHeight / sketch.cellSize)
-
         sketch.svg.group({
             name: 'tomato',
             stroke: 'tomato',
@@ -35,10 +28,18 @@ const sketch = {
     },
     init: () => {
         // reset possible previous value
+        const movingDiagonally = Math.random() > 0.5
+        const innerWidth = sketch.svg.width - sketch.margin * 2
+        const innerHeight = sketch.svg.height - sketch.margin * 2
+
         sketch.walkers = []
         sketch.offset = 8
+        sketch.cellSize = movingDiagonally ? 22 : 26
+        sketch.grid.cols = Math.floor(innerWidth / sketch.cellSize)
+        sketch.grid.rows = Math.floor(innerHeight / sketch.cellSize)
+
         sketch.svg.clearGroups()
-        const movingDiagonally = true // Math.random() > 0.5
+
         for (let n = 0; n < sketch.walkerNum; n++) {
             const x = randomIntBetween({ min: 0, max: sketch.grid.cols })
             const y = randomIntBetween({ min: 0, max: sketch.grid.rows })
@@ -49,7 +50,7 @@ const sketch = {
                         min: 1,
                         max: 6
                     },
-                    maxDirectionTries: 8,
+                    maxDirectionTries: 4,
                     limit: [sketch.grid.cols, sketch.grid.rows],
                     movingDiagonally: movingDiagonally
                 })
@@ -84,15 +85,15 @@ const sketch = {
                 sketch.margin + pos[1] * sketch.cellSize
             ])
             if (line.length > 2) {
+                sketch.svg.circle({})
                 const offset = new LineOffset({
                     line: line,
                     offsetCount: sketch.offset,
                     isDiagComp: sketch.walkers[w].movingDiagonally,
-                    offsetWidth: sketch.cellSize / 2,
+                    offsetWidth: sketch.cellSize,
                     tracer: sketch.svg
                 })
                 const offsetLines = offset.getOffsets(w)
-                console.log(offsetLines)
                 offsetLines.lines.forEach((line) =>
                     sketch.svg.path({
                         points: line,
@@ -104,7 +105,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        sketch.svg.export({ name: 'sketchname' })
+        sketch.svg.export({ name: 'hatch' })
     }
 }
 
