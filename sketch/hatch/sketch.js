@@ -8,8 +8,8 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer(container, 'p32x24'),
     margin: 50,
-    cellSize: 8 * Math.ceil(Math.random() * 8),
-    walkerNum: 32,
+    cellSize: 4 * Math.ceil(Math.random() * 12),
+    walkerNum: 64,
     grid: { cols: false, rows: false },
     // setup svg anf its params
     launch: () => {
@@ -19,14 +19,26 @@ const sketch = {
 
         sketch.grid.cols = Math.floor(innerWidth / sketch.cellSize)
         sketch.grid.rows = Math.floor(innerHeight / sketch.cellSize)
+
+        sketch.svg.group({
+            name: 'tomato',
+            stroke: 'tomato',
+            fill: 'rgba(0,0,0,0)'
+        })
+
+        sketch.svg.group({
+            name: 'steelblue',
+            stroke: 'steelblue',
+            fill: 'rgba(0,0,0,0)'
+        })
         sketch.init()
     },
     init: () => {
         // reset possible previous value
         sketch.walkers = []
         sketch.offset = 8
-
-        const movingDiagonally = Math.random() > 0.5
+        sketch.svg.clearGroups()
+        const movingDiagonally = true // Math.random() > 0.5
         for (let n = 0; n < sketch.walkerNum; n++) {
             const x = randomIntBetween({ min: 0, max: sketch.grid.cols })
             const y = randomIntBetween({ min: 0, max: sketch.grid.rows })
@@ -35,7 +47,7 @@ const sketch = {
                     pos: [2 * Math.round(x / 2), 2 * Math.round(y / 2)],
                     step: {
                         min: 1,
-                        max: 3
+                        max: 6
                     },
                     maxDirectionTries: 8,
                     limit: [sketch.grid.cols, sketch.grid.rows],
@@ -64,7 +76,7 @@ const sketch = {
     },
     // Compute offset line and draw them
     draw: () => {
-        sketch.svg.clear()
+        sketch.svg.clearGroups()
 
         for (let w = 0; w < sketch.walkers.length; w++) {
             const line = sketch.walkers[w].history.map((pos) => [
@@ -72,14 +84,21 @@ const sketch = {
                 sketch.margin + pos[1] * sketch.cellSize
             ])
             if (line.length > 2) {
-                var offset = new LineOffset({
+                const offset = new LineOffset({
                     line: line,
                     offsetCount: sketch.offset,
                     isDiagComp: sketch.walkers[w].movingDiagonally,
                     offsetWidth: sketch.cellSize / 2,
                     tracer: sketch.svg
                 })
-                offset.draw(w)
+                const offsetLines = offset.getOffsets(w)
+                console.log(offsetLines)
+                offsetLines.lines.forEach((line) =>
+                    sketch.svg.path({
+                        points: line,
+                        group: offsetLines.color
+                    })
+                )
             }
         }
     },

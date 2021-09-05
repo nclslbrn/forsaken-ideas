@@ -344,6 +344,8 @@ export default class SvgTracer {
      * Group function
      * @typedef {group} props group definition
      * @param {string} props.name the name attribute of the group
+     * @param {string} props.stroke the stroke color attribute
+     * @param {string} props.strokeWidth the stroke-width color attribute
      * @param {string} props.fill color value of the fill attribute
      * @param {string} props.group group name an other group to nest the new one
      */
@@ -357,6 +359,8 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
+        props.strokeWidth =
+            props.strokeWidth === undefined ? false : props.strokeWidth
 
         const groupElem = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -365,6 +369,9 @@ export default class SvgTracer {
         if (props.name) groupElem.setAttribute('name', props.name)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
         if (props.stroke) groupElem.setAttribute('stroke', props.stroke)
+        if (props.strokeWidth)
+            groupElem.setAttribute('stroke-width', props.strokeWidth)
+
         if (props.group) {
             this.groups[props.group].appendChild(groupElem)
         } else {

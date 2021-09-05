@@ -20,7 +20,7 @@ export default class LineOffset {
         this.tracer = props.tracer
     }
 
-    draw(walkerId = 0) {
+    getOffsets() {
         let offsetId = 0,
             previousAngle,
             previousPos
@@ -58,15 +58,6 @@ export default class LineOffset {
             }
             offsetId++
         }
-
-        offsets.lines.forEach((line) =>
-            this.tracer.path({
-                name: 'w-' + walkerId,
-                points: line,
-                stroke: offsets.color,
-                fill: 'rgba(0,0,0,0)',
-                strokeWidth: 1
-            })
-        )
+        return offsets
     }
 }
