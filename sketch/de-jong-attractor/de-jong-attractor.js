@@ -41,7 +41,7 @@ const cutLines = (lines, nbCuts, maxLineLength) => {
 }
 
 const sketch = {
-    iterations: 30,
+    iterations: 50,
     res: 0.009,
     maxBounce: 1,
     setup: () => {
@@ -111,7 +111,7 @@ const sketch = {
                         x: points[i].x / tracer.width,
                         y: points[i].y / tracer.height
                     }
-                    const n1 = pdj({ x: p.x * 2, y: p.y * 2 })
+                    const n1 = pdj({ x: p.x * 5, y: p.y * 5 })
                     const n2 = pdj({ x: p.x * 10, y: p.y * 10 })
                     const n3 = pdj({ x: p.x * 50, y: p.y * 50 })
 
