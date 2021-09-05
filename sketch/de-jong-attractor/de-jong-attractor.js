@@ -1,6 +1,7 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
 import Notification from '../../src/js/sketch-common/Notification'
+import ProgressBar from '../../src/js/sketch-common/ProgressBar'
 
 const container = document.getElementById('windowFrame')
 const tracer = new SvgTracer(container, 'p32x24')
@@ -39,9 +40,9 @@ const cutLines = (lines, nbCuts, maxLineLength) => {
 
     return cuttedLines
 }
-
+const progressBar = new ProgressBar(container, 0)
 const sketch = {
-    iterations: 50,
+    iterations: 20,
     res: 0.009,
     maxBounce: 1,
     setup: () => {
@@ -49,6 +50,7 @@ const sketch = {
         sketch.init()
     },
     init: () => {
+        progressBar.reset()
         strangeAttractors().init('de_jong')
         scale = 2 * Math.ceil(Math.random() * 4)
         points = []
@@ -141,16 +143,26 @@ const sketch = {
                     if (points[i].bounce >= sketch.maxBounce) {
                         points[i].stuck = true
                     }
-                    lines[i].push([points[i].x, points[i].y])
+                    const lastPoint = lines[i].slice(-1).pop()
+                    if (
+                        lastPoint === undefined ||
+                        (Math.abs(lastPoint[0] - points[i].x) > 0.5 &&
+                            Math.abs(lastPoint[1] - points[i].y) > 0.5)
+                    ) {
+                        lines[i].push([points[i].x, points[i].y])
+                    }
                     points[i].x += points[i].vx * 0.95
                     points[i].y += points[i].vy * 0.95
                 }
             }
             move++
-            // console.log(move, '/', sketch.iterations)
+            progressBar.update(Math.round((move / sketch.iterations) * 100))
             sketch.draw()
             window.requestAnimationFrame(sketch.update)
         } else {
+            lines.forEach((line, index) =>
+                console.log(`line n°${index} = ${line.length} points`)
+            )
             console.log('sketch done')
             new Notification('Sketch done !', container, 'light')
         }
