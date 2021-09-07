@@ -11,7 +11,7 @@ export default class Walker {
         }
     ) {
         this.pos = props.pos
-        this.triesWithCrossingAnother = 0
+        this.failedDisplacementsTries = 0
         this.maxDirectionTries = props.maxDirectionTries
         this.step = props.step
         this.history = [[...this.pos]]
@@ -21,43 +21,53 @@ export default class Walker {
     }
 
     walk(othersWalkers) {
-        if (this.isStopped[0] && this.isStopped[1]) {
-            return
-        }
-        const distance = randomIntBetween(this.step)
-        const direction = randomIntBetween({ min: 0, max: 3 })
-        let isWrongDirection = false
-        for (let d = 0; d <= distance && !isWrongDirection; d++) {
-            const newPos = this.displace([...this.pos], direction)
-            const isCrossing = this.willCrossingAnother(othersWalkers, newPos)
-            const isInside = this.isInside(newPos)
+        if (!this.isStopped[1]) {
+            const distance = randomIntBetween(this.step)
+            const direction = randomIntBetween({ min: 0, max: 3 })
 
-            if (!isCrossing && isInside) {
-                this.triesWithCrossingAnother = 0
-                this.pos = [...newPos]
-                this.history.push([...newPos])
-            } else {
-                if (isWrongDirection && isCrossing) {
-                    this.triesWithCrossingAnother++
-                    if (
-                        this.triesWithCrossingAnother === this.maxDirectionTries
-                    ) {
-                        this.isStopped[1] = true
+            let isWrongDirection = false,
+                d = 0
+            while (d <= distance && !isWrongDirection) {
+                const newPos = this.displace([...this.pos], direction)
+
+                const isHoverAnother = this.willCrossingAnother(
+                    othersWalkers,
+                    newPos
+                )
+                const isInside = this.isInside(newPos)
+
+                // Everything is fine
+                if (!isHoverAnother && isInside) {
+                    this.failedDisplacementsTries = 0
+                    this.pos = [...newPos]
+                    this.history.push([...newPos])
+                }
+                // Walker is in a wrong way ...
+                else {
+                    if (isHoverAnother || !isInside) {
+                        this.failedDisplacementsTries++
+
+                        // for too long
+                        if (
+                            this.failedDisplacementsTries ===
+                            this.maxDirectionTries
+                        ) {
+                            if (this.isStopped[0]) {
+                                // Definitively stuck
+                                this.isStopped[1] = true
+                            }
+                            // stuck in the first path
+                            else {
+                                // revert path order (filo lifo)
+                                this.pos = [...this.history[0]]
+                                this.history = [...this.history.reverse()]
+                                this.isStopped[0] = true
+                                this.failedDisplacementsTries = 0
+                            }
+                        }
                     }
                 }
-
-                if (isWrongDirection && !isInside) {
-                    if (!this.isStopped[0]) {
-                        this.isStopped[0] = true
-                        this.triesWithCrossingAnother = 0
-                        this.pos = [...this.history[0]]
-                        this.history = [...this.history.reverse()]
-                    } else {
-                        this.isStopped[1] = true
-                    }
-                }
-
-                isWrongDirection = true
+                d++
             }
         }
     }
@@ -139,5 +149,8 @@ export default class Walker {
         } else {
             return false
         }
+    }
+    isStuck() {
+        return this.isStopped[1]
     }
 }

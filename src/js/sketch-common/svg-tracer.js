@@ -51,9 +51,11 @@ export default class SvgTracer {
         } else if (size.w && size.h) {
             this.width = size.w
             this.height = size.h
+            this.size = `${size.w}x${size.h}`
         } else if (printFormat[size]) {
             this.width = printFormat[size].w
             this.height = printFormat[size].h
+            this.size = size
         }
     }
     /**
@@ -394,7 +396,7 @@ export default class SvgTracer {
             H = date.getHours(),
             i = date.getMinutes()
 
-        const filename = `${props.name}.${Y}-${m}-${d}_${H}.${i}.svg`
+        const filename = `${props.name}.${this.size}.${Y}-${m}-${d}_${H}.${i}.svg`
         const svgMarkup = this.elem.outerHTML
         const data = new Blob([svgMarkup], {
             type: 'text/plain'
