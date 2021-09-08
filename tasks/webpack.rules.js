@@ -11,22 +11,25 @@ module.exports = (mode) => {
         {
             // pug
             test: /\.pug$/,
-            exclude: ['/node_modules/'],
+            exclude: /(node_modules|bower_components)/,
             loader: 'pug-loader'
         },
         {
             // font
             test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
+            exclude: /(node_modules|bower_components)/,
             loader: 'file-loader'
         },
         {
             // images
             test: /\.(png|jp(e*)g|svg)$/,
+            exclude: /(node_modules|bower_components)/,
             use: 'file-loader'
         },
         {
             //sass
             test: /\.(sa|sc|c)ss$/,
+            exclude: /(node_modules|bower_components)/,
             use: [
                 'style-loader',
                 {
@@ -52,7 +55,6 @@ module.exports = (mode) => {
                 'postcss-loader'
             ],
             include: [
-                path.resolve(__dirname, '../node_modules'),
                 path.resolve(__dirname, 'src/sass'),
                 path.resolve(__dirname, '../')
             ]
