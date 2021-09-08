@@ -1,6 +1,6 @@
 {
     "libs": [],
-    "info": "Sketch based on Peter de Jong attractor. xn+1 = sin(a yn) - cos(b xn) yn+1 = sin(c xn) - cos(d yn).",
+    "info": "Sketch based on Peter De Jong attractor. Instead of moving a point, we create a grid of point and displace them with attractors by interpolating different scale with their position.",
     "date": "2019-11-13",
     "action": [
         {
