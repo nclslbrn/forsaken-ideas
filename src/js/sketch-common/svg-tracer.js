@@ -27,6 +27,10 @@ const printFormat = {
     p32x24: { w: 1209.44885, h: 907.08661 },
     p24x32: { w: 907.08661, h: 1209.44885 }
 }
+const ns = {
+    inkscape: 'http://www.inkscape.org/namespaces/inkscape',
+    svg: 'http://www.w3.org/2000/svg'
+}
 
 export default class SvgTracer {
     /**
@@ -73,10 +77,13 @@ export default class SvgTracer {
             )
             this.elem.setAttribute('version', '1.1')
             this.elem.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+            this.elem.setAttribute('xmlns:svg', ns.svg)
             this.elem.setAttribute(
                 'xmlns:xlink',
                 'http://www.w3.org/1999/xlink'
             )
+            this.elem.setAttribute('xmlns:inkscape', ns.inkscape)
+
             this.elem.setAttribute('width', this.width)
             this.elem.setAttribute('height', this.height)
             this.elem.setAttribute(
@@ -87,10 +94,7 @@ export default class SvgTracer {
                 'style',
                 `height: 85vh; width: auto; background: ${this.background}; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
             )
-            this.elem.setAttribute(
-                'inkscape',
-                'http://www.inkscape.org/namespaces/inkscape'
-            )
+
             // create an array of group instance (key = group(props.name))
             this.groups = []
             this.parentElem.appendChild(this.elem)
@@ -137,7 +141,7 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
-        const rect = document.createElementNS(
+        const rect = document.createElmentNS(
             'http://www.w3.org/2000/svg',
             'rect'
         )
@@ -173,7 +177,7 @@ export default class SvgTracer {
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
 
-        const circle = document.createElementNS(
+        const circle = document.createElmentNS(
             'http://www.w3.org/2000/svg',
             'circle'
         )
@@ -225,7 +229,7 @@ export default class SvgTracer {
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
-        const triangle = document.createElementNS(
+        const triangle = document.createElmentNS(
             'http://www.w3.org/2000/svg',
             'path'
         )
@@ -273,7 +277,7 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.strokeWidth =
-            props.strokeWidth === undefined || Number(props.setAttribute) > 1
+            props.strokeWidth === undefined || Number(props.setAttr) > 1
                 ? false
                 : props.strokeWidth
         props.close = props.close === undefined ? false : props.close
@@ -373,16 +377,13 @@ export default class SvgTracer {
         props.group = props.group === undefined ? false : props.group
         props.strokeWidth =
             props.strokeWidth === undefined ? false : props.strokeWidth
-        props.id = props.id === undefined ? false : props.id
+        props.id = props.id === undefined ? false : 'layer' + props.id
 
-        const groupElem = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'g'
-        )
+        const groupElem = document.createElementNS(ns.svg, 'g')
         if (props.name) {
             groupElem.setAttribute('name', props.name)
-            groupElem.setAttribute('inkscape:label', props.name)
-            groupElem.setAttribute('inkscape:groupmode', 'layer')
+            groupElem.setAttributeNS(ns.inkscape, 'label', props.name)
+            groupElem.setAttributeNS(ns.inkscape, 'groupmode', 'layer')
         }
         if (props.id) groupElem.setAttribute('id', props.id)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
