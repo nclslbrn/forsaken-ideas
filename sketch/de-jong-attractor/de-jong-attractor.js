@@ -4,10 +4,15 @@ import Notification from '../../src/js/sketch-common/Notification'
 import ProgressBar from '../../src/js/sketch-common/ProgressBar'
 
 const container = document.getElementById('windowFrame')
-const tracer = new SvgTracer(container, 'p32x24')
+// A3 width - 1.5mm
+const tracer = new SvgTracer(
+    container,
+    { w: 1582.11026, h: 1122.51969 },
+    'black'
+)
 const pdj = strangeAttractors().attractors['de_jong']
 
-let points, lines, margin, scale, strokeColors, move
+let points, lines, margin, scale, move
 
 const getRandomInt = (min, max) => {
     min = Math.ceil(min)
@@ -17,36 +22,59 @@ const getRandomInt = (min, max) => {
 }
 
 const cutLines = (lines, nbCuts, maxLineLength) => {
-    const cuttedLines = []
     const dropPoint = 3
+    const newLines = []
+
     for (let h = 0; h < lines.length; h++) {
-        if (lines[h].length > maxLineLength / 4) {
+        if (lines[h].points && lines[h].points.length > maxLineLength / 4) {
             let previousPoint = 0
             for (let c = 1; c < nbCuts; c++) {
                 const randPoint = getRandomInt(
                     previousPoint,
-                    lines[h].length - dropPoint
+                    lines[h].points.length - dropPoint
                 )
-                cuttedLines.push(lines[h].slice(previousPoint, randPoint))
+                newLines.push({
+                    points: lines[h].points.slice(previousPoint, randPoint),
+                    group: lines[h].group
+                })
                 previousPoint = randPoint + dropPoint
             }
-            cuttedLines.push(lines[h].slice(previousPoint, lines[h].length))
+            newLines.push({
+                points: lines[h].points.slice(
+                    previousPoint,
+                    lines[h].points.length
+                ),
+                groups: lines[h].group
+            })
         } else {
-            if (lines[h].length > 1) {
-                cuttedLines.push([...lines[h]])
+            if (lines[h].points.length > 1) {
+                newLines.push({
+                    points: [...lines[h].points],
+                    group: lines[h].group
+                })
             }
         }
     }
 
-    return cuttedLines
+    return newLines
 }
+
+const groups = ['steelblue', 'white']
 const progressBar = new ProgressBar(container, 0)
 const sketch = {
-    iterations: 20,
-    res: 0.009,
+    iterations: 30,
+    res: 0.012,
     maxBounce: 1,
     setup: () => {
         tracer.init()
+        groups.forEach((color) => {
+            tracer.group({
+                name: color,
+                stroke: color,
+                fill: 'none',
+                id: color
+            })
+        })
         sketch.init()
     },
     init: () => {
@@ -72,37 +100,47 @@ const sketch = {
                     bounce: 0,
                     stuck: false
                 })
-                lines.push([])
+                lines.push({
+                    points: [],
+                    group: Math.random() < 0.5 ? groups[0] : groups[1]
+                })
             }
         }
-        tracer.clear()
+        tracer.clearGroups()
         tracer.elem.addEventListener('click', sketch.getActivePointNum)
         sketch.update()
     },
     draw: () => {
-        tracer.clear()
+        tracer.clearGroups()
+
         if (move === sketch.iterations) {
             const cuttedLines = cutLines(lines, 3, sketch.iterations)
-            const removeEmpty = cuttedLines.filter((line) => line.length > 1)
+            console.log(cuttedLines)
+            const removeEmpty = cuttedLines.filter(
+                (line) => line.points.length > 1
+            )
+
             removeEmpty.forEach((line) =>
                 tracer.path({
-                    points: line,
+                    points: line.points,
                     close: false,
                     strokeWidth: 1,
                     fill: 'none',
-                    stroke: 'black'
+                    group: line.group
                 })
             )
         } else {
-            lines.forEach((line) =>
+            for (const line of lines) {
+                // lines.forEach((line) =>
                 tracer.path({
-                    points: line,
+                    points: line.points,
                     close: false,
                     strokeWidth: 1,
                     fill: 'none',
-                    stroke: 'black'
+                    //stroke: 'black',
+                    group: line.group
                 })
-            )
+            }
         }
     },
     update: () => {
@@ -110,16 +148,16 @@ const sketch = {
             for (let i = 0; i < points.length; i++) {
                 if (!points[i].stuck) {
                     const p = {
-                        x: points[i].x / tracer.width,
-                        y: points[i].y / tracer.height
+                        x: points[i].x / tracer.width - 0.5,
+                        y: points[i].y / tracer.height - 0.5
                     }
                     const n1 = pdj({ x: p.x * 5, y: p.y * 5 })
                     const n2 = pdj({ x: p.x * 10, y: p.y * 10 })
                     const n3 = pdj({ x: p.x * 50, y: p.y * 50 })
 
                     const angle = Math.atan2(
-                        n1.y * n2.y * n3.y,
-                        n1.x * n2.x * n3.x
+                        n1.y + n2.y + n3.y,
+                        n1.x + n2.x + n3.x
                     )
 
                     points[i].vx = Math.cos(angle) * scale
@@ -143,16 +181,16 @@ const sketch = {
                     if (points[i].bounce >= sketch.maxBounce) {
                         points[i].stuck = true
                     }
-                    const lastPoint = lines[i].slice(-1).pop()
+                    const lastPoint = lines[i].points.slice(-1).pop()
                     if (
                         lastPoint === undefined ||
                         (Math.abs(lastPoint[0] - points[i].x) > 0.5 &&
                             Math.abs(lastPoint[1] - points[i].y) > 0.5)
                     ) {
-                        lines[i].push([points[i].x, points[i].y])
+                        lines[i].points.push([points[i].x, points[i].y])
                     }
-                    points[i].x += points[i].vx * 0.95
-                    points[i].y += points[i].vy * 0.95
+                    points[i].x += points[i].vx * 0.99
+                    points[i].y += points[i].vy * 0.99
                 }
             }
             move++
@@ -160,9 +198,9 @@ const sketch = {
             sketch.draw()
             window.requestAnimationFrame(sketch.update)
         } else {
-            lines.forEach((line, index) =>
-                console.log(`line n°${index} = ${line.length} points`)
-            )
+            /*  lines.forEach((line, index) =>
+                console.log(`line n°${index} = ${line.points.length} points`)
+            ) */
             console.log('sketch done')
             new Notification('Sketch done !', container, 'light')
         }
