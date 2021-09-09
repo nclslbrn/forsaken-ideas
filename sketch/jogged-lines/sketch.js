@@ -38,7 +38,7 @@ const sketch = {
         sketch.svg.clear()
         sketch.palette.colors.forEach((color, index) =>
             sketch.svg.group({
-                name: String(color.id + '-' + color.name),
+                name: color.id,
                 stroke: color.value,
                 fill: 'rgba(0,0,0,0)',
                 id: color.id
@@ -133,7 +133,7 @@ const sketch = {
                 offsetLines.lines.forEach((line) =>
                     sketch.svg.path({
                         points: line,
-                        group: sketch.palette.colors[offsetLines.color].name,
+                        group: sketch.palette.colors[offsetLines.color].id,
                         fill: 'none'
                     })
                 )
