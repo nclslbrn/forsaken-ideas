@@ -1,3 +1,5 @@
+const willMonitorTask = false
+
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -9,6 +11,12 @@ const defaultPlugins = require('./webpack.plugins')
 const getRules = require('./webpack.rules')
 const devServer = require('./webpack.devServer')
 const externals = require('./webpack.externals')
+
+if (willMonitorTask) {
+    // optimize task
+    const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+    const smp = new SpeedMeasurePlugin()
+}
 /**
  * Common webpack configuration for sketch watching & building
  *
@@ -23,17 +31,7 @@ module.exports = (property) => {
                 path: property.output,
                 filename: '[name].sketch.[chunkhash].js'
             },
-            plugins: [
-                ...defaultPlugins,
-                new CleanWebpackPlugin(),
-                new HtmlWebpackPlugin({
-                    templateParameters: {
-                        property: property
-                    },
-                    filename: './index.html',
-                    template: './src/pug/project.pug'
-                })
-            ],
+
             module: {
                 rules: getRules(property.mode)
             },
@@ -51,8 +49,20 @@ module.exports = (property) => {
             stats: 'errors-only'
         }
 
+        const plugins = [
+            ...defaultPlugins,
+            new CleanWebpackPlugin(),
+            new HtmlWebpackPlugin({
+                templateParameters: {
+                    property: property
+                },
+                filename: './index.html',
+                template: './src/pug/project.pug'
+            })
+        ]
+
         if (property.getAssetsToCopy) {
-            config.plugins.push(
+            plugins.push(
                 new CopyWebpackPlugin({
                     patterns: [
                         {
@@ -67,11 +77,11 @@ module.exports = (property) => {
             )
         }
         if (property.mode !== 'production') {
-            config.plugins.push(new webpack.HotModuleReplacementPlugin())
+            plugins.push(new webpack.HotModuleReplacementPlugin())
             config.devServer = devServer
             config.devtool = 'inline-source-map'
         } else {
-            config.plugins.push(new CleanWebpackPlugin())
+            plugins.push(new CleanWebpackPlugin())
             config.optimization = {
                 minimize: true,
                 minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
@@ -85,7 +95,7 @@ module.exports = (property) => {
                 maxAssetSize: 512000
             }
             if (property.imageCover) {
-                config.plugins.push(
+                plugins.push(
                     new CopyWebpackPlugin({
                         patterns: [
                             {
@@ -100,7 +110,11 @@ module.exports = (property) => {
                 )
             }
         }
-        return config
+        if (willMonitorTask) {
+            return smp.wrap({ ...config, plugins: plugins })
+        } else {
+            return { ...config, plugins: plugins }
+        }
     }
     return sketchConfig(property)
 }

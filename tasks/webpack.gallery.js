@@ -1,3 +1,5 @@
+const willMonitorTask = false
+
 // Node modules
 const path = require('path')
 const webpack = require('webpack')
@@ -6,6 +8,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+if (willMonitorTask) {
+    // optimize task
+    const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+    const smp = new SpeedMeasurePlugin()
+}
 
 // Custom modules
 const defaultPlugins = require('./webpack.plugins')
@@ -45,29 +53,6 @@ module.exports = (env, process) => {
             path: path.resolve('public/'),
             filename: '[name].gallery.[chunkhash].js'
         },
-        plugins: [
-            ...defaultPlugins,
-            new HtmlWebpackPlugin({
-                templateParameters: {
-                    projects: projectWithMeta,
-                    property: property
-                },
-                filename: './index.html',
-                template: './src/pug/gallery.pug'
-            }),
-            new CopyWebpackPlugin({
-                patterns: [
-                    {
-                        from: path.resolve('src/img'),
-                        to: path.resolve('public/img')
-                    },
-                    {
-                        from: path.resolve('src/fonts'),
-                        to: path.resolve('public/fonts')
-                    }
-                ]
-            })
-        ],
         module: {
             rules: getRules(property.mode)
         },
@@ -79,8 +64,31 @@ module.exports = (env, process) => {
         }
         //stats: 'verbose' // errors-only'
     }
+    const plugins = [
+        ...defaultPlugins,
+        new HtmlWebpackPlugin({
+            templateParameters: {
+                projects: projectWithMeta,
+                property: property
+            },
+            filename: './index.html',
+            template: './src/pug/gallery.pug'
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve('src/img'),
+                    to: path.resolve('public/img')
+                },
+                {
+                    from: path.resolve('src/fonts'),
+                    to: path.resolve('public/fonts')
+                }
+            ]
+        })
+    ]
     if (property.mode !== 'production') {
-        config.plugins.push(new webpack.HotModuleReplacementPlugin())
+        plugins.push(new webpack.HotModuleReplacementPlugin())
         config.devServer = devServer
         config.devtool = 'inline-source-map'
     } else {
@@ -91,11 +99,15 @@ module.exports = (env, process) => {
                 name: 'runtime'
             }
         }
-        config.performance = {
+        /*   config.performance = {
             hints: false,
             maxEntrypointSize: 512000,
             maxAssetSize: 512000
-        }
+        } */
     }
-    return config
+    if (willMonitorTask) {
+        return smp.wrap({ ...config, plugins: plugins })
+    } else {
+        return { ...config, plugins: plugins }
+    }
 }
