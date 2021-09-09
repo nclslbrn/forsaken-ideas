@@ -32,12 +32,13 @@ export default class SvgTracer {
     /**
      * Define svg size
      * @param {object} parentElem the HTML dom element where include the SVG
-     * @param {string|object} size format name listed above or size object {w: width, h: height}
+     * @param {string|{x: Number, y: Number}} size format name listed above or pixels {w: width, h: height}
+     * @param {string} background specify color for non white background
      */
-    constructor(parentElem, size) {
+    constructor(parentElem, size, background) {
         this.parentElem = parentElem
         this.groups = []
-
+        this.background = background === undefined ? 'white' : background
         if (
             printFormat[size] == undefined &&
             (size.w === undefined || size.h === undefined)
@@ -51,8 +52,10 @@ export default class SvgTracer {
         } else if (size.w && size.h) {
             this.width = size.w
             this.height = size.h
+            // pixel size
             this.size = `${size.w}x${size.h}`
         } else if (printFormat[size]) {
+            //
             this.width = printFormat[size].w
             this.height = printFormat[size].h
             this.size = size
@@ -63,6 +66,7 @@ export default class SvgTracer {
      */
     init() {
         if (this.parentElem && this.width && this.height) {
+            // html and inksape header (tested only on Debian inkscape 1.0)
             this.elem = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'svg'
@@ -81,8 +85,14 @@ export default class SvgTracer {
             )
             this.elem.setAttribute(
                 'style',
-                'height: 85vh; width: auto; background: #fff; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);'
+                `height: 85vh; width: auto; background: ${this.background}; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
             )
+            this.elem.setAttribute(
+                'inkscape',
+                'http://www.inkscape.org/namespaces/inkscape'
+            )
+            // create an array of group instance (key = group(props.name))
+            this.groups = []
             this.parentElem.appendChild(this.elem)
         }
     }
@@ -127,7 +137,6 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
-
         const rect = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'rect'
@@ -350,6 +359,7 @@ export default class SvgTracer {
      * @param {string} props.strokeWidth the stroke-width color attribute
      * @param {string} props.fill color value of the fill attribute
      * @param {string} props.group group name an other group to nest the new one
+     * @param {string} props.id testing inkscape layer
      */
     group(props) {
         if (props.name === undefined) {
@@ -363,22 +373,28 @@ export default class SvgTracer {
         props.group = props.group === undefined ? false : props.group
         props.strokeWidth =
             props.strokeWidth === undefined ? false : props.strokeWidth
+        props.id = props.id === undefined ? false : props.id
 
         const groupElem = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'g'
         )
-        if (props.name) groupElem.setAttribute('name', props.name)
+        if (props.name) {
+            groupElem.setAttribute('name', props.name)
+            groupElem.setAttribute('inkscape:label', props.name)
+            groupElem.setAttribute('inkscape:groupmode', 'layer')
+        }
+        if (props.id) groupElem.setAttribute('id', props.id)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
         if (props.stroke) groupElem.setAttribute('stroke', props.stroke)
         if (props.strokeWidth)
             groupElem.setAttribute('stroke-width', props.strokeWidth)
 
-        if (props.group) {
+        /*   if (props.group) {
             this.groups[props.group].appendChild(groupElem)
-        } else {
-            this.elem.appendChild(groupElem)
-        }
+        } else { */
+        this.elem.appendChild(groupElem)
+        //}
         this.groups[props.name] = groupElem
     }
     /**
@@ -397,7 +413,8 @@ export default class SvgTracer {
             i = date.getMinutes()
 
         const filename = `${props.name}.${this.size}.${Y}-${m}-${d}_${H}.${i}.svg`
-        const svgMarkup = this.elem.outerHTML
+        const svgMarkup = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                            ${this.elem.outerHTML}`
         const data = new Blob([svgMarkup], {
             type: 'text/plain'
         })
