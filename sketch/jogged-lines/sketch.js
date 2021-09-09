@@ -2,8 +2,11 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import Walker from './Walker'
 import Notification from '../../src/js/sketch-common/Notification'
 import { randomIntBetween } from './randomBetween'
+import { getColorCombination } from '../../src/js/sketch-common/stabilo68-colors'
+
 import LineOffset from './LineOffset'
 
+let notification = false
 const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer(container, 'p32x24'),
@@ -12,17 +15,6 @@ const sketch = {
     // setup svg anf its params
     launch: () => {
         sketch.svg.init()
-        sketch.svg.group({
-            name: 'tomato',
-            stroke: 'tomato',
-            fill: 'rgba(0,0,0,0)'
-        })
-
-        sketch.svg.group({
-            name: 'steelblue',
-            stroke: 'steelblue',
-            fill: 'rgba(0,0,0,0)'
-        })
         sketch.init()
     },
     init: () => {
@@ -40,8 +32,19 @@ const sketch = {
         sketch.grid.rows = Math.floor(innerHeight / sketch.cellSize)
         sketch.margin.x += (innerWidth % sketch.cellSize) / 2
         sketch.margin.y += (innerHeight % sketch.cellSize) / 2
-        sketch.svg.clearGroups()
 
+        sketch.palette = getColorCombination(2)
+
+        sketch.svg.clear()
+        sketch.palette.colors.forEach((color, index) =>
+            sketch.svg.group({
+                name: String(color.id + '-' + color.name),
+                stroke: color.value,
+                fill: 'rgba(0,0,0,0)',
+                id: color.id
+            })
+        )
+        if (notification) notification.remove()
         let initializedWalkerNum = 0
 
         while (initializedWalkerNum < sketch.walkerNum) {
@@ -96,7 +99,15 @@ const sketch = {
             requestAnimationFrame(sketch.update)
         } else {
             sketch.draw(true)
-            new Notification('Sketch done', container, 'light')
+            const penSpecs = sketch.palette.colors.reduce((specs, color) => {
+                return specs + `<br> - 88/${color.id} ${color.name}`
+            }, '(Stabilo Art markers)')
+            notification = new Notification(
+                `${sketch.palette.name} palette ${penSpecs}`,
+                container,
+                'light',
+                false
+            )
         }
     },
     // Compute offset line and draw them
@@ -109,7 +120,6 @@ const sketch = {
                 sketch.margin.y + pos[1] * sketch.cellSize
             ])
             if (line.length > 2) {
-                //sketch.svg.circle({})
                 const offset = new LineOffset({
                     line: line,
                     offsetCount: sketch.offset,
@@ -123,7 +133,8 @@ const sketch = {
                 offsetLines.lines.forEach((line) =>
                     sketch.svg.path({
                         points: line,
-                        group: offsetLines.color
+                        group: sketch.palette.colors[offsetLines.color].name,
+                        fill: 'none'
                     })
                 )
             }
@@ -131,7 +142,9 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        sketch.svg.export({ name: 'hatch' })
+        sketch.svg.export({
+            name: `jogged-lines-${sketch.palette.name}-palette`
+        })
     }
 }
 

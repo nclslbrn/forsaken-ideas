@@ -6,25 +6,34 @@ import '../../sass/notification.scss'
  * @param {string} mode dark|light the style of the box
  */
 export default class Notification {
-    constructor(message, parentElem, mode = 'dark') {
-        const p = document.createElement('p')
-        p.id = 'notification'
+    constructor(message, parentElem, mode = 'dark', duration = 5000) {
+        this.elem = document.createElement('p')
+        this.elem.id = 'notification'
         if (mode == 'dark' || mode == 'light') {
-            p.classList.add(mode)
+            this.elem.classList.add(mode)
         } else {
             console.error(
                 `Undefined mode (${mode}), possible options: dark & light.`
             )
         }
-        p.innerHTML = message
+        this.elem.innerHTML = message
 
         if (parentElem !== undefined) {
-            parentElem.appendChild(p)
-            window.setTimeout(() => {
-                parentElem.removeChild(p)
-            }, 5000)
+            this.parentElem = parentElem
+            parentElem.appendChild(this.elem)
+            if (duration) {
+                window.setTimeout(() => {
+                    parentElem.removeChild(this.elem)
+                }, duration)
+            }
         } else {
+            this.parentElem = false
             console.error("Parent elem doesn't exist.")
+        }
+    }
+    remove() {
+        if (this.parentElem) {
+            this.parentElem.removeChild(this.elem)
         }
     }
 }

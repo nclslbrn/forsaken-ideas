@@ -15,7 +15,7 @@ export default class LineOffset {
         this.isDiagComp = props.isDiagComp
         this.offsetWidth = props.offsetWidth
         this.isCCW = isCCW(props.line)
-        this.color = this.isCCW ? 'tomato' : 'steelblue'
+        this.color = this.isCCW ? 0 : 1
         this.distance = props.offsetWidth / this.offsetCount
         this.tracer = props.tracer
     }
