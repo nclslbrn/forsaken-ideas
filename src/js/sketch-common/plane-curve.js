@@ -3,7 +3,7 @@
  * https://www.wolframalpha.com/widgets/view.jsp?id=4e37f43fcbe8be03c20f977f32e20d15
  *
  * For every functions
- * @param {object} 2D vector object with x & y (z will be ignored)
+ * @param {object} v 2D vector object with x & y (z will be ignored)
  * @param {float} amount the intensity of the displacement
  * @return {object} 2D vector object with x & y (z will be ignored)
  */
@@ -11,10 +11,10 @@
 const archimedean_spiral = (v, amount = 1.0) => {
     const theta = Math.atan2(v.x, v.y)
     const a = 1
-    const n = -3
+    const n = 3
     return {
-        x: amount * -Math.sqrt(theta) * Math.cos(theta),
-        y: amount * -Math.sqrt(theta) * Math.sin(theta)
+        x: amount * a * Math.pow(theta, 1 / n) * Math.cos(theta),
+        y: amount * a * Math.pow(theta, 1 / n) * Math.sin(theta)
     }
 }
 
