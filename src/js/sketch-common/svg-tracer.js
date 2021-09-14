@@ -300,7 +300,14 @@ export default class SvgTracer {
             path.setAttribute('stroke-width', props.strokeWidth)
         if (props.name) path.setAttribute('name', props.name)
         if (props.group) {
-            this.groups[props.group].appendChild(path)
+            if (
+                this.groups !== undefined ||
+                this.groups[props.group] !== undefined
+            ) {
+                this.groups[props.group].appendChild(path)
+            } else {
+                console.error(`Group ${props.group} doesn't exist.`)
+            }
         } else {
             this.elem.appendChild(path)
         }
@@ -397,6 +404,7 @@ export default class SvgTracer {
         this.elem.appendChild(groupElem)
         //}
         this.groups[props.name] = groupElem
+        console.log(this.groups[props.name])
     }
     /**
      * Export <svg> as file
@@ -417,7 +425,7 @@ export default class SvgTracer {
         const svgMarkup = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             ${this.elem.outerHTML}`
         const data = new Blob([svgMarkup], {
-            type: 'text/plain'
+            type: 'application/xml' //'text/plain'
         })
         if (svgFile !== null) {
             window.URL.revokeObjectURL(svgFile)
