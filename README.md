@@ -111,3 +111,10 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 }
 ```
 
+### Visual studio code users 
+
+You can watch and build sketch with :
+
+CMD/CTRL + SHIFT + P and choose ```Tasks: Run build task```
+
+Vscode will send current opened tab file directory as entry point to node JS (You have to open in the editor a ./sketch/sketch-name/***.** file before use this shortcut).
