@@ -4,42 +4,42 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 
 
 ```
-+-- public/ (Where project are exported - production ready HTML/JS/CSS)
-+-- sketch/ 
-|	+-- your-fantastic-JS-project/ (Where we code)
-|       +-- assets/ (you can also copy assets relative to your project)
-|       +-- index.js (Sketch entry point)
-|       +-- property.json (Sketch properties details below) 
-|       +-- capture.jpg (1067x720px illustration for Open Graph) 
-+-- src/ (Gallery and project page templates)
-|   +-- fonts/
-|   +-- img/
-|   +-- js/
-|        +-- gallery/
-|        +-- sketch-common/ (Shared functions & class between multiple sketch)
-|   +-- json/
-|   +-- pug/
-|   +-- sass/
-|        +-- mixins/
-|        +-- modules/
-|        +-- variables/
-|        +-- _commons.sccs
-|        +-- _layout.scss
-|        +-- _mixins.scss
-|        +-- _variables.scss
-|        +-- frame-canvas.scss (A pre-styled frame surronded <canvas> or <svg>)
-|        +-- full-canvas.scss (A full frame style page)
-|        +-- gallery.scss (Entry point for home page style)
-|        +-- notifications.scss
-|        +-- progressBar.scss
-|        +-- project.scss (Common style for each project in sketch/)
-+-- tasks/ (nodejs tasks declaration)
-+-- templates/ (boilerplate/example/empty project)
-|	+-- custom-svg-templates/
-|       +-- index.js
-|       +-- property.json
-| 	+-- p5-template/
-|  	+-- three-template/
++ public/ (Where project are exported - production ready HTML/JS/CSS)
++ sketch/ 
+|---+ your-fantastic-JS-project/ (Where we code)
+|-------+ assets/ (you can also copy assets relative to your project)
+|-------+ index.js (Sketch entry point)
+|-------+ property.json (Sketch properties details below) 
+|-------+ capture.jpg (1067x720px illustration for Open Graph) 
++ src/ (Gallery and project page templates)
+|---+ fonts/
+|---+ img/
+|---+ js/
+|--------+ gallery/
+|--------+ sketch-common/ (Shared functions & class between multiple sketch)
+|---+ json/
+|---+ pug/
+|---+ sass/
+|--------+ mixins/
+|--------+ modules/
+|--------+ variables/
+|--------+ _commons.sccs
+|--------+ _layout.scss
+|--------+ _mixins.scss
+|--------+ _variables.scss
+|--------+ frame-canvas.scss (A pre-styled frame surronded <canvas> or <svg>)
+|--------+ full-canvas.scss (A full frame style page)
+|--------+ gallery.scss (Entry point for home page style)
+|--------+ notifications.scss
+|--------+ progressBar.scss
+|--------+ project.scss (Common style for each project in sketch/)
++ tasks/ (nodejs tasks declaration)
++ templates/ (boilerplate/example/empty project)
+|---+ custom-svg-templates/
+|--------+ index.js
+|--------+ property.json
+|---+ p5-template/
+|---+ three-template/
 ```
 
 
