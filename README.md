@@ -28,11 +28,11 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 |--------+ _mixins.scss
 |--------+ _variables.scss
 |--------+ frame-canvas.scss (A pre-styled frame surronded <canvas> or <svg>)
-|--------+ full-canvas.scss (A full frame style page)
-|--------+ gallery.scss (Entry point for home page style)
+|--------+ full-canvas.scss (A full frame page style)
+|--------+ gallery.scss (Home page style)
 |--------+ notifications.scss
 |--------+ progressBar.scss
-|--------+ project.scss (Common style for each project in sketch/)
+|--------+ project.scss (Projects style)
 + tasks/ (nodejs tasks declaration)
 + templates/ (boilerplate/example/empty project)
 |---+ custom-svg-templates/
