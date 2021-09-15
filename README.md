@@ -7,7 +7,7 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 + public/ (Where project are exported - production ready HTML/JS/CSS)
 + sketch/ 
 |---+ your-fantastic-JS-project/ (Where we code)
-|-------+ assets/ (you can also copy assets relative to your project)
+|-------+ assets/ (you can copy assets relative to your project)
 |-------+ index.js (Sketch entry point)
 |-------+ property.json (Sketch properties details below) 
 |-------+ capture.jpg (1067x720px illustration for Open Graph) 
@@ -16,7 +16,7 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 |---+ img/
 |---+ js/
 |--------+ gallery/
-|--------+ sketch-common/ (Shared functions & class between multiple sketch)
+|--------+ sketch-common/ (Shared JS functions & class between multiple sketch)
 |---+ json/
 |---+ pug/
 |---+ sass/
@@ -27,7 +27,7 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 |--------+ _layout.scss
 |--------+ _mixins.scss
 |--------+ _variables.scss
-|--------+ frame-canvas.scss (A pre-styled frame surronded <canvas> or <svg>)
+|--------+ frame-canvas.scss (A pre-styled frame surrounded <canvas> or <svg>)
 |--------+ full-canvas.scss (A full frame page style)
 |--------+ gallery.scss (Home page style)
 |--------+ notifications.scss
