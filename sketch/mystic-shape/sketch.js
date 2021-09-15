@@ -68,7 +68,7 @@ const sketch = {
                 //  const v1 = circle(angle)
                 const v1 = funcs[sketch.trigoFunc](point)
                 const a1 = Math.atan2(v1.y, v1.x)
-                const a2 = simplex.noise2D(v1.x / 100, v1.y / 100)
+                const a2 = simplex.noise2D(v1.x / 50, v1.y / 50) * 200
                 const v2 = circle(a2)
                 const v3 = {
                     x: Math.cos(v1.x + v2.x),
@@ -93,8 +93,8 @@ const sketch = {
                     )
                 ])
 
-                sketch.points[p].x += v4.x * 0.007
-                sketch.points[p].y += v4.y * 0.007
+                sketch.points[p].x += v4.x * 0.01
+                sketch.points[p].y += v4.y * 0.01
             }
 
             sketch.nIter++
