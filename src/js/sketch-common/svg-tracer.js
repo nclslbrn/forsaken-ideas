@@ -418,12 +418,12 @@ export default class SvgTracer {
             groupElem.setAttribute('name', props.name)
             groupElem.setAttributeNS(
                 this.namespace.inkscape,
-                'label',
+                'inkscape:label',
                 props.name
             )
             groupElem.setAttributeNS(
                 this.namespace.inkscape,
-                'groupmode',
+                'inkscape:groupmode',
                 'layer'
             )
         }
@@ -472,6 +472,11 @@ export default class SvgTracer {
         link.click()
     }
 
+    /**
+     * Convert a centimeter size to pixels from current DPI
+     * @param {number} cm to convert
+     * @returns {number} px converted
+     */
     cmToPixels(cm) {
         if (!isNaN(cm)) {
             return cm * this.dpiToPix[this.dpi]
