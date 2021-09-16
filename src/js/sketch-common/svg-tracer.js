@@ -319,7 +319,7 @@ export default class SvgTracer {
             path.setAttribute('stroke-width', props.strokeWidth)
         if (props.name) path.setAttribute('name', props.name)
         if (props.group) {
-            this.appendToGroup(path)
+            this.appendToGroup(props.group, path)
         } else {
             this.elem.appendChild(path)
         }
