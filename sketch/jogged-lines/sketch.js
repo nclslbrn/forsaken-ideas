@@ -13,16 +13,14 @@ const sketch = {
         parentElem: container,
         size: 'A3_topSpiralNotebook',
         dpi: 300,
-        background: 'black'
+        background: '#000'
     }),
-
-    grid: { cols: false, rows: false },
     // setup svg anf its params
     launch: () => {
         sketch.svg.init()
         sketch.margin = {
-            x: sketch.svg.cmToPixels(4),
-            y: sketch.svg.cmToPixels(4)
+            x: sketch.svg.cmToPixels(5),
+            y: sketch.svg.cmToPixels(5)
         }
         sketch.init()
     },
@@ -33,18 +31,20 @@ const sketch = {
         const innerHeight = sketch.svg.height - sketch.margin.y * 2
 
         sketch.walkers = []
-        sketch.offset = 8
-        sketch.cellSize = movingDiagonally ? 22 : 28
-        sketch.walkerNum = movingDiagonally ? 60 : 50
+        sketch.offset = movingDiagonally ? 7 : 9
+        sketch.cellSize = sketch.svg.cmToPixels(movingDiagonally ? 0.4 : 0.8)
+        sketch.walkerNum = 60
 
-        sketch.grid.cols = Math.floor(innerWidth / sketch.cellSize)
-        sketch.grid.rows = Math.floor(innerHeight / sketch.cellSize)
+        sketch.grid = {
+            cols: Math.floor(innerWidth / sketch.cellSize),
+            rows: Math.floor(innerHeight / sketch.cellSize)
+        }
         sketch.margin.x += (innerWidth % sketch.cellSize) / 2
         sketch.margin.y += (innerHeight % sketch.cellSize) / 2
 
         sketch.svg.clear()
 
-        sketch.palette = getColorCombination(2)
+        sketch.palette = getColorCombination(3)
         sketch.palette.colors.forEach((color, index) =>
             sketch.svg.group({
                 name: color.id,
@@ -135,7 +135,7 @@ const sketch = {
                     isDiagComp: sketch.walkers[w].movingDiagonally,
                     offsetWidth:
                         sketch.cellSize *
-                        (sketch.walkers[w].movingDiagonally ? 2 : 1.35),
+                        (sketch.walkers[w].movingDiagonally ? 2 : 1.39), // uglly tricks
                     tracer: sketch.svg
                 })
                 const offsetLines = offset.getOffsets(w)

@@ -33,7 +33,7 @@ export default class LineOffset {
 
         for (
             let d = -this.offsetWidth / 2;
-            d <= this.offsetWidth / 2;
+            d < this.offsetWidth / 2;
             d += this.distance
         ) {
             offsets.lines[offsetId] = []
