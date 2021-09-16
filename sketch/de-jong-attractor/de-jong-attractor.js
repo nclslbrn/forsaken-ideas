@@ -4,12 +4,13 @@ import Notification from '../../src/js/sketch-common/Notification'
 import ProgressBar from '../../src/js/sketch-common/ProgressBar'
 
 const container = document.getElementById('windowFrame')
-// A3 width - 1.5mm
-const tracer = new SvgTracer(
-    container,
-    { w: 1582.11026, h: 1122.51969 },
-    'black'
-)
+// A3square width - 1.5mm
+const tracer = new SvgTracer({
+    parentElem: container,
+    size: 'A3_topSpiralNotebook',
+    dpi: 150,
+    background: 'black'
+})
 const pdj = strangeAttractors().attractors['de_jong']
 
 let points, lines, margin, scale, move

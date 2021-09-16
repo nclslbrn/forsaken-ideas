@@ -9,7 +9,12 @@ import LineOffset from './LineOffset'
 let notification = false
 const container = document.getElementById('windowFrame')
 const sketch = {
-    svg: new SvgTracer(container, 'p32x24'),
+    svg: new SvgTracer({
+        parentElem: container,
+        size: 'A3_topSpiralNotebook',
+        dpi: 150,
+        background: 'black'
+    }),
     margin: { x: 50, y: 50 },
     grid: { cols: false, rows: false },
     // setup svg anf its params
@@ -33,9 +38,9 @@ const sketch = {
         sketch.margin.x += (innerWidth % sketch.cellSize) / 2
         sketch.margin.y += (innerHeight % sketch.cellSize) / 2
 
-        sketch.palette = getColorCombination(2)
-
         sketch.svg.clear()
+
+        sketch.palette = getColorCombination(2)
         sketch.palette.colors.forEach((color, index) =>
             sketch.svg.group({
                 name: color.id,

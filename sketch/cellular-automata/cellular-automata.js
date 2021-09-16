@@ -32,7 +32,11 @@ colorButton.addEventListener(
 windowFrame.appendChild(paramBox)
 
 const sketch = {
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'A3square'),
+    svg: new SvgTracer({
+        parentElem: document.getElementById('windowFrame'),
+        size: 'A3_square',
+        dpi: 150
+    }),
     g: undefined,
     mirror: false,
     palette: false,

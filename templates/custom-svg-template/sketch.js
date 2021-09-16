@@ -3,7 +3,10 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 const sketch = {
     iterations: 100,
     nIter: 0,
-    svg: new SvgTracer(document.getElementById('windowFrame'), 'a4Square'),
+    svg: new SvgTracer({
+        parentElem: document.getElementById('windowFrame'),
+        size: 'A4Square'
+    }),
     // setup
     launch: () => {
         sketch.svg.init()

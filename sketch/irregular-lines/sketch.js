@@ -10,9 +10,13 @@ const sketch = {
     noiseFrequency: 105,
     noiseAmplitude: 40,
     lines: [],
-    svg: new SvgTracer(document.getElementById('windowFrame'), {
-        w: sketchSize,
-        h: sketchSize
+    svg: new SvgTracer({
+        parentElem: document.getElementById('windowFrame'),
+        size: {
+            w: sketchSize,
+            h: sketchSize
+        },
+        dpi: 150
     }),
     sides: [2 / 3, 2 / 4, 2 / 5, 2 / 6],
     seed: undefined,

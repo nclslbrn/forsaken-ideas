@@ -1,69 +1,100 @@
 /**
- * SVG TRACER
+ * SVG TRACER CLASS
  *
  * Utility class to create <svg> element
  *
  * Availables methods:
- * init: add <svg> in the parentElem
+ * init: add <svg> in the document (HTML)
  * clear: remove anything in <svg>
  * clearGroups: remove anythings in <svg> <group>
+ * appendToGroup; add element to a group
  * rect: add a rectangle
+ * circle: add a circle
  * triangle: add a triangle
  * path: add a line
  * text: add text
  * group: add group
  * export: export the whole <svg> markup as file
+ *
+ * @author Nicolas Lebrun
+ * @license MIT
  */
-
-/**
- * The sizes of the formats were obtained by making
- * a conversion from cm to px in Inkscape
- */
-const printFormat = {
-    A3: { w: 1587.40157, h: 1122.51969 },
-    A3portrait: { w: 1122.51969, h: 1587.40157 },
-    A3Square: { w: 1122.51969, h: 1122.51969 },
-    A4: { w: 1122.51969, h: 793.70079 },
-    P32x24: { w: 1209.44885, h: 907.08661 },
-    P24x32: { w: 907.08661, h: 1209.44885 },
-    A3topSpiralNotebook: { w: 1584.37795, h: 1122.51969 }
-}
-const namespace = {
-    inkscape: 'http://www.inkscape.org/namespaces/inkscape',
-    svg: 'http://www.w3.org/2000/svg'
-}
 
 export default class SvgTracer {
     /**
      * Define svg size
-     * @param {object} parentElem the HTML dom element where include the SVG
-     * @param {string|{x: Number, y: Number}} size format name listed above or pixels {w: width, h: height}
-     * @param {string} background specify color for non white background
+     * @typedef {options}
+     * @param {object} options.parentElem the HTML dom element where include the SVG
+     * @param {string|{x: Number, y: Number}} options.size format name listed above or cm {w: width, h: height}
+     * @param {number} options.dpi resolution 72|150|300
+     * @param {string} options.background specify color for non white background
      */
-    constructor(parentElem, size, background) {
-        this.parentElem = parentElem
+    constructor(options) {
+        this.parentElem = options.parentElem
+        this.dpi = options.dpi === undefined ? 150 : options.dpi
+        this.background =
+            options.background === undefined ? 'white' : options.background
+        this.printFormat = {
+            A3_landscape: { w: 42, h: 29.7 },
+            A3_portrait: { w: 29.7, h: 42 },
+            A3_Square: { w: 29.7, h: 29.7 },
+            A3_topSpiralNotebook: { w: 29.7, h: 40.5 },
+            A4_landscape: { w: 29.7, h: 21 },
+            A4_portrait: { w: 21, h: 29.7 },
+            P32x24: { w: 32, h: 24 },
+            P24x32: { w: 24, h: 32 }
+        }
+        this.dpiToPix = {
+            72: 30,
+            150: 59,
+            300: 118
+        }
+        this.namespace = {
+            inkscape: 'http://www.inkscape.org/namespaces/inkscape',
+            svg: 'http://www.w3.org/2000/svg'
+        }
         this.groups = []
-        this.background = background === undefined ? 'white' : background
-        if (
-            printFormat[size] == undefined &&
-            (size.w === undefined || size.h === undefined)
-        ) {
-            console.log(
-                'Wrong format passed, possible options are : ',
-                Object.keys(printFormat),
-                ' or custom size object {w: width, h: height}'
-            )
-            return
-        } else if (size.w && size.h) {
-            this.width = size.w
-            this.height = size.h
-            // pixel size
-            this.size = `${size.w}x${size.h}`
-        } else if (printFormat[size]) {
-            //
-            this.width = printFormat[size].w
-            this.height = printFormat[size].h
-            this.size = size
+        if (options.parentElem !== undefined) {
+            this.parentElem = options.parentElem
+
+            if (
+                this.printFormat[options.size] !== undefined ||
+                (options.size.w !== undefined && options.size.h !== undefined)
+            ) {
+                if (this.dpiToPix[this.dpi] !== undefined) {
+                    // Custom size
+                    if (options.size.w && options.size.h) {
+                        this.width = options.size.w * this.dpiToPix[this.dpi]
+                        this.height = options.size.h * this.dpiToPix[this.dpi]
+                        // CM size
+                        this.size = `${options.size.w}x${options.size.h}`
+                    }
+                    // Referenced print formats
+                    else if (this.printFormat[options.size]) {
+                        //
+                        this.width =
+                            this.printFormat[options.size].w *
+                            this.dpiToPix[this.dpi]
+                        this.height =
+                            this.printFormat[options.size].h *
+                            this.dpiToPix[this.dpi]
+                        // Format name size
+                        this.size = options.size
+                    }
+                } else {
+                    console.log(
+                        'DPI is not set to 72, 150 or 300, we cannot initialize <svg>.'
+                    )
+                }
+            } else {
+                console.log(
+                    'Wrong format passed, possible options are : ',
+                    Object.keys(this.printFormat),
+                    ' or custom size object {w: width, h: height}'
+                )
+            }
+        } else {
+            console.error('We can found HTML element where to add the <svg>.')
         }
     }
     /**
@@ -72,18 +103,15 @@ export default class SvgTracer {
     init() {
         if (this.parentElem && this.width && this.height) {
             // html and inksape header (tested only on Debian inkscape 1.0)
-            this.elem = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'svg'
-            )
+            this.elem = document.createElementNS(this.namespace.svg, 'svg')
             this.elem.setAttribute('version', '1.1')
-            this.elem.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-            this.elem.setAttribute('xmlns:svg', namespace.svg)
+            this.elem.setAttribute('xmlns', this.namespace.svg)
+            this.elem.setAttribute('xmlns:svg', this.namespace.svg)
             this.elem.setAttribute(
                 'xmlns:xlink',
                 'http://www.w3.org/1999/xlink'
             )
-            this.elem.setAttribute('xmlns:inkscape', namespace.inkscape)
+            this.elem.setAttribute('xmlns:inkscape', this.namespace.inkscape)
 
             this.elem.setAttribute('width', this.width)
             this.elem.setAttribute('height', this.height)
@@ -160,10 +188,7 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
-        const rect = document.createElmentNS(
-            'http://www.w3.org/2000/svg',
-            'rect'
-        )
+        const rect = document.createElmentNS(this.namespace.svg, 'rect')
         rect.setAttribute('x', props.x)
         rect.setAttribute('y', props.y)
         rect.setAttribute('width', props.w)
@@ -196,10 +221,7 @@ export default class SvgTracer {
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
 
-        const circle = document.createElmentNS(
-            'http://www.w3.org/2000/svg',
-            'circle'
-        )
+        const circle = document.createElmentNS(this.namespace.svg, 'circle')
         circle.setAttribute('cx', props.x)
         circle.setAttribute('cy', props.y)
         circle.setAttribute('r', props.r)
@@ -248,10 +270,7 @@ export default class SvgTracer {
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
-        const triangle = document.createElmentNS(
-            'http://www.w3.org/2000/svg',
-            'path'
-        )
+        const triangle = document.createElmentNS(this.namespace.svg, 'path')
         triangle.setAttribute(
             'd',
             'M ' +
@@ -303,10 +322,7 @@ export default class SvgTracer {
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
-        const path = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'path'
-        )
+        const path = document.createElementNS(this.namespace.svg, 'path')
         let d = `M ${props.points[0][0]} ${props.points[0][1]}`
         for (let i = 1; i < props.points.length; i++) {
             d += ` L${props.points[i][0]} ${props.points[i][1]}`
@@ -356,10 +372,7 @@ export default class SvgTracer {
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
-        const text = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'text'
-        )
+        const text = document.createElementNS(this.namespace.svg, 'text')
         text.setAttribute('x', props.x)
         text.setAttribute('y', props.y)
         text.setAttribute('font-family', props.fontFamily)
@@ -398,11 +411,19 @@ export default class SvgTracer {
             props.strokeWidth === undefined ? false : props.strokeWidth
         props.id = props.id === undefined ? false : 'layer' + props.id
 
-        const groupElem = document.createElementNS(namespace.svg, 'g')
+        const groupElem = document.createElementNS(this.namespace.svg, 'g')
         if (props.name) {
             groupElem.setAttribute('name', props.name)
-            groupElem.setAttributeNS(namespace.inkscape, 'label', props.name)
-            groupElem.setAttributeNS(namespace.inkscape, 'groupmode', 'layer')
+            groupElem.setAttributeNS(
+                this.namespace.inkscape,
+                'label',
+                props.name
+            )
+            groupElem.setAttributeNS(
+                this.namespace.inkscape,
+                'groupmode',
+                'layer'
+            )
         }
         if (props.id) groupElem.setAttribute('id', props.id)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
