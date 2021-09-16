@@ -4,12 +4,12 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 
 
 ```
-+ public/ (Where project are exported - production ready HTML/JS/CSS)
++ public/ (Where projects are exported - production ready HTML/JS/CSS)
 + sketch/ 
 |---+ your-fantastic-JS-project/ (Where we code)
-|-------+ assets/ (you can copy assets relative to your project)
+|-------+ assets/ (you can copy assets relative to a project)
 |-------+ index.js (Sketch entry point)
-|-------+ property.json (Sketch properties details below) 
+|-------+ property.json (Sketch properties, details below) 
 |-------+ capture.jpg (1067x720px illustration for Open Graph) 
 + src/ (Gallery and project page templates)
 |---+ fonts/
@@ -76,7 +76,7 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 
 ```libs``` For each project you could import JS libraries (from CDN)
 
-```info``` Short text about the project (used for display and in Open Graph)
+```info``` Short text about the project (displayed on project page and on Open Graph)
 
 ```date``` A YYYY/MM/DD date of creation
 
@@ -98,9 +98,9 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 
 ```npm run watch:gallery``` Launch gallery/homepage at localhost:8080 
 
-```npm run build:gallery``` Build the homepage (by referencing each sketches of public/sketch/)
+```npm run build:gallery``` Build the homepage (by referencing each sketches in public/sketch/)
 
-```npm run deploy``` Send the public folder tp remote machine (you must server into ./ftp.json sample below)
+```npm run deploy``` Send the public folder to remote machine (you must fill server info into ./ftp.json, sample below)
 
 ```
 {
@@ -111,10 +111,10 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 }
 ```
 
-### Visual studio code users 
+### Visual studio coders (the MS software not a real studio)
 
-You can watch and build sketch with :
+You can watch and build specific sketch with :
 
 CMD/CTRL + SHIFT + P and choose ```Tasks: Run build task```
 
-Vscode will send current opened tab file directory as entry point to node JS (You have to open in the editor a ./sketch/sketch-name/***.** file before use this shortcut).
+Vscode will send current opened tab file directory as entry point to node JS (You have to open in the editor a ./sketch/sketch-name/***.** file before use this task).
