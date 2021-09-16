@@ -12,14 +12,18 @@ const sketch = {
     svg: new SvgTracer({
         parentElem: container,
         size: 'A3_topSpiralNotebook',
-        dpi: 150,
+        dpi: 300,
         background: 'black'
     }),
-    margin: { x: 50, y: 50 },
+
     grid: { cols: false, rows: false },
     // setup svg anf its params
     launch: () => {
         sketch.svg.init()
+        sketch.margin = {
+            x: sketch.svg.cmToPixels(4),
+            y: sketch.svg.cmToPixels(4)
+        }
         sketch.init()
     },
     init: () => {

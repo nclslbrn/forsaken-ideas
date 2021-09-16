@@ -68,6 +68,7 @@ export default class SvgTracer {
                         this.height = options.size.h * this.dpiToPix[this.dpi]
                         // CM size
                         this.size = `${options.size.w}x${options.size.h}`
+                        this.printSize = options.size
                     }
                     // Referenced print formats
                     else if (this.printFormat[options.size]) {
@@ -80,6 +81,7 @@ export default class SvgTracer {
                             this.dpiToPix[this.dpi]
                         // Format name size
                         this.size = options.size
+                        this.printSize = this.printFormat[options.size]
                     }
                 } else {
                     console.log(
@@ -113,8 +115,8 @@ export default class SvgTracer {
             )
             this.elem.setAttribute('xmlns:inkscape', this.namespace.inkscape)
 
-            this.elem.setAttribute('width', this.width)
-            this.elem.setAttribute('height', this.height)
+            this.elem.setAttribute('width', `${this.printSize.w}cm`)
+            this.elem.setAttribute('height', `${this.printSize.h}cm`)
             this.elem.setAttribute(
                 'viewBox',
                 `0 0 ${this.width} ${this.height}`
@@ -468,5 +470,15 @@ export default class SvgTracer {
         link.href = svgFile
         link.download = filename
         link.click()
+    }
+
+    cmToPixels(cm) {
+        if (!isNaN(cm)) {
+            return cm * this.dpiToPix[this.dpi]
+        } else {
+            console.error(
+                'The method cmToPixels() must be called with a number in centimeters.'
+            )
+        }
     }
 }
