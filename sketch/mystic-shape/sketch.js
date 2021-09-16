@@ -15,11 +15,11 @@ const randomTrigoFunc = () => {
 const circle = (theta) => {
     return { x: Math.cos(theta), y: Math.sin(theta) }
 }
-// remove 0.8mm for spiral
-const cansonA3 = { w: 1584.37795, h: 1122.51969 }
+// remove 0.8mm for A3square (spiral notebook)
+const cansonA3square = { w: 1584.37795, h: 1122.51969 }
 const groups = ['white', 'tomato', 'steelblue']
 const container = document.getElementById('windowFrame')
-const tracer = new SvgTracer(container, cansonA3, 'black')
+const tracer = new SvgTracer(container, cansonA3square, 'black')
 const simplex = new SimplexNoise()
 
 const sketch = {

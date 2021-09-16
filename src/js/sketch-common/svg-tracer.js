@@ -20,14 +20,15 @@
  * a conversion from cm to px in Inkscape
  */
 const printFormat = {
-    a3: { w: 1587.40157, h: 1122.51969 },
-    a3portrait: { w: 1122.51969, h: 1587.40157 },
-    a3Square: { w: 1122.51969, h: 1122.51969 },
-    a4: { w: 1122.51969, h: 793.70079 },
-    p32x24: { w: 1209.44885, h: 907.08661 },
-    p24x32: { w: 907.08661, h: 1209.44885 }
+    A3: { w: 1587.40157, h: 1122.51969 },
+    A3portrait: { w: 1122.51969, h: 1587.40157 },
+    A3Square: { w: 1122.51969, h: 1122.51969 },
+    A4: { w: 1122.51969, h: 793.70079 },
+    P32x24: { w: 1209.44885, h: 907.08661 },
+    P24x32: { w: 907.08661, h: 1209.44885 },
+    A3topSpiralNotebook: { w: 1584.37795, h: 1122.51969 }
 }
-const ns = {
+const namespace = {
     inkscape: 'http://www.inkscape.org/namespaces/inkscape',
     svg: 'http://www.w3.org/2000/svg'
 }
@@ -77,12 +78,12 @@ export default class SvgTracer {
             )
             this.elem.setAttribute('version', '1.1')
             this.elem.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-            this.elem.setAttribute('xmlns:svg', ns.svg)
+            this.elem.setAttribute('xmlns:svg', namespace.svg)
             this.elem.setAttribute(
                 'xmlns:xlink',
                 'http://www.w3.org/1999/xlink'
             )
-            this.elem.setAttribute('xmlns:inkscape', ns.inkscape)
+            this.elem.setAttribute('xmlns:inkscape', namespace.inkscape)
 
             this.elem.setAttribute('width', this.width)
             this.elem.setAttribute('height', this.height)
@@ -119,6 +120,24 @@ export default class SvgTracer {
                     this.groups[group_name].firstChild
                 )
             }
+        }
+    }
+    /**
+     * Add elem to svg group
+     * @param {string} group the group name
+     * @param {node Element} svgItem the element to append
+     */
+    appendToGroup(group, svgItem) {
+        if (this.groups !== undefined || this.groups[group] !== undefined) {
+            if (svgItem !== undefined) {
+                this.groups[group].appendChild(svgItem)
+            } else {
+                console.error(
+                    "The SVG element is not set, and can't be added to group"
+                )
+            }
+        } else {
+            console.error(`Group ${group} doesn't exist.`)
         }
     }
 
@@ -189,7 +208,7 @@ export default class SvgTracer {
         if (props.stroke) circle.setAttribute('stroke', props.stroke)
 
         if (props.group) {
-            this.groups[props.group].appendChild(circle)
+            this.appendToGroup(props.group, circle)
         } else {
             this.elem.appendChild(circle)
         }
@@ -253,7 +272,7 @@ export default class SvgTracer {
         if (props.stroke) triangle.setAttribute('stroke', props.stroke)
         if (props.name) triangle.setAttribute('name', props.name)
         if (props.group) {
-            this.groups[props.group].appendChild(triangle)
+            this.appendToGroup(props.group, triangle)
         } else {
             this.elem.appendChild(triangle)
         }
@@ -300,14 +319,7 @@ export default class SvgTracer {
             path.setAttribute('stroke-width', props.strokeWidth)
         if (props.name) path.setAttribute('name', props.name)
         if (props.group) {
-            if (
-                this.groups !== undefined ||
-                this.groups[props.group] !== undefined
-            ) {
-                this.groups[props.group].appendChild(path)
-            } else {
-                console.error(`Group ${props.group} doesn't exist.`)
-            }
+            this.appendToGroup(path)
         } else {
             this.elem.appendChild(path)
         }
@@ -357,7 +369,7 @@ export default class SvgTracer {
         text.innerHTML = props.text
 
         if (props.group) {
-            this.groups[props.group].appendChild(text)
+            this.appendToGroup(props.group, text)
         } else {
             this.elem.appendChild(text)
         }
@@ -365,10 +377,10 @@ export default class SvgTracer {
     /**
      * Group function
      * @typedef {group} props group definition
-     * @param {string} props.name the name attribute of the group
-     * @param {string} props.stroke the stroke color attribute
-     * @param {string} props.strokeWidth the stroke-width color attribute
-     * @param {string} props.fill color value of the fill attribute
+     * @param {string} props.name an unique group name
+     * @param {string} props.stroke a stroke color attribute
+     * @param {string} props.strokeWidth a stroke-width color attribute
+     * @param {string} props.fill a value of the fill attribute
      * @param {string} props.group group name an other group to nest the new one
      * @param {string} props.id testing inkscape layer
      */
@@ -386,11 +398,11 @@ export default class SvgTracer {
             props.strokeWidth === undefined ? false : props.strokeWidth
         props.id = props.id === undefined ? false : 'layer' + props.id
 
-        const groupElem = document.createElementNS(ns.svg, 'g')
+        const groupElem = document.createElementNS(namespace.svg, 'g')
         if (props.name) {
             groupElem.setAttribute('name', props.name)
-            groupElem.setAttributeNS(ns.inkscape, 'label', props.name)
-            groupElem.setAttributeNS(ns.inkscape, 'groupmode', 'layer')
+            groupElem.setAttributeNS(namespace.inkscape, 'label', props.name)
+            groupElem.setAttributeNS(namespace.inkscape, 'groupmode', 'layer')
         }
         if (props.id) groupElem.setAttribute('id', props.id)
         if (props.fill) groupElem.setAttribute('fill', props.fill)
@@ -398,13 +410,12 @@ export default class SvgTracer {
         if (props.strokeWidth)
             groupElem.setAttribute('stroke-width', props.strokeWidth)
 
-        /*   if (props.group) {
-            this.groups[props.group].appendChild(groupElem)
-        } else { */
-        this.elem.appendChild(groupElem)
-        //}
+        if (props.group) {
+            this.appendToGroup(props.group, groupElem)
+        } else {
+            this.elem.appendChild(groupElem)
+        }
         this.groups[props.name] = groupElem
-        console.log(this.groups[props.name])
     }
     /**
      * Export <svg> as file
