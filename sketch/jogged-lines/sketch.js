@@ -2,8 +2,6 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import Walker from './Walker'
 import Notification from '../../src/js/sketch-common/Notification'
 import { randomIntBetween } from './randomBetween'
-import { getColorCombination } from '../../src/js/sketch-common/stabilo68-colors'
-
 import LineOffset from './LineOffset'
 
 let notification = false
@@ -11,9 +9,9 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer({
         parentElem: container,
-        size: 'A3_topSpiralNotebook',
-        dpi: 300,
-        background: '#000'
+        size: 'A3_landscape',
+        dpi: 72,
+        background: 'black'
     }),
     // setup svg anf its params
     launch: () => {
@@ -44,15 +42,17 @@ const sketch = {
 
         sketch.svg.clear()
 
-        sketch.palette = getColorCombination(3)
-        sketch.palette.colors.forEach((color, index) =>
+        sketch.palette = ['white', 'gold']
+        console.log(sketch.palette)
+        sketch.palette.forEach((color, index) => {
             sketch.svg.group({
-                name: color.id,
-                stroke: color.value,
+                name: color,
+                stroke: color,
                 fill: 'rgba(0,0,0,0)',
-                id: color.id
+                id: index
             })
-        )
+        })
+
         if (notification) notification.remove()
         let initializedWalkerNum = 0
 
@@ -104,23 +104,14 @@ const sketch = {
         }
 
         if (stoppedWalkersNum !== sketch.walkerNum) {
-            sketch.draw(false)
+            sketch.draw()
             requestAnimationFrame(sketch.update)
         } else {
-            sketch.draw(true)
-            const penSpecs = sketch.palette.colors.reduce((specs, color) => {
-                return specs + `<br> - 88/${color.id} ${color.name}`
-            }, '(Stabilo Art markers)')
-            notification = new Notification(
-                `${sketch.palette.name} palette ${penSpecs}`,
-                container,
-                'light',
-                false
-            )
+            sketch.draw()
         }
     },
     // Compute offset line and draw them
-    draw: (isWalkersStopped = false) => {
+    draw: () => {
         sketch.svg.clearGroups()
 
         for (let w = 0; w < sketch.walkers.length; w++) {
@@ -135,14 +126,14 @@ const sketch = {
                     isDiagComp: sketch.walkers[w].movingDiagonally,
                     offsetWidth:
                         sketch.cellSize *
-                        (sketch.walkers[w].movingDiagonally ? 2 : 1.39), // uglly tricks
+                        (sketch.walkers[w].movingDiagonally ? 2 : 1.39), // ugly tricks
                     tracer: sketch.svg
                 })
                 const offsetLines = offset.getOffsets(w)
                 offsetLines.lines.forEach((line) =>
                     sketch.svg.path({
                         points: line,
-                        group: sketch.palette.colors[offsetLines.color].id,
+                        group: sketch.palette[offsetLines.color],
                         fill: 'none'
                     })
                 )
