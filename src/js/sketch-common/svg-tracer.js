@@ -104,7 +104,7 @@ export default class SvgTracer {
      */
     init() {
         if (this.parentElem && this.width && this.height) {
-            // html and inksape header (tested only on Debian inkscape 1.0)
+            // html and inksape header (tested only on Debian Inkscape 1.0)
             this.elem = document.createElementNS(this.namespace.svg, 'svg')
             this.elem.setAttribute('version', '1.1')
             this.elem.setAttribute('xmlns', this.namespace.svg)
@@ -121,9 +121,16 @@ export default class SvgTracer {
                 'viewBox',
                 `0 0 ${this.width} ${this.height}`
             )
+
+            const scaling =
+                this.width > this.height
+                    ? 'max-width: 60vw; height: auto;'
+                    : 'max-height: 90vh; width: auto;'
             this.elem.setAttribute(
                 'style',
-                `height: 85vh; width: auto; background: ${this.background}; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
+                `${scaling}
+                background: ${this.background}; 
+                box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
             )
 
             // create an array of group instance (key = group(props.name))
@@ -142,13 +149,18 @@ export default class SvgTracer {
     }
     /**
      * Remove everything in <group>s elements
+     * @param {array|boolean} groups (optional) array of specific groups to clear
      */
-    clearGroups() {
+    clearGroups(groups = false) {
+        console.log(groups)
         for (const group_name in this.groups) {
-            while (this.groups[group_name].firstChild) {
-                this.groups[group_name].removeChild(
-                    this.groups[group_name].firstChild
-                )
+            if (!groups || groups.includes(group_name)) {
+                console.log('clearing ' + group_name)
+                while (this.groups[group_name].firstChild) {
+                    this.groups[group_name].removeChild(
+                        this.groups[group_name].firstChild
+                    )
+                }
             }
         }
     }
@@ -190,7 +202,9 @@ export default class SvgTracer {
         props.fill = props.fill === undefined ? false : props.fill
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
-        const rect = document.createElmentNS(this.namespace.svg, 'rect')
+
+        const rect = document.createElementNS(this.namespace.svg, 'rect')
+
         rect.setAttribute('x', props.x)
         rect.setAttribute('y', props.y)
         rect.setAttribute('width', props.w)
@@ -200,8 +214,10 @@ export default class SvgTracer {
         if (props.stroke) rect.setAttribute('stroke', props.stroke)
 
         if (props.group) {
-            this.groups[props.group].appendChild(rect)
+            console.log('group recognized')
+            this.appendToGroup(props.group, rect)
         } else {
+            console.log('group unrecognized')
             this.elem.appendChild(rect)
         }
     }
@@ -223,7 +239,7 @@ export default class SvgTracer {
         props.stroke = props.stroke === undefined ? false : props.stroke
         props.group = props.group === undefined ? false : props.group
 
-        const circle = document.createElmentNS(this.namespace.svg, 'circle')
+        const circle = document.createElementNS(this.namespace.svg, 'circle')
         circle.setAttribute('cx', props.x)
         circle.setAttribute('cy', props.y)
         circle.setAttribute('r', props.r)
@@ -272,7 +288,7 @@ export default class SvgTracer {
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
-        const triangle = document.createElmentNS(this.namespace.svg, 'path')
+        const triangle = document.createElementNS(this.namespace.svg, 'path')
         triangle.setAttribute(
             'd',
             'M ' +
