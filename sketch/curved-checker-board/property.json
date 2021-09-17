@@ -1,6 +1,0 @@
-{
-    "libs": ["p5"],
-    "info": "Animation made by multiplying an angle with a time index: from 5 to 10 between the beginning and the end of the loop.",
-    "date": "2021-01-20",
-    "action": []
-}
