@@ -16,10 +16,14 @@ const circle = (theta) => {
     return { x: Math.cos(theta), y: Math.sin(theta) }
 }
 // remove 0.8mm for A3square (spiral notebook)
-const cansonA3square = { w: 1584.37795, h: 1122.51969 }
+const cansonA3square = { w: 29.7, h: 29.7 }
 const groups = ['white', 'tomato', 'steelblue']
 const container = document.getElementById('windowFrame')
-const tracer = new SvgTracer(container, cansonA3square, 'black')
+const tracer = new SvgTracer({
+    parentElem: container,
+    size: cansonA3square,
+    background: 'black'
+})
 const simplex = new SimplexNoise()
 
 const sketch = {
@@ -112,7 +116,8 @@ const sketch = {
             tracer.path({
                 points: sketch.lines[i],
                 fill: 'none',
-                group: groups[i % groups.length]
+                group: groups[i % groups.length],
+                stroke: groups[i % groups.length]
             })
         }
         tracer.text({
