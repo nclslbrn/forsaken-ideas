@@ -152,10 +152,8 @@ export default class SvgTracer {
      * @param {array|boolean} groups (optional) array of specific groups to clear
      */
     clearGroups(groups = false) {
-        console.log(groups)
         for (const group_name in this.groups) {
             if (!groups || groups.includes(group_name)) {
-                console.log('clearing ' + group_name)
                 while (this.groups[group_name].firstChild) {
                     this.groups[group_name].removeChild(
                         this.groups[group_name].firstChild
