@@ -14,10 +14,6 @@ const randomTrigoFunc = () => {
     return funcsName[Math.floor(Math.random() * funcsName.length)]
 }
 
-const circle = (theta) => {
-    return { x: Math.cos(theta), y: Math.sin(theta) }
-}
-
 const container = document.getElementById('windowFrame')
 const simplex = new SimplexNoise()
 const tracer = new SvgTracer({
@@ -26,11 +22,11 @@ const tracer = new SvgTracer({
 })
 
 const sketch = {
-    iterations: 30,
-    numPoints: 4000,
-    margin: 0.2,
-    scale: 1,
-    speed: 0.009,
+    iterations: 50,
+    margin: tracer.cmToPixels(6),
+    scale: 3,
+    speed: 0.03,
+    res: 0.15,
     // setup
     launch: () => {
         tracer.init()
@@ -43,20 +39,24 @@ const sketch = {
         sketch.lines = []
         sketch.trigoFunc = randomTrigoFunc()
         sketch.palette = getColorCombination(2)
-        
-        const rot = (Math.PI * 2) / sketch.numPoints
-        for (let i = 0; i < sketch.numPoints; i++) {
-            const theta = rot * i
-            const pos = { x: Math.cos(theta), y: Math.sin(theta) }
-            const disp = funcs[sketch.trigoFunc](pos)
-            sketch.points[i] = {
-                x: Math.cos(pos.x - disp.x),
-                y: Math.sin(pos.y - disp.y)
+
+        for (let x = -3; x <= 3; x += sketch.res) {
+            for (let y = -3; y <= 3; y += sketch.res) {
+                const pos = {
+                    x: x + Math.random() * sketch.res,
+                    y: y + Math.random() * sketch.res
+                }
+                sketch.points.push({
+                    x: pos.x,
+                    y: pos.y,
+                    stuck: false
+                })
+                sketch.lines.push([])
             }
-            sketch.lines[i] = []
         }
+
         tracer.clear()
-        sketch.palette.colors.forEach((color)=> 
+        sketch.palette.colors.forEach((color) =>
             tracer.group({
                 name: color.id,
                 id: color.id,
@@ -69,38 +69,59 @@ const sketch = {
     update: () => {
         if (sketch.nIter < sketch.iterations) {
             for (let p = 0; p < sketch.points.length; p++) {
-                let point = { ...sketch.points[p] }
-
-                //  const v1 = circle(angle)
-                const v1 = funcs[sketch.trigoFunc](point)
-                const a1 = Math.atan2(v1.y, v1.x)
-                const a2 = simplex.noise2D(v1.x / 50, v1.y / 50) * 200
-                const v2 = circle(a1 + a2)
-                const v3 = {
-                    x: Math.cos(v1.x + v2.x),
-                    y: Math.sin(v1.y + v2.y)
-                }
-                const v4 = v3 //funcs['sinusoidal'](v3)
-
-                sketch.lines[p].push([
-                    map(
-                        point.x,
+                if (!sketch.points[p].stuck) {
+                    const x = map(
+                        sketch.points[p].x,
                         -sketch.scale,
                         sketch.scale,
-                        tracer.width * sketch.margin,
-                        tracer.width - tracer.width * sketch.margin
-                    ),
-                    map(
-                        point.y,
-                        -sketch.scale,
-                        sketch.scale,
-                        tracer.height * sketch.margin,
-                        tracer.height - tracer.height * sketch.margin
+                        sketch.margin,
+                        tracer.width - sketch.margin
                     )
-                ])
+                    const y = map(
+                        sketch.points[p].y,
+                        -sketch.scale,
+                        sketch.scale,
+                        sketch.margin,
+                        tracer.height - sketch.margin
+                    )
+                    if (
+                        x < sketch.margin ||
+                        x > tracer.width - sketch.margin ||
+                        y < sketch.margin ||
+                        y > tracer.height - sketch.margin
+                    ) {
+                        sketch.points[p].stuck = true
+                    }
+                    const a1 = map(
+                        300 *
+                            simplex.noise2D(
+                                Math.cos(sketch.points[p].x),
+                                Math.sin(sketch.points[p].y)
+                            ),
+                        0,
+                        1,
+                        -0.5,
+                        0.5
+                    )
+                    const v1 = funcs[sketch.trigoFunc]({
+                        x: sketch.points[p].x + Math.cos(a1),
+                        y: sketch.points[p].y + Math.sin(a1)
+                    })
 
-                sketch.points[p].x += v4.x * sketch.speed
-                sketch.points[p].y += v4.y * sketch.speed
+                    const v = funcs['sinusoidal'](v1)
+
+                    const prev = sketch.lines[p][sketch.lines[p].length - 1]
+
+                    if (
+                        sketch.nIter === 0 ||
+                        (Math.abs(prev[0] - x) > 1 && Math.abs(prev[1] - y) > 1)
+                    ) {
+                        sketch.lines[p].push([x, y])
+                    }
+
+                    sketch.points[p].x += sketch.speed * v.x
+                    sketch.points[p].y += sketch.speed * v.y
+                }
             }
 
             sketch.nIter++
@@ -126,24 +147,28 @@ const sketch = {
             tracer.path({
                 points: sketch.lines[i],
                 fill: 'none',
-                group: sketch.palette.colors[i % sketch.palette.colors.length].id,
-                stroke: sketch.palette.colors[i % sketch.palette.colors.length].value
+                group: sketch.palette.colors[i % sketch.palette.colors.length]
+                    .id,
+                stroke: sketch.palette.colors[i % sketch.palette.colors.length]
+                    .value
             })
         }
         tracer.text({
-            x: tracer.width * sketch.margin,
-            y: tracer.height - tracer.height * sketch.margin * 0.5,
+            x: sketch.margin,
+            y: tracer.height - sketch.margin + tracer.cmToPixels(1),
             text: 'PLANE CURVE',
             fontSize: 14,
+            anchor: 'start',
             group: sketch.palette.colors[0].id
         })
 
         tracer.text({
-            x: tracer.width - tracer.width * sketch.margin * 1.5,
-            y: tracer.height - tracer.height * sketch.margin * 0.5,
+            x: tracer.width - sketch.margin,
+            y: tracer.height - sketch.margin + tracer.cmToPixels(1),
             text: sketch.trigoFunc.toUpperCase().replaceAll('_', ' '),
             fontSize: 14,
-            group:  sketch.palette.colors[0].id
+            anchor: 'end',
+            group: sketch.palette.colors[0].id
         })
     },
     // export inline <svg> as SVG file
