@@ -365,6 +365,7 @@ export default class SvgTracer {
      * @param {string} props.fontFamily font family name of the text
      * @param {number} props.fontSize font size of the text
      * @param {string} props.fill color of text
+     * @param {string} props.anchor horizontal alignment (start, middle or end)
      * @param {string} props.name a name attribute
      * @param {string} props.group group name if you want to add path to a specific group
      */
@@ -381,10 +382,16 @@ export default class SvgTracer {
             console.error('You need to specify the text that will be displayed')
             return
         }
+
         props.fontFamily =
             props.fontFamily === undefined ? 'sans-serif' : props.fontFamily
         props.fontSize = props.fontSize === undefined ? 16 : props.fontSize
         props.fill = props.fill === undefined ? 'black' : props.fill
+        props.anchor =
+            props.group === undefined ||
+            !['start', 'middle', 'end'].includes(props.anchor)
+                ? false
+                : props.anchor
         props.name = props.name === undefined ? false : props.name
         props.group = props.group === undefined ? false : props.group
 
@@ -394,7 +401,10 @@ export default class SvgTracer {
         text.setAttribute('font-family', props.fontFamily)
         text.setAttribute('font-size', props.fontSize)
         text.setAttribute('fill', props.fill)
+
         if (props.name) text.setAttribute('name', props.name)
+        if (props.anchor) text.setAttribute('text-anchor', props.anchor)
+
         text.innerHTML = props.text
 
         if (props.group) {
