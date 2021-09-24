@@ -55,9 +55,11 @@ const cochleoid = (v, amount = 1.0) => {
 const conchoid_of_nicomedes = (v, amount = 1.0) => {
     const theta = Math.atan2(v.x, v.y)
     const sec = 1 / Math.cos(theta)
+    const a = 1
+    const b = 2
     return {
-        x: amount * Math.cos(theta) * (Math.cos(theta) + sec),
-        y: amount * Math.sin(theta) * (Math.cos(theta) + sec)
+        x: amount * (Math.cos(theta) * (a * sec) + b),
+        y: amount * (Math.sin(theta) * (a * sec) + b)
     }
 }
 
