@@ -14,6 +14,36 @@ const randomTrigoFunc = () => {
     return funcsName[Math.floor(Math.random() * funcsName.length)]
 }
 
+const initPoints = {
+    circle: () => {
+        const pos = []
+        const angleStep = (Math.PI * 2) / (8 / sketch.res)
+        for (let angle = 0; angle <= Math.PI * 2; angle += angleStep) {
+            for (let radius = 0; radius <= 6; radius += sketch.res) {
+                pos.push({
+                    x: Math.cos(angle) * radius * Math.random(),
+                    y: Math.sin(angle) * radius * Math.random(),
+                    stuck: false
+                })
+            }
+        }
+        return pos
+    },
+    grid: () => {
+        const pos = []
+        for (let x = -3; x <= 3; x += sketch.res) {
+            for (let y = -3; y <= 3; y += sketch.res) {
+                pos.push({
+                    x: x + Math.random() * sketch.res,
+                    y: y + Math.random() * sketch.res,
+                    stuck: false
+                })
+            }
+        }
+        return pos
+    }
+}
+
 const container = document.getElementById('windowFrame')
 const simplex = new SimplexNoise()
 const tracer = new SvgTracer({
@@ -22,10 +52,10 @@ const tracer = new SvgTracer({
 })
 
 const sketch = {
-    iterations: 50,
+    iterations: 40,
     margin: tracer.cmToPixels(6),
     scale: 3,
-    speed: 0.03,
+    speed: 0.015,
     res: 0.15,
     // setup
     launch: () => {
@@ -39,21 +69,10 @@ const sketch = {
         sketch.lines = []
         sketch.trigoFunc = randomTrigoFunc()
         sketch.palette = getColorCombination(2)
-
-        for (let x = -3; x <= 3; x += sketch.res) {
-            for (let y = -3; y <= 3; y += sketch.res) {
-                const pos = {
-                    x: x + Math.random() * sketch.res,
-                    y: y + Math.random() * sketch.res
-                }
-                sketch.points.push({
-                    x: pos.x,
-                    y: pos.y,
-                    stuck: false
-                })
-                sketch.lines.push([])
-            }
-        }
+        sketch.initMode = Math.random() > 0.5 ? 'circle' : 'grid'
+        sketch.points = initPoints[sketch.initMode]()
+        console.log(sketch.initMode, sketch.points.length)
+        sketch.points.forEach((point) => sketch.lines.push([]))
 
         tracer.clear()
         sketch.palette.colors.forEach((color) =>
@@ -93,19 +112,19 @@ const sketch = {
                         sketch.points[p].stuck = true
                     }
                     const a1 = map(
-                        300 *
+                        120 *
                             simplex.noise2D(
                                 Math.cos(sketch.points[p].x),
                                 Math.sin(sketch.points[p].y)
                             ),
                         0,
                         1,
-                        -0.5,
-                        0.5
+                        -0.25,
+                        0.25
                     )
                     const v1 = funcs[sketch.trigoFunc]({
-                        x: sketch.points[p].x + Math.cos(a1),
-                        y: sketch.points[p].y + Math.sin(a1)
+                        x: sketch.points[p].x * Math.cos(a1),
+                        y: sketch.points[p].y * Math.sin(a1)
                     })
 
                     const v = funcs['sinusoidal'](v1)
@@ -173,7 +192,9 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        tracer.export({ name: 'mystic-sphere' })
+        tracer.export({
+            name: `mystic-sphere${sketch.trigoFunc}-${sketch.initMode}`
+        })
     }
 }
 
