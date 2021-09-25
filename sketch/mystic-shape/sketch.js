@@ -190,7 +190,9 @@ const sketch = {
             group: sketch.palette.colors[0].id
         })
     },
-    // export inline <svg> as SVG file
+    /**
+     * Export/download inline <svg> as SVG file
+     */
     export: () => {
         tracer.export({
             name: `mystic-sphere${sketch.trigoFunc}-${sketch.initMode}`
