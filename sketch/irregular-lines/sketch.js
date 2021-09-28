@@ -2,23 +2,19 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import SimplexNoise from 'simplex-noise'
 import ease from '../../src/js/sketch-common/ease'
 import isPointInsidePolygon from './isPointInsidePolygon'
-const sketchSize = Math.min(window.innerWidth, window.innerHeight) * 0.75
+const tracer = new SvgTracer({
+    parentElem: document.getElementById('windowFrame'),
+    size: 'A3_Square',
+    dpi: 150
+})
 const sketch = {
-    step: 5,
-    margin: 50,
+    step: tracer.cmToPixels(0.2),
+    margin: tracer.cmToPixels(2),
     points: [],
     noiseFrequency: 105,
-    noiseAmplitude: 40,
+    noiseAmplitude: 20,
     lines: [],
-    svg: new SvgTracer({
-        parentElem: document.getElementById('windowFrame'),
-        size: {
-            w: sketchSize,
-            h: sketchSize
-        },
-        dpi: 150
-    }),
-    sides: [2 / 3, 2 / 4, 2 / 5, 2 / 6],
+    sides: [3, 4, 5, 6].map((value) => 2 / value),
     seed: undefined,
     simplex: undefined,
     isDone: undefined,
@@ -26,7 +22,7 @@ const sketch = {
     // triangle square pentagone hexagon
     // setup
     launch: () => {
-        sketch.svg.init()
+        tracer.init()
         sketch.init()
     },
     // reset value and relaunch drawing
@@ -37,7 +33,7 @@ const sketch = {
         sketch.lines = []
         for (
             let y = sketch.margin;
-            y < sketch.svg.height - sketch.margin;
+            y < tracer.height - sketch.margin;
             y += sketch.step
         ) {
             sketch.points.push({
@@ -53,8 +49,8 @@ const sketch = {
     },
     // compute change
     update: () => {
-        const radius = sketchSize * 0.35
-        const center = { x: sketch.svg.width / 2, y: sketch.svg.height / 2 }
+        const radius = Math.min(tracer.width, tracer.height) * 0.35
+        const center = { x: tracer.width / 2, y: tracer.height / 2 }
         const polygon = []
 
         const rot = Math.PI * sketch.side
@@ -73,7 +69,7 @@ const sketch = {
 
         for (let i = 0; i < sketch.points.length; i++) {
             let amplitude = 0
-            let dist = sketch.svg.width
+            let dist = tracer.width
             let _d = 1.5
 
             if (isPointInsidePolygon(sketch.points[i], polygon)) {
@@ -106,7 +102,7 @@ const sketch = {
             if (sketch.lines[i]) {
                 sketch.lines[i].push([x, y])
             }
-            if (sketch.points[i].x >= sketch.svg.width - sketch.margin) {
+            if (sketch.points[i].x >= tracer.width - sketch.margin) {
                 sketch.isDone = true
             }
         }
@@ -121,10 +117,10 @@ const sketch = {
     },
     // draw svg element
     draw: () => {
-        sketch.svg.clear()
+        tracer.clear()
         for (let i = 0; i < sketch.lines.length; i++) {
             if (sketch.lines[i].length > 1) {
-                sketch.svg.path({
+                tracer.path({
                     points: sketch.lines[i],
                     stroke: 'black',
                     fill: 'none',
@@ -135,7 +131,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        sketch.svg.export({ name: 'sketchname' })
+        tracer.export({ name: 'sketchname' })
     }
 }
 
