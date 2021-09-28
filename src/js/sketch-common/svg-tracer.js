@@ -255,7 +255,7 @@ export default class SvgTracer {
      * @property {string} name - a name attribute
      * @property {string} group - group name if you want to add path to a specific group
      */
-    triangle(props) {
+    triangle(triangleProps) {
         if (triangleProps.points === undefined) {
             console.error(
                 'You must specify 3 points in property object to draw a triangle'
