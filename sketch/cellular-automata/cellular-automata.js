@@ -9,7 +9,7 @@ const paramBox = document.createElement('div')
 paramBox.id = 'interactiveParameter'
 
 const updateButton = document.createElement('button')
-updateButton.innerText = 'Update the grid'
+updateButton.innerText = '▶ Update the grid'
 paramBox.appendChild(updateButton)
 updateButton.addEventListener(
     'click',
@@ -19,7 +19,7 @@ updateButton.addEventListener(
     false
 )
 const colorButton = document.createElement('button')
-colorButton.innerText = 'Change color'
+colorButton.innerText = '🔄 Change color'
 paramBox.appendChild(colorButton)
 colorButton.addEventListener(
     'click',
@@ -34,7 +34,7 @@ windowFrame.appendChild(paramBox)
 const sketch = {
     svg: new SvgTracer({
         parentElem: document.getElementById('windowFrame'),
-        size: 'A3_square',
+        size: 'A3_Square',
         dpi: 150
     }),
     g: undefined,
