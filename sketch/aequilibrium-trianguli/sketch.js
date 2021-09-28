@@ -1,5 +1,4 @@
-import makeGrid from './makeGrid'
-
+import Grid from './Grid'
 let grid = null
 let cacheCanvas = null
 
@@ -30,25 +29,26 @@ const sketch = (p5) => {
     let triangles = []
     let frame = 0
     let stopFrame = 0
-    const numTrianglePerCircle = 4
+    const numTrianglePerCircle = 7
+    const cellWidth = Math.floor(p5.random(200, 300))
     sketch.initSketch = () => {
         triangles = []
-        grid = makeGrid(
-            Math.floor(p5.random(160, 220)),
+        grid = new Grid(
+            cellWidth,
+            cellWidth / 16,
             window.innerWidth,
             window.innerHeight
         )
-
+        p5.background(0)
+        p5.stroke(255, 30)
         for (let x = 0; x < grid.cols; x++) {
             for (let y = 0; y < grid.rows; y++) {
-                const _x =
-                    grid.outerXMargin + grid.cellWidth / 2 + x * grid.cellWidth
-                const _y =
-                    grid.outerYMargin + grid.cellWidth / 2 + y * grid.cellWidth
+                const _x = x * grid.cellWidth
+                const _y = y * grid.cellWidth
 
                 for (let t = 0; t < numTrianglePerCircle; t++) {
-                    const points = getRandomPoints(_x, _y, grid.cellWidth / 3)
 
+                    const points = getRandomPoints(_x, _y, (grid.cellWidth-(grid.cellPadding*2)) / 2)
                     const color = p5.int(p5.random(1) * colors.length)
 
                     triangles.push({
@@ -58,9 +58,17 @@ const sketch = (p5) => {
                         color: color
                     })
                 }
+
+                p5.rect(
+                    _x + grid.margin.x + grid.cellPadding,
+                    _y + grid.margin.y + grid.cellPadding,
+                    grid.cellWidth - (grid.cellPadding*2),
+                    grid.cellWidth - (grid.cellPadding*2)
+                )
             }
         }
-        p5.background(0)
+       
+        
     }
 
     p5.setup = () => {
@@ -95,12 +103,13 @@ const sketch = (p5) => {
         const points = []
 
         for (let n_point = 0; n_point <= 3; n_point++) {
-            const angle = Math.floor(last_angle + p5.random(0, p5.TWO_PI))
+            const angle = Math.floor(last_angle + p5.random(p5.QUARTER_PI, p5.TWO_PI))
             points[n_point] = {}
             last_angle = angle
-
+/* 
             const x_factor = p5.round(p5.random(0, 16))
-            const y_factor = p5.round(p5.random(0, 9))
+            const y_factor = p5.round(p5.random(0, 9)) 
+*/
 
             points[n_point].x = Math.floor(x + p5.cos(angle) * radius)
             points[n_point].y = Math.floor(y + p5.sin(angle) * radius)
@@ -132,15 +141,23 @@ const sketch = (p5) => {
             c.x - a.x
         ]
         const point_by_frame = p5.max(points_to_compare)
+        const _x = grid.margin.x + grid.cellWidth / 2
+        const _y = grid.margin.y + grid.cellWidth / 2
 
         p5.stroke(colorAlpha(colors[color], 0.5))
 
         for (let n = 0; n < point_by_frame; n++) {
-            const r = p5.random(-1, 0)
-            const s = p5.random(-1, 0)
+            const p = { x: Math.random() * n, y: Math.random() * n }
+            const r = -1 * p5.noise(p.x * 12, p.y * 12)
+            const s = -1 * p5.noise(p.x % 12, p.y % 12)            
+            //const r = p5.random(-1, 0)
+            //const s = p5.random(-1, 0)
 
             if (r + s >= -1) {
-                p5.point(a.x + r * ab.x + s * ac.x, a.y + r * ab.y + s * ac.y)
+                p5.point(
+                    _x + a.x + r * ab.x + s * ac.x, 
+                    _y + a.y + r * ab.y + s * ac.y
+                )
             }
         }
     }
