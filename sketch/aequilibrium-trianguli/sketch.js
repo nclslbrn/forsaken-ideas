@@ -29,15 +29,15 @@ const sketch = (p5) => {
     let triangles = []
     let frame = 0
     let stopFrame = 0
-    const numTrianglePerCircle = 7
-    const cellWidth = Math.floor(p5.random(200, 300))
+    const numTrianglePerCircle = 5
+    const cellWidth = Math.floor(p5.random(400, 500))
     sketch.initSketch = () => {
         triangles = []
         grid = new Grid(
             cellWidth,
             cellWidth / 16,
-            window.innerWidth,
-            window.innerHeight
+            window.innerWidth * 2,
+            window.innerHeight * 2
         )
         p5.background(0)
         p5.stroke(255, 30)
@@ -47,8 +47,11 @@ const sketch = (p5) => {
                 const _y = y * grid.cellWidth
 
                 for (let t = 0; t < numTrianglePerCircle; t++) {
-
-                    const points = getRandomPoints(_x, _y, (grid.cellWidth-(grid.cellPadding*2)) / 2)
+                    const points = getRandomPoints(
+                        _x,
+                        _y,
+                        (grid.cellWidth - grid.cellPadding * 2) / 2
+                    )
                     const color = p5.int(p5.random(1) * colors.length)
 
                     triangles.push({
@@ -62,19 +65,19 @@ const sketch = (p5) => {
                 p5.rect(
                     _x + grid.margin.x + grid.cellPadding,
                     _y + grid.margin.y + grid.cellPadding,
-                    grid.cellWidth - (grid.cellPadding*2),
-                    grid.cellWidth - (grid.cellPadding*2)
+                    grid.cellWidth - grid.cellPadding * 2,
+                    grid.cellWidth - grid.cellPadding * 2
                 )
             }
         }
-       
-        
     }
 
     p5.setup = () => {
-        cacheCanvas = p5.createCanvas(window.innerWidth, window.innerHeight)
-        p5.frameRate(24)
-        p5.smooth(0)
+        cacheCanvas = p5.createCanvas(
+            window.innerWidth * 2,
+            window.innerHeight * 2
+        )
+        cacheCanvas.elt.style = 'width: 100%; height: 100%; max-width: unset;'
         p5.noFill()
 
         frame = 0
@@ -103,10 +106,12 @@ const sketch = (p5) => {
         const points = []
 
         for (let n_point = 0; n_point <= 3; n_point++) {
-            const angle = Math.floor(last_angle + p5.random(p5.QUARTER_PI, p5.TWO_PI))
+            const angle = Math.floor(
+                last_angle + p5.random(p5.QUARTER_PI, p5.TWO_PI)
+            )
             points[n_point] = {}
             last_angle = angle
-/* 
+            /* 
             const x_factor = p5.round(p5.random(0, 16))
             const y_factor = p5.round(p5.random(0, 9)) 
 */
@@ -149,13 +154,13 @@ const sketch = (p5) => {
         for (let n = 0; n < point_by_frame; n++) {
             const p = { x: Math.random() * n, y: Math.random() * n }
             const r = -1 * p5.noise(p.x * 12, p.y * 12)
-            const s = -1 * p5.noise(p.x % 12, p.y % 12)            
+            const s = -1 * p5.noise(p.x % 12, p.y % 12)
             //const r = p5.random(-1, 0)
             //const s = p5.random(-1, 0)
 
             if (r + s >= -1) {
                 p5.point(
-                    _x + a.x + r * ab.x + s * ac.x, 
+                    _x + a.x + r * ab.x + s * ac.x,
                     _y + a.y + r * ab.y + s * ac.y
                 )
             }
@@ -174,7 +179,7 @@ const sketch = (p5) => {
     sketch.exportJPG = () => {
         const date = new Date()
         const filename =
-            'Point-in-triangle.' +
+            'Aequilibrium-trianguli.' +
             date.getFullYear() +
             '-' +
             date.getMonth() +
