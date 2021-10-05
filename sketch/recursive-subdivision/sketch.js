@@ -2,6 +2,10 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
 import Notification from '../../src/js/sketch-common/Notification'
+import * as tome from 'chromotome'
+
+const colors = tome.get().colors
+const threeColors = colors.map((col) => parseInt(col.replace('#', '0x'), 16))
 
 const randomBetween = (interval = { min: 0, max: 1 }) => {
     return interval.min + Math.random() * (interval.max - interval.min)
@@ -17,6 +21,7 @@ const saveString = (text, filename) => {
 const saveArrayBuffer = (buffer, filename) => {
     save(new Blob([buffer], { type: 'application/octet-stream' }), filename)
 }
+
 const link = document.createElement('a')
 link.style.display = 'none'
 document.body.appendChild(link)
@@ -24,7 +29,7 @@ document.body.appendChild(link)
 const sketch = {
     size: { w: window.innerWidth, h: window.innerHeight },
     thickness: 0.01,
-    decrease: 0.9,
+    decrease: 0.85,
     expectedDivisions: 48,
     cubeDimension: 4,
     subSize: { min: 0.25, max: 0.75 },
@@ -37,26 +42,31 @@ const sketch = {
     ),
     scene: new THREE.Scene(),
     renderer: new THREE.WebGLRenderer(),
-    normMat: new THREE.MeshNormalMaterial({
+    mat: new THREE.MeshStandardMaterial({ color: 0xfffffe }),
+    wireMat: new THREE.MeshBasicMaterial({
+        color: 0x000000,
         transparent: true,
-        opacity: 0.99
+        opacity: 0.5
     }),
-    wireMat: new THREE.LineBasicMaterial({ color: 0x000000 }),
     controls: false,
     exporter: new GLTFExporter(),
     launch: () => {
         sketch.camera.position.z = sketch.cubeDimension * 2
         sketch.scene.background = new THREE.Color(0, 0, 0)
         sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
-        const dirLights = [
-            new THREE.DirectionalLight(0xffffff, 0.6),
-            new THREE.DirectionalLight(0xffffff, 0.6)
+        const positions = [
+            [3, 3, 1],
+            [3, 1, 3],
+            [1, 3, 3]
         ]
-        dirLights[0].position.set(-10, -10, 10)
-        dirLights[1].position.set(10, 10, 10)
-        dirLights.forEach((light) => {
+        const ligthColors = [0xffffff, 0xffffff, 0xffffff]
+        positions.forEach((position, i) => {
+            const light = new THREE.DirectionalLight(ligthColors[i], 0.3)
+            light.position.set(...position)
+            light.castShadow = true
             sketch.scene.add(light)
         })
+
         sketch.renderer.setSize(sketch.size.w, sketch.size.h)
         document
             .getElementById('windowFrame')
@@ -144,7 +154,7 @@ const sketch = {
     clean: () => {
         const toKeep = ['DirectionalLight', 'AmbientLight']
         sketch.scene.children.forEach((child) => {
-            if (!toKeep.includes(child.type)) {
+            if (child.type === 'Group') {
                 sketch.scene.remove(child)
             }
         })
@@ -180,29 +190,36 @@ const sketch = {
                 sketch.divisions[i].h,
                 cubeDepth
             )
-            const cubeMesh = new THREE.Mesh(geometry, sketch.normMat)
+            const cubeMat = new THREE.MeshStandardMaterial({ color: 0xfffffe })
+            const cubeMesh = new THREE.Mesh(geometry, cubeMat)
+            /*  
             const wireframe = new THREE.WireframeGeometry(geometry)
             const cubeWire = new THREE.LineSegments(wireframe, sketch.wireMat)
-
+            */
+            const randColor =
+                threeColors[Math.floor(Math.random() * threeColors.length)]
+            cubeMesh.material.color.set(randColor)
             cubeMesh.position.set(
                 sketch.divisions[i].x,
                 sketch.divisions[i].y,
                 cubeDepth / 2
             )
+            /*   
             cubeWire.position.set(
                 sketch.divisions[i].x,
                 sketch.divisions[i].y,
                 cubeDepth / 2
-            )
+            ) 
+            */
             frontGroup.add(cubeMesh)
-            frontGroup.add(cubeWire)
+            /* frontGroup.add(cubeWire) */
         }
         const baseGeo = new THREE.BoxGeometry(
-            sketch.cubeDimension,
-            sketch.cubeDimension,
-            sketch.cubeDimension
+            sketch.cubeDimension * 0.99,
+            sketch.cubeDimension * 0.99,
+            sketch.cubeDimension * 0.99
         )
-        const base = new THREE.Mesh(baseGeo, sketch.normMat)
+        const base = new THREE.Mesh(baseGeo, sketch.mat)
         const leftGroup = frontGroup.clone(true)
         const rightGroup = frontGroup.clone(true)
         const topGroup = frontGroup.clone(true)
