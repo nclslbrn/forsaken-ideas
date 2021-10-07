@@ -68,9 +68,9 @@ module.exports = (property) => {
                         {
                             from: path.join(
                                 property.input.toString(),
-                                '/assets/*'
+                                'assets'
                             ),
-                            to: path.join('../../')
+                            to: path.join('./assets/')
                         }
                     ]
                 })

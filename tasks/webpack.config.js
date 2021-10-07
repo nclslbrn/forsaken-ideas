@@ -30,7 +30,7 @@ module.exports = (env, process) => {
     property.output = path.resolve('public/sketch/', folder)
     property.srcPath = '../../'
     property.path = folder
-    property.getAssetsToCoppy = getAssetsToCoppy
+    property.getAssetsToCopy = getAssetsToCoppy
     property.imageCover = getImageCover
         ? property.url + 'capture.jpg'
         : undefined
