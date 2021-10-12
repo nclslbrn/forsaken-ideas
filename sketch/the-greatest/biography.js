@@ -19,7 +19,7 @@ export default function () {
 
     const charArray = []
     text.forEach((sentence) => {
-        const replaceSpace = sentence.replaceAll(' ', '_')
+        const replaceSpace = sentence.replaceAll(' ', '*')
         charArray.push(...replaceSpace)
     })
     return charArray
