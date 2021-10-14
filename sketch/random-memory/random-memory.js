@@ -15,16 +15,12 @@ const sketch = {
     sampler: new CanvasPictureSampler(),
     simplex: new SimplexNoise(),
     resetImage: () => {
-        if (sketch.image) {
-            document.body.removeChild(sketch.image)
-        }
         const date = new Date(),
             H = date.getHours(),
             i = date.getMinutes(),
             s = date.getSeconds()
         sketch.sampler.clear()
         sketch.image.src = `https://source.unsplash.com/56x74/?portrait&last=${H}-${i}-${s}`
-        document.body.appendChild(sketch.image)
     },
     init: () => {
         sketch.tracer.init()
@@ -33,6 +29,8 @@ const sketch = {
         sketch.image = new Image()
         sketch.image.id = 'sample'
         sketch.image.crossOrigin = 'anonymous'
+        document.body.appendChild(sketch.image)
+
         sketch.resetImage()
         frame.appendChild(sketch.sampler.canvas)
 
