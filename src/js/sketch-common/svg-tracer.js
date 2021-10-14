@@ -7,17 +7,17 @@
  * @author Nicolas Lebrun
  * @license MIT
  *
- * @constructs
- * @param {Object} options Tracer options
- * @property {object} parentElem - the HTML dom element where include the SVG
- * @property {(('A3_landscape'|'A3_portrait'|'A3_Square'|'A3_topSpiralNotebook'|'A4_landscape'|'A4_portrait'|'P32x24'|'P24x32')|{w: number, h: number})} size - format name listed above or cm {w: width, h: height}
- * @property {number} dpi - resolution 72, 150 or 300
- * @property {string} background - specify color for non white background
  */
 
 export default class SvgTracer {
     /**
      * Setup tracer
+     * @constructs
+     * @param {Object} options Tracer options
+     * @property {object} parentElem - the HTML dom element where include the SVG
+     * @property {(('A3_landscape'|'A3_portrait'|'A3_Square'|'A3_topSpiralNotebook'|'A4_landscape'|'A4_portrait'|'P32x24'|'P24x32')|{w: number, h: number})} size - format name listed above or cm {w: width, h: height}
+     * @property {number} dpi - resolution 72, 150 or 300
+     * @property {string} background - specify color for non white background
      */
     constructor(options) {
         this.parentElem = options.parentElem
