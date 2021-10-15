@@ -10,9 +10,11 @@
         "build:sketches": "webpack --mode production --config tasks/webpack.export-all.js",
         "watch:gallery": "webpack serve --config tasks/webpack.gallery.js",
         "build:gallery": "webpack --mode production --config tasks/webpack.gallery.js --entry ./src/js/gallery.js",
-        "build": "npm run build:clean && npm run build:sketches && npm run build:gallery",
+        "build": "npm run build:clean && npm run build:sketches && npm run build:gallery && node npm run thumbnail:all",
         "primer": "node tasks/primer",
-        "deploy": "node tasks/node-deploy"
+        "deploy": "node tasks/node-deploy",
+        "thumbnail:this": "node tasks/thumbnailThis.js",
+        "thumbnail:all": "node tasks/thumbnailAll.js"
     },
     "keywords": [
         "p5js",
@@ -35,6 +37,8 @@
         "body-parser": "^1.19.0",
         "chromotome": "^1.19.1",
         "d": "^1.0.1",
+        "gm": "^1.23.1",
+        "node-imagemagick": "^0.1.8",
         "p5": "^1.3.1",
         "p5.js-svg": "^1.0.7",
         "perspective-transform": "^1.1.3",

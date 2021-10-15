@@ -17,6 +17,13 @@
             "command": "npm run build:sketch ${fileDirname}",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "thumbnail this sketch",
+            "type": "shell",
+            "command": "node tasks/thumbnailThis.js ${fileDirname}",
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }
