@@ -1,5 +1,4 @@
 const path = require('path')
-const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
 
 const alphabet = [...'abcdefghijklmnopqrstuvwxyz']

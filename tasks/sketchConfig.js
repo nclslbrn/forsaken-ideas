@@ -1,16 +1,16 @@
 const willMonitorTask = false
 
-const path = require('path')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const defaultPlugins = require('./webpack.plugins')
-const getRules = require('./webpack.rules')
-const devServer = require('./webpack.devServer')
-const externals = require('./webpack.externals')
+const path = require('path'),
+    webpack = require('webpack'),
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    TerserPlugin = require('terser-webpack-plugin'),
+    CssMinimizerPlugin = require('css-minimizer-webpack-plugin'),
+    CopyWebpackPlugin = require('copy-webpack-plugin'),
+    { CleanWebpackPlugin } = require('clean-webpack-plugin'),
+    defaultPlugins = require('./webpack.plugins'),
+    getRules = require('./webpack.rules'),
+    devServer = require('./webpack.devServer'),
+    externals = require('./webpack.externals')
 
 if (willMonitorTask) {
     // optimize task

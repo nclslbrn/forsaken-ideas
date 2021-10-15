@@ -51,7 +51,7 @@ module.exports = (env, process) => {
         entry: path.resolve('/src/js/gallery.js'),
         output: {
             path: path.resolve('public/'),
-            filename: '[name].gallery.[chunkhash].js'
+            filename: 'gallery.js'
         },
         module: {
             rules: getRules(property.mode)
