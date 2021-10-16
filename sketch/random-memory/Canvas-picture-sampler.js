@@ -1,7 +1,7 @@
 export default class CanvasPictureSampler {
     constructor() {
         this.canvas = document.createElement('canvas')
-        this.canvas.style = 'margin-left: 1em; background: white;'
+        this.canvas.style = 'background: white;'
         this.canvas.setAttribute(
             'onMouseOver',
             "this.style.background='gainsboro'"
