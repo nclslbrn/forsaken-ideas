@@ -4,10 +4,12 @@ import makeAcronym from './gallery/random-acronym-extend'
 import randomHeroImage from './gallery/random-hero-image'
 import GlitchText from './gallery/glitchText'
 import randomOpenGraphCover from './gallery/randomOpenGraphCover'
+import navFilter from './gallery/navFilter'
 
 randomOpenGraphCover()
 makeAcronym()
 randomHeroImage()
+navFilter()
 
 const textToGlitch = document.querySelectorAll('[data-glitch-effect]')
 textToGlitch.forEach((elem) => {

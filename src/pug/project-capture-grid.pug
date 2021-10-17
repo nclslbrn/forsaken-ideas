@@ -8,7 +8,6 @@
 //| https://github.com/nclslbrn/make |
 //+----------------------------------+
 
-
 html(lang="en")
   include parts/head.pug
   +head(property)
@@ -16,17 +15,42 @@ html(lang="en")
   
     include parts/svg-defs.pug
 
-     ul#project-capture-grid
+    header#top
+      
+      img#logo(src="img/logo.svg")
+      //h2(data-glitch-effect="add") RT
+      // h1(data-glitch-effect="add") AЯT ∑MG 
+      div.acronym-block
+        h3#acronym
 
-          each project in projects
+      nav#gridFilter
+        ul
+          li
+            a.active(href="#name" data-orderBy="name") Name
+          li
+            a(href="#date" data-orderBy="date") Date
+          li
+            a(href="#category" data-orderBy="category") Category 
+
+        div#activeIndicator
         
-            li
-              a(
-                href="./sketch/" + project.name,
-              ) 
-                figure
-                    img(src="./sketch/" + project.name + "/capture-380x200px.jpg")
-                    
-                    figcaption 
-                        span #{project.title}
-                        small #{project.date}
+      //a.button(href="#info") About
+    
+    //p !{property.info}
+
+    ul#project-capture-grid
+
+      each project in projects
+
+        li(data-date=project.date, data-name=project.name)
+          a(
+            href="./sketch/" + project.name,
+          ) 
+            figure
+                
+                img(src="./sketch/" + project.name + "/thumbnail.jpg")
+                
+                figcaption 
+                
+                  h2.project-title #{project.title}
+                  small #{project.date}

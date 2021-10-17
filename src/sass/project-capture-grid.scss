@@ -2,55 +2,207 @@
 @import 'mixins';
 @include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
 @import 'commons';
+@import 'modules/gridFilters';
+
+body {
+    background: ghostwhite;
+}
+header#top {
+    display: flex;
+    flex-flow: row wrap;
+
+    @include breakpoint(md) {
+        flex-flow: row nowrap;
+    }
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 auto;
+    padding: 0 1.5em;
+}
+
+header#top,
+#project-capture-grid {
+    width: 80%;
+    max-width: 1280px;
+}
+
+header#top img#logo,
+header#top nav#gridFilter {
+    padding-right: 1.5em;
+}
+header#top div.acronym-block {
+    position: relative;
+    max-width: 50%;
+    @include breakpoint(md) {
+        min-width: 50%;
+        max-width: unset;
+    }
+    button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin-right: -1em;
+        opacity: 0;
+    }
+    &:hover button {
+        opacity: 1;
+    }
+}
+header#top h1,
+header#top h2,
+header#top h3 {
+    margin: 0;
+    text-transform: capitalize;
+}
+
+header#top img#logo {
+    margin: 1em 0;
+    width: 80px;
+    height: 80px;
+}
+
+header#top nav {
+    flex: 1 0 auto;
+}
 
 #project-capture-grid {
     display: flex;
     flex-flow: row wrap;
     padding: 0;
-    width: 90%;
-    margin: 1em auto;
-    justify-content: space-between;
+    margin: 0 auto;
+    justify-content: flex-start;
     align-items: flex-start;
     list-style-type: none;
     box-sizing: border-box;
 }
 
 #project-capture-grid li {
-    flex: 0 1 17.5%;
+    flex: 0 1 97.5%;
+
+    @include breakpoint(xs) {
+        flex: 0 1 97.5%;
+    }
+    @include breakpoint(md) {
+        flex: 0 1 47.5%;
+    }
+    @include breakpoint(lg) {
+        flex: 0 1 30.8%;
+    }
+    @include breakpoint(xl) {
+        flex: 0 1 22.5%;
+    }
     margin: 1.25em 1.25%;
-    box-shadow: 0 0 0.1em #333;
 }
 
 #project-capture-grid li a {
     display: block;
     padding: 1em;
+    @include breakpoint(lg) {
+        padding: 1em;
+    }
     text-decoration: none;
     background: #fefefe;
-    color: #333;
-    figure {
-        opacity: 1;
-    }
+    box-shadow: 0 0 0.1em #fff;
 
     &:hover {
-        background: #333;
-        color: white;
-        figure {
-            opacity: 0.5;
+        box-shadow: 0 0 0.1em #f3f3f3;
+        background: #fff;
+        color: steelblue;
+        transition: all 0.15s ease-out;
+
+        figure img {
+            filter: invert(100%);
         }
     }
 }
 #project-capture-grid li a figure {
+    position: relative;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 #project-capture-grid li a figure img {
+    float: left;
     max-width: 100%;
     height: auto;
 }
-#project-capture-grid li a figure figcaption {
-    span,
-    small {
+#project-capture-grid li {
+    a figure figcaption {
+        color: #333;
+    }
+
+    @media (hover: hover) {
+        a figure img {
+            opacity: 1;
+            transition: all 0.15s ease-out;
+        }
+        &:hover a figure img {
+            opacity: 0.25;
+        }
+        a figure figcaption {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: black;
+            background: white;
+
+            padding: 1em;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            mix-blend-mode: multiply;
+            opacity: 0;
+            transition: all 0.25s ease-in;
+        }
+        &:nth-child(4n) a figure figcaption {
+            transform: translate(0, 50%);
+        }
+        &:nth-child(4n + 1) a figure figcaption {
+            transform: translate(0, -50%);
+        }
+        &:nth-child(4n + 2) a figure figcaption {
+            transform: translate(50%, 0);
+        }
+        &:nth-child(4n + 3) a figure figcaption {
+            transform: translate(-50%, 0);
+        }
+
+        &:hover a figure figcaption {
+            transform: translate(0, 0);
+            opacity: 1;
+        }
+    }
+
+    h2 {
+        font-size: 2em;
+        @include breakpoint(md) {
+            font-size: 2.1vw;
+        }
+    }
+    .project-title {
+        position: relative;
+        hyphens: auto;
+
+        @media (hover: none) {
+            margin-top: 1em;
+            min-height: 4em;
+        }
+        @media (hover: hover) {
+            margin-top: 0;
+            &::before {
+                content: '>';
+                position: absolute;
+                left: 0;
+                top: 0.5em;
+                margin-left: -1em;
+                font-size: 0.5em;
+            }
+        }
+    }
+    span {
         display: block;
     }
 }

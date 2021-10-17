@@ -18,10 +18,11 @@ for (const sketchName of projects) {
     if (fs.existsSync(capturePath)) {
         const thumbnailPath = path.join(
             path.resolve('public/sketch', sketchName),
-            'capture-380x200px.jpg'
+            'thumbnail.jpg'
         )
         gm(capturePath)
-            .resize(380, 200, '!')
+            .crop(600, 600, 300, 15)
+            //.resize(380, 200, '!')
             .write(thumbnailPath, function (err) {
                 if (err) {
                     console.error(err)
