@@ -55,8 +55,8 @@ const sketch = {
     iterations: 40,
     margin: tracer.cmToPixels(6),
     scale: 3,
-    speed: 0.015,
-    res: 0.15,
+    speed: 0.01,
+    res: 0.1,
     // setup
     launch: () => {
         tracer.init()
