@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
     "info": "An image is drawn by matching the gray value of a pixel to a letter of a text and a font family with 9 different weight. Everything else is random and trickery.",
-    "date": "2020-09-07",
+    "date": "2021-09-07",
     "action": []
 }
