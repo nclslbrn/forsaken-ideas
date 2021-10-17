@@ -1,0 +1,56 @@
+@import 'variables';
+@import 'mixins';
+@include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
+@import 'commons';
+
+#project-capture-grid {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    width: 90%;
+    margin: 1em auto;
+    justify-content: space-between;
+    align-items: flex-start;
+    list-style-type: none;
+    box-sizing: border-box;
+}
+
+#project-capture-grid li {
+    flex: 0 1 17.5%;
+    margin: 1.25em 1.25%;
+    box-shadow: 0 0 0.1em #333;
+}
+
+#project-capture-grid li a {
+    display: block;
+    padding: 1em;
+    text-decoration: none;
+    background: #fefefe;
+    color: #333;
+    figure {
+        opacity: 1;
+    }
+
+    &:hover {
+        background: #333;
+        color: white;
+        figure {
+            opacity: 0.5;
+        }
+    }
+}
+#project-capture-grid li a figure {
+    margin: 0;
+    padding: 0;
+}
+
+#project-capture-grid li a figure img {
+    max-width: 100%;
+    height: auto;
+}
+#project-capture-grid li a figure figcaption {
+    span,
+    small {
+        display: block;
+    }
+}

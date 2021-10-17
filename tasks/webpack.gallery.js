@@ -74,6 +74,14 @@ module.exports = (env, process) => {
             filename: './index.html',
             template: './src/pug/gallery.pug'
         }),
+        new HtmlWebpackPlugin({
+            templateParameters: {
+                projects: projectWithMeta,
+                property: property
+            },
+            filename: './grid.html',
+            template: './src/pug/project-capture-grid.pug'
+        }),
         new CopyWebpackPlugin({
             patterns: [
                 {

@@ -1,4 +1,5 @@
 import '../sass/gallery.scss'
+import '../sass/project-capture-grid.scss'
 import makeAcronym from './gallery/random-acronym-extend'
 import randomHeroImage from './gallery/random-hero-image'
 import GlitchText from './gallery/glitchText'

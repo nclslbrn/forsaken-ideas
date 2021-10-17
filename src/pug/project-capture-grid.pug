@@ -1,0 +1,32 @@
+//+----------------------------------+
+//|..ARTEMG.COM .....................|
+//|..Author: Nicolas Lebrun .........|
+//|..License: MIT License ...........|
+//|..................................|                                  
+//| If you read this text you should |
+//| go here for better understanding |
+//| https://github.com/nclslbrn/make |
+//+----------------------------------+
+
+
+html(lang="en")
+  include parts/head.pug
+  +head(property)
+  body
+  
+    include parts/svg-defs.pug
+
+     ul#project-capture-grid
+
+          each project in projects
+        
+            li
+              a(
+                href="./sketch/" + project.name,
+              ) 
+                figure
+                    img(src="./sketch/" + project.name + "/capture-380x200px.jpg")
+                    
+                    figcaption 
+                        span #{project.title}
+                        small #{project.date}
