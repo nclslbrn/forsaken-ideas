@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "Coming soon",
     "date": "2021-07-25",
+    "topic": "Random distribution",
     "action": [
         {
             "name": "init",

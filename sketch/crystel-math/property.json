@@ -1,7 +1,8 @@
 {
     "libs": ["three"],
-    "info": "Coming soon",
+    "info": "A grid of cell, each of them dupplicated and mirrored",
     "date": "2020-11-20",
+    "topic": "Cellular automata",
     "action": [
         {
             "name": "init",

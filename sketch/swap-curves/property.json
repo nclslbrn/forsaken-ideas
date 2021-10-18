@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Create a grid and for each cell, create random points. At the end of the loop, switch a random row or column by another close to it.",
     "date": "2020-10-10",
+    "topic": "Random distribution",
     "action": []
 }

@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Push rectangles into random distribution on a loop (with a current and a next dimensions).",
     "date": "2020-11-21",
+    "topic": "Randpm distribution",
     "action": []
 }

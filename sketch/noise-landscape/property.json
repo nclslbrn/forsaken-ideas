@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "Inspired by Kjetil Golid work, <a href=\"https://generated.space/sketch/altitude-map-trace/\">Altitutude map trace</a>, this script create random topology with Perlin noise.",
     "date": "2020-07-31",
+    "topic": "Perlin noise",
     "action": [
         {
             "name": "init",

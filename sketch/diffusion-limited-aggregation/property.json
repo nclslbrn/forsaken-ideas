@@ -2,6 +2,7 @@
     "libs": ["p5", "svg"],
     "info": "DLA is a chemistry concept, it is usefull for undestand many system,  such as electrodeposition, Hele-Shaw flow, mineral deposits, and dielectric breakdown. Here we start by create an array of point which will store cluster coordinate, then we put walkers/particles at random position around it and make them moove, when one of them is close enough from one of the cluster point, we add it to he cluster / tree.",
     "date": "2019-11-13",
+    "topic": "Random walk",
     "action": [
         {
             "name": "download_SVG",

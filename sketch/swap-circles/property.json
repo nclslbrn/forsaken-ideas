@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "This sketch is inspired by a <a href='https://twitter.com/satoshi_aizawa/status/1252975285420490753'>tweet of @satoshi_aizawa</a>.This composition works like a Rubik's cube (even if it is only a two-dimensional plane): two rows or two columns can be exchanged.",
     "date": "2020-10-09",
+    "topic": "Random distribution",
     "action": [
         {
             "name": "init",

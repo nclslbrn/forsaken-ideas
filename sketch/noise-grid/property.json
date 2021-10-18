@@ -2,6 +2,7 @@
     "libs": ["p5", "p5.createloop"],
     "info": "Create line between grid cell with filtering them by noise value.",
     "date": "2020-07-25",
+    "topic": "Perlin noise",
     "action": [
         {
             "name": "init",

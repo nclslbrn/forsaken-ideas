@@ -2,6 +2,7 @@
     "libs": [],
     "info": "Using random walk to create path with a simple rule, they can't overlap each other. Then we use a simple function to offset and copy the path.",
     "date": "2021-06-15",
+    "topic": "Random walk",
     "action": [
         {
             "name": "init",

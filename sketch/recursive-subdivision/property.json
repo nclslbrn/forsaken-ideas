@@ -2,6 +2,7 @@
     "libs": ["three"],
     "info": "Cut out several planes and copy the resulting composition onto the 6 faces of a cube. This program made with <a href=\"https://threejs.org/\">Three.js</a>, exports 3D models in GLTF format to be rendered in Blender then reproduced with a plotter.",
     "date": "2021-06-03",
+    "topic": "Random distribution",
     "action": [
         {
             "name": "init",

@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Experiment with a kind of attractor, a 2D to 2D mapping function and a reference: <a href=\"https://fr.wikipedia.org/wiki/Lenna\">Lenna</a>. This is a part of a fragment, an alegorie of computer vision.",
     "date": "2021-04-27",
+    "topic": "Unsorted",
     "action": []
 }

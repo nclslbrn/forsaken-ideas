@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "Simple program that initializes points with a pattern and moves them with a planar function.",
     "date": "2021-04-25",
+    "topic": "Unsorted",
     "action": [
         {
             "name": "init",

@@ -1,6 +1,7 @@
 {
     "libs": ["three"],
     "info": "This script generate a landscape with some buildings with a <a href='https://thebookofshaders.com/13/'>fbm</a> noise, download the generate model by clicking on the last icon of the sidebar, you can convert it to a SVG with <a href='https://plotter.vision/'>plotter.vision</a>",
+    "topic": "Perlin noise",
     "date": "2021-07-17",
     "action": [
         {

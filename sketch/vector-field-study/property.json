@@ -1,6 +1,7 @@
 {
     "libs": ["p5"],
     "info": "Experiments with vector field and <a href=\"https://www.wolframalpha.com/widgets/view.jsp?id=4e37f43fcbe8be03c20f977f32e20d15\">plane curves</a>. Code is based on a post by Tsulej on <a href=\"https://generateme.wordpress.com/2016/04/24/drawing-vector-field/\">generateme.wordpress.com</a>.<br> Color palette come from <a href=\"https://github.com/kgolid/chromotome\">Chromotone</a> by Kjetil Midtgarden Golid.<br> ",
+    "topic": "Plane curve",
     "action": [
         {
             "name": "init_sketch",

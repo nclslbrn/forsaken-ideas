@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "Plotting <a href='https://www.wolframalpha.com/widgets/view.jsp?id=4e37f43fcbe8be03c20f977f32e20d15'>plane curves</a> function from polar coordinate, then iterate each points with the same function.",
     "date": "2020-11-01",
+    "topic": "Plane curve",
     "action": [
         {
             "name": "init",

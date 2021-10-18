@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Simple animation where a shape seems to be created before being replaced by its previous version.",
     "date": "2020-11-16",
+    "topic": "Endless loop",
     "action": []
 }

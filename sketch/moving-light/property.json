@@ -2,6 +2,7 @@
     "libs": ["p5"],
     "info": "Simple walkers are used to trace lines if they are'nt offcanvas.",
     "date": "2020-01-21",
+    "topic": "Random distribution",
     "action": [
         {
             "name": "init",

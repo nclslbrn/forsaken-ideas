@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Compute square rotations with theirs indexes and positions (x & y) and a value of loop time.",
     "date": "2020-07-25",
+    "topic": "Endless loop",
     "action": []
 }

@@ -1,6 +1,7 @@
 {
     "libs": ["p5"],
     "info": "Inspired by a post of <a href='https://github.com/tsulej'>@tsulej</a>, <a href='https://generateme.wordpress.com/2016/04/11/folds/'>Folds</a>, this sketch reuse the concept of variation by mixing plane curve function and strange attractors (each one randomly picked from collections) on a vector field. From a grid, we compute two position and we merge them with adding, substracting, multiplying or dividing one vector to another.",
+    "topic": "Strange attractor",
     "date": "2020-09-25",
     "action": [
         {

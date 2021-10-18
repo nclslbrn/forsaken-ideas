@@ -2,6 +2,7 @@
     "libs": [],
     "info": "Inspired/based from <a href=\"https://generated.space/sketch/crosshatch-automata/\">Crosshatch Automata</a> by Kjetil Golid, this sketch create isometric shape with a simple rule. This script initialize a grid a 50% chance that a cell is alive, each update (when user click on grid), every living cell that doesn't have two living cells nearby is going to die.",
     "date": "2020-11-11",
+    "topic": "Cellular automata",
     "action": [
         {
             "name": "downloadSVG",

@@ -1,5 +1,6 @@
 {
     "libs": ["p5"],
+    "topic": "Perlin noise",
     "info": "This animation is built by creating arcs with random angles and interpolate lines along them with a noise value to make it evolve like waves.",
     "date": "2019-10-18"
 }

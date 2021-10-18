@@ -2,5 +2,6 @@
     "libs": ["p5"],
     "info": "Simple animation which interpolate shapes from triangle to hex and make them grow then shrink to  make you feel an impulse.",
     "date": "2021-05-05",
+    "topic": "Endless loop",
     "action": []
 }
