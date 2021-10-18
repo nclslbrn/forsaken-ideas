@@ -30,7 +30,7 @@ html(lang="en")
           li
             a(href="#date" data-orderBy="date") Date
           li
-            a(href="#category" data-orderBy="category") Category 
+            a(href="#category" data-orderBy="topic") Topic
 
         div#activeIndicator
         
@@ -42,7 +42,12 @@ html(lang="en")
 
       each project in projects
 
-        li(data-date=project.date, data-name=project.name)
+        li(
+          data-date=project.date, 
+          data-name=project.name, 
+          data-topic=project.topic
+        )
+
           a(
             href="./sketch/" + project.name,
           ) 
@@ -53,4 +58,13 @@ html(lang="en")
                 figcaption 
                 
                   h2.project-title #{project.title}
-                  small #{project.date}
+                  
+                  p 
+                    svg.icon
+                      use(xlink:href="#icon-milestone")
+                    | #{project.topic}
+
+                  small 
+                    svg.icon
+                      use(xlink:href="#icon-clock")
+                    | #{project.date}
