@@ -1,15 +1,15 @@
 import '../sass/gallery.scss'
-import '../sass/project-capture-grid.scss'
+import '../sass/grid-gallery.scss'
 import makeAcronym from './gallery/random-acronym-extend'
 import randomHeroImage from './gallery/random-hero-image'
 import GlitchText from './gallery/glitchText'
 import randomOpenGraphCover from './gallery/randomOpenGraphCover'
-import navFilter from './gallery/navFilter'
+import gridOrder from './gallery/grid-order'
 
 randomOpenGraphCover()
 makeAcronym()
 randomHeroImage()
-navFilter()
+gridOrder()
 
 const textToGlitch = document.querySelectorAll('[data-glitch-effect]')
 textToGlitch.forEach((elem) => {

@@ -1,0 +1,69 @@
+//+----------------------------------+
+//|..ARTEMG.COM .....................|
+//|..Author: Nicolas Lebrun .........|
+//|..License: MIT License ...........|
+//|..................................|                                  
+//| If you read this text you should |
+//| go here for better understanding |
+//| https://github.com/nclslbrn/make |
+//+----------------------------------+
+
+html(lang="en")
+  include parts/head.pug
+  +head(property)
+  body
+  
+    include parts/svg-defs.pug
+  
+    main 
+  
+      header#top
+        
+        img#logo(src="img/logo.svg")
+        //h2(data-glitch-effect="add") RT
+        // h1(data-glitch-effect="add") AЯT ∑MG 
+        div.acronym-block
+          h3#acronym
+
+        form#orderGrid
+          ul
+            li
+              button(value="name") Name
+            li
+              button(value="date") Date
+            li
+              button(value="topic") Topic
+
+            li#activeIndicator
+          
+        //a.button(href="#info") About
+      
+      //p !{property.info}
+
+      ul#grid-gallery
+
+        each project in projects
+
+          li(
+            data-date=project.date, 
+            data-name=project.name, 
+            data-topic=project.topic
+          )
+
+            a(
+              href="./sketch/" + project.name,
+            ) 
+              figure
+                  
+                  img(
+                    src="./sketch/" + project.name + "/thumbnail.jpg" 
+                    alt="capture of " + project.title
+                  )
+                  
+                  figcaption 
+                  
+                    h2.project-title #{project.title}
+                    
+                    p #{project.topic}
+
+                    small #{project.date}

@@ -80,7 +80,7 @@ module.exports = (env, process) => {
                 property: property
             },
             filename: './grid.html',
-            template: './src/pug/project-capture-grid.pug'
+            template: './src/pug/grid-gallery.pug'
         }),
         new CopyWebpackPlugin({
             patterns: [

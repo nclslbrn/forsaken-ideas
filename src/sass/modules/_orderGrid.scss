@@ -1,7 +1,5 @@
-nav#gridFilter {
+form#orderGrid ul {
     position: relative;
-}
-nav#gridFilter ul {
     display: flex;
     padding: 0;
     flex-flow: row nowrap;
@@ -9,10 +7,12 @@ nav#gridFilter ul {
     list-style-type: none;
     line-height: 2;
 
-    li a {
+    li button {
         margin: 0 1em;
         padding: 1.5em 0 0.5em;
         // text-transform: uppercase;
+        border: none;
+        background: none;
         letter-spacing: 2px;
         text-decoration: none;
         color: #333;
@@ -21,13 +21,13 @@ nav#gridFilter ul {
             font-weight: bolder;
         }
     }
-}
-nav#gridFilter div#activeIndicator {
-    position: absolute;
-    top: 100%;
-    height: 2px;
-    background: #333;
-    width: 0;
-    left: 0;
-    transition: all 0.15s ease-in-out;
+    li#activeIndicator {
+        position: absolute;
+        bottom: 100%;
+        height: 2px;
+        background: #333;
+        width: 0;
+        left: 0;
+        transition: all 0.15s ease-in-out;
+    }
 }

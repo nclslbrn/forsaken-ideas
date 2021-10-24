@@ -2,11 +2,24 @@
 @import 'mixins';
 @include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
 @import 'commons';
-@import 'modules/gridFilters';
+@import 'modules/orderGrid';
 
 body {
     background: ghostwhite;
 }
+main {
+    display: block;
+    padding: 0;
+    width: 80%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+header#top,
+#grid-gallery {
+    width: 100%;
+}
+
 header#top {
     display: flex;
     flex-flow: row wrap;
@@ -20,15 +33,11 @@ header#top {
     padding: 0 1.5em;
 }
 
-header#top,
-#project-capture-grid {
-    width: 80%;
-    max-width: 1280px;
-}
-
 header#top img#logo,
-header#top nav#gridFilter {
-    padding-right: 1.5em;
+header#top form#orderGrid {
+    @include breakpoint(md) {
+        padding-right: 1.5em;
+    }
 }
 header#top div.acronym-block {
     position: relative;
@@ -61,58 +70,78 @@ header#top img#logo {
     height: 80px;
 }
 
-header#top nav {
+header#top form {
     flex: 1 0 auto;
 }
-
-#project-capture-grid {
+#grid-gallery:not(.sorted) {
+    border-top: 1px solid #333;
+}
+#grid-gallery,
+#grid-gallery.sorted > li > ul {
     display: flex;
     flex-flow: row wrap;
     padding: 0;
     margin: 0 auto;
+    width: 100%;
     justify-content: flex-start;
     align-items: flex-start;
-    box-sizing: border-box;
     &,
     & ul {
         list-style-type: none;
+        padding: 0;
     }
 }
-#project-capture-grid ul {
+#grid-gallery.sorted {
+    display: block;
+}
+
+#grid-gallery ul {
     flex: 0 1 100%;
 }
-#project-capture-grid li {
+
+#grid-gallery li {
+    position: relative;
     flex: 0 1 97.5%;
 
     @include breakpoint(xs) {
         flex: 0 1 97.5%;
     }
     @include breakpoint(md) {
-        flex: 0 1 47.5%;
+        flex: 0 5 47.5%;
     }
     @include breakpoint(lg) {
         flex: 0 1 30.8%;
     }
     @include breakpoint(xl) {
-        flex: 0 1 22.5%;
+        flex: 0 5 22.5%;
     }
     margin: 1.25em 1.25%;
+    overflow: hidden;
 }
+#grid-gallery.sorted > li {
+    border-top: 1px solid #333;
+    margin-left: 0;
+    margin-right: 0;
 
-#project-capture-grid li a {
+    .list-title {
+        margin-left: 1.25%;
+    }
+}
+#grid-gallery li a {
     display: block;
     padding: 1em;
     @include breakpoint(lg) {
         padding: 1em;
     }
     text-decoration: none;
+    color: #333;
     background: #fefefe;
     box-shadow: 0 0 0.1em #fff;
 
     &:hover {
-        box-shadow: 0 0 0.1em #f3f3f3;
-        background: #fff;
-        color: steelblue;
+        box-shadow: 0 0 0.1em #ccc;
+        background: #2f1f1f;
+        color: #fefefe;
         transition: all 0.15s ease-out;
 
         figure img {
@@ -120,31 +149,28 @@ header#top nav {
         }
     }
 }
-#project-capture-grid li a figure {
+#grid-gallery li a figure {
     position: relative;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 
-#project-capture-grid li a figure img {
+#grid-gallery li a figure img {
     float: left;
     max-width: 100%;
     height: auto;
 }
-#project-capture-grid li {
-    a figure figcaption {
-        color: #333;
+#grid-gallery li {
+    a figure figcaption::before {
+        content: '';
+        display: table;
+        float: none;
+        clear: both;
     }
-
     @media (hover: hover) {
-        a figure img {
-            opacity: 1;
-            transition: all 0.15s ease-out;
-        }
-        &:hover a figure img {
-            opacity: 0.25;
-        }
+        /**
+        Reveal figcaption on hover
         a figure figcaption {
             position: absolute;
             top: 0;
@@ -179,6 +205,7 @@ header#top nav {
             transform: translate(0, 0) !important;
             opacity: 1;
         }
+        */
     }
 
     h2 {
@@ -189,33 +216,14 @@ header#top nav {
         }
     }
     .project-title {
+        display: block;
         position: relative;
         hyphens: auto;
-
-        @media (hover: none) {
-            margin-top: 1em;
-            min-height: 4em;
-        }
-        @media (hover: hover) {
-            margin-top: 0;
-            &::before {
-                content: '>';
-                position: absolute;
-                left: 0;
-                top: 0.5em;
-                margin-left: -1em;
-                font-size: 0.5em;
-            }
-        }
+        margin-top: 0.5em;
+        min-height: 4em;
     }
     p,
     small {
         display: block;
-    }
-    svg {
-        display: inline;
-        width: 1em;
-        height: 1em;
-        fill: black;
     }
 }
