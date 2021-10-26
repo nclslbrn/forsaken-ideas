@@ -31,8 +31,16 @@ const initPoints = {
     },
     grid: () => {
         const pos = []
-        for (let x = -3; x <= 3; x += sketch.res) {
-            for (let y = -3; y <= 3; y += sketch.res) {
+        for (
+            let x = -sketch.scale * 0.8;
+            x <= sketch.scale * 0.8;
+            x += sketch.res
+        ) {
+            for (
+                let y = -sketch.scale * 0.8;
+                y <= sketch.scale * 0.8;
+                y += sketch.res
+            ) {
                 pos.push({
                     x: x + Math.random() * sketch.res,
                     y: y + Math.random() * sketch.res,
@@ -54,8 +62,8 @@ const tracer = new SvgTracer({
 const sketch = {
     iterations: 40,
     margin: tracer.cmToPixels(6),
-    scale: 3,
-    speed: 0.01,
+    scale: 5,
+    speed: 0.025,
     res: 0.1,
     // setup
     launch: () => {
@@ -82,6 +90,11 @@ const sketch = {
                 stroke: color.value
             })
         )
+        tracer.group({
+            name: 'black',
+            id: 'black',
+            stroke: 'black'
+        })
         sketch.update()
     },
     // compute change
@@ -178,7 +191,7 @@ const sketch = {
             text: 'PLANE CURVE',
             fontSize: 14,
             anchor: 'start',
-            group: sketch.palette.colors[0].id
+            group: 'black'
         })
 
         tracer.text({
@@ -187,7 +200,7 @@ const sketch = {
             text: sketch.trigoFunc.toUpperCase().replaceAll('_', ' '),
             fontSize: 14,
             anchor: 'end',
-            group: sketch.palette.colors[0].id
+            group: 'black'
         })
     },
     /**
@@ -195,7 +208,7 @@ const sketch = {
      */
     export: () => {
         tracer.export({
-            name: `mystic-sphere${sketch.trigoFunc}-${sketch.initMode}`
+            name: `mystic-shape-${sketch.trigoFunc}-${sketch.initMode}`
         })
     }
 }
