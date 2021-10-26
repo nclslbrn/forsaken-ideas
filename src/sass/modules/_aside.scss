@@ -1,6 +1,6 @@
 aside {
     @include breakpoint(md) {
-        box-shadow: inset 2px 0 0 transparentize($color_text, 0.75);
+        //ox-shadow: inset 2px 0 0 transparentize($color_text, 0.75);
         > *,
         ul {
             padding: 0 0 0 2rem;
@@ -109,7 +109,7 @@ aside.column.about {
             display: block;
             float: left;
             margin: 0.5em 0;
-            @include breakpoint(xs) {
+            @include breakpoint(sm) {
                 width: 44%;
             }
             @include breakpoint(md) {

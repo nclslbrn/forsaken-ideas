@@ -38,7 +38,6 @@ html(lang="en")
           
         //a.button(href="#info") About
       
-      //p !{property.info}
 
       ul#grid-gallery
 
@@ -67,3 +66,35 @@ html(lang="en")
                     p #{project.topic}
 
                     small #{project.date}
+      
+      div.about 
+        
+        blockquote !{property.info}
+
+        aside
+          ul
+            li  
+              a(href="https://twitter.com/" + property.author.twitter) 
+                svg.icon.icon-twitter 
+                  use(xlink:href="#icon-twitter")
+                span Twitter
+            
+            li
+              a(href="https://github.com/" + property.author.github) 
+                svg.icon.icon-github
+                  use(xlink:href="#icon-github")
+                span Github
+            li
+              a(href=property.author.site)
+                svg.icon.icon-link
+                  use(xlink:href="#icon-link")
+                span Site
+
+            li  
+              a(href="mailto:" + property.author.mail) 
+                svg.icon.icon-mail
+                  use(xlink:href="#icon-mail")
+                span Mail
+        
+      footer 
+        p !{property.right}
