@@ -3,22 +3,25 @@ form#orderGrid ul {
     display: flex;
     padding: 0;
     flex-flow: row nowrap;
-    justify-content: flex-end;
+    justify-content: center;
+    @include breakpoint(md) {
+        justify-content: flex-end;
+    }
     list-style-type: none;
     line-height: 2;
 
     li button {
         margin: 0 1em;
         padding: 1.5em 0 0.5em;
-        // text-transform: uppercase;
         border: none;
         background: none;
         letter-spacing: 2px;
         text-decoration: none;
         color: #333;
-        &.active,
-        &:hover {
-            font-weight: bolder;
+        cursor: pointer;
+        &:hover,
+        &.active {
+            text-shadow: 0 1px 0 #222;
         }
     }
     li#activeIndicator {

@@ -1,0 +1,158 @@
+#grid-gallery {
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+}
+#grid-gallery,
+#grid-gallery.sorted > li > ul {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    &,
+    & ul {
+        list-style-type: none;
+        padding: 0;
+    }
+}
+#grid-gallery.sorted {
+    display: block;
+}
+
+#grid-gallery ul {
+    flex: 0 1 100%;
+}
+
+#grid-gallery li {
+    position: relative;
+    flex: 0 2 97.5%;
+
+    @include breakpoint(xs) {
+        flex: 0 1 97.5%;
+    }
+    @include breakpoint(sm) {
+        flex: 0 5 47.5%;
+    }
+    @include breakpoint(md) {
+        flex: 0 5 47.5%;
+    }
+    @include breakpoint(lg) {
+        flex: 0 1 30.8%;
+    }
+    @include breakpoint(xl) {
+        flex: 0 5 22.5%;
+    }
+    margin: 1.25em 1.25%;
+}
+#grid-gallery.sorted > li {
+    margin-left: 0;
+    margin-right: 0;
+
+    .list-title {
+        margin-left: 1.25%;
+        text-transform: capitalize;
+    }
+}
+#grid-gallery li a {
+    display: block;
+    padding: 1em;
+    @include breakpoint(lg) {
+        padding: 1em;
+    }
+    text-decoration: none;
+    color: #333;
+    background: #fefefe;
+    box-shadow: 0 0 0.1em #fff;
+
+    &:hover {
+        box-shadow: 0 0 0.1em #ccc;
+        background: #222;
+        color: #fefefe;
+        transition: all 0.15s ease-out;
+
+        figure img {
+            filter: invert(100%);
+        }
+    }
+}
+#grid-gallery li a figure {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+#grid-gallery li a figure img {
+    float: left;
+    max-width: 100%;
+    height: auto;
+}
+#grid-gallery li {
+    a figure figcaption::before {
+        content: '';
+        display: table;
+        float: none;
+        clear: both;
+    }
+    @media (hover: hover) {
+        /**
+        Reveal figcaption on hover
+        a figure figcaption {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: black;
+            background: white;
+
+            padding: 1em;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            mix-blend-mode: multiply;
+            opacity: 0;
+            transition: all 0.25s ease-in;
+        }
+        &:nth-child(4n) a figure figcaption {
+            transform: translate(0, 50%);
+        }
+        &:nth-child(4n + 1) a figure figcaption {
+            transform: translate(0, -50%);
+        }
+        &:nth-child(4n + 2) a figure figcaption {
+            transform: translate(50%, 0);
+        }
+        &:nth-child(4n + 3) a figure figcaption {
+            transform: translate(-50%, 0);
+        }
+
+        &:hover a figure figcaption {
+            transform: translate(0, 0) !important;
+            opacity: 1;
+        }
+        */
+    }
+
+    h2 {
+        font-size: 2em;
+        @include breakpoint(md) {
+            font-size: 2.1vw;
+            margin-bottom: 0;
+        }
+    }
+    .project-title {
+        display: block;
+        position: relative;
+        hyphens: auto;
+        margin-top: 0.5em;
+        @include breakpoint(md) {
+            min-height: 4em;
+        }
+    }
+    p,
+    small {
+        display: block;
+    }
+}
