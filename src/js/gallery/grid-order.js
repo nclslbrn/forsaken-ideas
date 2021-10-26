@@ -2,7 +2,6 @@ export default function () {
     window.addEventListener('load', () => {
         const grid = document.getElementById('grid-gallery')
         const activeIndicator = document.getElementById('activeIndicator')
-
         const sortButton = Array.from(
             document.querySelectorAll('form#orderGrid ul li button')
         )
@@ -43,6 +42,7 @@ export default function () {
             entry.appendChild(list)
             grid.appendChild(entry)
         }
+
         const sortGrid = (order) => {
             grid.innerHTML = ''
             if (order === 'name') {
@@ -96,7 +96,7 @@ export default function () {
         if (undefined !== sortButton && undefined !== projects) {
             const url = new URL(window.location)
             const currentOrder = url.searchParams.get('order')
-            if (undefined !== currentOrder) {
+            if (null !== currentOrder && 'none' !== currentOrder) {
                 moveIndicator(
                     sortButton.filter((elem) => elem.value == currentOrder)[0]
                 )
@@ -112,7 +112,7 @@ export default function () {
                         grid.classList.remove('sorted')
                         button.classList.remove('active')
                         moveIndicator(false)
-                        window.history.replaceState(null, null, '')
+                        window.history.replaceState(null, null, '?order=none')
                         projects.forEach((p) => grid.appendChild(p))
                     } else {
                         grid.classList.add('sorted')
@@ -128,6 +128,15 @@ export default function () {
                     }
                 })
             })
+
+            window.onresize = () => {
+                const activeButton = sortButton.filter((elem) =>
+                    elem.classList.contains('active')
+                )[0]
+                if (undefined !== activeButton) {
+                    moveIndicator(activeButton)
+                }
+            }
         }
     })
 }
