@@ -1,0 +1,12 @@
+{
+    "libs": ["p5"],
+    "info": "Copy a part of an image and paste it several times by moving it on an axis. Then update the source image so that the changes can be copied and pasted.",
+    "topic": "Random distribution",
+    "date": "2021-10-31",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        }
+    ]
+}

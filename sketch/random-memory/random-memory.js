@@ -64,7 +64,7 @@ const sketch = {
     },
     draw: () => {
         console.log('draw')
-        const pathLength = 0.15
+        const pathLength = 0.5
         for (let x = 0; x < sketch.image.width; x++) {
             for (let y = 0; y < sketch.image.height; y++) {
                 const color = sketch.sampler.getColor(x, y)

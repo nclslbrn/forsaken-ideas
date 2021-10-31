@@ -17,30 +17,21 @@ const randomTrigoFunc = () => {
 const initPoints = {
     circle: () => {
         const pos = []
-        const angleStep = (Math.PI * 2) / (8 / sketch.res)
-        for (let angle = 0; angle <= Math.PI * 2; angle += angleStep) {
-            for (let radius = 0; radius <= 6; radius += sketch.res) {
-                pos.push({
-                    x: Math.cos(angle) * radius * Math.random(),
-                    y: Math.sin(angle) * radius * Math.random(),
-                    stuck: false
-                })
-            }
+        const TAU = Math.PI * 2
+        const numPoints = (sketch.scale / (sketch.res * 0.5)) ** 2
+        for (let point = 0; point < numPoints; point++) {
+            pos.push({
+                x: Math.cos(Math.random() * TAU) * sketch.scale * Math.random(),
+                y: Math.sin(Math.random() * TAU) * sketch.scale * Math.random(),
+                stuck: false
+            })
         }
         return pos
     },
     grid: () => {
         const pos = []
-        for (
-            let x = -sketch.scale * 0.8;
-            x <= sketch.scale * 0.8;
-            x += sketch.res
-        ) {
-            for (
-                let y = -sketch.scale * 0.8;
-                y <= sketch.scale * 0.8;
-                y += sketch.res
-            ) {
+        for (let x = -sketch.scale; x <= sketch.scale; x += sketch.res) {
+            for (let y = -sketch.scale; y <= sketch.scale; y += sketch.res) {
                 pos.push({
                     x: x + Math.random() * sketch.res,
                     y: y + Math.random() * sketch.res,
@@ -60,11 +51,11 @@ const tracer = new SvgTracer({
 })
 
 const sketch = {
-    iterations: 40,
-    margin: tracer.cmToPixels(6),
+    iterations: 50,
+    margin: tracer.cmToPixels(4),
     scale: 5,
     speed: 0.025,
-    res: 0.1,
+    res: 0.2,
     // setup
     launch: () => {
         tracer.init()
