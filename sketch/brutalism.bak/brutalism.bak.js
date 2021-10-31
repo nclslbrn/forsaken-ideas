@@ -1,4 +1,10 @@
 import samples from './assets'
+const sampleInfoBox = document.createElement('div')
+const subject = document.createElement('p')
+const author = document.createElement('small')
+sampleInfoBox.style.margin = '1em'
+sampleInfoBox.appendChild(subject)
+sampleInfoBox.appendChild(author)
 // TODO
 // 1. Save image function
 // 2. Image author (right)
@@ -6,12 +12,12 @@ const sketch = (p5) => {
     let sample,
         move,
         images = [],
-        sampleID = false,
-        density = 1
+        sampleID = false
+
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
         const numFrame = 12 * Math.ceil(Math.random() * 4)
-        const stepSize = 8 * Math.ceil(Math.random() * 16)
+        const stepSize = 4 * Math.ceil(Math.random() * 16)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
         const size = Math.random() * p5.width
@@ -34,16 +40,19 @@ const sketch = (p5) => {
     sketch.init = () => {
         sampleID = Math.floor(Math.random() * samples.length)
         sample = images[sampleID].get()
+        subject.innerText = samples[sampleID].subject
+        author.innerText = samples[sampleID].photographer
+
         sketch.nextMove()
     }
     p5.preload = () => {
         samples.forEach((sample) =>
             images.push(p5.loadImage(`./assets/${sample.sourceName}`))
         )
-        density = p5.pixelDensity()
     }
     p5.setup = () => {
         p5.createCanvas(800, 800)
+        document.getElementById('windowFrame').appendChild(sampleInfoBox)
         sketch.init()
     }
     p5.draw = () => {
@@ -79,11 +88,6 @@ const sketch = (p5) => {
             p5.image(sample, 0, 0, p5.width, p5.height)
             move.d++
         }
-        /* 
-        const rect = [Math.random() * p5.width, Math.random() * p5.height]
-        const start = [Math.random() * p5.width, Math.random() * p5.height]
-        const move = [Math.random() * p5.width, Math.random() * p5.height]
-       */
     }
 }
 export default sketch
