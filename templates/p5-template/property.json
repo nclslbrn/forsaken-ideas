@@ -1,6 +1,7 @@
 {
     "libs": ["p5"],
     "info": "Coming soon",
+    "topic": "Perlin noise",
     "date": "2020-07-25",
     "action": []
 }
