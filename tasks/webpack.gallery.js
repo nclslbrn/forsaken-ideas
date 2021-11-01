@@ -71,7 +71,7 @@ module.exports = (env, process) => {
                 projects: projectWithMeta,
                 property: property
             },
-            filename: './index.html',
+            filename: './list.html',
             template: './src/pug/gallery.pug'
         }),
         new HtmlWebpackPlugin({
@@ -79,7 +79,7 @@ module.exports = (env, process) => {
                 projects: projectWithMeta,
                 property: property
             },
-            filename: './grid.html',
+            filename: './index.html',
             template: './src/pug/grid-gallery.pug'
         }),
         new CopyWebpackPlugin({
