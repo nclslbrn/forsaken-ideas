@@ -11,9 +11,6 @@ const loader = document.getElementById('loading')
 new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 window.init = sketch.init
-
-/*
-window.export_PNG = sketch.exportPNG
-*/
+window.export = sketch.export
 window.infobox = infobox
 handleAction()

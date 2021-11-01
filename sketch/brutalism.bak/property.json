@@ -7,6 +7,10 @@
         {
             "name": "init",
             "icon": "sync"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
         }
     ]
 }

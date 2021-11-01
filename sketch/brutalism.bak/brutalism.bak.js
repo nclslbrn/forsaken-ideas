@@ -5,14 +5,19 @@ const author = document.createElement('small')
 sampleInfoBox.style.margin = '1em'
 sampleInfoBox.appendChild(subject)
 sampleInfoBox.appendChild(author)
-// TODO
-// 1. Save image function
-// 2. Image author (right)
+
 const sketch = (p5) => {
-    let sample,
+    let canvas,
+        sample,
         move,
         images = [],
         sampleID = false
+
+    sketch.canvasSize = () => {
+        const max = 800
+        const side = window.innerWidth * 0.8
+        return window.innerWidth < max ? [side, side] : [max, max]
+    }
 
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
@@ -51,7 +56,7 @@ const sketch = (p5) => {
         )
     }
     p5.setup = () => {
-        p5.createCanvas(800, 800)
+        canvas = p5.createCanvas(...sketch.canvasSize())
         document.getElementById('windowFrame').appendChild(sampleInfoBox)
         sketch.init()
     }
@@ -88,6 +93,22 @@ const sketch = (p5) => {
             p5.image(sample, 0, 0, p5.width, p5.height)
             move.d++
         }
+    }
+    p5.windowResized = () => {
+        p5.resizeCanvas(...sketch.canvasSize())
+    }
+    sketch.export = () => {
+        const date = new Date()
+        const filename =
+            'Brutalism.bak.' +
+            '-' +
+            date.getHours() +
+            '.' +
+            date.getMinutes() +
+            '.' +
+            date.getSeconds() +
+            sample.sourceName
+        p5.save(canvas, filename, 'png')
     }
 }
 export default sketch
