@@ -54,7 +54,7 @@
 #grid-gallery.sorted > li {
     margin-left: 0;
     margin-right: 0;
-
+    max-width: unset;
     .list-title {
         margin-left: 1.25%;
         text-transform: capitalize;
