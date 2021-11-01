@@ -31,18 +31,23 @@
 
     @include breakpoint(xs) {
         flex: 0 1 97.5%;
+        max-width: 97.5%;
     }
     @include breakpoint(sm) {
         flex: 0 5 47.5%;
+        max-width: 47.5%;
     }
     @include breakpoint(md) {
         flex: 0 5 47.5%;
+        max-width: 47.5%;
     }
     @include breakpoint(lg) {
         flex: 0 1 30.8%;
+        max-width: 30.8%;
     }
     @include breakpoint(xl) {
         flex: 0 5 22.5%;
+        max-width: 22.5%;
     }
     margin: 1.25em 1.25%;
 }
@@ -146,6 +151,8 @@
         display: block;
         position: relative;
         hyphens: auto;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
         margin-top: 0.5em;
         @include breakpoint(md) {
             min-height: 4em;
