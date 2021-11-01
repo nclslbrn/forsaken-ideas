@@ -1,0 +1,16 @@
+{
+    "libs": ["p5"],
+    "info": "Stress and cut the grid.",
+    "topic": "Random distribution",
+    "date": "2021-11-01",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
