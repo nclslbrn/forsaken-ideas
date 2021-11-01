@@ -3,6 +3,7 @@ import Notification from '../../src/js/sketch-common/Notification'
 
 const sketch = (p5) => {
     let canvas,
+        upscale,
         t = 0,
         portraitId = 0,
         numRow = 0,
@@ -12,10 +13,18 @@ const sketch = (p5) => {
         nextLettersThickness = []
 
     const fonts = [],
-        upscale = 14,
         code = [...'0123456789', ...":/*|&#@!<>'=", ...'{}[]+-^~%?;()'],
         text = biography()
 
+    sketch.canvasSize = (isResize = false) => {
+        const size = window.innerWidth < 800 ? window.innerWidth * 0.8 : 800
+        upscale = size / 58
+        if (isResize) {
+            p5.resizeCanvas(size, size)
+        } else {
+            canvas = p5.createCanvas(size, size)
+        }
+    }
     p5.preload = () => {
         muhammad_ali_portrait = [
             p5.loadImage('assets/muhammad_ali.0@58px.jpg'),
@@ -35,10 +44,7 @@ const sketch = (p5) => {
         fonts[8] = p5.loadFont('assets/Inter-Black.otf')
     }
     p5.setup = () => {
-        canvas = p5.createCanvas(
-            muhammad_ali_portrait[0].width * upscale,
-            muhammad_ali_portrait[0].height * upscale
-        )
+        sketch.canvasSize()
         canvas.elt.style = 'background: #000; padding: 0;'
         document.getElementById('windowFrame').style = 'background: #000'
         numRow = muhammad_ali_portrait[0].height - 1
@@ -155,7 +161,7 @@ const sketch = (p5) => {
         rippleLength = 1
     } */
     p5.windowResized = () => {
-        p5.resizeCanvas(window.innerWidth, window.innerHeight)
+        sketch.canvasSize(true)
         sketch.init()
     }
 }
