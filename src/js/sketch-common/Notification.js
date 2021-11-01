@@ -4,7 +4,7 @@ import '../../sass/notification.scss'
  * @param {string} message the text to display
  * @param {object} parentElem the node element where append it
  * @param {string} mode dark|light the style of the box
- * @param {number|boolean} duration miliseconds delay before remove notification or false for a permanent display
+ * @param {(number|boolean)} duration miliseconds delay before remove notification or false for a permanent display
  */
 export default class Notification {
     constructor(message, parentElem, mode = 'dark', duration = 5000) {
