@@ -53,9 +53,9 @@ const zoneOccupancy = (p5) => {
             cols[y].current.update()
             cols[y].next.update()
         }
-        firstRowsItems = JSON.parse(JSON.stringify(rows.current.items))
-        firstCols = JSON.parse(JSON.stringify(cols))
-        colors = generateHslaColors(75, 60, 100, 2).map((c) => {
+        firstRowsItems = [...rows.current.items]
+        firstCols = [...cols]
+        colors = generateHslaColors(82, 70, 100, 4).map((c) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
         p5.background(255)
