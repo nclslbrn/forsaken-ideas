@@ -9,7 +9,7 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer({
         parentElem: container,
-        size: 'A3_landscape',
+        size: 'A4_portrait',
         dpi: 72,
         background: 'black'
     }),
@@ -17,8 +17,8 @@ const sketch = {
     launch: () => {
         sketch.svg.init()
         sketch.margin = {
-            x: sketch.svg.cmToPixels(5),
-            y: sketch.svg.cmToPixels(5)
+            x: sketch.svg.cmToPixels(2),
+            y: sketch.svg.cmToPixels(2)
         }
         sketch.init()
     },
