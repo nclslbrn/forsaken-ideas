@@ -18,5 +18,12 @@ label {
 #interactiveParameter {
     display: flex;
     flex-flow: column nowrap;
-    padding: 1em;
+    padding: 1em 1em 3em 1em;
+}
+#windowFrame {
+    flex-flow: column-reverse nowrap;
+}
+
+#windowFrame svg {
+    margin: 2em;
 }

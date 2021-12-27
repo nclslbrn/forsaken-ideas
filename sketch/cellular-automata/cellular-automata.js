@@ -34,7 +34,7 @@ windowFrame.appendChild(paramBox)
 const sketch = {
     svg: new SvgTracer({
         parentElem: document.getElementById('windowFrame'),
-        size: 'A3_Square',
+        size: 'A4_portrait',
         dpi: 150
     }),
     g: undefined,
@@ -50,7 +50,7 @@ const sketch = {
         sketch.init()
     },
     init: () => {
-        sketch.g = new AutomataGrid(6, 6)
+        sketch.g = new AutomataGrid(6, 8)
         sketch.cellSize = {
             w: sketch.svg.width / (1 + sketch.g.cols * 2),
             h: sketch.svg.height / (1 + sketch.g.rows * 2)
@@ -73,7 +73,7 @@ const sketch = {
         })
         if (!aliveCellInGrid) {
             new Notification(
-                'All cells become dead, the grid has been reset.',
+                'All cells died, the grid has been reinitialized.',
                 sketch.svg.parentElem,
                 'light'
             )
