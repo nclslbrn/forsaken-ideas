@@ -45,8 +45,7 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         sketch.canvasSize()
-        canvas.elt.style = 'background: #000; padding: 0;'
-        document.getElementById('windowFrame').style = 'background: #000'
+        canvas.elt.style = 'padding: 0; max-width: 100vw; height: auto;'
         numRow = muhammad_ali_portrait[0].height - 1
         rippleCenter = [
             Math.floor(Math.random() * numRow),
