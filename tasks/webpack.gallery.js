@@ -66,14 +66,14 @@ module.exports = (env, process) => {
     }
     const plugins = [
         ...defaultPlugins,
-        new HtmlWebpackPlugin({
+        /*  new HtmlWebpackPlugin({
             templateParameters: {
                 projects: projectWithMeta,
                 property: property
             },
             filename: './list.html',
             template: './src/pug/gallery.pug'
-        }),
+        }), */
         new HtmlWebpackPlugin({
             templateParameters: {
                 projects: projectWithMeta,
