@@ -5,8 +5,8 @@ const sketch = (p5) => {
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
-            w: 1200, //side > 800 ? 800 : side * 0.85,
-            h: 630 //side > 800 ? 800 : side * 0.85
+            w: side > 800 ? 800 : side * 0.85,
+            h: side > 800 ? 800 : side * 0.85
         }
     }
 
