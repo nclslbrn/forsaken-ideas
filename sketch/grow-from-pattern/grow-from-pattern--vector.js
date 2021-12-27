@@ -20,19 +20,19 @@ const circle = (theta) => {
 // Value from Inkscape (document properties)
 const size = {
     a3: { w: 1587.40157, h: 1122.51969 },
-    a4: { w: 1122.51969, h: 793.70079 }
+    a4: { w: 793.70079, h: 1122.51969 }
 }
 
 // Main sketch object
 const sketch = {
     nIter: 0,
-    iterations: 40,
+    iterations: 15, // print version 40
     patternNum: [3, 5, 6, 7, 9, 10, 11, 12, 13, 15],
     size: size.a4,
     trigoFunc: false,
-    scale: 0.001,
-    step: 64, // print version 96
-    res: 8, // print version 6
+    scale: 0.007,
+    step: 48, // print version 96
+    res: 10, // print version 6
     points: [],
     lines: [],
     root: document.getElementById('windowFrame'),
@@ -61,6 +61,7 @@ const sketch = {
             ]
         sketch.points = []
         sketch.lines = []
+        sketch.nIter = 0
 
         for (let x = 0; x <= sketch.size.w; x += sketch.step) {
             for (let y = 0; y <= sketch.size.h; y += sketch.step) {
