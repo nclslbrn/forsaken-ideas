@@ -1,7 +1,15 @@
+@import '../../src/sass/variables/breakpoints';
+@import '../../src/sass/mixins/breakpoint';
+
 #windowFrame canvas {
     display: block;
-    height: 80vh !important;
-    width: auto !important;
+    width: 80vw !important;
+    height: auto !important;
+
+    @include breakpoint(md) {
+        height: 80vh !important;
+        width: auto !important;
+    }
 }
 
 #cartel {
