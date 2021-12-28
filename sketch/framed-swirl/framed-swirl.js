@@ -6,13 +6,14 @@ import Notification from '../../src/js/sketch-common/Notification'
 
 const container = document.getElementById('windowFrame')
 const sketch = (p5) => {
-    const n = 1
-    const x1 = -3
-    const y1 = -3
-    const x2 = 3
-    const y2 = 3
-    let y = y1
-    let margin,
+    const n = 1,
+        x1 = -2,
+        y1 = -2,
+        x2 = 2,
+        y2 = 2
+
+    let y = y1,
+        margin,
         step,
         drawing,
         planeFunction,
@@ -23,8 +24,8 @@ const sketch = (p5) => {
         cartel
 
     // A4 150dpi canvas = p5.createCanvas(1754, 1280)
-    const sketchWidth = 620
-    const sketchHeight = 800
+    const sketchWidth = 900
+    const sketchHeight = 1200
     const sketchSize = (sketchWidth, sketchHeight) => {
         const ratio = sketchWidth / sketchHeight
         const side = p5.min(window.innerWidth, window.innerHeight)
@@ -72,20 +73,15 @@ const sketch = (p5) => {
                 margin,
                 p5.height - margin
             )
+
             p5.point(xx, yy)
         }
     }
     p5.setup = () => {
         const sketchDim = sketchSize(sketchWidth, sketchHeight)
-        margin = sketchDim.w / 64
+        margin = sketchDim.w / 24
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
 
-        canvas.elt.setAttribute(
-            'style',
-            'display: block; width: 80vw; height: auto;'
-        )
-
-        //p5.strokeWeight(0.5)
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
         step = (p5.sqrt(n) * (x2 - x1)) / p5.width
@@ -96,9 +92,9 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         if (drawing) {
-            p5.background(0, 75, 4, 2)
+            p5.background(0, 75, 4, 5)
 
-            for (let i = 0; (i < 4) & drawing; i++) {
+            for (let i = 0; (i < 20) & drawing; i++) {
                 for (let x = x1; x <= x2; x += step) {
                     const color = colors[i % colors.length]
                     p5.stroke(color)
@@ -135,7 +131,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(100, 50, 80, 4).map((c, index) => {
+        colors = generateHslaColors(85, 60, 90, 3).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '
