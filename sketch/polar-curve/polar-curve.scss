@@ -1,7 +1,7 @@
 @import '../../src/sass/variables';
 @import '../../src/sass/mixins';
 
-body {
+#windowFrame {
     flex-flow: column-reverse nowrap;
     @include breakpoint(md) {
         flex-flow: row-reverse nowrap;

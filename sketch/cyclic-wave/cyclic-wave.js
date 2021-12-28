@@ -2,8 +2,8 @@ const sketch = (p5) => {
     let arcs = []
     let numFrames = 125
     let margin = 16, // margin between circle
-        noiseRadius = 6,
-        noiseStrength = 1,
+        noiseRadius = 0.9,
+        noiseStrength = 100,
         lineSize = 8,
         speed = 0, // the value wich increments circle's radiuses
         maxRadius = 0 // Limit the size of the arc circle
@@ -11,8 +11,8 @@ const sketch = (p5) => {
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
+            w: side > 800 ? 800 : window.innerWidth,
+            h: side > 800 ? 800 : window.innerHeight
         }
     }
     sketch.init = () => {
@@ -39,7 +39,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         const sketchDim = sketchSize()
         p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
-        p5.smooth(20)
+        //p5.smooth(20)
         sketch.init()
     }
 
@@ -65,7 +65,7 @@ const sketch = (p5) => {
                 angleID += 2
             ) {
                 var strokeColor = p5.map(arc.radius, 0, maxRadius, 255, 0)
-                var lineWeight = p5.map(arc.radius, 0, maxRadius, 0.5, 2)
+                var lineWeight = p5.map(arc.radius, 0, maxRadius, 0.5, 4)
 
                 var start = currentAngle + arc.angles[angleID]
                 var end = currentAngle + arc.angles[angleID + 1]

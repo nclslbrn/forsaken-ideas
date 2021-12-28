@@ -47,15 +47,15 @@ const container = document.getElementById('windowFrame')
 const simplex = new SimplexNoise()
 const tracer = new SvgTracer({
     parentElem: container,
-    size: 'A3_landscape'
+    size: 'A4_portrait'
 })
 
 const sketch = {
     iterations: 50,
-    margin: tracer.cmToPixels(4),
-    scale: 5,
-    speed: 0.025,
-    res: 0.2,
+    margin: tracer.cmToPixels(3.5),
+    scale: 10,
+    speed: 0.05,
+    res: 0.4,
     // setup
     launch: () => {
         tracer.init()
@@ -116,15 +116,14 @@ const sketch = {
                         sketch.points[p].stuck = true
                     }
                     const a1 = map(
-                        120 *
-                            simplex.noise2D(
-                                Math.cos(sketch.points[p].x),
-                                Math.sin(sketch.points[p].y)
-                            ),
+                        simplex.noise2D(
+                            Math.cos(sketch.points[p].x),
+                            Math.sin(sketch.points[p].y)
+                        ),
                         0,
                         1,
-                        -0.25,
-                        0.25
+                        -1,
+                        1
                     )
                     const v1 = funcs[sketch.trigoFunc]({
                         x: sketch.points[p].x * Math.cos(a1),
