@@ -3,15 +3,14 @@ export default class Stack {
         this.maxItems = maxItems
         this.items = []
 
-        let remaining = 1
-        for (let i = 1; i <= this.maxItems; i++) {
-            if (remaining > 0) {
-                const item = Math.random() * (i / this.maxItems) * remaining
-                this.items.push(item)
-                remaining -= item
-            } else {
-                this.items.push(0)
-            }
+        while (this.items.length <= maxItems) {
+            this.items.push(Math.random())
         }
+        const sum = this.items.reduce((sum, item) => {
+            return (sum += item)
+        }, 0)
+        this.items.forEach((value, index) => {
+            this.items[index] /= sum
+        })
     }
 }
