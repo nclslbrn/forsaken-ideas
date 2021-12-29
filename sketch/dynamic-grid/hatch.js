@@ -1,5 +1,5 @@
 const arc = (props) => {
-    const res = 0.01
+    const res = 0.005
     const radius = Math.sqrt(Math.pow(props.w, 2) + Math.pow(props.h, 2))
     const circleDef = [
         {
@@ -25,7 +25,7 @@ const arc = (props) => {
     ]
     const rotation = circleDef[Math.floor(Math.random() * circleDef.length)]
     const lines = []
-    for (let r = props.step; r < radius; r += props.step) {
+    for (let r = props.step; r <= radius; r += props.step) {
         const arc = []
         for (
             let theta = rotation.angle.start;
@@ -53,67 +53,68 @@ const arc = (props) => {
 
 /////////////////////////////////////////////////////////////////////////////////
 const corner = (props) => {
-    const radius = Math.min(props.w, props.h)
+    const radius = Math.max(props.w, props.h)
     const axe = Math.floor(Math.random() * 4)
-    const lines = []
-
-    for (let d = props.step; d < radius; d += props.step) {
+    const corner = []
+    for (let d = 0; d < radius; d += props.step) {
+        let lines = []
         if (axe === 0) {
             // top left corner
-            lines.push([
+            lines = [
                 [props.x + d, props.y],
                 [props.x + d, props.y + d],
                 [props.x, props.y + d]
-            ])
+            ]
         }
         if (axe === 1) {
             // top right corner
-            lines.push([
+            lines = [
                 [props.x + d, props.y],
                 [props.x + d, props.y + props.h - d],
                 [props.x + props.w, props.y + props.h - d]
-            ])
+            ]
         }
         if (axe === 2) {
             // bottom right corner
-            lines.push([
+            lines = [
                 [props.x + d, props.y + props.h],
                 [props.x + d, props.y + d],
                 [props.x + props.w, props.y + d]
-            ])
+            ]
         }
         if (axe === 3) {
             // bottom left corner
-            lines.push([
+            lines = [
                 [props.x + d, props.y],
                 [props.x + d, props.y + props.h - d],
                 [props.x + props.w, props.y + props.h - d]
-            ])
+            ]
         }
+
+        lines.forEach((l, i, lines) => {
+            lines[i][0] = Math.max(props.x, l[0])
+            lines[i][0] = Math.min(l[0], props.x + props.w)
+            lines[i][1] = Math.max(props.y, l[1])
+            lines[i][1] = Math.min(l[1], props.y + props.h)
+        })
+        corner.push(lines)
     }
-    /*   lines.filter((point) => {
-        return (
-            point[0] > props.x &&
-            point[0] < props.x + props.w &&
-            point[1] > props.y &&
-            point[1] < props.y + props.h
-        )
-    }) */
-    return lines
+
+    return corner
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 const line = (props) => {
     const lines = []
     if (Math.random() > 0.5) {
-        for (let y = 0; y < props.h; y += props.step) {
+        for (let y = 0; y <= props.h; y += props.step) {
             lines.push([
                 [props.x, props.y + y],
                 [props.x + props.w, props.y + y]
             ])
         }
     } else {
-        for (let x = 0; x < props.w; x += props.step) {
+        for (let x = 0; x <= props.w; x += props.step) {
             lines.push([
                 [props.x + x, props.y],
                 [props.x + x, props.y + props.h]
