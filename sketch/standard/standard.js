@@ -1,4 +1,4 @@
-import Subdivision from './Subdivision'
+import Subdivision from '../../src/js/sketch-common/Subdivision'
 import * as tome from 'chromotome'
 import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
 
