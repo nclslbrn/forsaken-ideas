@@ -5,13 +5,14 @@ import hatch from './hatch'
 // const simplex = new SimplexNoise()
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
-    size: 'A4_portrait'
+    size: 'P24x32'
 })
 const sketch = {
     noiseScale: 10,
     noiseFrequency: 200,
-    step: svg.cmToPixels(0.15),
+    step: svg.cmToPixels(0.2),
     margin: svg.cmToPixels(2),
+    colorGroups: ['black', Math.random() > 0.5 ? 'steelblue' : 'tomato'],
     // setup
     launch: () => {
         svg.init()
@@ -19,11 +20,18 @@ const sketch = {
             w: svg.width - sketch.margin * 2,
             h: svg.height - sketch.margin * 2
         }
+        sketch.colorGroups.forEach((c) =>
+            svg.group({
+                name: c,
+                stoke: c
+            })
+        )
+
         sketch.init()
     },
     // reset value and relaunch drawing
     init: () => {
-        svg.clear()
+        svg.clearGroups()
         const xGrid = new Stack(10)
         let size = { w: 0, h: 0 }
         let pos = { x: 0, y: 0 }
@@ -44,12 +52,17 @@ const sketch = {
                     step: sketch.step
                 })
                 if (lines[0]) {
-                    lines.forEach((points) =>
+                    lines.forEach((points, i) =>
                         svg.path({
                             points: points,
-                            stroke: 'black',
                             close: false,
-                            fill: 'none'
+                            stroke: sketch.colorGroups[
+                                i % sketch.colorGroups.length
+                            ],
+                            fill: 'none',
+                            group: sketch.colorGroups[
+                                i % sketch.colorGroups.length
+                            ]
                         })
                     )
                 }
