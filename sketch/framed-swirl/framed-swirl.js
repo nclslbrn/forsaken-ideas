@@ -5,8 +5,9 @@ import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColor
 import Notification from '../../src/js/sketch-common/Notification'
 
 const container = document.getElementById('windowFrame')
+
 const sketch = (p5) => {
-    const n = 1,
+    const n = 4,
         x1 = -2,
         y1 = -2,
         x2 = 2,
@@ -52,7 +53,7 @@ const sketch = (p5) => {
         return variable.replaceAll('_', ' ').toUpperCase()
     }
     // draw function
-    const drawVariation = (x, y) => {
+    const drawVariation = (x, y, h) => {
         const v = p5.createVector(x, y)
         for (let i = 0; i < n; i++) {
             const v2 = funcs[planeFunction](v)
@@ -92,13 +93,13 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         if (drawing) {
-            p5.background(0, 75, 4, 5)
+            p5.background(0, 75, 4, 2)
 
-            for (let i = 0; (i < 20) & drawing; i++) {
+            for (let i = 0; (i < n) & drawing; i++) {
+                p5.stroke(colors[i % colors.length])
+
                 for (let x = x1; x <= x2; x += step) {
-                    const color = colors[i % colors.length]
-                    p5.stroke(color)
-                    drawVariation(x, y)
+                    drawVariation(x, y, i)
                 }
                 y += step
                 if (y > y2) {
