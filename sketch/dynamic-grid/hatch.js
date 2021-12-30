@@ -25,7 +25,7 @@ const arc = (props) => {
     ]
     const rotation = circleDef[Math.floor(Math.random() * circleDef.length)]
     const lines = []
-    for (let r = props.step; r <= radius; r += props.step) {
+    for (let r = props.step; r < radius; r += props.step) {
         const arc = []
         for (
             let theta = rotation.angle.start;
@@ -53,7 +53,7 @@ const arc = (props) => {
 
 /////////////////////////////////////////////////////////////////////////////////
 const corner = (props) => {
-    const radius = Math.max(props.w, props.h)
+    const radius = Math.min(props.w, props.h)
     const axe = Math.floor(Math.random() * 4)
     const corner = []
     for (let d = 0; d < radius; d += props.step) {
@@ -91,12 +91,12 @@ const corner = (props) => {
             ]
         }
 
-        lines.forEach((l, i, lines) => {
+        /*  lines.forEach((l, i, lines) => {
             lines[i][0] = Math.max(props.x, l[0])
             lines[i][0] = Math.min(l[0], props.x + props.w)
             lines[i][1] = Math.max(props.y, l[1])
             lines[i][1] = Math.min(l[1], props.y + props.h)
-        })
+        }) */
         corner.push(lines)
     }
 
@@ -107,14 +107,14 @@ const corner = (props) => {
 const line = (props) => {
     const lines = []
     if (Math.random() > 0.5) {
-        for (let y = 0; y <= props.h; y += props.step) {
+        for (let y = 0; y < props.h; y += props.step) {
             lines.push([
                 [props.x, props.y + y],
                 [props.x + props.w, props.y + y]
             ])
         }
     } else {
-        for (let x = 0; x <= props.w; x += props.step) {
+        for (let x = 0; x < props.w; x += props.step) {
             lines.push([
                 [props.x + x, props.y],
                 [props.x + x, props.y + props.h]
@@ -124,7 +124,27 @@ const line = (props) => {
     return lines
 }
 /////////////////////////////////////////////////////////////////////////////////
+const contour = (props) => {
+    return [
+        [
+            [props.x, props.y],
+            [props.x + props.w, props.y],
+            [props.x + props.w, props.y + props.h],
+            [props.x, props.y + props.h],
+            [props.x, props.y]
+        ],
+        [
+            [props.x + props.step, props.y + props.step],
+            [props.x + props.w - props.step, props.y + props.step],
+            [props.x + props.w - props.step, props.y + props.h - props.step],
+            [props.x + props.step, props.y + props.h - props.step],
+            [props.x + props.step, props.y + props.step]
+        ]
+    ]
+}
+/////////////////////////////////////////////////////////////////////////////////
 export default function hatch(props) {
-    const fill = [arc, corner, line]
+    // Array of filling functions + blank one
+    const fill = [arc, corner, arc, corner, line, contour]
     return fill[Math.floor(Math.random() * fill.length)](props)
 }

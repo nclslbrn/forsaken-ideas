@@ -32,14 +32,14 @@ const sketch = {
     // reset value and relaunch drawing
     init: () => {
         svg.clearGroups()
-        const xGrid = new Stack(10)
+        const xGrid = new Stack(10, 0.15)
         let size = { w: 0, h: 0 }
         let pos = { x: 0, y: 0 }
 
         for (let i = 0; i < xGrid.items.length; i++) {
             pos.y = 0
             size.w = xGrid.items[i] * sketch.inner.w
-            const yGrid = new Stack(16)
+            const yGrid = new Stack(16, 0.15)
 
             for (let j = 0; j < yGrid.items.length; j++) {
                 size.h = yGrid.items[j] * sketch.inner.h
