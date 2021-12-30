@@ -88,7 +88,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        svg.export({ name: 'dynamic-grid' })
+        svg.export({ name: 'interconnection' })
     }
 }
 
