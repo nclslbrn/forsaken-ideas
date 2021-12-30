@@ -2,7 +2,7 @@
     "libs": [],
     "info": "Create grid with iregular distribution (on Y axis), then fill cells with three method: corner, arc, line, and contour.",
     "topic": "Random distribution",
-    "date": "2020-07-25",
+    "date": "2021-12-25",
     "action": [
         {
             "name": "export",
@@ -11,6 +11,6 @@
         {
             "name": "init",
             "icon": "sync"
-        }   
+        }
     ]
 }
