@@ -10,7 +10,7 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 |-------+ assets/ (you can copy assets relative to a project)
 |-------+ index.js (Sketch entry point)
 |-------+ property.json (Sketch properties, details below) 
-|-------+ capture.jpg (1067x720px illustration for Open Graph) 
+|-------+ capture.jpg (1200 x 630 px illustration for Open Graph) 
 + src/ (Gallery and project page templates)
 |---+ fonts/
 |---+ img/
