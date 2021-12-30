@@ -1,7 +1,7 @@
 {
-    "libs": ["p5"],
-    "info": "Coming soon",
-    "topic": "Perlin noise",
+    "libs": [],
+    "info": "Create grid with iregular distribution (on Y axis), then fill cells with three method: corner, arc, line, and contour.",
+    "topic": "Random distribution",
     "date": "2020-07-25",
     "action": [
         {
