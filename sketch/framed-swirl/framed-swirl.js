@@ -93,7 +93,7 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         if (drawing) {
-            p5.background(0, 75, 4, 2)
+            p5.background(0, 75, 4, 1)
 
             for (let i = 0; (i < n) & drawing; i++) {
                 p5.stroke(colors[i % colors.length])
