@@ -1,4 +1,3 @@
-import '../sass/gallery.scss'
 import '../sass/grid-gallery.scss'
 // import makeAcronym from './gallery/random-acronym-extend'
 // import randomHeroImage from './gallery/random-hero-image'
