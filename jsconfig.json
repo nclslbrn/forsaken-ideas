@@ -1,8 +1,4 @@
 {
-    "include": [
-        "src/js/*.js",
-        "sketch/*.js",
-        "/home/nlebrun/.vscode/extensions/samplavigne.p5-vscode-1.2.4/p5types/global.d.ts"
-    ],
+    "include": ["src/js/*.js", "sketch/*.js"],
     "exclude": ["node_modules"]
 }
