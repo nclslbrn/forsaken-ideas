@@ -88,7 +88,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        svg.export({ name: 'interconnection' })
+        svg.export({ name: 'multiple-choice-box' })
     }
 }
 
