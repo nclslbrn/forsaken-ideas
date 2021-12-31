@@ -14,14 +14,7 @@
         {
             "label": "export this sketch",
             "type": "shell",
-            "command": "npm run build:sketch ${fileDirname}",
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "thumbnail this sketch",
-            "type": "shell",
-            "command": "node tasks/thumbnailThis.js ${fileDirname}",
+            "command": "npm run build:sketch ${fileDirname}; node tasks/thumbnailThis.js ${relativeFileDirname}",
             "group": "build",
             "problemMatcher": []
         }

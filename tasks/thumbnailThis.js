@@ -6,18 +6,17 @@ const fs = require('fs'),
 
 if (sketchName) {
     const capturePath = path.join(
-        path.resolve('sketch', sketchName),
+        path.resolve(__dirname, '..', sketchName),
         'capture.jpg'
     )
 
     if (fs.existsSync(capturePath)) {
         const thumbnailPath = path.join(
-            path.resolve('public/sketch', sketchName),
-            'capture-380x200px.jpg'
+            path.resolve(__dirname, '..', 'public', sketchName),
+            'thumbnail.jpg'
         )
-
         gm(capturePath)
-            .resize(380, 200, '!')
+            .crop(600, 600, 300, 15)
             .write(thumbnailPath, function (err) {
                 if (err) {
                     console.error(err)
