@@ -1,6 +1,6 @@
 #grid-gallery {
-    border-top: 1px solid #222;
-    border-bottom: 1px solid #222;
+    border-top: 1px solid var(--color-text);
+    border-bottom: 1px solid var(--color-text);
 }
 #grid-gallery,
 #grid-gallery.sorted > li > ul {
@@ -67,18 +67,19 @@
         padding: 1em;
     }
     text-decoration: none;
-    color: #333;
-    background: #fefefe;
-    box-shadow: 0 0 0.1em #fff;
+    background: var(--color-body);
 
     &:hover {
-        box-shadow: 0 0 0.1em #ccc;
-        background: #222;
-        color: #fefefe;
+        background: var(--color-hover);
+        h2,
+        p,
+        small {
+            color: var(--color-body);
+        }
         transition: all 0.15s ease-out;
 
         figure img {
-            filter: invert(100%);
+            filter: brightness(1.4);
         }
     }
 }
@@ -94,50 +95,14 @@
     height: auto;
 }
 #grid-gallery li {
+    /* a figure figcaption {
+        margin: 0 1em;
+    } */
     a figure figcaption::before {
         content: '';
         display: table;
         float: none;
         clear: both;
-    }
-    @media (hover: hover) {
-        /**
-        Reveal figcaption on hover
-        a figure figcaption {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            color: black;
-            background: white;
-
-            padding: 1em;
-            max-width: 100%;
-            max-height: 100%;
-            overflow: hidden;
-            mix-blend-mode: multiply;
-            opacity: 0;
-            transition: all 0.25s ease-in;
-        }
-        &:nth-child(4n) a figure figcaption {
-            transform: translate(0, 50%);
-        }
-        &:nth-child(4n + 1) a figure figcaption {
-            transform: translate(0, -50%);
-        }
-        &:nth-child(4n + 2) a figure figcaption {
-            transform: translate(50%, 0);
-        }
-        &:nth-child(4n + 3) a figure figcaption {
-            transform: translate(-50%, 0);
-        }
-
-        &:hover a figure figcaption {
-            transform: translate(0, 0) !important;
-            opacity: 1;
-        }
-        */
     }
 
     h2 {

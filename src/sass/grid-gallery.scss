@@ -2,12 +2,14 @@
 @import 'mixins';
 @include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
 @import 'commons';
+@import 'modules/aside';
 @import 'modules/orderGridButton';
 @import 'modules/thumbnailGrid';
 
 body {
-    background: ghostwhite;
+    background: var(--color-body);
 }
+
 main {
     display: block;
     padding: 1em 0 0 0;

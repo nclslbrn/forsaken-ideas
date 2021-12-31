@@ -1,3 +1,12 @@
-$color_text: #333;
-$color_body: #fff;
-$color_hover: #5d89da;
+:root {
+    @media (prefers-color-scheme: dark) {
+        --color-text: #d8e6e5;
+        --color-body: #141010;
+        --color-hover: #f65855;
+    }
+    @media (prefers-color-scheme: light) {
+        --color-text: #333;
+        --color-body: #f1f1f1;
+        --color-hover: #14ae7c;
+    }
+}

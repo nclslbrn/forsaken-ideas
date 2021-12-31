@@ -4,14 +4,17 @@ html {
 
 body {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol';
+    font-family: $body_font_family;
     font-size: 16px;
     text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
     height: 100%;
+}
+
+::selection {
+    color: var(--color-body);
+    background-color: var(--color-hover);
 }
 
 .screen-reader-text {
@@ -22,6 +25,19 @@ body {
     .screen-reader-text {
         display: block;
     }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+small,
+blockquote,
+a {
+    color: var(--color-text);
 }
 
 h1,
@@ -60,10 +76,25 @@ h5 {
 small,
 .text_small {
     font-size: 0.889rem;
+    color: var(--color-text);
 }
 
 .clearfix {
     display: table;
     clear: both;
     float: none;
+}
+
+a {
+    color: var(--color-text);
+    svg {
+        fill: var(--color-text);
+    }
+
+    &:hover {
+        color: var(--color-hover);
+        svg {
+            fill: var(--color-hover);
+        }
+    }
 }

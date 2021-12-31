@@ -33,7 +33,6 @@ nav#iconav ul {
     }
 
     list-style-type: none;
-    //background: #f3f3f3;
 }
 
 nav#iconav a {
@@ -47,9 +46,8 @@ nav#iconav a {
 
     @include breakpoint(md) {
         &:hover {
-            //background-color: $color_text;
-            color: $color_body;
-            fill: $color_body;
+            color: var(--color-body);
+            fill: var(--color-body);
         }
     }
 
@@ -57,17 +55,17 @@ nav#iconav a {
         width: 1.5rem;
         height: 1.5rem;
         pointer-events: none;
-
-        stroke: $color_text;
-        //stroke-width: 0.125rem;
-        fill: $color_body;
+        fill: var(--color-hover);
     }
-    &:hover svg {
-        fill: lighten($color_hover, 8%);
+    &:hover {
+        background-color: var(--color-hover);
+        svg {
+            fill: var(--color-body);
+        }
     }
 }
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] {
-    background: darken($color_text, 10%);
-    color: $color_body;
-    fill: $color_body;
+    background: var(--color-text);
+    color: var(--color-body);
+    fill: var(--color-body);
 }
