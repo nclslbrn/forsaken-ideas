@@ -7,7 +7,7 @@ const container = document.getElementById('windowFrame')
 // A3square width - 1.5mm
 const tracer = new SvgTracer({
     parentElem: container,
-    size: 'A3_topSpiralNotebook',
+    size: 'A3_Square',
     dpi: 150,
     background: 'black'
 })
