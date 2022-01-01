@@ -9,7 +9,7 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer({
         parentElem: container,
-        size: 'A4_portrait',
+        size: 'A3_Square',
         dpi: 72,
         background: 'black'
     }),
@@ -29,7 +29,7 @@ const sketch = {
         const innerHeight = sketch.svg.height - sketch.margin.y * 2
 
         sketch.walkers = []
-        sketch.offset = movingDiagonally ? 7 : 9
+        sketch.offset = movingDiagonally ? 6 : 5
         sketch.cellSize = sketch.svg.cmToPixels(movingDiagonally ? 0.4 : 0.8)
         sketch.walkerNum = 60
 
@@ -42,7 +42,7 @@ const sketch = {
 
         sketch.svg.clear()
 
-        sketch.palette = ['white', 'gold']
+        sketch.palette = ['white', Math.random() > 0.5 ? 'tomato' : 'steelblue']
         console.log(sketch.palette)
         sketch.palette.forEach((color, index) => {
             sketch.svg.group({
@@ -82,7 +82,7 @@ const sketch = {
                             min: 1,
                             max: 6
                         },
-                        maxDirectionTries: 16,
+                        maxDirectionTries: 4,
                         limit: [sketch.grid.cols, sketch.grid.rows],
                         movingDiagonally: movingDiagonally
                     })
@@ -126,15 +126,15 @@ const sketch = {
                     isDiagComp: sketch.walkers[w].movingDiagonally,
                     offsetWidth:
                         sketch.cellSize *
-                        (sketch.walkers[w].movingDiagonally ? 2 : 1.39), // ugly tricks
+                        3 *
+                        (sketch.walkers[w].movingDiagonally ? 2 : 1),
                     tracer: sketch.svg
                 })
                 const offsetLines = offset.getOffsets(w)
                 offsetLines.lines.forEach((line) =>
                     sketch.svg.path({
                         points: line,
-                        group: sketch.palette[offsetLines.color],
-                        fill: 'none'
+                        group: sketch.palette[offsetLines.color]
                     })
                 )
             }
@@ -143,7 +143,7 @@ const sketch = {
     // export inline <svg> as SVG file
     export: () => {
         sketch.svg.export({
-            name: `jogged-lines-${sketch.palette.name}-palette`
+            name: `jogged-lines-${sketch.palette[1]}-palette`
         })
     }
 }
