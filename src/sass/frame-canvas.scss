@@ -14,7 +14,11 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(225deg, #f1f1f1, #f5f5f5);
-
+    > div p,
+    > div small,
+    > div label {
+        color: #333;
+    }
     svg {
         position: static;
         z-index: 99;
