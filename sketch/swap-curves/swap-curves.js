@@ -2,7 +2,7 @@ import ease from '../../src/js/sketch-common/ease'
 import switchMode from './switchMode'
 let canvas
 const numFrame = 45
-const cellSize = 64
+const cellSize = 72
 const pointByCell = 8
 
 window.drawAsSingleLine = switchMode()
@@ -54,8 +54,8 @@ const sketch = (p5) => {
     }
     const sketchSize = () => {
         return {
-            w: ~~(window.innerWidth * 0.7),
-            h: ~~(window.innerHeight * 0.7)
+            w: window.innerWidth * 0.7,
+            h: window.innerHeight * 0.7
         }
     }
     p5.setup = () => {
