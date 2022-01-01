@@ -8,10 +8,10 @@ const container = document.getElementById('windowFrame')
 
 const sketch = (p5) => {
     const n = 4,
-        x1 = -2,
-        y1 = -2,
-        x2 = 2,
-        y2 = 2
+        x1 = -3,
+        y1 = -3,
+        x2 = 3,
+        y2 = 3
 
     let y = y1,
         margin,
@@ -132,7 +132,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(85, 60, 90, 3).map((c, index) => {
+        colors = generateHslaColors(85, 60, 100, 3).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '
