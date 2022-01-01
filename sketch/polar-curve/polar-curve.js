@@ -116,7 +116,7 @@ const sketch = (p5) => {
         canvas = p5.createCanvas(size, size)
         canvas.elt.setAttribute(
             'style',
-            'display: block; max-height: 60vh; max-width: 80vw;'
+            'display: block; max-height: 60vh; max-width: 60vh;'
         )
         p5.strokeWeight(2)
         p5.smooth(5)
