@@ -1,14 +1,14 @@
 :root {
     @media (prefers-color-scheme: dark) {
         --color-text: #d8e6e5;
-        --color-body: #141010;
-        --color-interactive: #191919;
-        --color-hover: #f65855;
+        --color-body: #0d0b0b;
+        --color-interactive: #181414;
+        --color-hover: #ffc6e3;
     }
     @media (prefers-color-scheme: light) {
         --color-text: #333;
         --color-body: #f1f1f1;
         --color-interactive: #f5f5f5;
-        --color-hover: #bd3355;
+        --color-hover: #3341bd;
     }
 }

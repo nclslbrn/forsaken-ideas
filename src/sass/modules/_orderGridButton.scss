@@ -19,11 +19,11 @@ form#orderGrid ul {
         text-decoration: none;
         font-weight: 700;
         color: var(--color-text);
-        border: 1px solid var(--color-interactive);
+        //border: 1px solid var(--color-interactive);
         cursor: pointer;
         &:hover {
             color: var(--color-hover);
-            border: 1px solid var(--color-hover);
+            //border: 1px solid var(--color-hover);
         }
     }
     li#activeIndicator {
