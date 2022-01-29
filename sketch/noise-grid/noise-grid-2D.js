@@ -31,7 +31,7 @@ const sketch = (p5) => {
      * grid with noise value
      */
     sketch.init = () => {
-        size = 16 * p5.floor(p5.random(4, 8))
+        size = 126
         sketchDim = sketchSize()
         cols = p5.floor(sketchDim.w / size)
         rows = p5.floor(sketchDim.h / size)
@@ -47,8 +47,8 @@ const sketch = (p5) => {
         init()
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
         p5.stroke(125)
-        p5.noFill()
-        p5.smooth()
+        p5.fill(255, 125)
+        //p5.smooth()
 
         if (recording) {
             p5.createLoop({
@@ -82,16 +82,12 @@ const sketch = (p5) => {
 
             const z = layers[i].depth * hSize
             const lines = layers[i].getLines(noiseThreshold, size)
+            p5.beginShape()
             for (let j = 0; j < lines.length; j++) {
-                p5.line(
-                    lines[j].x1,
-                    lines[j].y1,
-                    z,
-                    lines[j].x2,
-                    lines[j].y2,
-                    z
-                )
+                p5.vertex(lines[j].x1, lines[j].y1, z)
+                p5.vertex(lines[j].x2, lines[j].y2, z)
             }
+            p5.endShape(p5.CLOSE)
         }
 
         p5.pop()
