@@ -1,8 +1,7 @@
 import * as THREE from 'three'
 import AutomataGrid from '../../src/js/sketch-common/AutomataGrid'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
-import Notification from '../../src/js/sketch-common/Notification'
+import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils'
 const windowFrame = document.getElementById('windowFrame')
 
 const triangleGeometry = (width, height, depth) => {
@@ -27,7 +26,7 @@ const triangleGeometry = (width, height, depth) => {
 const s = {
     grid: new AutomataGrid(12, 12),
     neededAliveNeighboors: 2,
-    initPercentChanceAliveCell: 0.35,
+    initPercentChanceAliveCell: 0.5,
     //meshSize: { w: 6, h: 6, d: 6 },
     clock: new THREE.Clock(),
     scene: new THREE.Scene(),
@@ -60,10 +59,7 @@ const s = {
             1 / s.grid.rows,
             1 / s.grid.rows
         )
-        s.object = SceneUtils.createMultiMaterialObject(
-            s.defaultGeometry,
-            s.defaulMat
-        )
+        s.object = createMultiMaterialObject(s.defaultGeometry, s.defaulMat)
         s.renderer.setPixelRatio(window.devicePixelRatio)
         s.renderer.setSize(window.innerWidth, window.innerHeight)
         s.camera.position.z = Math.max(s.grid.cols, s.grid.rows) / 4
@@ -100,7 +96,7 @@ const s = {
         s.zRot++
         s.build.rotation.set(0, s.zRot / 100, 0)
 
-        if (s.zRot % 30 == 0) {
+        if (s.zRot % 180 == 0) {
             s.grid.update()
             s.drawgrid()
         }
@@ -121,11 +117,6 @@ const s = {
         s.build.clear()
         if (s.scene.getObjectByName('chrystal')) {
             s.scene.remove(s.scene.getObjectByName('chrystal'))
-            /*   new Notification(
-                'Previous construction was removed.',
-                windowFrame,
-                'dark'
-            ) */
         }
         const group = new THREE.Group()
         for (let x = 0; x <= s.grid.cols; x++) {
