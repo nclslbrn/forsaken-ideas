@@ -37,13 +37,16 @@ nav#iconav ul {
 
 nav#iconav a {
     display: block;
-    padding: 1rem;
-    width: 2rem;
-    height: 2rem;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
     line-height: 1rem;
     text-align: center;
     text-decoration: none;
-
+    background-color: var(--color-body);
+    border-radius: 50%;
+    opacity: 0.5;
     @include breakpoint(md) {
         &:hover {
             color: var(--color-body);
@@ -55,7 +58,8 @@ nav#iconav a {
         width: 1.5rem;
         height: 1.5rem;
         pointer-events: none;
-        fill: var(--color-hover);
+        fill: var(--color-text);
+        opacity: 1;
     }
     &:hover {
         background-color: var(--color-hover);
@@ -67,5 +71,7 @@ nav#iconav a {
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] {
     background: var(--color-text);
     color: var(--color-body);
-    fill: var(--color-body);
+    svg {
+        fill: var(--color-body);
+    }
 }

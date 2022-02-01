@@ -113,9 +113,9 @@ export default class SvgTracer {
             )
 
             const scaling =
-                this.width > this.height
-                    ? 'max-width: 85vw; height: auto;'
-                    : 'max-height: 90vh; width: auto;'
+                window.innerWidth > window.innerHeight
+                    ? 'max-height: 80vh; width: auto;'
+                    : 'max-width: 85vw; height: auto;'
             this.elem.setAttribute(
                 'style',
                 `${scaling}

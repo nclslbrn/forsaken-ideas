@@ -13,12 +13,17 @@ body {
     }
     #offFrame {
         position: absolute;
-        height: calc(100vh - 3rem);
+        height: 100vh;
         width: 100vw;
         max-width: 100vw;
         overflow-y: auto;
         transform: translate(0, 100vh);
         background: var(--color-text);
+        opacity: 0.8;
+
+        > div {
+            opacity: 1;
+        }
 
         @include breakpoint(md) {
             height: 100vh;
