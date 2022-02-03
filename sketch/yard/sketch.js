@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
 import { generateHeight } from './generate'
-import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
+import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils'
 import paramSlider from '../../src/js/sketch-common/param-slider'
 import Notification from '../../src/js/sketch-common/Notification'
 
@@ -120,7 +120,7 @@ const sketch = {
                 transparent: true
             })
         ]
-        sketch.object = SceneUtils.createMultiMaterialObject(
+        sketch.object = createMultiMaterialObject(
             sketch.geometry,
             meshMaterials
         )
