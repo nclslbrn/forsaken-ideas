@@ -1,5 +1,5 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import shuffle from './shuffle'
+import { randomFloatBteween } from '../../src/js/sketch-common/rand-between'
 const angleFromTo = (from, to) => {
     return Math.atan2(to.y - from.y, to.x - from.x)
 }
@@ -46,7 +46,8 @@ const sketch = {
             w: svg.width - sketch.margin * 2,
             h: svg.height - sketch.vPoint.y - sketch.margin,
             group: sketch.colorGroups[1],
-            fill: sketch.colorGroups[0]
+            fill: sketch.colorGroups[0],
+            stroke: sketch.colorGroups[0]
         })
 
         for (let i = 0; i < sketch.N; i++) {
@@ -55,8 +56,8 @@ const sketch = {
                 y: svg.height * 0.5 + (Math.random() - 0.5) * svg.height * 0.65
             }
             const lineWidth = [
-                svg.width * Math.random() * 0.09,
-                svg.width * Math.random() * 0.09
+                svg.width * randomFloatBteween(0.005, 0.09),
+                svg.width * randomFloatBteween(0.005, 0.09)
             ]
             const angle = [
                 angleFromTo(rPos, { x: sketch.vPoint.x1, y: sketch.vPoint.y }),
