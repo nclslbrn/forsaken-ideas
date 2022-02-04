@@ -11,8 +11,8 @@ export default class Layer {
         this.rows = rows
         this.depth = depth
         this.points = []
-        for (let x = 0; x < this.cols; x++) {
-            for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x <= this.cols; x++) {
+            for (let y = 0; y <= this.rows; y++) {
                 this.points.push({
                     weight: window.noise(x, y, frameIndex),
                     x: x,
@@ -26,18 +26,18 @@ export default class Layer {
      * @param {int} maxDepth the number of layers
      */
     update(maxDepth) {
-        this.depth += 1
+        this.depth--
 
-        if (this.depth >= maxDepth) {
-            this.depth = 1
+        if (this.depth === 0) {
+            this.depth = maxDepth
         }
     }
-    computePoints(frameIndex) {
+    computePoints(maxDepth, frameIndex) {
         for (let i = 0; i < this.points.length; i++) {
             this.points[i].weight = window.noise(
                 this.points[i].x,
                 this.points[i].y,
-                frameIndex
+                this.depth / maxDepth + frameIndex * 0.1
             )
         }
     }
@@ -97,7 +97,6 @@ export default class Layer {
         const lines = []
         for (let i = 0; i < this.points.length; i++) {
             if (this.points[i].weight > noiseThreshold) {
-                const selection = []
                 const nearPoints = this.getNearPoints(this.points[i])
                 for (let j = 0; j < nearPoints.length; j++) {
                     if (

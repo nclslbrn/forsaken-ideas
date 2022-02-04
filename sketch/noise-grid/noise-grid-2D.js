@@ -3,9 +3,9 @@ import Layer from './Layer'
 import { makeNoise3D } from 'open-simplex-noise'
 
 const recording = false
-const numFrame = 360
-const numLayer = 220
-const noiseThreshold = 0.45
+const numFrame = 100
+const numLayer = 100
+const noiseThreshold = 0.3
 const gifOptions = {
     quality: 10,
     render: true,
@@ -16,8 +16,8 @@ const noise3D = makeNoise3D(Date.now())
 
 const sketch = (p5) => {
     // Layer need these two functions
-    //window.noise = p5.noise
     window.noise = noise3D
+    //window.noise = p5.noise
     let size, cols, rows, layers, depthStep, hSize, sketchDim, canvas
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
@@ -31,12 +31,12 @@ const sketch = (p5) => {
      * grid with noise value
      */
     sketch.init = () => {
-        size = 126
+        size = 100
         sketchDim = sketchSize()
         cols = p5.floor(sketchDim.w / size)
         rows = p5.floor(sketchDim.h / size)
         depthStep = sketchDim.h / (numLayer * numFrame)
-        hSize = sketchDim.h / numLayer
+        hSize = (sketchDim.h * 1.5) / numLayer
         layers = []
         for (let n = 0; n < numLayer; n++) {
             layers.push(new Layer(cols, rows, n, n / numLayer))
@@ -46,9 +46,10 @@ const sketch = (p5) => {
     p5.setup = () => {
         init()
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
-        p5.stroke(125)
-        p5.fill(255, 125)
-        //p5.smooth()
+        p5.setAttributes('antialias', true)
+        p5.strokeWeight(2)
+        p5.smooth(10)
+        p5.fill(15)
 
         if (recording) {
             p5.createLoop({
@@ -60,34 +61,35 @@ const sketch = (p5) => {
     }
 
     p5.draw = () => {
-        const t = (p5.frameCount % numFrame) / numFrame
-        // const tt = (t < 0.5 ? t : 1 - t) * 2
         p5.background(15)
         p5.push()
-        p5.translate(
-            -p5.width * 0.5,
-            p5.height * 0.5 - depthStep,
-            -p5.height * 0.5
-        )
-        // p5.rotateX(p5.QUARTER_PI)
-        p5.rotateX(p5.HALF_PI)
+        p5.translate(-p5.width * 0.5, p5.height * 0.8 + depthStep, -p5.height)
+        p5.rotateX(p5.PI * 0.5)
 
         for (let i = 0; i < layers.length; i++) {
-            layers[i].depth++
+            const frameIndex = p5.frameCount * 0.1
             if (layers[i].depth >= numLayer) {
-                layers[i] = new Layer(cols, rows, 1, i)
+                layers[i] = new Layer(cols, rows, 1, i, frameIndex)
             } else {
-                layers[i].computePoints(t + i)
+                layers[i].computePoints(numLayer, frameIndex)
             }
 
             const z = layers[i].depth * hSize
             const lines = layers[i].getLines(noiseThreshold, size)
-            p5.beginShape()
-            for (let j = 0; j < lines.length; j++) {
-                p5.vertex(lines[j].x1, lines[j].y1, z)
-                p5.vertex(lines[j].x2, lines[j].y2, z)
+            if (i == layers.length - 1) {
+                p5.stroke(53, 138, 53)
+            } else {
+                p5.stroke(50 + 205 * (layers[i].depth / numLayer))
             }
-            p5.endShape(p5.CLOSE)
+            if (layers[i].depth < numLayer) {
+                p5.beginShape()
+                for (let j = 0; j < lines.length; j++) {
+                    p5.vertex(lines[j].x1, lines[j].y1, z)
+                    p5.vertex(lines[j].x2, lines[j].y2, z)
+                }
+                p5.endShape(p5.CLOSE)
+            }
+            layers[i].depth++
         }
 
         p5.pop()
