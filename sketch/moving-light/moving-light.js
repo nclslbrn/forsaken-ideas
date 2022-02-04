@@ -56,12 +56,13 @@ const sketch = (p5) => {
         const offRoads = []
         const newRoads = []
         p5.push()
-        p5.translate(
+        /*  p5.translate(
             0,
             p5.width > p5.height
-                ? (-p5.height * 2) / p5.width
-                : (-p5.width * 2) / p5.height
-        )
+                ? (-p5.height / p5.width) * 0.5
+                : (-p5.width / p5.height) * 0.5
+        ) */
+        p5.translate(0, p5.width > p5.height ? -p5.height / 3 : -p5.width / 1.5)
         p5.rotateX(p5.PI / 3.5)
 
         for (let i = 0; i < roads.length; i++) {
