@@ -29,7 +29,7 @@ module.exports = (property) => {
             entry: [property.entry],
             output: {
                 path: property.output,
-                filename: '[name].sketch.[chunkhash].js'
+                filename: '[name].sketch.js'
             },
 
             module: {
