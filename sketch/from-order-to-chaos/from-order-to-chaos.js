@@ -3,7 +3,10 @@ import Notification from '../../src/js/sketch-common/Notification'
 
 const sketch = (p5) => {
     let canvas, sample, move, palette, nIter
-    const iteration = 50,
+
+    const iteration = 75,
+        noiseStrength = 15,
+        noiseScale = 0.007,
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
@@ -49,14 +52,13 @@ const sketch = (p5) => {
             // rect size where size > stepSize
             rect: isVerticalSample ? [stepSize, size] : [size, stepSize],
             // rect position
-            start: [Math.random() * p5.width, Math.random() * p5.height],
-            noiseScale: Math.ceil(4 * Math.random())
+            start: [Math.random() * p5.width, Math.random() * p5.height]
         }
     }
     sketch.export = () => {
         const date = new Date()
         const filename =
-            'Cisaillement' +
+            'From-order-to-chaos' +
             '-' +
             date.getHours() +
             '.' +
@@ -84,17 +86,18 @@ const sketch = (p5) => {
             }
         } else if (nIter < iteration) {
             const copy = p5.get()
-            let { goForward, step, isVertical, d, start, rect, noiseScale } =
-                move
-            // https://p5js.org/reference/#/p5/image
+            let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = noiseScale * p5.noise(d)
+            const noise = noiseStrength * p5.noise(d * noiseScale)
 
             const disp = [
-                (goForward ? -1 : 1) * isVertical ? Math.cos(noise) * step : d,
-                (goForward ? -1 : 1) * isVertical ? d : Math.sin(noise) * step
+                (goForward ? -1 : 1) * isVertical
+                    ? Math.cos(noise * 2 * Math.PI) * step
+                    : d,
+                (goForward ? -1 : 1) * isVertical
+                    ? d
+                    : Math.sin(noise * 2 * Math.PI) * step
             ]
-
             const src = {
                 x: start[0],
                 y: start[1],
@@ -102,12 +105,10 @@ const sketch = (p5) => {
                 h: rect[1]
             }
             const dest = {
-                x: start[0] - disp[0],
-                y: start[1] - disp[1],
-                //x: start[0] + Math.cos(noise * Math.PI * 2) * step * 0.2,
-                //y: start[1] + Math.sin(noise * Math.PI + 2) * step * 0.2,
-                w: rect[0],
-                h: rect[1]
+                x: start[0] + disp[0],
+                y: start[1] + disp[1],
+                w: rect[0] * 2,
+                h: rect[1] * 2
             }
 
             sample.copy(
