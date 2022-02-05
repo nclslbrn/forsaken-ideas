@@ -2,7 +2,7 @@
 //|..ARTEMG.COM .....................|
 //|..Author: Nicolas Lebrun .........|
 //|..License: MIT License ...........|
-//|..................................|                                  
+//|..................................|
 //| If you read this text you should |
 //| go here for better understanding |
 //| https://github.com/nclslbrn/make |
@@ -12,16 +12,16 @@ html(lang="en")
   include parts/head.pug
   +head(property)
   body
-  
+
     include parts/svg-defs.pug
-  
-    main 
-  
+
+    main
+
       header#top
-        
+
         img#logo(src="https://avatars.githubusercontent.com/u/1374627?v=4")
         // h2(data-glitch-effect="add") RT
-        // h1(data-glitch-effect="add") AЯT ∑MG 
+        // h1(data-glitch-effect="add") AЯT ∑MG
         div.acronym-block
           h3(data-glitch-effect="add") NCLSLBRN
           small Nicolas Lebrun
@@ -36,52 +36,52 @@ html(lang="en")
               button(value="topic") Topic
 
             li#activeIndicator
-          
+
         //a.button(href="#info") About
-      
+
 
       ul#grid-gallery
 
         each project in projects
 
           li(
-            data-date=project.date, 
-            data-name=project.name, 
+            data-date=project.date,
+            data-name=project.name,
             data-topic=project.topic
           )
 
             a(
               href="./sketch/" + project.name,
-            ) 
+            )
               figure
-                  
+
                   img(
-                    src="./sketch/" + project.name + "/thumbnail.jpg" 
+                    src="./sketch/" + project.name + "/thumbnail.jpg"
                     alt="capture of " + project.title
                   )
-                  
-                  figcaption 
-                  
-                    h2.project-title #{project.title}
-                    
-                    p #{project.topic}
 
-                    small #{project.date}
-      
-      div.about 
-        
+                  figcaption
+
+                    h2.project-title #{project.title}
+
+                    // p #{project.topic}
+
+                    // small #{project.date}
+
+      div.about
+
         blockquote !{property.info}
 
         aside
           ul
-            li  
-              a(href="https://twitter.com/" + property.author.twitter) 
-                svg.icon.icon-twitter 
+            li
+              a(href="https://twitter.com/" + property.author.twitter)
+                svg.icon.icon-twitter
                   use(xlink:href="#icon-twitter")
                 span Twitter
-            
+
             li
-              a(href="https://github.com/" + property.author.github) 
+              a(href="https://github.com/" + property.author.github)
                 svg.icon.icon-github
                   use(xlink:href="#icon-github")
                 span Github
@@ -91,11 +91,11 @@ html(lang="en")
                   use(xlink:href="#icon-link")
                 span Site
 
-            li  
-              a(href="mailto:" + property.author.mail) 
+            li
+              a(href="mailto:" + property.author.mail)
                 svg.icon.icon-mail
                   use(xlink:href="#icon-mail")
                 span Mail
-        
-      footer 
+
+      footer
         p !{property.right}

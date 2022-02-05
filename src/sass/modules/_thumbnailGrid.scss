@@ -132,7 +132,7 @@ ul#grid-gallery li {
             display: block;
             top: 0;
             left: 0;
-            width: 90%;
+            width: calc( 100% - 2em );
             height: 100%;
             transform: translate(0, 100%);
             transition: all 0.15s ease-out;
@@ -152,11 +152,12 @@ ul#grid-gallery li {
     }
 
     h2 {
-        font-size: 1.2em;
+        font-size: 1.4em;
 
         @include breakpoint(md) {
-            font-size: 1.4vw;
+            font-size: 2vw;
             margin-bottom: 0;
+            hyphens: auto;
         }
     }
     .project-title {

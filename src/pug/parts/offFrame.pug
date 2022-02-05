@@ -2,26 +2,33 @@ mixin offFrame(property)
     #offFrame
         div
             h1#projectTitle #{property.title}
-            .date 
+            .date
                 svg.icon.icon-calendar
                     use(xlink:href="#icon-calendar")
                 span #{property.date}
-                
+
             p.description !{property.info}
-                
-            if property.path 
+
+            if property.path
                 a(href="https://github.com/nclslbrn/make/tree/main/sketch/"+ property.path title="CODE")
                     svg.icon.icon-forward
-                        use(xlink:href="#icon-repo") 
+                        use(xlink:href="#icon-repo")
                     span Get the code
 
+            if property.topic
+                p.topic
+                    svg.icon.icon-tag
+                        use(xlink:href="#icon-tag")
+
+                    span #{property.topic}
+
             if property.previous.link && property.previous.title
-                
+
                 a(href=property.previous.link title=property.previous.title)
                     svg.icon.icon-chevron-left
                         use(xlink:href="#icon-chevron-left")
                     span #{property.previous.title}
-                    
+
 
             if property.next.link && property.next.title
 
