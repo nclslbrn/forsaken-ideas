@@ -5,7 +5,7 @@ const sketch = {
     nIter: 0,
     svg: new SvgTracer({
         parentElem: document.getElementById('windowFrame'),
-        size: 'A4Square'
+        size: 'A3_portrait'
     }),
     // setup
     launch: () => {
