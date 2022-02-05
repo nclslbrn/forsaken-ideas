@@ -1,4 +1,6 @@
 import Grid from './Grid'
+import Notification from '../../src/js/sketch-common/Notification'
+
 let grid = null
 let cacheCanvas = null
 
@@ -30,8 +32,10 @@ const sketch = (p5) => {
     let frame = 0
     let stopFrame = 0
     const numTrianglePerCircle = 5
-    const cellWidth = Math.floor(p5.random(400, 500))
+    const cellWidth = Math.floor(p5.random(500, 700))
     sketch.initSketch = () => {
+        p5.loop()
+        stopFrame = p5.frameCount
         triangles = []
         grid = new Grid(
             cellWidth,
@@ -39,8 +43,9 @@ const sketch = (p5) => {
             window.innerWidth * 2,
             window.innerHeight * 2
         )
-        p5.background(0)
-        p5.stroke(255, 30)
+        p5.background(15)
+        p5.fill(18)
+        p5.stroke(35)
         for (let x = 0; x < grid.cols; x++) {
             for (let y = 0; y < grid.rows; y++) {
                 const _x = x * grid.cellWidth
@@ -94,10 +99,12 @@ const sketch = (p5) => {
         }
 
         if (frame > 350) {
-            //p5.saveCanvas(cacheCanvas, 'random-triangles' + frameCount, 'png')
-            stopFrame = p5.frameCount
-            p5.background(0)
-            sketch.initSketch()
+            new Notification(
+                'Sketch done, press init button to draw another.',
+                document.getElementById('windowFrame'),
+                'dark'
+            )
+            p5.noLoop()
         }
     }
 
@@ -111,10 +118,6 @@ const sketch = (p5) => {
             )
             points[n_point] = {}
             last_angle = angle
-            /* 
-            const x_factor = p5.round(p5.random(0, 16))
-            const y_factor = p5.round(p5.random(0, 9)) 
-*/
 
             points[n_point].x = Math.floor(x + p5.cos(angle) * radius)
             points[n_point].y = Math.floor(y + p5.sin(angle) * radius)
@@ -155,8 +158,6 @@ const sketch = (p5) => {
             const p = { x: Math.random() * n, y: Math.random() * n }
             const r = -1 * p5.noise(p.x * 12, p.y * 12)
             const s = -1 * p5.noise(p.x % 12, p.y % 12)
-            //const r = p5.random(-1, 0)
-            //const s = p5.random(-1, 0)
 
             if (r + s >= -1) {
                 p5.point(
