@@ -3,7 +3,13 @@
     "rules": {
         "strict": 0
     },
-    "extends": ["p5js", "p5js/dom", "p5js/sound", "prettier"],
+    "extends": [
+	"p5js", 
+	"p5js/dom", 
+	"p5js/sound", 
+	"prettier",
+	"plugin:prettier/recommended"
+    ],
     "env": {
         "es6": true,
         "node": true
