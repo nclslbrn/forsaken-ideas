@@ -46,7 +46,6 @@ header#top form#orderGrid {
 header#top div.acronym-block {
     position: relative;
     width: calc(100% - 80px);
-    padding-left: 1em;
     text-align: right;
     @include breakpoint(md) {
         text-align: left;
@@ -72,7 +71,7 @@ header#top h3 {
 }
 
 header#top img#logo {
-    margin: 0 0 1em 0;
+    margin: 1em 0;
     width: 80px;
     height: 80px;
 }
