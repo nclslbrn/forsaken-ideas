@@ -1,7 +1,7 @@
 /**
  * Returns a random number between min (inclusive) and max (exclusive)
  */
-const randomFloatBteween = (min, max) => {
+const randomFloatBetween = (min, max) => {
     return Math.random() * (max - min) + min
 }
 
@@ -18,4 +18,4 @@ const randomIntBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export { randomFloatBteween, randomIntBetween }
+export { randomFloatBetween, randomIntBetween }
