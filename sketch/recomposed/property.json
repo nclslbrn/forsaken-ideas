@@ -1,6 +1,6 @@
 {
     "libs": ["p5"],
-    "info": "Stress and cut the grid.",
+    "info": "Stretch and cut the grid by copying parts of it randomly.",
     "topic": "Random distribution",
     "date": "2021-11-01",
     "action": [

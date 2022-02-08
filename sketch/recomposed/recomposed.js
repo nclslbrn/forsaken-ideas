@@ -4,7 +4,7 @@ import Notification from '../../src/js/sketch-common/Notification'
 const sketch = (p5) => {
     let canvas, sample, move, palette, nIter
 
-    const iteration = 75,
+    const iteration = 50,
         noiseStrength = 15,
         noiseScale = 0.007,
         container = document.getElementById('windowFrame')
@@ -34,8 +34,8 @@ const sketch = (p5) => {
     }
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
-        const numFrame = 6 * Math.ceil(Math.random() * 4)
-        const stepSize = 12 * Math.ceil(Math.random() * 12)
+        const numFrame = 4 * Math.ceil(Math.random() * 4)
+        const stepSize = 6 * Math.ceil(Math.random() * 12)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
         const size = Math.random() * p5.width
@@ -58,14 +58,13 @@ const sketch = (p5) => {
     sketch.export = () => {
         const date = new Date()
         const filename =
-            'From-order-to-chaos' +
+            'Recomposed' +
             '-' +
             date.getHours() +
             '.' +
             date.getMinutes() +
             '.' +
-            date.getSeconds() +
-            sample.sourceName
+            date.getSeconds()
         p5.save(canvas, filename, 'png')
     }
     p5.setup = () => {
@@ -107,8 +106,8 @@ const sketch = (p5) => {
             const dest = {
                 x: start[0] + disp[0],
                 y: start[1] + disp[1],
-                w: rect[0] * 2,
-                h: rect[1] * 2
+                w: rect[0] * (Math.random() + 1),
+                h: rect[1] * (Math.random() + 1)
             }
 
             sample.copy(

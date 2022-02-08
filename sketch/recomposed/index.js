@@ -1,7 +1,7 @@
 'use strict'
 import '../../src/sass/project.scss'
 import '../../src/sass/frame-canvas.scss'
-import sketch from './from-order-to-chaos'
+import sketch from './recomposed'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
 
