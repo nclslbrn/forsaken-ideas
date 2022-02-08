@@ -315,7 +315,7 @@ export default class SvgTracer {
         }
     }
     /**
-     * Darw line
+     * Draw line
      * @param {Object} pathProps path properties
      * @property {array} points - two dimensional array (points[n] = [x coordinate, y coordinate])
      * @property {string} fill - background color name or color value (HEX, RGB, HSL)
