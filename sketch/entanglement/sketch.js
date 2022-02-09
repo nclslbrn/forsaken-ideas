@@ -6,11 +6,13 @@ import {
 import Hexagon from './Hexagon'
 import Checkerboard from './Checkerboard'
 import dashLine from './dashLine'
+import SimplexNoise from 'simplex-noise'
 
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
     size: 'A3_portrait'
 })
+const simplex = new SimplexNoise()
 
 let hexRadius, inner, checker, hexagons, lineSpacing
 
@@ -60,9 +62,43 @@ const sketch = {
             }
         }
 
-        /*  checker.getCells().forEach((cell) => {
-            svg.rect(cell)
-        }) */
+        checker.getCells().forEach((cell, i) => {
+            if (i % 2) {
+                svg.rect(cell)
+                const swirl = []
+                for (let i = 0; i < 50; i++) {
+                    let pos = {
+                        x: cell.x + Math.random() * cell.w,
+                        y: cell.y + Math.random() * cell.h
+                    }
+                    let isGone = false
+                    for (let j = 0; j < 20 && !isGone; j++) {
+                        const n = simplex.noise2D(pos.x * 0.01, pos.y * 0.01)
+                        pos.x += Math.cos(n) * 0.1
+                        pos.y += Math.sin(n) * 0.1
+                        if (
+                            pos.x >= cell.x &&
+                            pos.x <= cell.x + cell.w &&
+                            pos.y >= cell.y &&
+                            pos.y <= cell.y + cell.h &&
+                            sketch.isPointInHex(pos)
+                        ) {
+                            isGone = true
+                        } else {
+                            swirl.push([pos.x, pos.y])
+                        }
+                    }
+                }
+                if (undefined !== swirl[0]) {
+                    svg.path({
+                        points: swirl,
+                        stroke: 'black',
+                        fill: 'none',
+                        close: false
+                    })
+                }
+            }
+        })
         // sketch.drawHexagons()
         sketch.drawHexagonsStripes()
     },
@@ -88,19 +124,6 @@ const sketch = {
                         })
                     }
                 })
-                /* svg.path({
-                    points: line,
-                    stroke: 'tomato',
-                    //strokeWidth: svg.cmToPixels(0.05),
-                    fill: 'none',
-                    close: false
-                }) */
-            })
-            svg.path({
-                points: hex.getContour(),
-                stroke: 'tomato',
-                fill: 'none',
-                close: true
             })
         })
     },
