@@ -10,26 +10,27 @@ import SimplexNoise from 'simplex-noise'
 
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
-    size: 'A3_portrait'
+    size: 'A3_landscape'
+    //background: 'black'
 })
 const simplex = new SimplexNoise()
-const freq = 0.01
-const step = 2
+const freq = 0.005
+const step = 3
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const sketch = {
     launch: () => {
         svg.init()
-        svg.elem.style = 'max-width: unset;'
+        //svg.elem.style.maxWidth = 'unset'
         sketch.margin = svg.cmToPixels(2)
-        lineSpacing = svg.cmToPixels(1)
+        lineSpacing = svg.cmToPixels(0.25)
         sketch.init()
     },
     // reset value and relaunch drawing
     init: () => {
         svg.clear()
         hexagons = []
-        hexRadius = svg.cmToPixels(randomFloatBetween(1, 4))
+        hexRadius = svg.cmToPixels(randomFloatBetween(2, 4))
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
         checkerNum = randomIntBetween(3, 7)
         checker = new Checkerboard(inner, sketch.margin, checkerNum)
@@ -66,15 +67,15 @@ const sketch = {
                 (cell.i === 'odd' && checkerNum % 2 === 0)
             ) {
                 let swirl
-                for (let x = 0; x < cell.w; x += lineSpacing / 4) {
-                    for (let y = 0; y < cell.h; y += lineSpacing / 4) {
+                for (let x = 0; x < cell.w; x += lineSpacing * 0.75) {
+                    for (let y = 0; y < cell.h; y += lineSpacing * 0.75) {
                         let pos = {
                             x: cell.x + x,
                             y: cell.y + y
                         }
                         swirl = []
                         let isGone = false
-                        for (let j = 0; j < lineSpacing / 10 && !isGone; j++) {
+                        for (let j = 0; j < lineSpacing / 2 && !isGone; j++) {
                             const n = simplex.noise2D(
                                 pos.x * freq,
                                 pos.y * freq
@@ -121,7 +122,7 @@ const sketch = {
                     if (i % 2) {
                         dashedLine.forEach((dash) => {
                             if (
-                                checker.pointIsHoverEvenBox({
+                                checker.pointIsHoverDarkBox({
                                     x: dash[0][0],
                                     y: dash[0][1]
                                 })
@@ -139,7 +140,6 @@ const sketch = {
                                 svg.path({
                                     points: noisedDash,
                                     stroke: 'black',
-                                    //strokeWidth: svg.cmToPixels(0.05),
                                     fill: 'none',
                                     close: false
                                 })
@@ -147,7 +147,6 @@ const sketch = {
                                 svg.path({
                                     points: dash,
                                     stroke: 'black',
-                                    //strokeWidth: svg.cmToPixels(0.05),
                                     fill: 'none',
                                     close: false
                                 })
@@ -170,7 +169,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        svg.export({ name: 'isometric-perspective' })
+        svg.export({ name: 'entanglement' })
     }
 }
 

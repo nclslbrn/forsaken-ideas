@@ -5,6 +5,7 @@ export default class Checkerboard {
             Math.pow(inner[0], 2) + Math.pow(inner[1], 2)
         )
         const cellHypo = innerHypo / checkerNum
+        this.checkerNum = checkerNum
         this.cellSize = cellHypo / Math.sqrt(2)
         this.inner = inner
         this.padding = [
@@ -34,13 +35,13 @@ export default class Checkerboard {
         return cells
     }
 
-    pointIsHoverEvenBox(point) {
+    pointIsHoverDarkBox(point) {
         point.x -= this.margin + this.padding[0]
         point.y -= this.margin + this.padding[1]
 
-        return (
+        const isHover =
             point.x % (this.cellSize * 2) <= this.cellSize &&
             point.y % (this.cellSize * 2) <= this.cellSize
-        )
+        return this.checkerNum % 2 === 0 ? !isHover : isHover
     }
 }

@@ -118,9 +118,7 @@ export default class SvgTracer {
                     : 'max-width: 85vw; height: auto;'
             this.elem.setAttribute(
                 'style',
-                `${scaling}
-                background: ${this.background}; 
-                box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
+                `${scaling} background: ${this.background}; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);`
             )
 
             // create an array of group instance (key = group(props.name))
