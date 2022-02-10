@@ -13,13 +13,14 @@ const svg = new SvgTracer({
     size: 'A3_portrait'
 })
 const simplex = new SimplexNoise()
-
-let hexRadius, inner, checker, hexagons, lineSpacing
+const freq = 0.01
+const step = 2
+let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const sketch = {
     launch: () => {
         svg.init()
-        // debug svg.elem.style = 'max-width: unset;'
+        svg.elem.style = 'max-width: unset;'
         sketch.margin = svg.cmToPixels(2)
         lineSpacing = svg.cmToPixels(1)
         sketch.init()
@@ -28,13 +29,10 @@ const sketch = {
     init: () => {
         svg.clear()
         hexagons = []
-        hexRadius = svg.cmToPixels(randomFloatBetween(2, 6))
+        hexRadius = svg.cmToPixels(randomFloatBetween(1, 4))
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
-        checker = new Checkerboard(
-            inner,
-            sketch.margin,
-            randomIntBetween(5, 12)
-        )
+        checkerNum = randomIntBetween(3, 7)
+        checker = new Checkerboard(inner, sketch.margin, checkerNum)
         const numCell = [
             Math.floor(inner[0] / (2 * hexRadius)) - 1,
             Math.floor(inner[1] / (2 * hexRadius)) - 1
@@ -62,44 +60,52 @@ const sketch = {
             }
         }
 
-        checker.getCells().forEach((cell, i) => {
-            if (i % 2) {
-                svg.rect(cell)
-                const swirl = []
-                for (let i = 0; i < 50; i++) {
-                    let pos = {
-                        x: cell.x + Math.random() * cell.w,
-                        y: cell.y + Math.random() * cell.h
-                    }
-                    let isGone = false
-                    for (let j = 0; j < 20 && !isGone; j++) {
-                        const n = simplex.noise2D(pos.x * 0.01, pos.y * 0.01)
-                        pos.x += Math.cos(n) * 0.1
-                        pos.y += Math.sin(n) * 0.1
-                        if (
-                            pos.x >= cell.x &&
-                            pos.x <= cell.x + cell.w &&
-                            pos.y >= cell.y &&
-                            pos.y <= cell.y + cell.h &&
-                            sketch.isPointInHex(pos)
-                        ) {
-                            isGone = true
-                        } else {
-                            swirl.push([pos.x, pos.y])
+        checker.getCells().forEach((cell) => {
+            if (
+                (cell.i === 'even' && checkerNum % 2 !== 0) ||
+                (cell.i === 'odd' && checkerNum % 2 === 0)
+            ) {
+                let swirl
+                for (let x = 0; x < cell.w; x += lineSpacing / 4) {
+                    for (let y = 0; y < cell.h; y += lineSpacing / 4) {
+                        let pos = {
+                            x: cell.x + x,
+                            y: cell.y + y
+                        }
+                        swirl = []
+                        let isGone = false
+                        for (let j = 0; j < lineSpacing / 10 && !isGone; j++) {
+                            const n = simplex.noise2D(
+                                pos.x * freq,
+                                pos.y * freq
+                            )
+                            pos.x += Math.cos(n) * step
+                            pos.y += Math.sin(n) * step
+                            if (
+                                pos.x < cell.x ||
+                                pos.x > cell.x + cell.w ||
+                                pos.y < cell.y ||
+                                pos.y > cell.y + cell.h ||
+                                sketch.isPointInHex(pos)
+                            ) {
+                                isGone = true
+                            } else {
+                                swirl.push([pos.x, pos.y])
+                            }
+                        }
+                        if (undefined !== swirl[0]) {
+                            svg.path({
+                                points: swirl,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false
+                            })
                         }
                     }
                 }
-                if (undefined !== swirl[0]) {
-                    svg.path({
-                        points: swirl,
-                        stroke: 'black',
-                        fill: 'none',
-                        close: false
-                    })
-                }
             }
         })
-        // sketch.drawHexagons()
+        //sketch.drawHexagons()
         sketch.drawHexagonsStripes()
     },
     isPointInHex: (point) => {
@@ -114,13 +120,38 @@ const sketch = {
                 dashLine(line, lineSpacing).forEach((dashedLine, i) => {
                     if (i % 2) {
                         dashedLine.forEach((dash) => {
-                            svg.path({
-                                points: dash,
-                                stroke: 'black',
-                                //strokeWidth: svg.cmToPixels(0.05),
-                                fill: 'none',
-                                close: false
-                            })
+                            if (
+                                checker.pointIsHoverEvenBox({
+                                    x: dash[0][0],
+                                    y: dash[0][1]
+                                })
+                            ) {
+                                const noisedDash = dash.map((point) => {
+                                    const n = simplex.noise2D(
+                                        point[0] * freq,
+                                        point[1] * freq
+                                    )
+                                    return [
+                                        (point[0] += Math.cos(n) * step * 5),
+                                        (point[1] += Math.sin(n) * step * 5)
+                                    ]
+                                })
+                                svg.path({
+                                    points: noisedDash,
+                                    stroke: 'black',
+                                    //strokeWidth: svg.cmToPixels(0.05),
+                                    fill: 'none',
+                                    close: false
+                                })
+                            } else {
+                                svg.path({
+                                    points: dash,
+                                    stroke: 'black',
+                                    //strokeWidth: svg.cmToPixels(0.05),
+                                    fill: 'none',
+                                    close: false
+                                })
+                            }
                         })
                     }
                 })
@@ -132,7 +163,7 @@ const sketch = {
             svg.path({
                 points: hex.getContour(),
                 close: true,
-                fill: 'rgba(255, 255, 255, 0.5)',
+                fill: 'rgba(255, 255, 255, 0)',
                 stroke: 'black'
             })
         )

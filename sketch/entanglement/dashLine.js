@@ -19,7 +19,7 @@ export default function (line, step) {
         if (r + lineLength < size) dashLine.push([[prev, next]])
 
         // little jump between lines
-        const jumpLenght = Math.random() * step * 0.05
+        const jumpLenght = Math.random() * step * 0.001
         prev = next
         prev[0] += Math.cos(angle) * jumpLenght
         prev[1] += Math.sin(angle) * jumpLenght

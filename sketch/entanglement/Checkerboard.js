@@ -26,14 +26,21 @@ export default class Checkerboard {
                     y: this.margin + this.padding[1] + y * this.cellSize,
                     w: this.cellSize,
                     h: this.cellSize,
-                    fill:
-                        (x + y) % 2 === 0
-                            ? 'rgba(255, 0, 0, 0.25)'
-                            : 'rgba(0, 0, 255, 0.25)',
-                    stroke: 'black'
+                    i: (x + y) % 2 === 0 ? 'even' : 'odd',
+                    stroke: 'none'
                 })
             }
         }
         return cells
+    }
+
+    pointIsHoverEvenBox(point) {
+        point.x -= this.margin + this.padding[0]
+        point.y -= this.margin + this.padding[1]
+
+        return (
+            point.x % (this.cellSize * 2) <= this.cellSize &&
+            point.y % (this.cellSize * 2) <= this.cellSize
+        )
     }
 }
