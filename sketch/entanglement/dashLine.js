@@ -11,16 +11,19 @@ export default function (line, step) {
 
     while (r < size) {
         // random line length
-        const lineLength = Math.random() * step * 0.3
+        let lineLength = Math.random() * step * 0.3
+        // lineLenght too long
+        if (r + lineLength > size) lineLength = size - r
+
         const next = [
             prev[0] + Math.cos(angle) * lineLength,
             prev[1] + Math.sin(angle) * lineLength
         ]
-        if (r + lineLength < size) dashLine.push([[prev, next]])
+        dashLine.push([[prev, next]])
 
         // little jump between lines
-        const jumpLenght = Math.random() * step * 0.001
-        prev = next
+        const jumpLenght = Math.random() * step * 0.2
+        prev = [...next]
         prev[0] += Math.cos(angle) * jumpLenght
         prev[1] += Math.sin(angle) * jumpLenght
         r += jumpLenght + lineLength

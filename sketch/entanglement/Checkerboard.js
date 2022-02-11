@@ -36,12 +36,13 @@ export default class Checkerboard {
     }
 
     pointIsHoverDarkBox(point) {
-        point.x -= this.margin + this.padding[0]
-        point.y -= this.margin + this.padding[1]
+        point[0] -= this.margin + this.padding[0]
+        point[1] -= this.margin + this.padding[1]
 
-        const isHover =
-            point.x % (this.cellSize * 2) <= this.cellSize &&
-            point.y % (this.cellSize * 2) <= this.cellSize
-        return this.checkerNum % 2 === 0 ? !isHover : isHover
+        const col = Math.ceil(point[0] / this.cellSize)
+        const row = Math.ceil(point[1] / this.cellSize)
+        const isHover = (col + row) % 2 !== 0
+        //return isHover
+        return this.checkerNum % 2 === 0 ? isHover : !isHover
     }
 }

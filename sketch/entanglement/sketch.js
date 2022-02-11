@@ -13,22 +13,27 @@ const svg = new SvgTracer({
     size: 'A3_landscape'
     //background: 'black'
 })
+const groups = [
+    { name: 'line', stroke: 'black' },
+    { name: 'frame', stroke: 'tomato' }
+]
 const simplex = new SimplexNoise()
-const freq = 0.005
-const step = 5
+const freq = 0.007
+const step = 2
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const sketch = {
     launch: () => {
         svg.init()
         //svg.elem.style.maxWidth = 'unset'
-        sketch.margin = svg.cmToPixels(2)
-        lineSpacing = svg.cmToPixels(0.25)
+        groups.forEach((g) => svg.group(g))
+        sketch.margin = svg.cmToPixels(3.5)
+        lineSpacing = svg.cmToPixels(0.5)
         sketch.init()
     },
     // reset value and relaunch drawing
     init: () => {
-        svg.clear()
+        svg.clearGroups()
         hexagons = []
         hexRadius = svg.cmToPixels(randomFloatBetween(2, 4))
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
@@ -42,7 +47,15 @@ const sketch = {
             (inner[0] - hexRadius * 2 * (numCell[0] - 0.5)) / 2,
             (inner[1] - hexRadius * 1.74 * numCell[1]) / 2
         ]
-
+        svg.rect({
+            x: sketch.margin,
+            y: sketch.margin,
+            w: svg.width - sketch.margin * 2,
+            h: svg.height - sketch.margin * 2,
+            group: groups[1].name,
+            fill: 'none',
+            stroke: 'tomato'
+        })
         for (let x = 0; x < numCell[0]; x++) {
             for (let y = 0; y < numCell[1]; y++) {
                 if (y % 2 !== 0 || x !== numCell[0] - 1) {
@@ -80,8 +93,8 @@ const sketch = {
                                 pos.x * freq,
                                 pos.y * freq
                             )
-                            pos.x += Math.cos(n) * step
-                            pos.y += Math.sin(n) * step
+                            pos.x += Math.cos(n) * step * 0.5
+                            pos.y += Math.sin(n) * step * 0.5
                             if (
                                 pos.x < cell.x ||
                                 pos.x > cell.x + cell.w ||
@@ -99,7 +112,8 @@ const sketch = {
                                 points: swirl,
                                 stroke: 'black',
                                 fill: 'none',
-                                close: false
+                                close: false,
+                                group: groups[0].name
                             })
                         }
                     }
@@ -127,22 +141,24 @@ const sketch = {
                                     point[1] * freq
                                 )
                                 return [
-                                    (point[0] += Math.cos(n) * step),
-                                    (point[1] += Math.sin(n) * step)
+                                    (point[0] += Math.cos(n) * step * 8),
+                                    (point[1] += Math.sin(n) * step * 8)
                                 ]
                             })
                             svg.path({
                                 points: noisedDash,
                                 stroke: 'black',
                                 fill: 'none',
-                                close: false
+                                close: false,
+                                group: groups[0].name
                             })
                         } else {
                             svg.path({
                                 points: dash,
                                 stroke: 'black',
                                 fill: 'none',
-                                close: false
+                                close: false,
+                                group: groups[0].name
                             })
                         }
                     })
@@ -161,22 +177,24 @@ const sketch = {
                                     point[1] * freq
                                 )
                                 return [
-                                    (point[0] += Math.cos(n) * step * 5),
-                                    (point[1] += Math.sin(n) * step * 5)
+                                    (point[0] += Math.cos(n) * step * 3),
+                                    (point[1] += Math.sin(n) * step * 3)
                                 ]
                             })
                             svg.path({
                                 points: noisedDash,
                                 stroke: 'black',
                                 fill: 'none',
-                                close: false
+                                close: false,
+                                group: groups[0].name
                             })
                         } else {
                             svg.path({
                                 points: dash,
                                 stroke: 'black',
                                 fill: 'none',
-                                close: false
+                                close: false,
+                                group: groups[0].name
                             })
                         }
                     })
