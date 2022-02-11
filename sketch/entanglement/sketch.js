@@ -15,7 +15,7 @@ const svg = new SvgTracer({
 })
 const simplex = new SimplexNoise()
 const freq = 0.005
-const step = 3
+const step = 5
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const sketch = {
@@ -118,41 +118,68 @@ const sketch = {
     drawHexagonsStripes: () => {
         hexagons.forEach((hex) => {
             hex.getStripe(12).forEach((line) => {
-                dashLine(line, lineSpacing).forEach((dashedLine, i) => {
-                    if (i % 2) {
-                        dashedLine.forEach((dash) => {
-                            if (
-                                checker.pointIsHoverDarkBox({
-                                    x: dash[0][0],
-                                    y: dash[0][1]
-                                })
-                            ) {
-                                const noisedDash = dash.map((point) => {
-                                    const n = simplex.noise2D(
-                                        point[0] * freq,
-                                        point[1] * freq
-                                    )
-                                    return [
-                                        (point[0] += Math.cos(n) * step * 5),
-                                        (point[1] += Math.sin(n) * step * 5)
-                                    ]
-                                })
-                                svg.path({
-                                    points: noisedDash,
-                                    stroke: 'black',
-                                    fill: 'none',
-                                    close: false
-                                })
-                            } else {
-                                svg.path({
-                                    points: dash,
-                                    stroke: 'black',
-                                    fill: 'none',
-                                    close: false
-                                })
-                            }
-                        })
-                    }
+                dashLine(line, lineSpacing).forEach((dashedLine) => {
+                    dashedLine.forEach((dash) => {
+                        if (checker.pointIsHoverDarkBox([...dash[0]])) {
+                            const noisedDash = dash.map((point) => {
+                                const n = simplex.noise2D(
+                                    point[0] * freq,
+                                    point[1] * freq
+                                )
+                                return [
+                                    (point[0] += Math.cos(n) * step),
+                                    (point[1] += Math.sin(n) * step)
+                                ]
+                            })
+                            svg.path({
+                                points: noisedDash,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false
+                            })
+                        } else {
+                            svg.path({
+                                points: dash,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false
+                            })
+                        }
+                    })
+                })
+                dashLine(line, lineSpacing).forEach((dashedLine) => {
+                    dashedLine.forEach((dash) => {
+                        if (
+                            checker.pointIsHoverDarkBox({
+                                x: dash[0][0],
+                                y: dash[0][1]
+                            })
+                        ) {
+                            const noisedDash = dash.map((point) => {
+                                const n = simplex.noise2D(
+                                    point[0] * freq,
+                                    point[1] * freq
+                                )
+                                return [
+                                    (point[0] += Math.cos(n) * step * 5),
+                                    (point[1] += Math.sin(n) * step * 5)
+                                ]
+                            })
+                            svg.path({
+                                points: noisedDash,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false
+                            })
+                        } else {
+                            svg.path({
+                                points: dash,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false
+                            })
+                        }
+                    })
                 })
             })
         })
