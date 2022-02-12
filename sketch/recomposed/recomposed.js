@@ -1,12 +1,12 @@
-import * as tome from 'chromotome'
+//import * as tome from 'chromotome'
 import Notification from '../../src/js/sketch-common/Notification'
+import getPalette from './palette'
 
 const sketch = (p5) => {
-    let canvas, sample, move, palette, nIter
+    let canvas, sample, move, palette, nIter, iteration
 
-    const iteration = 50,
-        noiseStrength = 15,
-        noiseScale = 0.007,
+    const maxIteration = 100,
+        noiseScale = 0.05,
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
@@ -15,30 +15,34 @@ const sketch = (p5) => {
         return window.innerWidth < max ? [side, side] : [max, max]
     }
     sketch.init = () => {
-        palette = tome.get()
-        nIter = 0
-        const colorNum = palette.colors.length
-        p5.stroke(palette.background || palette.stroke || '#222')
-        for (let x = 0; x < colorNum; x++) {
-            for (let y = 0; y < colorNum; y++) {
-                p5.fill(palette.colors[(x + y) % colorNum])
+        palette = [...getPalette()]
+        p5.shuffle(palette)
+        if (Math.random() > 0.5) palette.splice(0, 1)
+        p5.stroke(palette[0])
+        palette.splice(0, 1)
+        for (let x = 0; x < palette.length; x++) {
+            for (let y = 0; y < palette.length; y++) {
+                p5.fill(palette[(x + y) % palette.length])
                 p5.rect(
-                    (x / colorNum) * p5.width,
-                    (y / colorNum) * p5.height,
-                    (1 / colorNum) * p5.width,
-                    (1 / colorNum) * p5.height
+                    (x / palette.length) * p5.width,
+                    (y / palette.length) * p5.height,
+                    (1 / palette.length) * p5.width,
+                    (1 / palette.length) * p5.height
                 )
             }
         }
+        nIter = 0
+        iteration = Math.round((1 / palette.length) * maxIteration * 2)
+        console.log(palette.length, ' => ', iteration)
         sample = p5.get()
     }
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
-        const numFrame = 4 * Math.ceil(Math.random() * 4)
-        const stepSize = 6 * Math.ceil(Math.random() * 12)
+        const numFrame = 2 * Math.ceil(Math.random() * 4)
+        const stepSize = p5.map(nIter, 0, iteration, p5.width * 0.1, 24)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
-        const size = Math.random() * p5.width
+        const size = p5.map(nIter, 0, iteration, p5.width * 2, p5.width * 0.2)
 
         move = {
             goForward: goForward,
@@ -87,15 +91,15 @@ const sketch = (p5) => {
             const copy = p5.get()
             let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = noiseStrength * p5.noise(d * noiseScale)
+            const noise = p5.noise(d * noiseScale, iteration * noiseScale)
 
             const disp = [
                 (goForward ? -1 : 1) * isVertical
-                    ? Math.cos(noise * 2 * Math.PI) * step
+                    ? Math.cos(noise * Math.PI * 2) * step
                     : d,
                 (goForward ? -1 : 1) * isVertical
                     ? d
-                    : Math.sin(noise * 2 * Math.PI) * step
+                    : Math.sin(noise * Math.PI * 2) * step
             ]
             const src = {
                 x: start[0],
@@ -106,8 +110,8 @@ const sketch = (p5) => {
             const dest = {
                 x: start[0] + disp[0],
                 y: start[1] + disp[1],
-                w: rect[0] * (Math.random() + 1),
-                h: rect[1] * (Math.random() + 1)
+                w: rect[0] * (Math.random() / 2 + 1),
+                h: rect[1] * (Math.random() / 2 + 1)
             }
 
             sample.copy(
@@ -122,7 +126,7 @@ const sketch = (p5) => {
                 src.h
             )
             p5.image(sample, 0, 0, p5.width, p5.height)
-            move.d++
+            move.goForward ? move.d-- : move.d++
         }
     }
     p5.windowResized = () => {
