@@ -23,15 +23,19 @@ const step = 12
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const noise = (x, y) => {
-    const freq = 0.007
-    const turbulence = 0.5
+    const freq = 0.005
+    const turbulence = 2
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
 
 const sketch = {
     launch: () => {
         svg.init()
-        //svg.elem.style.maxWidth = 'unset'
+        /* remove auto margin for debug
+        svg.elem.style.maxWidth = 'unset'
+        svg.elem.style.maxHeight = 'unset'
+        */
+
         groups.forEach((g) => svg.group(g))
         sketch.margin = svg.cmToPixels(3.5)
         lineSpacing = svg.cmToPixels(1)
@@ -43,7 +47,7 @@ const sketch = {
         hexagons = []
         hexRadius = svg.cmToPixels(randomFloatBetween(2, 4))
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
-        checkerNum = randomIntBetween(3, 7)
+        checkerNum = randomIntBetween(3, 5)
         checker = new Checkerboard(inner, sketch.margin, checkerNum)
         const numCell = [
             Math.floor(inner[0] / (2 * hexRadius)) - 1,
@@ -53,6 +57,7 @@ const sketch = {
             (inner[0] - hexRadius * 2 * (numCell[0] - 0.5)) / 2,
             (inner[1] - hexRadius * 1.74 * numCell[1]) / 2
         ]
+        // plotter drawing zone on separate layer to calibrate plotter
         svg.rect({
             x: sketch.margin,
             y: sketch.margin,
@@ -96,8 +101,8 @@ const sketch = {
                         let isGone = false
                         for (let j = 0; j < 2 && !isGone; j++) {
                             const n = noise(pos.x, pos.y)
-                            pos.x += Math.cos(n) * step
-                            pos.y += Math.sin(n) * step
+                            pos.x += Math.cos(n) * lineSpacing * 0.1
+                            pos.y += Math.sin(n) * lineSpacing * 0.1
                             if (
                                 pos.x < cell.x ||
                                 pos.x > cell.x + cell.w ||
@@ -123,7 +128,9 @@ const sketch = {
                 }
             }
         })
+
         //sketch.drawHexagons()
+        //sketch.drawCheckerBoard()
         sketch.drawHexagonsStripes()
     },
     isPointInHex: (point) => {
@@ -138,62 +145,65 @@ const sketch = {
                 const start = [...line[0]]
                 const end = sketch.splitLineByBox([...line])
                 const c = checker.pointIsHoverDarkBox([...start]) ? 0 : 1
-                console.log(end.length)
+                // line doesn't cross checker box
                 if (end.length === 0) {
-                    svg.path({
-                        points: line,
-                        fill: 'none',
-                        close: false,
-                        stroke: c % 2 === 0 ? 'tomato' : 'steelblue',
-                        group: groups[0].name
-                    })
+                    const dashedLine =
+                        c % 2 === 0
+                            ? sketch.noisedDashLine([...line], 0)
+                            : dashLine([...line], lineSpacing, 1)
+
+                    dashedLine.forEach((l) =>
+                        svg.path({
+                            points: l,
+                            fill: 'none',
+                            close: false,
+                            //debug stroke: c % 2 === 0 ? 'tomato' : 'black',
+                            group: groups[0].name
+                        })
+                    )
+                    // line cross checker box
                 } else {
                     let prev = [...start]
                     end.push([...line[1]])
                     end.forEach((stop, i) => {
-                        svg.path({
-                            points: [prev, stop],
-                            fill: 'none',
-                            close: false,
-                            stroke: (i + c) % 2 === 0 ? 'tomato' : 'steelblue',
-                            group: groups[0].name
-                        })
+                        const dashedLine =
+                            (i + c) % 2 === 0
+                                ? sketch.noisedDashLine([prev, stop], 0)
+                                : dashLine([prev, stop], lineSpacing, 1)
+
+                        dashedLine.forEach((l) =>
+                            svg.path({
+                                points: l,
+                                fill: 'none',
+                                close: false,
+                                //debug stroke: (i + c) % 2 === 0 ? 'tomato' : 'black',
+                                group: groups[0].name
+                            })
+                        )
                         prev = stop
                     })
                 }
-
-                /* dashLine(line, lineSpacing).forEach((dashedLine) => {
-                    dashedLine.forEach((dash) => {
-                        if (checker.pointIsHoverDarkBox([...dash[0]])) {
-                            const noisedDash = dash.map((point) => {
-                                const n = noise(point[0], point[1])
-                                return [
-                                    (point[0] += Math.cos(n) * step * 2),
-                                    (point[1] += Math.sin(n) * step * 2)
-                                ]
-                            })
-                            svg.path({
-                                points: noisedDash,
-                                stroke: 'black',
-                                fill: 'none',
-                                close: false,
-                                group: groups[0].name
-                            })
-                        } else {
-                            svg.path({
-                                points: dash,
-                                stroke: 'black',
-                                fill: 'none',
-                                close: false,
-                                group: groups[0].name
-                            })
-                        }
-                    })
-                })
-                */
             })
         })
     },
+    // displace dash line with noise
+    noisedDashLine: (lineIn, mode) => {
+        const lineOut = []
+        dashLine(lineIn, lineSpacing, mode).forEach((dashedLine) => {
+            dashedLine.forEach((dash) => {
+                const noisedDash = dash.map((point) => {
+                    const n = noise(point[0], point[1])
+                    return [
+                        point[0] + Math.cos(n) * step,
+                        point[1] + Math.sin(n) * step
+                    ]
+                })
+                lineOut.push(noisedDash)
+            })
+        })
+        return lineOut
+    },
+    // get a set of point where line cross the checkerboard
     splitLineByBox: (line) => {
         const angle = Math.atan2(
             line[1][1] - line[0][1],
@@ -221,6 +231,7 @@ const sketch = {
         }
         return intersect
     },
+    // trace hexagon contour
     drawHexagons: () => {
         hexagons.forEach((hex) =>
             svg.path({
@@ -231,6 +242,16 @@ const sketch = {
                 group: groups[0].name
             })
         )
+    },
+    drawCheckerBoard: () => {
+        checker.getCells().forEach((cell) => {
+            if (cell.i === 'even')
+                svg.rect({
+                    ...cell,
+                    group: groups[0].name,
+                    fill: 'black'
+                })
+        })
     },
     // export inline <svg> as SVG file
     export: () => {
