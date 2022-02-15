@@ -1,3 +1,8 @@
+// TODO
+// - other distribution (packing) or remove some hex randomly
+// - try different distortion (plane curve function, attractor...)
+// - refactor sketch function and break into separate parts / files
+
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import {
     randomIntBetween,
@@ -14,16 +19,15 @@ const svg = new SvgTracer({
     //background: 'black'
 })
 const groups = [
-    { name: 'line', stroke: 'black' },
+    { name: 'line', stroke: 'black', strokeWidth: 2 },
     { name: 'frame', stroke: 'tomato' }
 ]
 const simplex = new SimplexNoise()
 
 const step = 12
-let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
+let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum, freq
 
 const noise = (x, y) => {
-    const freq = 0.001
     const turbulence = 8
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
@@ -46,8 +50,9 @@ const sketch = {
         hexagons = []
         hexRadius = svg.cmToPixels(randomFloatBetween(2, 4))
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
-        checkerNum = randomIntBetween(3, 5)
+        checkerNum = randomIntBetween(3, 7)
         checker = new Checkerboard(inner, sketch.margin, checkerNum)
+        freq = Math.random() / 700
         const numCell = [
             Math.floor(inner[0] / (2 * hexRadius)) - 1,
             Math.floor(inner[1] / (2 * hexRadius)) - 1
@@ -85,6 +90,7 @@ const sketch = {
         }
 
         // sketch.drawHexagons()
+        sketch.drawCheckerBoardDash()
         // sketch.drawCheckerBoard()
         sketch.drawHexagonsStripes()
     },
@@ -96,47 +102,39 @@ const sketch = {
     },
     drawHexagonsStripes: () => {
         hexagons.forEach((hex) => {
-            hex.getStripe(12).forEach((line) => {
+            hex.getStrips(8).forEach((line) => {
                 const start = [...line[0]]
                 const end = sketch.splitLineByBox([...line])
                 const c = checker.pointIsHoverDarkBox([...start]) ? 0 : 1
                 // line doesn't cross checker box
                 if (end.length === 0) {
-                    /* const dashedLine =
+                    const dashedLine =
                         c % 2 === 0
                             ? sketch.noisedDashLine([...line], 0)
-                            : dashLine([...line], lineSpacing, 1) */
-                    const dashedLine = dashLine([...line], lineSpacing, 1)
+                            : dashLine([...line], lineSpacing, 1)
                     dashedLine.forEach((l) =>
                         svg.path({
                             points: l,
                             fill: 'none',
                             close: false,
-                            //debug stroke: c % 2 === 0 ? 'tomato' : 'black',
                             group: groups[0].name
                         })
                     )
+
                     // line cross checker box
                 } else {
                     let prev = [...start]
                     end.push([...line[1]])
                     end.forEach((stop, i) => {
-                        /*  const dashedLine =
+                        const dashedLine =
                             (i + c) % 2 === 0
                                 ? sketch.noisedDashLine([prev, stop], 0)
                                 : dashLine([prev, stop], lineSpacing, 1)
-                        */
-                        const dashedLine = dashLine(
-                            [prev, stop],
-                            lineSpacing,
-                            1
-                        )
                         dashedLine.forEach((l) =>
                             svg.path({
                                 points: l,
                                 fill: 'none',
                                 close: false,
-                                //debug stroke: (i + c) % 2 === 0 ? 'tomato' : 'black',
                                 group: groups[0].name
                             })
                         )
@@ -161,7 +159,7 @@ const sketch = {
                     if (checker.pointIsHoverDarkBox([...noisedPoint])) {
                         return noisedPoint
                     } else {
-                        return point
+                        return false
                     }
                 })
                 lineOut.push(noisedDash)

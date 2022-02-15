@@ -42,7 +42,6 @@ export default class Checkerboard {
         const col = Math.ceil(point[0] / this.cellSize)
         const row = Math.ceil(point[1] / this.cellSize)
         const isHover = (col + row) % 2 !== 0
-        //return isHover
         return this.checkerNum % 2 === 0 ? isHover : !isHover
     }
 }
