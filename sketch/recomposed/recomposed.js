@@ -5,8 +5,8 @@ import getPalette from './palette'
 const sketch = (p5) => {
     let canvas, sample, move, palette, nIter, iteration
 
-    const maxIteration = 100,
-        noiseScale = 0.05,
+    const maxIteration = 150,
+        noiseScale = 0.01,
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
@@ -17,7 +17,6 @@ const sketch = (p5) => {
     sketch.init = () => {
         palette = [...getPalette()]
         p5.shuffle(palette)
-        if (Math.random() > 0.5) palette.splice(0, 1)
         p5.stroke(palette[0])
         palette.splice(0, 1)
         for (let x = 0; x < palette.length; x++) {
@@ -39,10 +38,10 @@ const sketch = (p5) => {
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
         const numFrame = 2 * Math.ceil(Math.random() * 4)
-        const stepSize = p5.map(nIter, 0, iteration, p5.width * 0.1, 24)
+        const stepSize = p5.map(nIter, 0, iteration, p5.width * 0.1, 8)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
-        const size = p5.map(nIter, 0, iteration, p5.width * 2, p5.width * 0.2)
+        const size = p5.map(nIter, 0, iteration, p5.width, p5.width * 0.1)
 
         move = {
             goForward: goForward,
@@ -91,15 +90,11 @@ const sketch = (p5) => {
             const copy = p5.get()
             let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = p5.noise(d * noiseScale, iteration * noiseScale)
+            const noise = p5.noise(d * noiseScale, nIter * noiseScale)
 
             const disp = [
-                (goForward ? -1 : 1) * isVertical
-                    ? Math.cos(noise * Math.PI * 2) * step
-                    : d,
-                (goForward ? -1 : 1) * isVertical
-                    ? d
-                    : Math.sin(noise * Math.PI * 2) * step
+                (goForward ? -1 : 1) * isVertical ? Math.cos(noise) * step : 0,
+                (goForward ? -1 : 1) * isVertical ? 0 : Math.sin(noise) * step
             ]
             const src = {
                 x: start[0],
