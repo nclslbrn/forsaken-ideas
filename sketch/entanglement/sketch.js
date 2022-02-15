@@ -23,18 +23,17 @@ const step = 12
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum
 
 const noise = (x, y) => {
-    const freq = 0.005
-    const turbulence = 2
+    const freq = 0.001
+    const turbulence = 8
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
 
 const sketch = {
     launch: () => {
         svg.init()
-        /* remove auto margin for debug
+        /* remove auto margin for debug */
         svg.elem.style.maxWidth = 'unset'
         svg.elem.style.maxHeight = 'unset'
-        */
 
         groups.forEach((g) => svg.group(g))
         sketch.margin = svg.cmToPixels(3.5)
@@ -85,52 +84,8 @@ const sketch = {
             }
         }
 
-        checker.getCells().forEach((cell) => {
-            if (
-                (cell.i === 'even' && checkerNum % 2 !== 0) ||
-                (cell.i === 'odd' && checkerNum % 2 === 0)
-            ) {
-                let swirl
-                for (let x = 0; x < cell.w; x += lineSpacing * 0.2) {
-                    for (let y = 0; y < cell.h; y += lineSpacing * 0.2) {
-                        let pos = {
-                            x: cell.x + x,
-                            y: cell.y + y
-                        }
-                        swirl = []
-                        let isGone = false
-                        for (let j = 0; j < 2 && !isGone; j++) {
-                            const n = noise(pos.x, pos.y)
-                            pos.x += Math.cos(n) * lineSpacing * 0.1
-                            pos.y += Math.sin(n) * lineSpacing * 0.1
-                            if (
-                                pos.x < cell.x ||
-                                pos.x > cell.x + cell.w ||
-                                pos.y < cell.y ||
-                                pos.y > cell.y + cell.h ||
-                                sketch.isPointInHex(pos)
-                            ) {
-                                isGone = true
-                            } else {
-                                swirl.push([pos.x, pos.y])
-                            }
-                        }
-                        if (undefined !== swirl[0]) {
-                            svg.path({
-                                points: swirl,
-                                stroke: 'black',
-                                fill: 'none',
-                                close: false,
-                                group: groups[0].name
-                            })
-                        }
-                    }
-                }
-            }
-        })
-
-        //sketch.drawHexagons()
-        //sketch.drawCheckerBoard()
+        // sketch.drawHexagons()
+        // sketch.drawCheckerBoard()
         sketch.drawHexagonsStripes()
     },
     isPointInHex: (point) => {
@@ -147,11 +102,11 @@ const sketch = {
                 const c = checker.pointIsHoverDarkBox([...start]) ? 0 : 1
                 // line doesn't cross checker box
                 if (end.length === 0) {
-                    const dashedLine =
+                    /* const dashedLine =
                         c % 2 === 0
                             ? sketch.noisedDashLine([...line], 0)
-                            : dashLine([...line], lineSpacing, 1)
-
+                            : dashLine([...line], lineSpacing, 1) */
+                    const dashedLine = dashLine([...line], lineSpacing, 1)
                     dashedLine.forEach((l) =>
                         svg.path({
                             points: l,
@@ -166,11 +121,16 @@ const sketch = {
                     let prev = [...start]
                     end.push([...line[1]])
                     end.forEach((stop, i) => {
-                        const dashedLine =
+                        /*  const dashedLine =
                             (i + c) % 2 === 0
                                 ? sketch.noisedDashLine([prev, stop], 0)
                                 : dashLine([prev, stop], lineSpacing, 1)
-
+                        */
+                        const dashedLine = dashLine(
+                            [prev, stop],
+                            lineSpacing,
+                            1
+                        )
                         dashedLine.forEach((l) =>
                             svg.path({
                                 points: l,
@@ -193,10 +153,16 @@ const sketch = {
             dashedLine.forEach((dash) => {
                 const noisedDash = dash.map((point) => {
                     const n = noise(point[0], point[1])
-                    return [
+                    const noisedPoint = [
                         point[0] + Math.cos(n) * step,
                         point[1] + Math.sin(n) * step
                     ]
+                    // If point outside checker replace by the default one
+                    if (checker.pointIsHoverDarkBox([...noisedPoint])) {
+                        return noisedPoint
+                    } else {
+                        return point
+                    }
                 })
                 lineOut.push(noisedDash)
             })
@@ -249,8 +215,54 @@ const sketch = {
                 svg.rect({
                     ...cell,
                     group: groups[0].name,
-                    fill: 'black'
+                    fill: 'none',
+                    stroke: 'black'
                 })
+        })
+    },
+    drawCheckerBoardDash: () => {
+        checker.getCells().forEach((cell) => {
+            if (
+                (cell.i === 'even' && checkerNum % 2 !== 0) ||
+                (cell.i === 'odd' && checkerNum % 2 === 0)
+            ) {
+                let swirl
+                for (let x = 0; x < cell.w; x += lineSpacing * 0.2) {
+                    for (let y = 0; y < cell.h; y += lineSpacing * 0.2) {
+                        let pos = {
+                            x: cell.x + x,
+                            y: cell.y + y
+                        }
+                        swirl = []
+                        let isGone = false
+                        for (let j = 0; j < 2 && !isGone; j++) {
+                            const n = noise(pos.x, pos.y)
+                            pos.x += Math.cos(n) * lineSpacing * 0.1
+                            pos.y += Math.sin(n) * lineSpacing * 0.1
+                            if (
+                                pos.x < cell.x ||
+                                pos.x > cell.x + cell.w ||
+                                pos.y < cell.y ||
+                                pos.y > cell.y + cell.h ||
+                                sketch.isPointInHex(pos)
+                            ) {
+                                isGone = true
+                            } else {
+                                swirl.push([pos.x, pos.y])
+                            }
+                        }
+                        if (undefined !== swirl[0]) {
+                            svg.path({
+                                points: swirl,
+                                stroke: 'black',
+                                fill: 'none',
+                                close: false,
+                                group: groups[0].name
+                            })
+                        }
+                    }
+                }
+            }
         })
     },
     // export inline <svg> as SVG file
