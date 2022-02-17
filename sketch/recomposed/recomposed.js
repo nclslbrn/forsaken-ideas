@@ -5,7 +5,7 @@ import getPalette from './palette'
 const sketch = (p5) => {
     let canvas, sample, move, palette, nIter, iteration
 
-    const maxIteration = 150,
+    const maxIteration = 200,
         noiseScale = 0.007,
         container = document.getElementById('windowFrame')
 
@@ -37,7 +37,7 @@ const sketch = (p5) => {
     }
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
-        const numFrame = 3 * Math.ceil(Math.random() * 2)
+        const numFrame = 2 * Math.ceil(Math.random() * 2)
         const stepSize = p5.map(nIter, 0, iteration, p5.width * 0.1, 8)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
@@ -90,15 +90,15 @@ const sketch = (p5) => {
             const copy = p5.get()
             let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = 15 * p5.noise(d * noiseScale, nIter * noiseScale)
+            const noise = 10 * p5.noise(d * noiseScale, nIter * noiseScale)
 
             const disp = [
                 (goForward ? -1 : 1) * isVertical
-                    ? Math.cos(noise * Math.PI * 2) * step
-                    : 0,
+                    ? Math.cos(noise * Math.PI) * step
+                    : d,
                 (goForward ? -1 : 1) * isVertical
-                    ? 0
-                    : Math.sin(noise * Math.PI * 2) * step
+                    ? d
+                    : Math.sin(noise * Math.PI) * step
             ]
             const src = {
                 x: start[0],
@@ -109,8 +109,8 @@ const sketch = (p5) => {
             const dest = {
                 x: start[0] + disp[0],
                 y: start[1] + disp[1],
-                w: rect[0] * (Math.random() / 2 + 1),
-                h: rect[1] * (Math.random() / 2 + 1)
+                w: rect[0] * (Math.random() / 4 + 1),
+                h: rect[1] * (Math.random() / 4 + 1)
             }
 
             sample.copy(
