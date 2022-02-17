@@ -31,7 +31,7 @@ const sketch = (p5) => {
      * grid with noise value
      */
     sketch.init = () => {
-        size = 100
+        size = 75
         sketchDim = sketchSize()
         cols = p5.floor(sketchDim.w / size)
         rows = p5.floor(sketchDim.h / size)
