@@ -108,6 +108,19 @@ module.exports = (property) => {
                         ]
                     })
                 )
+                plugins.push(
+                    new CopyWebpackPlugin({
+                        patterns: [
+                            {
+                                from: path.join(
+                                    property.input.toString(),
+                                    '/thumbnail.jpg'
+                                ),
+                                to: path.join('./')
+                            }
+                        ]
+                    })
+                )
             }
         }
         if (willMonitorTask) {

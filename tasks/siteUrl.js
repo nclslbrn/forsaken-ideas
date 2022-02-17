@@ -1,1 +1,1 @@
-module.exports = 'https://artemg.com'
+module.exports = 'https://nclslbrn.github.io'

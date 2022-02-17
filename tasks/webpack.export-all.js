@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const unescapeTitle = require('./unescapeTitle')
 const fileList = require('./fileList')
@@ -6,6 +7,7 @@ const siteUrl = require('./siteUrl')
 const stripTags = require('./stripTags')
 const author = require('./author')
 const { existsSync } = require('fs')
+const thumbnailThis = require('./thumbnailThis')
 const projects = fileList(path.resolve('sketch/'))
 const projectsConfig = []
 
@@ -21,7 +23,9 @@ for (let p = 0; p < projects.length; p++) {
         title: nextProject ? unescapeTitle(nextProject) : false,
         link: nextProject ? `../${nextProject}/` : false
     }
-
+    const getImageCover = fs.existsSync(
+        path.join(path.resolve('sketch/'), projects[p], 'capture.jpg')
+    )
     const property = require(path.resolve(
         'sketch/' + projects[p] + '/property.json'
     ))
@@ -43,11 +47,11 @@ for (let p = 0; p < projects.length; p++) {
     property.getAssetsToCopy = existsSync(
         path.join(path.resolve('sketch/'), projects[p], 'assets')
     )
-    property.imageCover = existsSync(
-        path.join(path.resolve('sketch/'), projects[p], 'capture.jpg')
-    )
+    property.imageCover = getImageCover
+        ? siteUrl + '/sketch/' + projects[p] + '/capture.jpg'
+        : undefined
     property.escapedInfo = property.info ? stripTags(property.info) : undefined
-
+    if (property.imageCover) thumbnailThis(projects[p])
     projectsConfig[p] = sketchConfig(property)
 }
 module.exports = projectsConfig

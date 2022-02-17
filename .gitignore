@@ -66,3 +66,6 @@ typings/
 
 # Ftp deploy config
 ftp.json
+
+# Generated thumbnail
+thumbnail.jpg

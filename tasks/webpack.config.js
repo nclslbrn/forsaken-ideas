@@ -7,20 +7,22 @@ const projects = fileList(path.resolve('sketch/'))
 const siteUrl = require('./siteUrl')
 const stripTags = require('./stripTags')
 const author = require('./author')
+const thumbnailThis = require('./thumbnailThis')
 
 module.exports = (env, process) => {
     const project = path.resolve(process.entry[0])
-    const getAssetsToCoppy = fs.existsSync(
-        path.join(project.toString(), 'assets')
-    )
-    const getImageCover = fs.existsSync(
-        path.join(project.toString(), 'capture.jpg')
-    )
+    console.log(project)
+
     const folder = JSON.parse(JSON.stringify(project))
         .toString()
         .split('/')
         .pop()
-
+    const getAssetsToCoppy = fs.existsSync(
+        path.join(path.resolve('sketch/'), folder, 'assets')
+    )
+    const getImageCover = fs.existsSync(
+        path.join(path.resolve('sketch/'), folder, 'capture.jpg')
+    )
     const property = require(project + '/property.json')
     property.mode = process.mode == 'production' ? 'production' : 'development'
     property.url = `${siteUrl}/sketch/${folder}`
@@ -32,7 +34,7 @@ module.exports = (env, process) => {
     property.path = folder
     property.getAssetsToCopy = getAssetsToCoppy
     property.imageCover = getImageCover
-        ? property.url + 'capture.jpg'
+        ? siteUrl + '/sketch/' + folder + '/capture.jpg'
         : undefined
     property.escapedInfo = property.info ? stripTags(property.info) : undefined
     property.siteUrl = siteUrl
@@ -53,6 +55,7 @@ module.exports = (env, process) => {
     }
 
     if (property) {
+        if (undefined !== property.imageCover) thumbnailThis(folder)
         return sketchConfig(property)
     } else {
         process.exitCode = 128

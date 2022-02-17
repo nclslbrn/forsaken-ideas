@@ -10,12 +10,10 @@
         "build:sketches": "webpack --mode production --config tasks/webpack.export-all.js",
         "watch:gallery": "webpack serve --config tasks/webpack.gallery.js",
         "build:gallery": "webpack --mode production --config tasks/webpack.gallery.js --entry ./src/js/gallery.js",
-        "build": "npm run build:clean && npm run build:sketches && npm run thumbnail:all && npm run build:gallery",
+        "build": "npm run build:clean && npm run build:sketches && npm run build:gallery",
         "primer": "node tasks/primer",
         "topics": "node tasks/getTopics",
-        "deploy": "node tasks/node-deploy",
-        "thumbnail:this": "node tasks/thumbnailThis.js",
-        "thumbnail:all": "node tasks/thumbnailAll.js"
+        "deploy": "node tasks/node-deploy"
     },
     "keywords": [
         "p5js",
