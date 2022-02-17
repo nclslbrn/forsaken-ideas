@@ -52,7 +52,7 @@ const sketch = {
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
         checkerNum = randomIntBetween(3, 7)
         checker = new Checkerboard(inner, sketch.margin, checkerNum)
-        freq = Math.random() / 700
+        freq = Math.max(0.0001, Math.random() / 800)
         const numCell = [
             Math.floor(inner[0] / (2 * hexRadius)) - 1,
             Math.floor(inner[1] / (2 * hexRadius)) - 1
@@ -90,7 +90,7 @@ const sketch = {
         }
 
         // sketch.drawHexagons()
-        sketch.drawCheckerBoardDash()
+        // sketch.drawCheckerBoardDash()
         // sketch.drawCheckerBoard()
         sketch.drawHexagonsStripes()
     },
