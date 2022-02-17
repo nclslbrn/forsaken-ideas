@@ -6,7 +6,7 @@ const sketch = (p5) => {
     let canvas, sample, move, palette, nIter, iteration
 
     const maxIteration = 150,
-        noiseScale = 0.01,
+        noiseScale = 0.007,
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
@@ -37,7 +37,7 @@ const sketch = (p5) => {
     }
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
-        const numFrame = 2 * Math.ceil(Math.random() * 4)
+        const numFrame = 3 * Math.ceil(Math.random() * 2)
         const stepSize = p5.map(nIter, 0, iteration, p5.width * 0.1, 8)
         const isVerticalSample = Math.random() > 0.5
         // Image sample & canvas must be 1:1 ratio
@@ -90,11 +90,15 @@ const sketch = (p5) => {
             const copy = p5.get()
             let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = p5.noise(d * noiseScale, nIter * noiseScale)
+            const noise = 15 * p5.noise(d * noiseScale, nIter * noiseScale)
 
             const disp = [
-                (goForward ? -1 : 1) * isVertical ? Math.cos(noise) * step : 0,
-                (goForward ? -1 : 1) * isVertical ? 0 : Math.sin(noise) * step
+                (goForward ? -1 : 1) * isVertical
+                    ? Math.cos(noise * Math.PI * 2) * step
+                    : 0,
+                (goForward ? -1 : 1) * isVertical
+                    ? 0
+                    : Math.sin(noise * Math.PI * 2) * step
             ]
             const src = {
                 x: start[0],
