@@ -19,7 +19,7 @@ const svg = new SvgTracer({
     //background: 'black'
 })
 const groups = [
-    { name: 'line', stroke: 'black', strokeWidth: 2 },
+    { name: 'line', stroke: 'black' }, // , strokeWidth: 2
     { name: 'frame', stroke: 'tomato' }
 ]
 const simplex = new SimplexNoise()
@@ -28,6 +28,7 @@ const step = 12
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum, freq
 
 const noise = (x, y) => {
+    const freq = 0.003
     const turbulence = 8
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
@@ -52,7 +53,6 @@ const sketch = {
         inner = [svg.width - sketch.margin * 2, svg.height - sketch.margin * 2]
         checkerNum = randomIntBetween(3, 7)
         checker = new Checkerboard(inner, sketch.margin, checkerNum)
-        freq = Math.max(0.0001, Math.random() / 800)
         const numCell = [
             Math.floor(inner[0] / (2 * hexRadius)) - 1,
             Math.floor(inner[1] / (2 * hexRadius)) - 1
@@ -88,7 +88,15 @@ const sketch = {
                 }
             }
         }
-
+        for (let i = 0; i < 40; i++) {
+            hexagons.push(
+                new Hexagon(
+                    svg.width / 2 + svg.width * 0.5 * (Math.random() - 0.5),
+                    svg.height / 2 + svg.height * 0.5 * (Math.random() - 0.5),
+                    hexRadius * Math.random()
+                )
+            )
+        }
         // sketch.drawHexagons()
         // sketch.drawCheckerBoardDash()
         // sketch.drawCheckerBoard()
