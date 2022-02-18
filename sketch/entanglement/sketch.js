@@ -12,24 +12,26 @@ import Hexagon from './Hexagon'
 import Checkerboard from './Checkerboard'
 import dashLine from './dashLine'
 import SimplexNoise from 'simplex-noise'
+import ease from '../../src/js/sketch-common/ease'
 
 const svg = new SvgTracer({
-    parentElem: document.getElementById('windowFrame'),
-    size: 'A3_landscape'
-    //background: 'black'
-})
-const groups = [
-    { name: 'line', stroke: 'black' }, // , strokeWidth: 2
-    { name: 'frame', stroke: 'tomato' }
-]
-const simplex = new SimplexNoise()
+        parentElem: document.getElementById('windowFrame'),
+        size: 'A3_landscape'
+        //background: 'black'
+    }),
+    groups = [
+        { name: 'line', stroke: 'black' }, // , strokeWidth: 2
+        { name: 'frame', stroke: 'tomato' }
+    ],
+    simplex = new SimplexNoise(),
+    step = 12,
+    randomHexNum = 4
 
-const step = 12
 let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum, freq
 
 const noise = (x, y) => {
     const freq = 0.003
-    const turbulence = 8
+    const turbulence = 6
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
 
@@ -88,12 +90,12 @@ const sketch = {
                 }
             }
         }
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < randomHexNum; i++) {
             hexagons.push(
                 new Hexagon(
                     svg.width / 2 + svg.width * 0.5 * (Math.random() - 0.5),
                     svg.height / 2 + svg.height * 0.5 * (Math.random() - 0.5),
-                    hexRadius * Math.random()
+                    hexRadius * 2 * 0.58
                 )
             )
         }
@@ -155,13 +157,33 @@ const sketch = {
     // displace dash line with noise
     noisedDashLine: (lineIn, mode) => {
         const lineOut = []
+        const castToGrid = [
+            sketch.margin + checker.padding[0],
+            sketch.margin - checker.padding[1]
+        ]
         dashLine(lineIn, lineSpacing, mode).forEach((dashedLine) => {
             dashedLine.forEach((dash) => {
                 const noisedDash = dash.map((point) => {
                     const n = noise(point[0], point[1])
+
+                    const posInchecker = [
+                        ((point[0] - castToGrid[0]) % checker.cellSize) /
+                            checker.cellSize,
+                        ((point[1] - castToGrid[1]) % checker.cellSize) /
+                            checker.cellSize
+                    ]
+                    const smooth = [
+                        posInchecker[0] < 0.5
+                            ? posInchecker[0]
+                            : 1 - posInchecker[0],
+                        posInchecker[1] < 0.5
+                            ? posInchecker[1]
+                            : 1 - posInchecker[1]
+                    ]
+                    console.log(ease)
                     const noisedPoint = [
-                        point[0] + Math.cos(n) * step,
-                        point[1] + Math.sin(n) * step
+                        point[0] + Math.cos(n) * step * ease(smooth[0] * 2),
+                        point[1] + Math.sin(n) * step * ease(smooth[1] * 2)
                     ]
                     // If point outside checker replace by the default one
                     if (checker.pointIsHoverDarkBox([...noisedPoint])) {

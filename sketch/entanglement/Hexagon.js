@@ -1,7 +1,8 @@
 const PI = Math.PI,
     cos = Math.cos,
     sin = Math.sin,
-    random = Math.random
+    random = Math.random,
+    emptyFaceChance = 0.1
 
 export default class Hexagon {
     constructor(x, y, r) {
@@ -36,17 +37,14 @@ export default class Hexagon {
     }
     // Top side strip
     getTopSideStrip(lineSpacing) {
-        const tracing = Math.round(random() * 2)
-        switch (tracing) {
-            case 0:
+        if (random() > emptyFaceChance) {
+            if (random() > 0.5) {
                 return this.topSideLeftToBottomStrip(lineSpacing)
-                break
-            case 1:
+            } else {
                 return this.topSideRightToBottomStrip(lineSpacing)
-                break
-            case 2:
-                return []
-                break
+            }
+        } else {
+            return []
         }
     }
     topSideLeftToBottomStrip(lineSpacing) {
@@ -92,10 +90,14 @@ export default class Hexagon {
 
     // Left side strip
     getLeftSideStrip(lineSpacing) {
-        if (random() > 0.5) {
-            return this.leftSideLeftToTopStripe(lineSpacing)
+        if (random() > emptyFaceChance) {
+            if (random() > 0.5) {
+                return this.leftSideLeftToTopStripe(lineSpacing)
+            } else {
+                return this.leftSideTopToBottom(lineSpacing)
+            }
         } else {
-            return this.leftSideTopToBottom(lineSpacing)
+            return []
         }
     }
     leftSideLeftToTopStripe(lineSpacing) {
@@ -142,10 +144,14 @@ export default class Hexagon {
     }
     // Right side strip
     getRightSideStrip(lineSpacing) {
-        if (random() > 0.5) {
-            return this.rightSideLeftToTopStrip(lineSpacing)
+        if (random() > emptyFaceChance) {
+            if (random() > 0.5) {
+                return this.rightSideLeftToTopStrip(lineSpacing)
+            } else {
+                return this.rightSideTopToBottomStrip(lineSpacing)
+            }
         } else {
-            return this.rightSideTopToBottomStrip(lineSpacing)
+            return []
         }
     }
     rightSideLeftToTopStrip(lineSpacing) {
