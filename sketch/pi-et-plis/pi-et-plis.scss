@@ -1,0 +1,24 @@
+button,
+label,
+input[type='text'] {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol';
+    font-size: 1em;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+label {
+    margin-top: 1em;
+}
+#windowFrame button {
+    margin: 1em;
+}
+#windowFrame {
+    flex-flow: row wrap;
+}
+
+#windowFrame svg {
+    margin: 2em;
+}
