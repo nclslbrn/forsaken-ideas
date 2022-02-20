@@ -1,6 +1,6 @@
 export default class Part {
-    constructor(points, color) {
+    constructor(points, index) {
         this.points = points
-        this.color = color
+        this.index = index
     }
 }

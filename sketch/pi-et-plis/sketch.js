@@ -9,9 +9,6 @@ const svg = new SvgTracer({
 })
 const N = 2
 const sketch = {
-    iterations: 100,
-    nIter: 0,
-
     // setup
     launch: () => {
         svg.init()
@@ -26,7 +23,6 @@ const sketch = {
     init: () => {
         svg.clear()
         parts = []
-
         for (let x = 0; x < N; x++) {
             for (let y = 0; y < N; y++) {
                 parts.push(
@@ -49,14 +45,11 @@ const sketch = {
                                 margin + (y + 1) * tileSize[1]
                             ]
                         ],
-                        (x + y) % 2 === 0
-                            ? ['black', 'white']
-                            : ['white', 'black']
+                        x + y
                     )
                 )
             }
         }
-
         let i = 0
         while (i < 10) {
             sketch.cutTile()
@@ -125,8 +118,8 @@ const sketch = {
                         a.push(pt)
                     }
                 })
-                newParts.push(new Part(a, [part.color[1], part.color[0]]))
-                newParts.push(new Part(b, [part.color[0], part.color[1]]))
+                newParts.push(new Part(a, part.index + 1))
+                newParts.push(new Part(b, part.index + 2))
                 partsToRemove.push(h)
             }
         })
@@ -145,8 +138,8 @@ const sketch = {
         parts.forEach((p) => {
             svg.path({
                 points: p.points,
-                fill: p.color[0],
-                stroke: p.color[1],
+                fill: p.index % 2 === 0 ? 'black' : 'white',
+                stroke: p.index % 2 === 0 ? 'white' : 'black',
                 close: true
             })
         })
