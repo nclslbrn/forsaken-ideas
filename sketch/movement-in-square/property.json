@@ -1,0 +1,7 @@
+{
+    "libs": ["p5"],
+    "info": "This sketch is a reproduction of <a href='https://www.moma.org/collection/works/75869' target='_blank'><i>Movement in square</i></a> by Bridget Riley (1961). It uses a logarithmic function to decrease the width of rectangles along x axis.",
+    "topic": "Unsorted",
+    "date": "2022-01-06",
+    "action": []
+}
