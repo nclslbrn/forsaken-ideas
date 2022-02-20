@@ -2,10 +2,9 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import { getLineLineCollision } from './trigonometry'
 import Part from './Part'
 
-let margin, parts, tileSize, button
-const parentElem = document.getElementById('windowFrame')
+let margin, parts, tileSize
 const svg = new SvgTracer({
-    parentElem: parentElem,
+    parentElem: document.getElementById('windowFrame'),
     size: 'A3_portrait'
 })
 const N = 2
@@ -21,17 +20,6 @@ const sketch = {
             Math.round((svg.width - margin * 2) / N),
             Math.round((svg.height - margin * 2) / N)
         ]
-        button = document.createElement('button')
-        button.innerText = 'Add fold'
-        button.addEventListener(
-            'click',
-            () => {
-                sketch.cutTile()
-                sketch.drawTiles()
-            },
-            false
-        )
-        parentElem.appendChild(button)
         sketch.init()
     },
     // reset value and relaunch drawing

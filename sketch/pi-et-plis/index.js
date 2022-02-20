@@ -13,5 +13,6 @@ sketch.launch()
 containerElement.removeChild(loader)
 window.init = sketch.init
 window.export = sketch.export
+window.fold = sketch.cutTile
 window.infobox = infobox
 handleAction()

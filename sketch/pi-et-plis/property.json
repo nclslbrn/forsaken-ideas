@@ -9,6 +9,10 @@
             "icon": "sync"
         },
         {
+            "name": "fold",
+            "icon": "plus-circle"
+        },
+        {
             "name": "export",
             "icon": "desktop-download"
         }
