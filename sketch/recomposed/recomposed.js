@@ -6,7 +6,7 @@ const sketch = (p5) => {
     let canvas, sample, move, palette, nIter, iteration
 
     const maxIteration = 200,
-        noiseScale = 0.007,
+        noiseScale = 0.03,
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
@@ -90,7 +90,7 @@ const sketch = (p5) => {
             const copy = p5.get()
             let { goForward, step, isVertical, d, start, rect } = move
 
-            const noise = 10 * p5.noise(d * noiseScale, nIter * noiseScale)
+            const noise = 20 * p5.noise(d * noiseScale, nIter * noiseScale)
 
             const disp = [
                 (goForward ? -1 : 1) * isVertical
@@ -109,8 +109,8 @@ const sketch = (p5) => {
             const dest = {
                 x: start[0] + disp[0],
                 y: start[1] + disp[1],
-                w: rect[0] * (Math.random() / 4 + 1),
-                h: rect[1] * (Math.random() / 4 + 1)
+                w: rect[0] * (Math.random() / 2 + 1),
+                h: rect[1] * (Math.random() / 2 + 1)
             }
 
             sample.copy(
