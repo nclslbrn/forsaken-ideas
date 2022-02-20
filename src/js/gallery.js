@@ -1,11 +1,11 @@
 import '../sass/grid-gallery.scss'
 // import makeAcronym from './gallery/random-acronym-extend'
 // import randomHeroImage from './gallery/random-hero-image'
+//import randomOpenGraphCover from './gallery/randomOpenGraphCover'
 import GlitchText from './gallery/glitchText'
-import randomOpenGraphCover from './gallery/randomOpenGraphCover'
 import gridOrder from './gallery/grid-order'
 
-randomOpenGraphCover()
+// randomOpenGraphCover()
 // makeAcronym()
 // randomHeroImage()
 gridOrder()

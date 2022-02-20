@@ -3,7 +3,6 @@ const willMonitorTask = false
 // Node modules
 const path = require('path')
 const webpack = require('webpack')
-const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
@@ -28,15 +27,18 @@ const siteUrl = require('./siteUrl')
 const author = require('./author')
 
 module.exports = (env, process) => {
+    const projects = fileList(publicFolder)
+    let projectWithMeta = []
+
     property.mode = process.mode == 'production' ? 'production' : 'development'
     property.url = siteUrl
-    property.imageCover = siteUrl + '/sketch/polar-curve/capture.jpg'
+    property.imageCover = `${siteUrl}/sketch/${
+        projects[Math.floor(Math.random() * projects.length)]
+    }/capture.jpg`
+
     property.author = author
     property.escapedInfo = property.info ? stripTags(property.info) : undefined
     property.srcPath = './'
-
-    const projects = fileList(publicFolder)
-    let projectWithMeta = []
 
     projects.forEach((proj) => {
         projectWithMeta.push({
