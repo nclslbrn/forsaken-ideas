@@ -1,0 +1,20 @@
+{
+    "libs": [],
+    "info": "The main process of this sketch is to cut a square in several parts. This work is inspired from <a href='https://collection.meeschaert.com/wp-content/uploads/sites/45/2015/10/260-MORELLET-Fran--ois-Pi-et-Pli-noir.jpg'><i>Pi & Plis (noir)</i></a> Pi & folds (black).",
+    "topic": "Random distribution",
+    "date": "2022-02-13",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "fold",
+            "icon": "plus-circle"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
