@@ -146,7 +146,7 @@ const sketch = {
     },
     // export inline <svg> as SVG file
     export: () => {
-        sketch.svg.export({ name: 'sketchname' })
+        svg.export({ name: 'pi-et-plis' })
     }
 }
 
