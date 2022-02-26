@@ -39,8 +39,8 @@ const sketch = {
     launch: () => {
         svg.init()
         /* remove auto margin for debug */
-        svg.elem.style.maxWidth = 'unset'
-        svg.elem.style.maxHeight = 'unset'
+        // svg.elem.style.maxWidth = 'unset'
+        //svg.elem.style.maxHeight = 'unset'
 
         groups.forEach((g) => svg.group(g))
         sketch.margin = svg.cmToPixels(3.5)
@@ -64,7 +64,7 @@ const sketch = {
             (inner[1] - hexRadius * 1.74 * numCell[1]) / 2
         ]
         // plotter drawing zone on separate layer to calibrate plotter
-        svg.rect({
+        /*  svg.rect({
             x: sketch.margin,
             y: sketch.margin,
             w: svg.width - sketch.margin * 2,
@@ -72,7 +72,7 @@ const sketch = {
             group: groups[1].name,
             fill: 'none',
             stroke: 'tomato'
-        })
+        }) */
         for (let x = 0; x < numCell[0]; x++) {
             for (let y = 0; y < numCell[1]; y++) {
                 if (y % 2 !== 0 || x !== numCell[0] - 1) {
