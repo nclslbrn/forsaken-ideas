@@ -1,0 +1,16 @@
+{
+    "libs": [],
+    "info": "Two functions are used to draw the lines of this sketch, the first is a random plane curve (among all those present in <a href='https://github.com/nclslbrn/make/blob/main/src/js/sketch-common/plane-curve.js'>this file</a>). The second one uses the Perlin noise (Simplex version). The lines use these two algorithms depending on whether the circle in which they are located is odd or even.",
+    "topic": "Plane curve",
+    "date": "2022-03-06",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
