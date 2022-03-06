@@ -1,7 +1,6 @@
 'use strict'
 import '../../src/sass/project.scss'
 import '../../src/sass/frame-canvas.scss'
-import './pi-et-plis.scss'
 import sketch from './sketch'
 import infobox from '../../src/js/sketch-common/infobox'
 import handleAction from '../../src/js/sketch-common/handle-action'
