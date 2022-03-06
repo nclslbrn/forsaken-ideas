@@ -8,12 +8,11 @@ import Part from './Part'
 let margin, parts, tileSize
 const svg = new SvgTracer({
         parentElem: document.getElementById('windowFrame'),
-        size: 'P24x32',
-        dpi: 72
+        size: 'P32x24'
     }),
     simplex = new SimplexNoise(),
     N = Math.ceil(Math.random() * 3),
-    I = 16,
+    I = 48,
     lineStep = 6,
     followLine = (line) => {
         const points = []
