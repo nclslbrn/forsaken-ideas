@@ -1,6 +1,6 @@
 {
     "libs": [],
-    "info": "The main process of this sketch is to cut a square in several parts. This work is inspired from <a href='https://collection.meeschaert.com/wp-content/uploads/sites/45/2015/10/260-MORELLET-Fran--ois-Pi-et-Pli-noir.jpg'><i>Pi & Plis (noir)</i></a> Pi & folds (black).",
+    "info": "The main process of this sketch is to cut a square in several parts. Then it draws diagonal strips with different types of lines to trace the fragments, with regular or random dashed lines (of different lengths and spacing). Randomly the lines are straight or follow a curve calculated with a Perlin noise.",
     "topic": "Random distribution",
     "date": "2022-02-13",
     "action": [
