@@ -1,0 +1,20 @@
+{
+    "libs": [],
+    "info": "coming soon",
+    "topic": "Random distribution",
+    "date": "2022-03-09",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "fold",
+            "icon": "plus-circle"
+        },
+        {
+            "name": "export",
+            "icon": "desktop-download"
+        }
+    ]
+}
