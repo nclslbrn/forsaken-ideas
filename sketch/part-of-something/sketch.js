@@ -12,7 +12,7 @@ const svg = new SvgTracer({
     }),
     simplex = new SimplexNoise(),
     N = Math.ceil(Math.random() * 3),
-    I = 50,
+    I = 25,
     noiseLine = (line) => {
         const noisedLine = []
         const freq = 0.003
@@ -159,17 +159,23 @@ const sketch = {
         svg.clear()
         parts.forEach((p, i) => {
             const circleCenter = [
-                svg.width / 2 + (Math.random() - 0.5) * svg.cmToPixels(2),
-                svg.height / 2 + (Math.random() - 0.5) * svg.cmToPixels(2)
+                svg.width / 2 + (Math.random() - 0.5) * svg.cmToPixels(1.5),
+                svg.height / 2 + (Math.random() - 0.5) * svg.cmToPixels(1.5)
             ]
+            let pointByCircle = 5
             for (
                 let radius = 0;
                 radius <= Math.sqrt(svg.width ** 2 + svg.height ** 2);
-                radius += svg.cmToPixels(0.3)
+                radius += svg.cmToPixels(0.15)
             ) {
-                const arc = []
-
-                for (let theta = 0; theta <= Math.PI * 2.1; theta += 0.015) {
+                const arcs = []
+                const start = Math.random() * Math.PI
+                let arc = []
+                for (
+                    let theta = start;
+                    theta <= start + Math.PI * 2;
+                    theta += (Math.PI * 2) / pointByCircle
+                ) {
                     const arcP = [
                         circleCenter[0] + Math.cos(theta) * radius,
                         circleCenter[1] + Math.sin(theta) * radius
@@ -177,15 +183,22 @@ const sketch = {
                     if (isPointInsidePolygon(arcP, p.points)) {
                         arc.push([...arcP])
                     }
+                    if (Math.random() < 0.1) {
+                        arcs.push([...arc])
+                        arc = []
+                    }
                 }
-                if (arc.length > 1) {
-                    svg.path({
-                        points: arc,
-                        stroke: 'black',
-                        fill: 'none',
-                        close: false
-                    })
-                }
+                arcs.forEach((arc) => {
+                    if (arc.length > 1) {
+                        svg.path({
+                            points: arc,
+                            stroke: 'black',
+                            fill: 'none',
+                            close: false
+                        })
+                    }
+                })
+                pointByCircle += 5
             }
         })
     },
