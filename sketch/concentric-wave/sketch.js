@@ -3,7 +3,16 @@ import funcs from '../../src/js/sketch-common/plane-curve'
 import Point from './Point'
 import Notification from './../../src/js/sketch-common/Notification'
 import SimplexNoise from 'simplex-noise'
-import { random, ceil, abs, sqrt, cos, sin, atan2 } from './Math'
+import {
+    random,
+    ceil,
+    abs,
+    sqrt,
+    cos,
+    sin,
+    atan2,
+    round
+} from '../../src/js/sketch-common/Math'
 
 let margin, pointSpacing, circleNum, radiuses, planeCurve, points, lines, frame
 const simplex = new SimplexNoise()
@@ -16,14 +25,14 @@ const randomPlaneCurveFunc = () => {
     return funcsName[Math.floor(Math.random() * funcsName.length)]
 }
 const noise = (x, y) => {
-    const freq = 0.03
-    const turbulence = 10
+    const freq = 0.1
+    const turbulence = 1
     return turbulence * simplex.noise2D(x * freq, y * freq)
 }
 const svg = new SvgTracer({
     parentElem: container,
     size: 'A3_Square',
-    dpi: 72
+    dpi: 150
 })
 const groups = [
     { name: 'lines', stroke: 'black' }, // , strokeWidth: 2
@@ -66,8 +75,8 @@ const sketch = {
                 (1 / circleNum) * (i + 1) * (svg.width - margin * 2) * 0.7
             )
         }
-        // svg.elem.style.maxWidth = 'unset'
-        // svg.elem.style.maxHeight = 'unset'
+        svg.elem.style.maxWidth = 'unset'
+        svg.elem.style.maxHeight = 'unset'
         if (debug) {
             sketch.drawFrame()
             sketch.drawRadiuses()
@@ -95,14 +104,20 @@ const sketch = {
                     const pos = [...points[i].pos]
                     if (sketch.getRadiusNum(pos) % 2 == 0) {
                         const p = {
-                            x: pos[0] / svg.width - 0.5,
-                            y: pos[1] / svg.height - 0.5
+                            x: (pos[0] / svg.width - 0.5) * 3.0,
+                            y: (pos[1] / svg.height - 0.5) * 3.0
                         }
-                        const curvePos = funcs[planeCurve](p)
+                        const curvePos = funcs[planeCurve](p, 1)
                         const loopPos = funcs['sinusoidal'](curvePos)
-                        points[i].angle = noise(loopPos.y, loopPos.x)
+                        points[i].angle =
+                            atan2(loopPos.y, loopPos.x) +
+                            noise(curvePos.x, curvePos.y) * 0.1
                     } else {
-                        points[i].angle = 0.1 * noise(pos[0], pos[1]) // * atan2( svg.height / 2 - pos[1], svg.width / 2 - pos[0])
+                        points[i].angle = noise(
+                            round(pos[0] / 64) * 16,
+                            round(pos[1] / 64) * 16
+                        )
+                        // * atan2( svg.height / 2 - pos[1], svg.width / 2 - pos[0])
                     }
                     points[i].pos = [
                         pos[0] + cos(points[i].angle) * points[i].speed,

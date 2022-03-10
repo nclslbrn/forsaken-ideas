@@ -3,7 +3,7 @@ export default class Point {
         this.pos = [x, y]
         this.angle = angle
         this.isStuck = false
-        this.speed = 1 / Math.ceil(Math.random() * 7)
+        this.speed = 1 + Math.random()
         this.onArea = false
     }
 }

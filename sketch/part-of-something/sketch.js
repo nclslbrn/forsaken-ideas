@@ -3,6 +3,19 @@ import SimplexNoise from 'simplex-noise'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
 import Part from './Part'
+import {
+    random,
+    ceil,
+    abs,
+    sqrt,
+    cos,
+    sin,
+    atan2,
+    round,
+    min,
+    max,
+    PI
+} from '../../src/js/sketch-common/Math'
 
 let margin, parts, tileSize
 const svg = new SvgTracer({
@@ -11,7 +24,7 @@ const svg = new SvgTracer({
         dpi: 72
     }),
     simplex = new SimplexNoise(),
-    N = Math.ceil(Math.random() * 3),
+    N = ceil(random() * 3),
     I = 25,
     noiseLine = (line) => {
         const noisedLine = []
@@ -22,8 +35,8 @@ const svg = new SvgTracer({
             const nValue =
                 turbulence * simplex.noise2D(pt[0] * freq, pt[1] * freq)
             noisedLine.push([
-                pt[0] + Math.cos(nValue) * force,
-                pt[1] + Math.sin(nValue) * force
+                pt[0] + cos(nValue) * force,
+                pt[1] + sin(nValue) * force
             ])
         })
         return noisedLine
@@ -37,8 +50,8 @@ const sketch = {
         svg.elem.style.maxHeight = 'unset'
         margin = svg.cmToPixels(3)
         tileSize = [
-            Math.round((svg.width - margin * 2) / N),
-            Math.round((svg.height - margin * 2) / N)
+            round((svg.width - margin * 2) / N),
+            round((svg.height - margin * 2) / N)
         ]
         sketch.init()
     },
@@ -81,19 +94,19 @@ const sketch = {
         sketch.drawTiles()
     },
     cutTile: () => {
-        const isVertical = Math.random() > 0.5
+        const isVertical = random() > 0.5
         const line = [
             [
-                isVertical ? Math.round(Math.random() * svg.width) : margin / 2,
-                isVertical ? margin / 2 : Math.round(Math.random() * svg.height)
+                isVertical ? round(random() * svg.width) : margin / 2,
+                isVertical ? margin / 2 : round(random() * svg.height)
             ],
             [
                 isVertical
-                    ? Math.round(Math.random() * svg.width)
+                    ? round(random() * svg.width)
                     : svg.width - margin / 2,
                 isVertical
                     ? svg.height - margin / 2
-                    : Math.round(Math.random() * svg.height)
+                    : round(random() * svg.height)
             ]
         ]
 
@@ -158,48 +171,60 @@ const sketch = {
     drawTiles: () => {
         svg.clear()
         parts.forEach((p, i) => {
-            const circleCenter = [
-                svg.width / 2 + (Math.random() - 0.5) * svg.cmToPixels(1.5),
-                svg.height / 2 + (Math.random() - 0.5) * svg.cmToPixels(1.5)
+            const center = [
+                svg.width / 2 + (random() - 0.5) * svg.cmToPixels(5),
+                svg.height / 2 + (random() - 0.5) * svg.cmToPixels(5)
             ]
-            let pointByCircle = 5
+
+            const radiuses = p.points.map((p) =>
+                abs(sqrt((center[0] - p[0]) ** 2 + (center[1] - p[1]) ** 2))
+            )
+            const angles = p.points.map((p) =>
+                atan2(p[1] - center[1], p[0] - center[0])
+            )
+            const minRadius = min(...radiuses)
+            const maxRadius = max(...radiuses)
+            const minAngle = min(...angles) - 1
+            const maxAngle = max(...angles) + 1
+
+            let pointByCircle = 10
             for (
-                let radius = 0;
-                radius <= Math.sqrt(svg.width ** 2 + svg.height ** 2);
+                let radius = minRadius;
+                radius <= maxRadius;
                 radius += svg.cmToPixels(0.15)
             ) {
-                const arcs = []
-                const start = Math.random() * Math.PI
-                let arc = []
+                const arc = []
+                //const start = random() * PI * 2
                 for (
-                    let theta = start;
-                    theta <= start + Math.PI * 2;
-                    theta += (Math.PI * 2) / pointByCircle
+                    let theta = minAngle;
+                    theta <= maxAngle;
+                    theta += (PI * 2) / pointByCircle
                 ) {
                     const arcP = [
-                        circleCenter[0] + Math.cos(theta) * radius,
-                        circleCenter[1] + Math.sin(theta) * radius
+                        center[0] + cos(theta) * radius,
+                        center[1] + sin(theta) * radius
                     ]
                     if (isPointInsidePolygon(arcP, p.points)) {
                         arc.push([...arcP])
                     }
-                    if (Math.random() < 0.1) {
-                        arcs.push([...arc])
-                        arc = []
-                    }
                 }
-                arcs.forEach((arc) => {
-                    if (arc.length > 1) {
-                        svg.path({
-                            points: arc,
-                            stroke: 'black',
-                            fill: 'none',
-                            close: false
-                        })
-                    }
-                })
-                pointByCircle += 5
+                if (arc.length > 1) {
+                    svg.path({
+                        points: arc,
+                        stroke: 'black',
+                        fill: 'none',
+                        close: false
+                    })
+                }
+
+                pointByCircle += 75
             }
+            /*  svg.path({
+                points: p.points,
+                stroke: 'black',
+                fill: 'none',
+                close: false
+            }) */
         })
     },
     // export inline <svg> as SVG file
