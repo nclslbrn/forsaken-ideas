@@ -26,6 +26,9 @@ const svg = new SvgTracer({
     simplex = new SimplexNoise(),
     N = ceil(random() * 3),
     I = 25,
+    randomBetween = (interval = { min: 0, max: 1 }) => {
+        return interval.min + Math.random() * (interval.max - interval.min)
+    },
     noiseLine = (line) => {
         const noisedLine = []
         const freq = 0.003
@@ -175,7 +178,6 @@ const sketch = {
                 svg.width / 2 + (random() - 0.5) * svg.cmToPixels(5),
                 svg.height / 2 + (random() - 0.5) * svg.cmToPixels(5)
             ]
-
             const radiuses = p.points.map((p) =>
                 abs(sqrt((center[0] - p[0]) ** 2 + (center[1] - p[1]) ** 2))
             )
@@ -184,20 +186,24 @@ const sketch = {
             )
             const minRadius = min(...radiuses)
             const maxRadius = max(...radiuses)
-            const minAngle = min(...angles) - 1
-            const maxAngle = max(...angles) + 1
+            const minAngle = min(...angles)
+            const maxAngle = max(...angles)
 
-            let pointByCircle = 10
+            const radiusStep = svg.cmToPixels(
+                randomBetween({ min: 0.1, max: 0.3 })
+            )
+
+            let pointByCircle = 200
             for (
                 let radius = minRadius;
                 radius <= maxRadius;
-                radius += svg.cmToPixels(0.15)
+                radius += radiusStep
             ) {
                 const arc = []
                 //const start = random() * PI * 2
                 for (
                     let theta = minAngle;
-                    theta <= maxAngle;
+                    theta < maxAngle;
                     theta += (PI * 2) / pointByCircle
                 ) {
                     const arcP = [
@@ -211,13 +217,13 @@ const sketch = {
                 if (arc.length > 1) {
                     svg.path({
                         points: arc,
-                        stroke: 'black',
+                        stroke: i % 2 == 0 ? 'tomato' : 'steelblue',
                         fill: 'none',
                         close: false
                     })
                 }
 
-                pointByCircle += 75
+                pointByCircle += 100
             }
             /*  svg.path({
                 points: p.points,
