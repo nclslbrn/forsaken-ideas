@@ -1,8 +1,10 @@
 html {
     overflow: hidden;
 }
-canvas {
+#windowFrame svg,
+#windowFrame canvas {
     display: block;
+    width: 100vw;
     max-width: 100%;
     height: auto;
 }

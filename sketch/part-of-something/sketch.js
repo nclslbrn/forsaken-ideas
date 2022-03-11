@@ -2,7 +2,9 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import SimplexNoise from 'simplex-noise'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
+import Notification from '../../src/js/sketch-common/Notification'
 import Part from './Part'
+import { getColorCombination } from '../../src/js/sketch-common/stabilo68-colors'
 import {
     random,
     ceil,
@@ -18,14 +20,14 @@ import {
 } from '../../src/js/sketch-common/Math'
 
 let margin, parts, tileSize
+const container = document.getElementById('windowFrame')
 const svg = new SvgTracer({
-        parentElem: document.getElementById('windowFrame'),
-        size: 'A3_Square',
-        dpi: 72
+        parentElem: container,
+        size: 'A3_landscape'
     }),
     simplex = new SimplexNoise(),
     N = ceil(random() * 3),
-    I = 25,
+    I = 72,
     randomBetween = (interval = { min: 0, max: 1 }) => {
         return interval.min + Math.random() * (interval.max - interval.min)
     },
@@ -44,23 +46,47 @@ const svg = new SvgTracer({
         })
         return noisedLine
     }
-
 const sketch = {
+    palette: getColorCombination(2),
     // setup
     launch: () => {
         svg.init()
-        svg.elem.style.maxWidth = 'unset'
-        svg.elem.style.maxHeight = 'unset'
+        /*
+        svg.elem.style.width = '100vw'
+        svg.elem.style.maxWidth = '100vw'
+        svg.elem.style.maxHeight = '100vh'
+        */
         margin = svg.cmToPixels(3)
         tileSize = [
             round((svg.width - margin * 2) / N),
             round((svg.height - margin * 2) / N)
         ]
+        sketch.palette.colors.forEach((color) =>
+            svg.group({
+                name: color.id,
+                id: color.id,
+                stroke: color.value
+            })
+        )
+        svg.group({
+            name: 'black',
+            id: 'black',
+            stroke: 'black'
+        })
         sketch.init()
     },
     // reset value and relaunch drawing
     init: () => {
-        svg.clear()
+        svg.clearGroups()
+        svg.rect({
+            x: margin,
+            y: margin,
+            w: svg.width - margin * 2,
+            h: svg.height - margin * 2,
+            fill: 'none',
+            stroke: 'black',
+            group: 'black'
+        })
         parts = []
         for (let x = 0; x < N; x++) {
             for (let y = 0; y < N; y++) {
@@ -95,6 +121,14 @@ const sketch = {
             i++
         }
         sketch.drawTiles()
+        const penSpecs = sketch.palette.colors.reduce((specs, color) => {
+            return specs + `<br> - 88/${color.id} ${color.name}`
+        }, '(Stabilo Art markers)')
+        new Notification(
+            `${sketch.palette.name} palette ${penSpecs}`,
+            container,
+            'light'
+        )
     },
     cutTile: () => {
         const isVertical = random() > 0.5
@@ -167,70 +201,80 @@ const sketch = {
             })
             newParts.forEach((p) => nextParts.push(p))
             parts = nextParts
-            svg.clear()
-            sketch.drawTiles()
         }
     },
     drawTiles: () => {
-        svg.clear()
         parts.forEach((p, i) => {
             const center = [
-                svg.width / 2 + (random() - 0.5) * svg.cmToPixels(5),
-                svg.height / 2 + (random() - 0.5) * svg.cmToPixels(5)
+                svg.width / 2 + (random() - 0.5) * svg.cmToPixels(0.92),
+                svg.height / 2 + (random() - 0.5) * svg.cmToPixels(0.08)
             ]
             const radiuses = p.points.map((p) =>
-                abs(sqrt((center[0] - p[0]) ** 2 + (center[1] - p[1]) ** 2))
+                sqrt(abs(center[0] - p[0]) ** 2 + abs(center[1] - p[1]) ** 2)
             )
             const angles = p.points.map((p) =>
                 atan2(p[1] - center[1], p[0] - center[0])
             )
-            const minRadius = min(...radiuses)
             const maxRadius = max(...radiuses)
-            const minAngle = min(...angles)
-            const maxAngle = max(...angles)
-
+            let minAngle = min(...angles)
+            let maxAngle = max(...angles)
             const radiusStep = svg.cmToPixels(
-                randomBetween({ min: 0.1, max: 0.3 })
+                randomBetween({ min: 0.07, max: 0.4 })
             )
-
-            let pointByCircle = 200
-            for (
-                let radius = minRadius;
-                radius <= maxRadius;
-                radius += radiusStep
-            ) {
-                const arc = []
-                //const start = random() * PI * 2
+            // Ugly hack to loop between -PI & PI
+            if (minAngle <= -PI / 2 && maxAngle >= PI / 2) {
+                minAngle = 0
+                maxAngle = PI * 2.001
+            }
+            let pointByCircle = 20
+            for (let radius = 0; radius <= maxRadius; radius += radiusStep) {
+                const angleStep = (PI * 2) / pointByCircle
+                const arcs = []
+                let arc = false
                 for (
                     let theta = minAngle;
-                    theta < maxAngle;
-                    theta += (PI * 2) / pointByCircle
+                    theta <= maxAngle;
+                    theta += angleStep
                 ) {
                     const arcP = [
                         center[0] + cos(theta) * radius,
                         center[1] + sin(theta) * radius
                     ]
+
                     if (isPointInsidePolygon(arcP, p.points)) {
-                        arc.push([...arcP])
+                        if (arc) {
+                            arc.push([...arcP])
+                        } else {
+                            arc = [[...arcP]]
+                        }
+                    } else {
+                        if (arc) {
+                            arcs.push([...arc])
+                            arc = false
+                        } else {
+                            arc = false
+                        }
                     }
                 }
-                if (arc.length > 1) {
-                    svg.path({
-                        points: arc,
-                        stroke: i % 2 == 0 ? 'tomato' : 'steelblue',
-                        fill: 'none',
-                        close: false
-                    })
-                }
-
-                pointByCircle += 100
+                if (arc) arcs.push([...arc])
+                arcs.forEach((arc) => {
+                    if (arc.length > 1) {
+                        svg.path({
+                            points: arc,
+                            stroke: sketch.palette.colors[
+                                i % sketch.palette.colors.length
+                            ].value,
+                            fill: 'none',
+                            close: false,
+                            group: sketch.palette.colors[
+                                i % sketch.palette.colors.length
+                            ].id,
+                            strokeWidth: svg.cmToPixels(0.1)
+                        })
+                    }
+                })
+                pointByCircle += 30
             }
-            /*  svg.path({
-                points: p.points,
-                stroke: 'black',
-                fill: 'none',
-                close: false
-            }) */
         })
     },
     // export inline <svg> as SVG file
