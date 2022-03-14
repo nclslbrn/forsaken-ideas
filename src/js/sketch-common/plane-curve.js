@@ -9,7 +9,7 @@
  */
 
 const archimedean_spiral = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const a = 1
     const n = 3
     return {
@@ -19,7 +19,7 @@ const archimedean_spiral = (v, amount = 1.0) => {
 }
 
 const astroid = (v, amount = 2.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: Math.pow(Math.cos(theta), 3),
         y: Math.pow(Math.sin(theta), 3)
@@ -27,7 +27,7 @@ const astroid = (v, amount = 2.0) => {
 }
 
 const cardioid_pedal = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: amount * (1 + Math.cos(theta)) * Math.cos(theta),
         y: amount * (1 + Math.cos(theta)) * Math.sin(theta)
@@ -35,7 +35,7 @@ const cardioid_pedal = (v, amount = 1.0) => {
 }
 
 const catenary = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: theta,
         y: Math.cosh(theta / 2.0)
@@ -43,7 +43,7 @@ const catenary = (v, amount = 1.0) => {
 }
 
 const cochleoid = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sinc = ((Math.sin(theta) * Math.PI) / theta) * Math.PI
 
     return {
@@ -53,7 +53,7 @@ const cochleoid = (v, amount = 1.0) => {
 }
 
 const conchoid_of_nicomedes = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sec = 1 / Math.cos(theta)
     const a = 1
     const b = 2
@@ -64,7 +64,7 @@ const conchoid_of_nicomedes = (v, amount = 1.0) => {
 }
 
 const eight = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: amount * Math.sin(theta),
         y: amount * Math.sin(theta) * Math.cos(theta)
@@ -72,7 +72,7 @@ const eight = (v, amount = 1.0) => {
 }
 
 const folium = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x:
             amount *
@@ -89,7 +89,7 @@ const folium = (v, amount = 1.0) => {
 const hyperbolic = (v, amount = 2.0) => {
     const mag = Math.sqrt(Math.pow(v.x, 2), Math.pow(v.y, 2))
     const r = mag + 1.0e-10
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: (amount * Math.sin(theta)) / r,
         y: amount * Math.cos(theta) * r
@@ -100,7 +100,7 @@ const julia = (v, amount = 2.0) => {
     const mag = Math.sqrt(Math.pow(v.x, 2), Math.pow(v.y, 2))
     const r = amount * Math.sqrt(mag)
     const theta =
-        0.5 * Math.atan2(v.x, v.y) + Math.round(2.0 * Math.random()) * Math.PI
+        0.5 * Math.atan2(v.y, v.x) + Math.round(2.0 * Math.random()) * Math.PI
     return {
         x: amount * r * Math.cos(theta),
         y: amount * r * Math.sin(theta)
@@ -108,7 +108,7 @@ const julia = (v, amount = 2.0) => {
 }
 
 const kampyle_of_euxodus = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sec = 1 / Math.cos(theta)
 
     return {
@@ -118,7 +118,7 @@ const kampyle_of_euxodus = (v, amount = 1.0) => {
 }
 
 const kilroy_curve = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sinc = Math.sin(theta) / theta
     return {
         x: amount * theta,
@@ -127,7 +127,7 @@ const kilroy_curve = (v, amount = 1.0) => {
 }
 
 const maltese_cross = (v, amount = 1.5) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: (amount * (2 * Math.cos(theta))) / Math.sqrt(Math.sin(4 * theta)),
         y: (amount * (2 * Math.sin(theta))) / Math.sqrt(Math.sin(4 * theta))
@@ -135,7 +135,7 @@ const maltese_cross = (v, amount = 1.5) => {
 }
 
 const parallel_parabola = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const offset = 1
     return {
         x:
@@ -148,7 +148,7 @@ const parallel_parabola = (v, amount = 1.0) => {
 }
 
 const quadratix_of_hippias = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sinc = Math.sin(theta) / theta
 
     return {
@@ -158,7 +158,7 @@ const quadratix_of_hippias = (v, amount = 1.0) => {
 }
 
 const rectangular_hyperbola = (v, amount = 0.4) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const sec = 1 / Math.cos(theta)
 
     return { x: sec, y: Math.tan(theta) }
@@ -184,7 +184,7 @@ const sinusoidal = (v, amount = 1.0) => {
 }
 
 const superformula = (v, amount = 1.0) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     const a = 1
     const b = 1
     const m = 6
@@ -202,7 +202,7 @@ const superformula = (v, amount = 1.0) => {
     }
 }
 const witch_of_agnesi = (v, amount = 0.5) => {
-    const theta = Math.atan2(v.x, v.y)
+    const theta = Math.atan2(v.y, v.x)
     return {
         x: 2 * amount * theta,
         y: (2 * amount) / Math.pow(theta, 2) + 1
