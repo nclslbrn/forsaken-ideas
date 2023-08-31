@@ -1,0 +1,14 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "Sketch created during #genuary code challenge in 2023",
+    "topic": "Genuary",
+    "date": "2023-01-24",
+    "action": [
+        {
+            "name": "init_sketch",
+            "icon": "sync"
+        }
+    ]
+}

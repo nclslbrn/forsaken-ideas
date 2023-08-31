@@ -1,5 +1,5 @@
-@import 'variables';
-@import 'mixins';
+@import "variables";
+@import "mixins";
 
 #windowFrame {
     position: relative;
@@ -8,8 +8,8 @@
     @include breakpoint(md) {
         flex-flow: row nowrap;
     }
-    width: 100vw;
-    height: 100vh;
+    min-width: 100%;
+    min-height: 100vh;
     margin: 0;
     align-items: center;
     justify-content: center;
@@ -41,7 +41,7 @@ canvas {
     svg {
         float: left;
         &::after {
-            content: '';
+            content: "";
             display: table;
             clear: both;
             float: none;
