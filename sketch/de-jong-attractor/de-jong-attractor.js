@@ -116,7 +116,6 @@ const sketch = {
 
         if (move === sketch.iterations) {
             const cuttedLines = cutLines(lines, 3, sketch.iterations)
-            console.log(cuttedLines)
             const removeEmpty = cuttedLines.filter(
                 (line) => line.points.length > 1
             )

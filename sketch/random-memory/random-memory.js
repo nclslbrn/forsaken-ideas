@@ -1,6 +1,6 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import CanvasPictureSampler from './Canvas-picture-sampler'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import Notification from '../../src/js/sketch-common/Notification'
 import memory from './memory'
 const frame = document.getElementById('windowFrame')
@@ -17,12 +17,11 @@ const sketch = {
         dpi: 300
     }),
     sampler: new CanvasPictureSampler(),
-    simplex: new SimplexNoise(),
+    simplex: createNoise2D(),
     resetImage: () => {
         sketch.sampler.clear()
-        sketch.image.src = `https://source.unsplash.com/${
-            memory[sketch.pictNum][0]
-        }/56x74/`
+        sketch.image.src = `https://source.unsplash.com/${memory[sketch.pictNum][0]
+            }/56x74/`
         const openLink = unsplashLinkPrefix + memory[sketch.pictNum][0]
         sketch.rememberText.innerHTML = `<p>${memory[sketch.pictNum][1]}</p>`
         sketch.rememberText.innerHTML += `<p>Open the original on <a href='${openLink}' target='blank'>unsplash.com</a></p>`
@@ -68,7 +67,7 @@ const sketch = {
         for (let x = 0; x < sketch.image.width; x++) {
             for (let y = 0; y < sketch.image.height; y++) {
                 const color = sketch.sampler.getColor(x, y)
-                const angle = sketch.simplex.noise2D(
+                const angle = sketch.simplex(
                     x / sketch.scale,
                     y / sketch.scale
                 )

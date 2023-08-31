@@ -1,10 +1,10 @@
-@import 'variables';
-@import 'mixins';
-@include font-face(Inter, 'fonts/Inter-Bold', 500, normal, woff2 woff);
-@import 'commons';
-@import 'modules/aside';
-@import 'modules/orderGridButton';
-@import 'modules/thumbnailGrid';
+@import "variables";
+@import "mixins";
+@include font-face(Inter, "fonts/Inter-Bold", 500, normal, woff2 woff);
+@import "commons";
+@import "modules/aside";
+@import "modules/orderGridButton";
+@import "modules/thumbnailGrid";
 
 body {
     background: var(--color-body);
@@ -14,7 +14,6 @@ main {
     display: block;
     padding: 1em 0 0 0;
     width: 90%;
-    max-width: 1280px;
     margin: 0 auto;
 }
 
@@ -28,7 +27,7 @@ header#top {
     flex-flow: row wrap;
 
     @include breakpoint(md) {
-        padding: 0 1.5em;
+        width: 90%;
         flex-flow: row nowrap;
     }
     align-items: center;

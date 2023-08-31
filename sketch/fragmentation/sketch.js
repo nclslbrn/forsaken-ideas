@@ -1,5 +1,5 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
 import dashLine from './dashLine'
@@ -7,11 +7,11 @@ import Part from './Part'
 
 let margin, parts, tileSize
 const svg = new SvgTracer({
-        parentElem: document.getElementById('windowFrame'),
-        size: 'A3_Square',
-        dpi: 72
-    }),
-    simplex = new SimplexNoise(),
+    parentElem: document.getElementById('windowFrame'),
+    size: 'A3_Square',
+    dpi: 72
+}),
+    simplex = createNoise2D(),
     N = Math.ceil(Math.random() * 3),
     I = 48,
     lineStep = 6,
@@ -24,7 +24,7 @@ const svg = new SvgTracer({
         )
         const size = Math.sqrt(
             Math.abs(line[1][0] - line[0][0]) ** 2 +
-                Math.abs(line[1][1] - line[0][1]) ** 2
+            Math.abs(line[1][1] - line[0][1]) ** 2
         )
         for (let d = 0; d <= size; d += lineStep * 4) {
             points.push([
@@ -41,7 +41,7 @@ const svg = new SvgTracer({
         const force = 2
         line.forEach((pt) => {
             const nValue =
-                turbulence * simplex.noise2D(pt[0] * freq, pt[1] * freq)
+                turbulence * simplex(pt[0] * freq, pt[1] * freq)
             noisedLine.push([
                 pt[0] + Math.cos(nValue) * force,
                 pt[1] + Math.sin(nValue) * force

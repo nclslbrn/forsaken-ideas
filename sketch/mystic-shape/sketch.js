@@ -3,7 +3,7 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import Notification from '../../src/js/sketch-common/Notification'
 import funcs from '../../src/js/sketch-common/plane-curve'
 import map from '../../src/js/sketch-common/remap'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import { getColorCombination } from '../../src/js/sketch-common/stabilo68-colors'
 
 const randomTrigoFunc = () => {
@@ -44,18 +44,18 @@ const initPoints = {
 }
 
 const container = document.getElementById('windowFrame')
-const simplex = new SimplexNoise()
+const simplex = createNoise2D()
 const tracer = new SvgTracer({
     parentElem: container,
-    size: 'A4_portrait'
+    size: 'A3_Square'
 })
 
 const sketch = {
     iterations: 50,
     margin: tracer.cmToPixels(3.5),
-    scale: 10,
+    scale: 5,
     speed: 0.05,
-    res: 0.4,
+    res: 0.15,
     // setup
     launch: () => {
         tracer.init()
@@ -70,7 +70,6 @@ const sketch = {
         sketch.palette = getColorCombination(2)
         sketch.initMode = Math.random() > 0.5 ? 'circle' : 'grid'
         sketch.points = initPoints[sketch.initMode]()
-        console.log(sketch.initMode, sketch.points.length)
         sketch.points.forEach((point) => sketch.lines.push([]))
 
         tracer.clear()
@@ -116,7 +115,7 @@ const sketch = {
                         sketch.points[p].stuck = true
                     }
                     const a1 = map(
-                        simplex.noise2D(
+                        simplex(
                             Math.cos(sketch.points[p].x),
                             Math.sin(sketch.points[p].y)
                         ),
@@ -151,7 +150,6 @@ const sketch = {
             sketch.draw()
         } else {
             sketch.draw()
-            console.log('Sketch done')
             const penSpecs = sketch.palette.colors.reduce((specs, color) => {
                 return specs + `<br> - 88/${color.id} ${color.name}`
             }, '(Stabilo Art markers)')

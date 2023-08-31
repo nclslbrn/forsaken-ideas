@@ -1,5 +1,4 @@
 import Stack from './Stack'
-// import SimplexNoise from 'simplex-noise'
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import hatch from './hatch'
 // const simplex = new SimplexNoise()
@@ -75,7 +74,7 @@ const sketch = {
             const r = Math.sin((x / size.w) * 2) * size.h * 0.01
             const angle =
                 sketch.noiseScale *
-                simplex.noise2D(
+                simplex(
                     (pos.x + x) * sketch.noiseFrequency,
                     (pos.y + y) * sketch.noiseFrequency
                 )

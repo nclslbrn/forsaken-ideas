@@ -7,7 +7,7 @@ import Notification from '../../src/js/sketch-common/Notification'
 const container = document.getElementById('windowFrame')
 
 const sketch = (p5) => {
-    const n = 4,
+    const n = 5,
         x1 = -3,
         y1 = -3,
         x2 = 3,
@@ -25,7 +25,7 @@ const sketch = (p5) => {
         cartel
 
     // A4 150dpi canvas = p5.createCanvas(1754, 1280)
-    const sketchWidth = 900
+    const sketchWidth = 1200
     const sketchHeight = 1200
     const sketchSize = (sketchWidth, sketchHeight) => {
         const ratio = sketchWidth / sketchHeight
@@ -115,7 +115,7 @@ const sketch = (p5) => {
         y = y1
         choosenJoinFunc =
             joinVectorFuncsNames[
-                p5.floor(p5.random() * joinVectorFuncsNames.length)
+            p5.floor(p5.random() * joinVectorFuncsNames.length)
             ]
         planeFunction =
             functionNames[p5.floor(p5.random() * functionNames.length)]
@@ -132,7 +132,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(85, 60, 100, 3).map((c, index) => {
+        colors = generateHslaColors(60, 70, 100, 4).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '

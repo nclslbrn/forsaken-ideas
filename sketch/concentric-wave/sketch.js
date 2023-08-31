@@ -2,7 +2,7 @@ import SvgTracer from '../../src/js/sketch-common/svg-tracer'
 import funcs from '../../src/js/sketch-common/plane-curve'
 import Point from './Point'
 import Notification from './../../src/js/sketch-common/Notification'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import {
     random,
     ceil,
@@ -15,7 +15,7 @@ import {
 } from '../../src/js/sketch-common/Math'
 
 let margin, pointSpacing, circleNum, radiuses, planeCurve, points, lines, frame
-const simplex = new SimplexNoise()
+const simplex = createNoise2D()
 const container = document.getElementById('windowFrame')
 const randomPlaneCurveFunc = () => {
     const funcsName = []

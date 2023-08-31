@@ -1,5 +1,5 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
 import Notification from '../../src/js/sketch-common/Notification'
@@ -27,7 +27,7 @@ const container = document.getElementById('windowFrame'),
         size: 'A3_landscape',
         background: 'black'
     }),
-    simplex = new SimplexNoise(),
+    simplex = createNoise2D(),
     N = ceil(random() * 3),
     I = 72,
     noiseLine = (line) => {
@@ -57,7 +57,7 @@ const sketch = {
             round((svg.width - margin * 2) / N),
             round((svg.height - margin * 2) / N)
         ]
-        const accent = ['mistyrose', 'aliceblue', 'linen']
+        const accent = ['mistyrose', 'aliceblue', 'linen', 'tomato', 'steelblue']
         colors = ['black', 'white', accent[floor(random() * accent.length)]]
         colors.forEach((color) =>
             svg.group({

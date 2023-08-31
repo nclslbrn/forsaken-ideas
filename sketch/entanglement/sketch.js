@@ -11,19 +11,19 @@ import {
 import Hexagon from './Hexagon'
 import Checkerboard from './Checkerboard'
 import dashLine from './dashLine'
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import ease from '../../src/js/sketch-common/ease'
 
 const svg = new SvgTracer({
-        parentElem: document.getElementById('windowFrame'),
-        size: 'A3_landscape'
-        //background: 'black'
-    }),
+    parentElem: document.getElementById('windowFrame'),
+    size: 'A3_landscape'
+    //background: 'black'
+}),
     groups = [
         { name: 'line', stroke: 'black' }, // , strokeWidth: 2
         { name: 'frame', stroke: 'tomato' }
     ],
-    simplex = new SimplexNoise(),
+    simplex = createNoise2D(),
     step = 12,
     randomHexNum = 4
 
@@ -32,7 +32,7 @@ let hexRadius, inner, checker, hexagons, lineSpacing, checkerNum, freq
 const noise = (x, y) => {
     const freq = 0.003
     const turbulence = 6
-    return turbulence * simplex.noise2D(x * freq, y * freq)
+    return turbulence * simplex(x * freq, y * freq)
 }
 
 const sketch = {
@@ -168,9 +168,9 @@ const sketch = {
 
                     const posInchecker = [
                         ((point[0] - castToGrid[0]) % checker.cellSize) /
-                            checker.cellSize,
+                        checker.cellSize,
                         ((point[1] - castToGrid[1]) % checker.cellSize) /
-                            checker.cellSize
+                        checker.cellSize
                     ]
                     const smooth = [
                         posInchecker[0] < 0.5
@@ -205,7 +205,7 @@ const sketch = {
         )
         const size = Math.sqrt(
             Math.abs(line[1][0] - line[0][0]) ** 2 +
-                Math.abs(line[1][1] - line[0][1]) ** 2
+            Math.abs(line[1][1] - line[0][1]) ** 2
         )
         let point = [...line[0]]
         let d = 0

@@ -13,32 +13,40 @@ module.exports = function (sketchName) {
             sketchName,
             'capture.jpg'
         )
-        if (fs.existsSync(capturePath)) {
-            const thumbnailPath = path.join(
-                path.resolve('sketch'),
-                sketchName,
-                'thumbnail.jpg'
-            )
-            gm(capturePath)
-                .crop(600, 600, 300, 15)
-                .write(thumbnailPath, function (err) {
-                    if (err) {
-                        console.error(err)
-                    } else {
-                        console.log(
-                            consoleColours.green,
-                            `✓ ${thumbnailPath}`,
-                            consoleColours.reset
-                        )
-                    }
-                })
-        } else {
-            console.error(
-                consoleColours.red,
-                `✗ ${capturePath}.`,
+        const thumbnailPath = path.join(
+            path.resolve('sketch'),
+            sketchName,
+            'thumbnail.jpg'
+        )
+        if (fs.existsSync(thumbnailPath)) {
+            console.log(
+                consoleColours.green,
+                `✓ ${thumbnailPath} already exists`,
                 consoleColours.reset
             )
+            return
         }
+        if (!fs.existsSync(capturePath)) {
+            console.error(
+                consoleColours.red,
+                `✗ ${thumbnailPath} can't be generated`,
+                consoleColours.reset
+            )
+            return
+        }
+        gm(capturePath)
+            .crop(600, 600, 300, 15)
+            .write(thumbnailPath, function (err) {
+                if (err) {
+                    console.error(err)
+                } else {
+                    console.log(
+                        consoleColours.green,
+                        `✓ ${thumbnailPath} generated`,
+                        consoleColours.reset
+                    )
+                }
+            })
     } else {
         console.error('A sketch path must be passed to this task')
     }

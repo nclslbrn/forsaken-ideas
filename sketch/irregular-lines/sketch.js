@@ -1,5 +1,5 @@
 import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import SimplexNoise from 'simplex-noise'
+import { createNoise3D } from 'simplex-noise'
 import ease from '../../src/js/sketch-common/ease'
 import isPointInsidePolygon from './isPointInsidePolygon'
 const tracer = new SvgTracer({
@@ -27,8 +27,7 @@ const sketch = {
     },
     // reset value and relaunch drawing
     init: () => {
-        sketch.seed = Math.random() * 9999
-        sketch.simplex = new SimplexNoise(sketch.seed)
+        sketch.simplex = createNoise2D()
         sketch.points = []
         sketch.lines = []
         for (
@@ -77,7 +76,7 @@ const sketch = {
                     let pointToJ = Math.abs(
                         Math.sqrt(
                             Math.pow(polygon[j].x - sketch.points[i].x, 2) +
-                                Math.pow(polygon[j].y - sketch.points[i].y, 2)
+                            Math.pow(polygon[j].y - sketch.points[i].y, 2)
                         )
                     )
 
@@ -90,7 +89,7 @@ const sketch = {
             sketch.points[i].x += sketch.step
             let x = sketch.points[i].x
             let y = sketch.points[i].y
-            const noise = sketch.simplex.noise3D(
+            const noise = sketch.simplex(
                 sketch.points[i].x / (sketch.noiseFrequency * (_d * 2)),
                 sketch.points[i].y / (sketch.noiseFrequency * (_d * 2)),
                 Math.sin(_d) / sketch.noiseFrequency

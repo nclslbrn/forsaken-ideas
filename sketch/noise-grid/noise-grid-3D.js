@@ -13,11 +13,10 @@ const gifOptions = {
     download: true,
     fileName: 'noiseGrid.gif'
 }
-const noise3D = makeNoise3D(Date.now())
 
 const sketch = (p5) => {
     // Layer need these two functions
-    window.noise = noise3D
+    window.noise = makeNoise3D()
     let noise, size, hSize, cols, rows, layers, width, height
 
     /**

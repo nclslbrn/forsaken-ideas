@@ -1,8 +1,8 @@
-import SimplexNoise from 'simplex-noise'
+import { createNoise2D } from 'simplex-noise'
 import funcs from '../../src/js/sketch-common/plane-curve'
 import Notification from '../../src/js/sketch-common/Notification'
 
-const simplex = new SimplexNoise()
+const simplex = createNoise2D()
 const randomTrigoFunc = () => {
     const funcsName = []
     Object.entries(funcs).forEach((func) => {
@@ -57,7 +57,7 @@ const sketch = {
     init_points: () => {
         const g =
             sketch.patternNum[
-                Math.floor(Math.random() * sketch.patternNum.length)
+            Math.floor(Math.random() * sketch.patternNum.length)
             ]
         sketch.points = []
         sketch.lines = []
@@ -86,7 +86,7 @@ const sketch = {
             const n1 =
                 500 *
                 map(
-                    simplex.noise2D(sketch.points[p].x, sketch.points[p].y),
+                    simplex(sketch.points[p].x, sketch.points[p].y),
                     0,
                     1,
                     -1,
