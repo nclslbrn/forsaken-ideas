@@ -10,7 +10,7 @@ const sketch = (p5) => {
   const margin = 100, step = 0.35;
 
   p5.setup = () => {
-    p5.createCanvas(1200, 630);
+    p5.createCanvas(window.innerWidth - 80, window.innerWidth - 160);
     p5.pixelDensity(1);
     p5.noLoop();
     p5.strokeCap(p5.PROJECT);
@@ -72,7 +72,7 @@ const sketch = (p5) => {
   }
 
   p5.windowResized = () => {
-    p5.resizeCanvas(window.innerWidth, window.innerHeight)
+    p5.resizeCanvas(window.innerWidth - 80, window.innerWidth - 160)
   }
   sketch.init_sketch = () => p5.redraw()
 }

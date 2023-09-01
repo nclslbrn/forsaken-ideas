@@ -7,11 +7,11 @@ import Notification from '../../src/js/sketch-common/Notification'
 const container = document.getElementById('windowFrame')
 
 const sketch = (p5) => {
-    const n = 5,
-        x1 = -3,
-        y1 = -3,
-        x2 = 3,
-        y2 = 3
+    const n = 3,
+        x1 = -4,
+        y1 = -4,
+        x2 = 4,
+        y2 = 4
 
     let y = y1,
         margin,
@@ -27,31 +27,17 @@ const sketch = (p5) => {
     // A4 150dpi canvas = p5.createCanvas(1754, 1280)
     const sketchWidth = 1200
     const sketchHeight = 1200
-    const sketchSize = (sketchWidth, sketchHeight) => {
-        const ratio = sketchWidth / sketchHeight
-        const side = p5.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 800 ? sketchWidth : side * ratio,
-            h: side > 800 ? sketchHeight : side
-        }
-    }
 
     // displacement functions
 
     const attractors = strangeAttractors().attractors
 
-    const functionNames = Object.entries(funcs).map((func_name) => {
-        return func_name[0]
-    })
-    const attractorNames = Object.entries(attractors).map((attr_name) => {
-        return attr_name[0]
-    })
+    const functionNames = Object.entries(funcs).map((func_name) => func_name[0])
+    const attractorNames = Object.entries(attractors).map((attr_name) => attr_name[0])
     const { joinVectorFuncs, joinVectorFuncsNames, getOperatorSymbol } =
         joinVector(p5)
+    const strFromVar = (variable) => variable.replaceAll('_', ' ').toUpperCase()
 
-    const strFromVar = (variable) => {
-        return variable.replaceAll('_', ' ').toUpperCase()
-    }
     // draw function
     const drawVariation = (x, y, h) => {
         const v = p5.createVector(x, y)
@@ -61,14 +47,14 @@ const sketch = (p5) => {
             const v4 = joinVectorFuncs[choosenJoinFunc](v2, v3)
             const fv = funcs['sinusoidal'](v4, (x2 - x1) / 2)
             const xx = p5.map(
-                fv.x, // + 0.0003 * p5.randomGaussian(),
+                fv.x,
                 x1,
                 x2,
                 margin,
                 p5.width - margin
             )
             const yy = p5.map(
-                fv.y, // + 0.0003 * p5.randomGaussian(),
+                fv.y,
                 y1,
                 y2,
                 margin,
@@ -79,9 +65,8 @@ const sketch = (p5) => {
         }
     }
     p5.setup = () => {
-        const sketchDim = sketchSize(sketchWidth, sketchHeight)
-        margin = sketchDim.w / 24
-        canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
+        margin = sketchWidth / 24
+        canvas = p5.createCanvas(sketchWidth, sketchHeight)
 
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
@@ -93,7 +78,7 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         if (drawing) {
-            p5.background(0, 75, 4, 1)
+            p5.background(0, 75, 4, 0.75)
 
             for (let i = 0; (i < n) & drawing; i++) {
                 p5.stroke(colors[i % colors.length])
@@ -132,7 +117,7 @@ const sketch = (p5) => {
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
         colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(60, 70, 100, 4).map((c, index) => {
+        colors = generateHslaColors(60, 70, 75, 4).map((c, index) => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '

@@ -1,13 +1,13 @@
 const sketch = (p5) => {
   p5.setup = () => {
-    p5.createCanvas(1200, 630);
+    p5.createCanvas(window.innerWidth - 80, window.innerHeight - 160);
     p5.background(20);
     p5.fill('#fce414');
     p5.noLoop();
   }
   p5.draw = () => {
-    const cells = p5.round(p5.random(48, 64));
-    const regularSize = window.innerWidth / cells;
+    const cells = p5.round(p5.random(64, 96));
+    const regularSize = p5.width / cells;
     const cellSizeVariation = (regularSize / cells) * 12;
 
     let xIncrement = cellSizeVariation;
@@ -24,8 +24,8 @@ const sketch = (p5) => {
 
     p5.background(20);
 
-    while (xPos < window.innerWidth) {
-      if (yPos < window.innerHeight) {
+    while (xPos < p5.width) {
+      if (yPos < p5.height) {
         if (yIncrement > cellSizeVariation) yIncrementStep--;
 
         if (yIncrement < 0) yIncrementStep++;
@@ -56,7 +56,8 @@ const sketch = (p5) => {
 
   }
   p5.windowResized = () => {
-    p5.resizeCanvas(window.innerWidth, window.innerHeight)
+    p5.resizeCanvas(window.innerWidth - 80, window.innerHeight - 160)
+    p5.redraw()
   }
   sketch.init_sketch = () => p5.redraw()
 }
