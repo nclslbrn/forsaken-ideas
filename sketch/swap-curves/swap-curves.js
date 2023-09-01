@@ -2,7 +2,7 @@ import ease from '../../src/js/sketch-common/ease'
 import switchMode from './switchMode'
 let canvas
 const numFrame = 45
-const cellSize = 72
+const cellSize = window.innerWidth > 800 ? 72 : 48
 const pointByCell = 8
 
 window.drawAsSingleLine = switchMode()
@@ -52,12 +52,11 @@ const sketch = (p5) => {
         }
         return switchCurves
     }
-    const sketchSize = () => {
-        return {
-            w: window.innerWidth * 0.7,
-            h: window.innerHeight * 0.7
-        }
-    }
+    const sketchSize = () => ({
+        w: window.innerWidth * 0.7,
+        h: window.innerHeight * 0.7
+    })
+
     p5.setup = () => {
         canvasSize = sketchSize()
         canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
@@ -73,8 +72,8 @@ const sketch = (p5) => {
             h: Math.floor(canvasSize.h / cellSize) - 2
         }
         margin = {
-            x: canvasSize.w / ((cellByLine.w + 2) * cellSize),
-            y: canvasSize.h / ((cellByLine.h + 2) * cellSize)
+            x: (canvasSize.w % cellSize) / 2,
+            y: (canvasSize.h % cellSize) / 2
         }
         console.log(
             'wrong width computation',
@@ -87,8 +86,6 @@ const sketch = (p5) => {
             '=',
             cellByLine.h * cellSize + margin.y
         )
-        margin.x /= 2
-        margin.y /= 2
 
         curves = []
         nextCurves = []

@@ -48,12 +48,12 @@ export default function () {
             if (order === 'name') {
                 let sortedByName = []
                 const orderedProject = [...projects].sort(function (a, b) {
-                    const aName = a.getAttribute('data-name')
-                    const bName = b.getAttribute('data-name')
+                    const aName = a.getAttribute('data-name').toLowerCase()
+                    const bName = b.getAttribute('data-name').toLowerCase()
                     return aName > bName ? 1 : -1
                 })
                 orderedProject.forEach((p) => {
-                    const firstChar = p.getAttribute('data-name').charAt(0)
+                    const firstChar = p.getAttribute('data-name').charAt(0).toLowerCase()
                     if (undefined === sortedByName[firstChar])
                         sortedByName[firstChar] = []
                     sortedByName[firstChar].push(p)

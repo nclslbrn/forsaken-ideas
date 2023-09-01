@@ -6,13 +6,7 @@ const sketch = (p5) => {
     const scale = 0.01
     const alpha = 50
     let selectedFunc, palette, points, canvas
-    const sketchSize = () => {
-        const side = p5.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
-        }
-    }
+
     const planeCurveFunctionSelector = () => {
         const funcSelector = document.createElement('select')
         const lastFunc = Object.keys(funcs).pop()
@@ -73,8 +67,8 @@ const sketch = (p5) => {
         //const size = sketchSize()
         //canvas = p5.createCanvas(size.w, size.h)
 
-        canvas = p5.createCanvas(2560, 2560)
-        canvas.elt.setAttribute('style', 'max-width: 80vh; height:auto;')
+        canvas = p5.createCanvas(1000, 1000)
+        p5.pixelDensity(window.devicePixelRatio)
         p5.stroke(0)
         planeCurveFunctionSelector()
         init_sketch()
@@ -82,8 +76,8 @@ const sketch = (p5) => {
 
     p5.draw = () => {
         for (let p = 0; p < points.length; p++) {
-            const xx = p5.map(points[p].x, -6.5, 6.5, 0, p5.width)
-            const yy = p5.map(points[p].y, -6.5, 6.5, 0, p5.height)
+            const xx = p5.map(points[p].x, -5, 5, 0, p5.width)
+            const yy = p5.map(points[p].y, -5, 5, 0, p5.height)
 
             const n1 =
                 5 * p5.map(p5.noise(points[p].x, points[p].y), 0, 1, -1, 1)

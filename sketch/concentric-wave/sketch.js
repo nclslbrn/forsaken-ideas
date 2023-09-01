@@ -27,11 +27,11 @@ const randomPlaneCurveFunc = () => {
 const noise = (x, y) => {
     const freq = 0.1
     const turbulence = 1
-    return turbulence * simplex.noise2D(x * freq, y * freq)
+    return turbulence * simplex(x * freq, y * freq)
 }
 const svg = new SvgTracer({
     parentElem: container,
-    size: 'A3_Square',
+    size: { w: window.innerWidth / 50, h: window.innerHeight / 50 },
     dpi: 150
 })
 const groups = [
@@ -43,7 +43,7 @@ const sketch = {
     // setup
     launch: () => {
         svg.init()
-        margin = svg.cmToPixels(3)
+        margin = svg.cmToPixels(0.5)
         frame = {
             min: { x: margin, y: margin },
             max: { x: svg.width - margin, y: svg.height - margin }

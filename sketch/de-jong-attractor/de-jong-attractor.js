@@ -60,12 +60,12 @@ const cutLines = (lines, nbCuts, maxLineLength) => {
     return newLines
 }
 
-const groups = ['steelblue', 'white']
+const groups = [Math.random() < 0.5 ? 'steelblue' : 'tomato', 'white']
 const progressBar = new ProgressBar(container, 0)
 const sketch = {
-    iterations: 30,
-    res: 0.012,
-    maxBounce: 1,
+    iterations: 20,
+    res: 0.009,
+    maxBounce: 3,
     setup: () => {
         tracer.init()
         groups.forEach((color) => {
@@ -81,7 +81,7 @@ const sketch = {
     init: () => {
         progressBar.reset()
         strangeAttractors().init('de_jong')
-        scale = 2 * Math.ceil(Math.random() * 4)
+        scale = 0.5 + Math.ceil(Math.random() * 12)
         points = []
         lines = []
         move = 0

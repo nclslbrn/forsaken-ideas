@@ -27,7 +27,7 @@ const sketch = {
     },
     // reset value and relaunch drawing
     init: () => {
-        sketch.simplex = createNoise2D()
+        sketch.simplex = createNoise3D()
         sketch.points = []
         sketch.lines = []
         for (

@@ -1,10 +1,12 @@
-@import '../../src/sass/variables';
-@import '../../src/sass/mixins';
+@import "../../src/sass/variables";
+@import "../../src/sass/mixins";
 
 #windowFrame {
     flex-flow: column-reverse nowrap;
+    max-height: calc(100vh - 160px);
     @include breakpoint(md) {
         flex-flow: row-reverse nowrap;
+        max-height: 100vh;
     }
 }
 #interactiveParameter {
@@ -18,16 +20,15 @@ select,
 #colorBlocks {
     line-height: 0.5;
     margin: 0.5em;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     text-align: center;
 }
 #colorBlocks {
     display: flex;
     flex-flow: row nowrap;
 }
-input[type='text'] {
+input[type="text"] {
     display: none;
     @include breakpoint(md) {
         display: block;
@@ -37,4 +38,15 @@ input[type='text'] {
 label {
     text-shadow: 0 0 4px #fff;
     pointer-events: none;
+}
+
+#windowFrame canvas {
+    display: block;
+    width: 80vw !important;
+    height: auto !important;
+
+    @include breakpoint(md) {
+        height: 80vh !important;
+        width: auto !important;
+    }
 }

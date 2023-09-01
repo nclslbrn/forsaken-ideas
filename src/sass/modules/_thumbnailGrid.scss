@@ -145,16 +145,14 @@ ul#grid-gallery li {
     }
 
     h2 {
-        font-size: 1.4em;
-
         @include breakpoint(md) {
             margin-bottom: 0;
             hyphens: auto;
         }
     }
     .project-title {
-        margin-top: 0;
         display: block;
+        margin-top: 0.5rem;
         position: relative;
     }
     p,

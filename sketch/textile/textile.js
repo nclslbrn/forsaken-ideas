@@ -1,5 +1,5 @@
 const sketch = (p5) => {
-  let grid, cell, palette;
+  let grid, cell, palette, margin;
   const palettes = [
     '#F1FAFD,#246023,#161922,#EA1703,#0C080B,#0173BB,#8B3014,#EEA600',
     '#FAF9E6,#5C4973,#1B0811,#321D19,#F4C808,#6487EE',
@@ -7,20 +7,24 @@ const sketch = (p5) => {
     '#3C4755,#E5E2DC,#E3B228,#414042,#CC311A,#613A29,#372F50,#302D28',
     '#DEDFDB,#AD3F0D,#050003,#8C9F9B,#215707,#1B6D9E,#E2BB0C'
   ]
-  const margin = 100, step = 0.35;
+  const step = 0.35;
 
   p5.setup = () => {
-    p5.createCanvas(window.innerWidth - 80, window.innerWidth - 160);
-    p5.pixelDensity(1);
+    p5.createCanvas(
+      window.innerWidth < 800 ? window.innerWidth - 80 : window.innerWidth - 160,
+      window.innerHeight - 160);
+    p5.pixelDensity(window.devicePixelRatio);
     p5.noLoop();
     p5.strokeCap(p5.PROJECT);
     p5.stroke(240);
     p5.noFill();
+
+    margin = p5.width * (window.innerWidth < 800 ? 0.1 : 0.05)
   }
   const drawCurve = (x1, y1, x2, y2) => {
     const dist = Math.hypot(x1 - x2, y1 - y2);
     const angle = Math.atan2(y2 - y1, x2 - x1);
-    const nStep = 2;
+    const nStep = 3;
     const weight = Math.min(cell.x, cell.y) / 3
 
     p5.strokeWeight(weight);

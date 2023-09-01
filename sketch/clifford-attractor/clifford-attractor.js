@@ -3,7 +3,7 @@ import Notification from '../../src/js/sketch-common/Notification'
 
 const sketch = (p5) => {
     const res = 2
-    const maxBounce = 2
+    const maxBounce = 3
     const initPoints = []
     const scale = 0.003
 
@@ -25,7 +25,7 @@ const sketch = (p5) => {
                 x: x,
                 y: 0,
                 vx: 0,
-                vy: 1,
+                vy: 4,
                 bounce: 0
             })
             pointsHistory.push([])

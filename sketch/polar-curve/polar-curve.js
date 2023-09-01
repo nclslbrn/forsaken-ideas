@@ -23,11 +23,6 @@ const sketch = (p5) => {
     paramBox.appendChild(paletteNameElem)
     paramBox.appendChild(colorBlocks)
 
-    sketch.size = () => {
-        const side = p5.min(window.innerWidth, window.innerHeight)
-        return side > 960 ? 1080 : side
-    }
-
     sketch.planeCurveFunctionSelector = () => {
         const funcSelector = document.createElement('select')
         const functions = Object.keys(funcs)
@@ -112,12 +107,8 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        const size = sketch.size()
-        canvas = p5.createCanvas(size, size)
-        canvas.elt.setAttribute(
-            'style',
-            'display: block; max-height: 60vh; max-width: 60vh;'
-        )
+        canvas = p5.createCanvas(1000, 1000)
+        p5.pixelDensity(window.devicePixelRatio)
         p5.strokeWeight(2)
         p5.smooth(5)
         sketch.planeCurveFunctionSelector()
@@ -159,12 +150,6 @@ const sketch = (p5) => {
             points[p].x += v4.x * scale
             points[p].y += v4.y * scale
         }
-    }
-
-    p5.windowResized = () => {
-        const size = sketch.size()
-        p5.resizeCanvas(size, size)
-        sketch.init()
     }
 }
 export default sketch
