@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "node tasks/gh-pages-deploy.mjs",
     "gallery:dev": "vite",
     "gallery:build": "run-p gallery:type-check gallery:build-only",
     "gallery:preview": "vite preview",
