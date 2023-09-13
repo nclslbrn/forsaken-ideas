@@ -1,6 +1,7 @@
 # Make
-[![Build Vue](https://github.com/nclslbrn/make/actions/workflows/main.yml/badge.svg)](https://github.com/nclslbrn/make/actions/workflows/main.yml)
-P5.JS/THREE.JS sketchbook build with Rollup and Vue.
+---
+
+P5.JS/THREE.JS/whatever libraries sketchbook build with Rollup and Vue.
 
 
 ```
@@ -88,4 +89,4 @@ P5.JS/THREE.JS sketchbook build with Rollup and Vue.
 
 ```npm run gallery:build``` Build the gallery app in dist/
 
-```npm run build``` alias of ```npm run build``` (used by github actions)
+```npm run deploy``` Deploy the site, send a build on a branch (gh-pages)

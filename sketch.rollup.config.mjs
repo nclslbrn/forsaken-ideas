@@ -13,9 +13,9 @@ import terser from '@rollup/plugin-terser';
 import html from '@rollup-extras/plugin-html';
 import serve from 'rollup-plugin-serve'
 
-import readJson from './tasks/readJSON.mjs'
-import stripTag from './tasks/stripTag.mjs'
-import titleFromSlug from './tasks/titleFromSlug.mjs'
+import readJson from './tasks/read-json.mjs'
+import stripTag from './tasks/strip-tag.mjs'
+import titleFromSlug from './tasks/title-from-slug.mjs'
 import htmlSketchTemplate from './tasks/html-sketch-template.mjs'
 
 // `npm run sketch:build` -> `production` is true

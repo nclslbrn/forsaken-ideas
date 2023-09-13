@@ -1,5 +1,5 @@
 import path from 'path';
-import fileList from './tasks/fileList.mjs';
+import fileList from './tasks/file-list.mjs';
 import { execSync } from 'child_process';
 
 const projects = fileList(path.resolve('./sketch/'));
