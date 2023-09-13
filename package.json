@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "run-p gallery:type-check gallery:build-only",
     "gallery:dev": "vite",
     "gallery:build": "run-p gallery:type-check gallery:build-only",
     "gallery:preview": "vite preview",
