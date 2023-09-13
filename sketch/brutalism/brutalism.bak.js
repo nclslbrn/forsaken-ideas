@@ -13,12 +13,6 @@ const sketch = (p5) => {
         images = [],
         sampleID = false
 
-    sketch.canvasSize = () => {
-        const max = 800
-        const side = window.innerWidth * 0.8
-        return window.innerWidth < max ? [side, side] : [max, max]
-    }
-
     sketch.nextMove = () => {
         const goForward = Math.random() > 0.5
         const numFrame = 12 * Math.ceil(Math.random() * 4)
@@ -56,7 +50,9 @@ const sketch = (p5) => {
         )
     }
     p5.setup = () => {
-        canvas = p5.createCanvas(...sketch.canvasSize())
+        canvas = p5.createCanvas(800, 800)
+        canvas.elt.style.aspectRatio = `1 / 1`
+
         document.getElementById('windowFrame').appendChild(sampleInfoBox)
         sketch.init()
     }
@@ -65,8 +61,14 @@ const sketch = (p5) => {
             sketch.nextMove()
         } else {
             const copy = sample
-            const { goForward, step, isVertical, d, start, rect } = move
+            const { goForward, isVertical, d, start, rect } = move
             // https://p5js.org/reference/#/p5/image
+
+            const v = {
+                x: (goForward ? -1 : 1) * (isVertical ? d : 0),
+                y: (goForward ? -1 : 1) * (isVertical ? 0 : d)
+            }
+
             const src = {
                 x: start[0],
                 y: start[1],
@@ -74,8 +76,8 @@ const sketch = (p5) => {
                 h: rect[1]
             }
             const dest = {
-                x: start[0] + (goForward ? -1 : 1) * (isVertical ? d : 0),
-                y: start[1] + (goForward ? -1 : 1) * (isVertical ? 0 : d),
+                x: start[0] + v.x,
+                y: start[1] + v.y,
                 w: rect[0],
                 h: rect[1]
             }
@@ -94,9 +96,7 @@ const sketch = (p5) => {
             move.d++
         }
     }
-    p5.windowResized = () => {
-        p5.resizeCanvas(...sketch.canvasSize())
-    }
+    
     sketch.export = () => {
         const date = new Date()
         const filename =

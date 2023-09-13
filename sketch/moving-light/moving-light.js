@@ -1,5 +1,3 @@
-let canvas = null
-
 const sketch = (p5) => {
     let roads = []
     const roadNum = 32
@@ -39,7 +37,7 @@ const sketch = (p5) => {
 
     p5.setup = () => {
         p5.setAttributes('preserveDrawingBuffer', true)
-        canvas = p5.createCanvas(
+        p5.createCanvas(
             window.innerWidth * 2,
             window.innerHeight * 2,
             p5.WEBGL
@@ -48,7 +46,7 @@ const sketch = (p5) => {
         p5.smooth()
         p5.noStroke()
         p5.fill(175)
-        init()
+        sketch.init()
     }
 
     p5.draw = () => {
@@ -62,7 +60,7 @@ const sketch = (p5) => {
                 ? (-p5.height / p5.width) * 0.5
                 : (-p5.width / p5.height) * 0.5
         ) */
-        p5.translate(0, p5.width > p5.height ? -p5.height / 3 : -p5.width / 1.5)
+        p5.translate(0, p5.width > p5.height ? -p5.height / 3 : -p5.width / 2)
         p5.rotateX(p5.PI / 3.5)
 
         for (let i = 0; i < roads.length; i++) {
@@ -104,7 +102,7 @@ const sketch = (p5) => {
 
     p5.windowResized = () => {
         p5.resizeCanvas(window.innerWidth, window.innerHeight)
-        init()
+        sketch.init()
     }
 
     sketch.init = () => {

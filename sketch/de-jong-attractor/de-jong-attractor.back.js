@@ -1,5 +1,5 @@
-import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
-import Notification from '../../src/js/sketch-common/Notification'
+import strangeAttractors from '../../sketch-common/strange-attractors'
+import Notification from '../../sketch-common/Notification'
 
 const sketch = (p5) => {
     const res = 4

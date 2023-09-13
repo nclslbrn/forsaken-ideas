@@ -1,6 +1,6 @@
-import ease from '../../src/js/sketch-common/ease'
-import Pool from '../../src/js/sketch-common/Pool'
-import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
+import ease from '../../sketch-common/ease'
+import Pool from '../../sketch-common/Pool'
+import * as tome from 'chromotome'
 
 const numLoop = 6
 const numFrame = 150
@@ -13,8 +13,8 @@ const framesPerSecond = 20
 const sketchSize = () => {
     const side = Math.min(window.innerWidth, window.innerHeight)
     return {
-        w: side > 800 ? 800 : side * 0.85,
-        h: side > 800 ? 800 : side * 0.85
+        w: side > 1000 ? 1000 : side * 0.85,
+        h: side > 1000 ? 1000 : side * 0.85
     }
 }
 /*
@@ -24,26 +24,14 @@ const gifOptions = {
     download: true,
     fileName: 'zone-occupancy.gif'
 }
+let firstRowsItems, firstCols,
+let nLoop = 1
 */
+let rows, cols, palette, canvas
+const maxItems = 32
 const zoneOccupancy = (p5) => {
-    let rows, cols, colors, firstRowsItems, firstCols
-    const maxItems = 32
-    let nLoop = 1
-    p5.setup = () => {
-        const canvasSize = sketchSize()
-        p5.createCanvas(canvasSize.w, canvasSize.h)
-        //p5.frameRate(framesPerSecond)
-        p5.stroke(255)
-        p5.colorMode(p5.HSL, 360, 100, 100, 100)
-        /*
-        if (isRecording) {
-            p5.createLoop({
-                gif: { ...gifOptions },
-                duration: numFrame / framesPerSecond,
-                framesPerSecond: framesPerSecond
-            })
-        }
-        */
+    zoneOccupancy.init = function () {
+        // nLoop = 1
         rows = { current: new Pool(maxItems), next: new Pool(maxItems) }
         rows.current.update()
         rows.next.update()
@@ -53,15 +41,34 @@ const zoneOccupancy = (p5) => {
             cols[y].current.update()
             cols[y].next.update()
         }
-        firstRowsItems = [...rows.current.items]
-        firstCols = [...cols]
-        colors = generateHslaColors(82, 70, 100, 4).map((c) => {
-            return p5.color(c[0], c[1], c[2], c[3])
-        })
+        // firstRowsItems = [...rows.current.items]
+        // firstCols = [...cols]
+        palette = tome.get()
+    }
+    zoneOccupancy.download_JPG = function () {
+        p5.saveCanvas(canvas, 'zone-occupancy', 'jpg')
+    }
+    p5.setup = function () {
+        const canvasSize = sketchSize()
+        canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
+        canvas.elt.style.aspectRatio = '1 / 1'
+        //p5.frameRate(framesPerSecond)
+        p5.stroke("#00000000")
+        /*
+        if (isRecording) {
+            p5.createLoop({
+                gif: { ...gifOptions },
+                duration: numFrame / framesPerSecond,
+                framesPerSecond: framesPerSecond
+            })
+        }
+        */
+        
         p5.background(255)
+        zoneOccupancy.init()
     }
 
-    p5.draw = () => {
+    p5.draw = function () {
         if (p5.frameCount % framesPerLoop === 0) {
             rows.current.items = [...rows.next.items]
             rows.next.update()
@@ -82,8 +89,8 @@ const zoneOccupancy = (p5) => {
             if (nLoop === numLoop + 1) {
                 p5.noLoop()
             }
-            */
             nLoop++
+            */
         } else {
             //p5.background(255)
 
@@ -119,9 +126,9 @@ const zoneOccupancy = (p5) => {
                                 p5.width *
                                 0.49
                             if (i === 0 || j === 0) {
-                                p5.fill(0, 0, 100, 100)
+                                p5.fill(palette.background || '#f3f3f3')
                             } else {
-                                p5.fill(colors[(i + j) % 2])
+                                p5.fill(palette.colors[(i + j) % 2] || '#444')
                             }
                             p5.rect(x, y, dx, dy)
                             p5.rect(p5.width - x, y, -dx, dy)

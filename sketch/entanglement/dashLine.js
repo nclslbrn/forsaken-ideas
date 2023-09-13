@@ -1,7 +1,7 @@
 /**
  * Create dash along a line
  * @param {Array} line [[x1, y1], [x2, y2]]
- * @param {Number} step maximum dash length
+ * @param {Number} step maximum dash length
  * @param {Number} mode 0: straight 1: random
  *
  * @returns {Array} of multiple line
@@ -10,7 +10,7 @@ export default function (line, step, mode) {
     const angle = Math.atan2(line[1][1] - line[0][1], line[1][0] - line[0][0])
     const size = Math.sqrt(
         Math.abs(line[1][0] - line[0][0]) ** 2 +
-            Math.abs(line[1][1] - line[0][1]) ** 2
+        Math.abs(line[1][1] - line[0][1]) ** 2
     )
 
     let r = 0,

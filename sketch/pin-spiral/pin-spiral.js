@@ -1,7 +1,7 @@
-import ease from '../../src/js/sketch-common/ease'
+import ease from '../../sketch-common/ease'
 
 const pinSpiral = (p5) => {
-    const res = 0.025
+    const res = 0.02
     const numFrame = 60
     let maxRadius, center, d
     const sketchSize = () => {
@@ -13,7 +13,8 @@ const pinSpiral = (p5) => {
     }
     p5.setup = () => {
         const canvasSize = sketchSize()
-        p5.createCanvas(canvasSize.w, canvasSize.h)
+        const canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.colorMode(p5.HSB, 1, 1, 1, 1)
         maxRadius = Math.min(canvasSize.w, canvasSize.h) * 0.35
         d = maxRadius * 0.01
@@ -21,10 +22,6 @@ const pinSpiral = (p5) => {
     }
     p5.draw = () => {
         p5.background(0)
-
-        const t = (p5.frameCount % numFrame) / numFrame
-        const tt = t < 0.5 ? t + t : 2 - (t + t)
-
         for (let i = 0; i < 1; i += res) {
             const radius = maxRadius * i
             for (let j = 0; j < 1; j += res / i) {

@@ -1,15 +1,13 @@
-'use strict'
-import '../../src/sass/project.scss'
-import '../../src/sass/frame-canvas.scss'
-import './polar-curve.scss'
+import '../framed-canvas.css'
+import '../framed-two-columns.css'
 import sketch from './polar-curve'
-import infobox from '../../src/js/sketch-common/infobox'
-import handleAction from '../../src/js/sketch-common/handle-action'
-
+import infobox from '../../sketch-common/infobox'
+import handleAction from '../../sketch-common/handle-action'
+import p5 from 'p5'
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
-const P5 = new p5(sketch, windowFrame)
+new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 
 window.init = sketch.init

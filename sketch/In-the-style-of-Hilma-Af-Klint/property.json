@@ -1,0 +1,18 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "An <s>attempted</s> failure, replicating the style of Hilma Af Klint. It would take me more than 24 hours to come up with something more similar to her painting. Done during #genuary2023.",
+    "date": "2023-01-27",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}

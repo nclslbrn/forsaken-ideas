@@ -1,9 +1,8 @@
-'use strict'
-import '../../src/sass/project.scss'
-import '../../src/sass/frame-canvas.scss'
+import '../framed-canvas.css'
+import p5 from 'p5'
 import sketch from './airport-carpet'
-import infobox from '../../src/js/sketch-common/infobox'
-import handleAction from '../../src/js/sketch-common/handle-action'
+import infobox from '../../sketch-common/infobox'
+import handleAction from '../../sketch-common/handle-action'
 
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')

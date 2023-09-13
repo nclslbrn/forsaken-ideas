@@ -1,7 +1,7 @@
 // Create a grid
 const sketchWidth = 600
 const sketchHeight = 720
-const cells = 25
+const cells = 24
 
 const sketch = (p5) => {
     const sketchSize = (sketchWidth, sketchHeight) => {
@@ -31,18 +31,19 @@ const sketch = (p5) => {
     yIncrementStep = initStep * yIncrementFactor
 
     const trianglesPos = []
-    let cellWidth, cellHeight, xPos, yPos, totalTriangles
+    let cellWidth, cellHeight, xPos, yPos
     cellWidth = regularSize + xIncrement
     cellHeight = regularSize + yIncrement
-    xPos = yPos = totalTriangles = 0
+    xPos = yPos = 0
 
-    p5.setup = () => {
-        p5.createCanvas(size.w, size.h)
+    p5.setup = function () {
+        const canvas = p5.createCanvas(size.w, size.h)
+        canvas.elt.style.aspectRatio = `${size.w} / ${size.h}`
     }
 
-    p5.init = () => {
-        if (xPos < sketchWidth) {
-            if (yPos < sketchHeight) {
+    p5.init = function () {
+        if (xPos < size.w) {
+            if (yPos < size.h) {
                 if (yIncrement > cellSizeVariation) yIncrementStep--
 
                 if (yIncrement < -cellSizeVariation) yIncrementStep++
@@ -59,7 +60,6 @@ const sketch = (p5) => {
                 })
 
                 yPos = yPos + cellHeight
-                totalTriangles++
             } else {
                 // end of column
 

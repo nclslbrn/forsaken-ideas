@@ -1,16 +1,16 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import { randomFloatBetween } from '../../src/js/sketch-common/rand-between'
+import SvgTracer from '../../sketch-common/svg-tracer'
+import { randomFloatBetween } from '../../sketch-common/rand-between'
 const angleFromTo = (from, to) => {
     return Math.atan2(to.y - from.y, to.x - from.x)
 }
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
-    size: 'P24x32'
+    size: 'A3_portrait'
 })
 const sketch = {
     N: 200,
     vPoint: { x1: null, x2: null, y: null },
-    margin: svg.cmToPixels(2),
+    margin: svg.cmToPixels(0.5),
     colorGroups: ['black', 'white'],
     // setup
     launch: () => {
@@ -19,7 +19,8 @@ const sketch = {
             svg.group({
                 name: c,
                 stroke: c,
-                fill: 'none'
+                fill: 'none',
+                strokeWidth: 2
             })
         )
 

@@ -1,10 +1,10 @@
-import '../../src/sass/frame-canvas.scss'
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import Notification from '../../src/js/sketch-common/Notification'
-import funcs from '../../src/js/sketch-common/plane-curve'
-import map from '../../src/js/sketch-common/remap'
+import '../framed-canvas.css'
+import SvgTracer from '../../sketch-common/svg-tracer'
+import Notification from '../../sketch-common/Notification'
+import funcs from '../../sketch-common/plane-curve'
+import map from '../../sketch-common/remap'
 import { createNoise2D } from 'simplex-noise'
-import { getColorCombination } from '../../src/js/sketch-common/stabilo68-colors'
+import { getColorCombination } from '../../sketch-common/stabilo68-colors'
 
 const randomTrigoFunc = () => {
     const funcsName = []
@@ -47,12 +47,12 @@ const container = document.getElementById('windowFrame')
 const simplex = createNoise2D()
 const tracer = new SvgTracer({
     parentElem: container,
-    size: 'A3_Square'
+    size: 'A3_square'
 })
 
 const sketch = {
     iterations: 50,
-    margin: tracer.cmToPixels(3.5),
+    margin: tracer.cmToPixels(1),
     scale: 5,
     speed: 0.05,
     res: 0.15,
@@ -70,7 +70,7 @@ const sketch = {
         sketch.palette = getColorCombination(2)
         sketch.initMode = Math.random() > 0.5 ? 'circle' : 'grid'
         sketch.points = initPoints[sketch.initMode]()
-        sketch.points.forEach((point) => sketch.lines.push([]))
+        sketch.points.forEach(() => sketch.lines.push([]))
 
         tracer.clear()
         sketch.palette.colors.forEach((color) =>
@@ -177,7 +177,7 @@ const sketch = {
             x: sketch.margin,
             y: tracer.height - sketch.margin + tracer.cmToPixels(1),
             text: 'PLANE CURVE',
-            fontSize: 14,
+            fontSize: 24,
             anchor: 'start',
             group: 'black'
         })
@@ -186,7 +186,7 @@ const sketch = {
             x: tracer.width - sketch.margin,
             y: tracer.height - sketch.margin + tracer.cmToPixels(1),
             text: sketch.trigoFunc.toUpperCase().replaceAll('_', ' '),
-            fontSize: 14,
+            fontSize: 24,
             anchor: 'end',
             group: 'black'
         })

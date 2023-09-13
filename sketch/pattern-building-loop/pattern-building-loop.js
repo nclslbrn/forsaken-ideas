@@ -1,9 +1,8 @@
-import p5 from 'p5'
-import ease from '../../src/js/sketch-common/ease'
+import ease from '../../sketch-common/ease'
 
 const patternBuildingLoop = (p5) => {
     const numFrame = 300
-    const grid = { cols: 8, rows: 8 }
+    const grid = { cols: 16, rows: 16 }
     const sketchSize = () => {
         const side = Math.min(window.innerWidth, window.innerHeight)
         return {
@@ -18,13 +17,11 @@ const patternBuildingLoop = (p5) => {
     }
     const r = Math.min(cell.w, cell.h) / 2
     p5.setup = () => {
-        p5.createCanvas(canvasSize.w, canvasSize.h)
+        let canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.noStroke()
     }
     p5.draw = () => {
-        const t = (p5.frameCount % numFrame) / numFrame
-        const tt = t < 0.5 ? t + t : 2 - (t + t)
-
         p5.background(0)
         p5.fill(255)
         p5.push()

@@ -6,7 +6,7 @@ const sketch = (p5) => {
     const even = []
     const numFrame = 160
     const shapeColorId = []
-    let s, palette, sumSquare, animScale
+    let s, palette, sumSquare, animScale, canvas
     const sketchSize = () => {
         const side = p5.min(window.innerWidth, window.innerHeight)
         return {
@@ -41,7 +41,8 @@ const sketch = (p5) => {
         const sketchDim = sketchSize()
         palette = tome.get()
 
-        p5.createCanvas(sketchDim.w, sketchDim.h)
+        canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
+        canvas.elt.style.aspectRatio = `${sketchDim.w} / ${sketchDim.h}`
         p5.noStroke()
         s = sketchDim.w / N
 

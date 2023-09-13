@@ -1,13 +1,13 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
-import Notification from '../../src/js/sketch-common/Notification'
-import ProgressBar from '../../src/js/sketch-common/ProgressBar'
+import SvgTracer from '../../sketch-common/svg-tracer'
+import strangeAttractors from '../../sketch-common/strange-attractors'
+import Notification from '../../sketch-common/Notification'
+import ProgressBar from '../../sketch-common/ProgressBar'
 
 const container = document.getElementById('windowFrame')
 // A3square width - 1.5mm
 const tracer = new SvgTracer({
     parentElem: container,
-    size: 'A3_Square',
+    size: 'A3_square',
     dpi: 150,
     background: 'black'
 })

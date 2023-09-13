@@ -43,7 +43,7 @@ const sketch = (p5) => {
   p5.draw = () => {
 
     const compAngle = Math.PI * 0.5 * p5.random();
-    const margin = 60
+    const margin = Math.min(p5.width, p5.height) / 16
     p5.background(255, 235, 235);
     p5.noFill();
     const innerCanvas = [
@@ -99,7 +99,7 @@ const sketch = (p5) => {
 
     // Build visible side of these shapes
     const isoShapes = []
-    shapes.forEach((shp, i) => {
+    shapes.forEach(shp => {
       const shpHeight = minD * p5.random(0.15, 0.5)
       // Project these points into an isometric grid
       const base = shp.pts.map((pt) => iso(pt))
@@ -123,7 +123,7 @@ const sketch = (p5) => {
     })
 
     // Then draw side
-    isoShapes.forEach((iso, i) => {
+    isoShapes.forEach(iso => {
       drawParallelLines([255, 255, 255, 200], iso.bottom);
       drawParallelLines([0, 0, 0, 0], iso.bottom);
       drawParallelLines([255, 255, 255, 200], iso.left);
@@ -139,7 +139,7 @@ const sketch = (p5) => {
     p5.resizeCanvas(window.innerWidth, window.innerHeight);
     ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     minD = Math.min(window.innerWidth, window.innerHeight) / 2;
-    redraw();
+    p5.redraw();
   }
   sketch.init_sketch = () => p5.redraw()
   sketch.download = () => {

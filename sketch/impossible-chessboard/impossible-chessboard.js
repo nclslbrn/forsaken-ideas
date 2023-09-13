@@ -1,18 +1,14 @@
-import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
+import { generateHslaColors } from '../../sketch-common/generateHslaColors'
 
 const sketch = (p5) => {
-    const sketchSize = () => {
-        const side = Math.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
-        }
-    }
-    let colors, sketchDim, center
-    const numFrame = 120
+    
+    let colors 
+    
+    const sketchDim = 1200, 
+        center = 600,
+        numFrame = 120
+
     const init = () => {
-        sketchDim = sketchSize()
-        center = { x: sketchDim.w / 2, y: sketchDim.h / 2 }
         colors = generateHslaColors(75, 60, 255, 2).map((c) => {
             return p5.color(c[0], c[1], c[2], c[3])
         })
@@ -20,7 +16,9 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         init()
-        p5.createCanvas(sketchDim.w, sketchDim.h)
+        let canvas = p5.createCanvas(sketchDim, sketchDim)
+        canvas.elt.style.aspectRatio = '1 / 1'
+
         p5.frameRate(24)
         p5.blendMode(p5.SUBTRACT)
         p5.colorMode(p5.HSLA, 360, 100, 100, 100)
@@ -35,22 +33,18 @@ const sketch = (p5) => {
         p5.beginShape()
         for (let theta = 0; theta < Math.PI * 2; theta += 0.001) {
             const x =
-                center.x +
-                Math.cos(theta) * Math.cos(theta * t2) * (sketchDim.w / 3)
+                center +
+                Math.cos(theta) * Math.cos(theta * t2) * (sketchDim / 3)
 
             const y =
-                center.y +
-                Math.sin(theta) * Math.sin(theta * t2) * (sketchDim.h / 3)
+                center +
+                Math.sin(theta) * Math.sin(theta * t2) * (sketchDim / 3)
 
             p5.vertex(x, y)
         }
         p5.endShape()
     }
-    p5.windowResized = () => {
-        init()
-        center = { x: sketchDim.w / 2, y: sketchDim.h / 2 }
-        p5.resizeCanvas(sketchDim.w, sketchDim.h)
-    }
+    
     sketch.init = init
 }
 export default sketch

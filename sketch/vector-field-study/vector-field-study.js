@@ -1,5 +1,5 @@
 import * as tome from 'chromotome'
-import funcs from '../../src/js/sketch-common/plane-curve'
+import funcs from '../../sketch-common/plane-curve'
 
 const sketch = (p5) => {
     const res = 0.05
@@ -8,6 +8,7 @@ const sketch = (p5) => {
     let selectedFunc, palette, points, canvas
 
     const planeCurveFunctionSelector = () => {
+        const paramBox = document.createElement('div')
         const funcSelector = document.createElement('select')
         const lastFunc = Object.keys(funcs).pop()
         // loop through functions in func
@@ -24,9 +25,10 @@ const sketch = (p5) => {
             }
             funcSelector.appendChild(funcOption)
         })
-        document.getElementById('windowFrame').appendChild(funcSelector)
+        paramBox.appendChild(funcSelector)
+        document.getElementById('windowFrame').appendChild(paramBox)
         // change selected function when user change it
-        funcSelector.addEventListener('change', (event) => {
+        funcSelector.addEventListener('change', () => {
             sketch.init_pos()
             selectedFunc = funcSelector.value
         })
@@ -64,14 +66,11 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        //const size = sketchSize()
-        //canvas = p5.createCanvas(size.w, size.h)
-
         canvas = p5.createCanvas(1000, 1000)
-        p5.pixelDensity(window.devicePixelRatio)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.stroke(0)
         planeCurveFunctionSelector()
-        init_sketch()
+        sketch.init_sketch()
     }
 
     p5.draw = () => {

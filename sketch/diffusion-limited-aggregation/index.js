@@ -1,11 +1,9 @@
-'use strict'
-import style from '../../src/sass/project.scss'
-import fullCanvas from '../../src/sass/frame-canvas.scss'
+import '../framed-canvas.css'
 import sketch from './diffusion-limited-aggregation'
 import computeSVG from './computeSVG'
-import exportSVG from '../../src/js/sketch-common/exportSVG'
-import infobox from '../../src/js/sketch-common/infobox'
-import handleAction from '../../src/js/sketch-common/handle-action'
+import infobox from '../../sketch-common/infobox'
+import handleAction from '../../sketch-common/handle-action'
+import p5 from 'p5'
 
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
@@ -13,44 +11,11 @@ const loader = document.getElementById('loading')
 new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
 
-let resizeTimeout
-window.addEventListener('resize', function (event) {
-    clearTimeout(resizeTimeout)
-    resizeTimeout = setTimeout(function () {
-        windowFrame.removeChild(
-            windowFrame.getElementsByClassName('p5Canvas')[0]
-        )
-        let P5 = new p5(sketch, windowFrame)
-    }, 500)
-})
-
 const downloadSVG = () => {
-    if (
-        window.confirm(
-            'Would you like to download the actual sketch as SVG file ?'
-        )
-    ) {
-        const svgContainerId = 'svg-clipboard'
-        const { lines, width, height, strokeWidth } =
-            sketch.getSketchProperties()
-        const date = new Date()
-        const filename =
-            'Diffusion-limited-aggregation.' +
-            date.getFullYear() +
-            '-' +
-            date.getMonth() +
-            '-' +
-            date.getDay() +
-            '_' +
-            date.getHours() +
-            '.' +
-            date.getMinutes() +
-            '.' +
-            date.getSeconds() +
-            '--Nicolas_Lebrun.svg'
+    if (window.confirm('Would you like to download a SVG file ?')) {
 
-        computeSVG(lines, '#000', 1, svgContainerId, width, height, strokeWidth)
-        exportSVG(svgContainerId, filename)
+        const { lines, width, height, strokeWidth } = sketch.getSketchProperties()
+        computeSVG(lines, 'black', windowFrame, width, height, strokeWidth)
     }
 }
 

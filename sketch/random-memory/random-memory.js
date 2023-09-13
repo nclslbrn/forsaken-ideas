@@ -1,7 +1,7 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import CanvasPictureSampler from './Canvas-picture-sampler'
 import { createNoise2D } from 'simplex-noise'
-import Notification from '../../src/js/sketch-common/Notification'
+import Notification from '../../sketch-common/Notification'
 import memory from './memory'
 const frame = document.getElementById('windowFrame')
 const unsplashLinkPrefix = 'https://unsplash.com/photos/'
@@ -31,7 +31,7 @@ const sketch = {
     },
     init: () => {
         sketch.tracer.init()
-        sketch.margin = sketch.tracer.cmToPixels(3)
+        sketch.margin = sketch.tracer.cmToPixels(0.5)
         sketch.image = new Image()
         sketch.image.id = 'sample'
         sketch.image.crossOrigin = 'anonymous'
@@ -55,14 +55,13 @@ const sketch = {
             sketch.resetImage()
         })
         new Notification(
-            'You can change the image by clicking on the thumbnail and waiting (a lot).<br>Image source : <a target="blank" href="https://source.unsplash.com/">Unsplash.com</a>',
+            'You can change the image by clicking on the thumbnail and waiting (a lot).',
             frame,
             'light',
             15000
         )
     },
     draw: () => {
-        console.log('draw')
         const pathLength = 0.5
         for (let x = 0; x < sketch.image.width; x++) {
             for (let y = 0; y < sketch.image.height; y++) {
@@ -72,7 +71,7 @@ const sketch = {
                     y / sketch.scale
                 )
                 const lightness = (color.r + color.g + color.b) / 765
-                const weight = (1 - lightness) * sketch.scale
+                const weight = (1 - lightness) * sketch.scale * 0.75
 
                 const d = {
                     x: x * sketch.scale + sketch.scale / 2 + sketch.margin,

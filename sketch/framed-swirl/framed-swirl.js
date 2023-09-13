@@ -1,8 +1,8 @@
-import funcs from '../../src/js/sketch-common/plane-curve'
-import strangeAttractors from '../../src/js/sketch-common/strange-attractors'
+import funcs from '../../sketch-common/plane-curve'
+import strangeAttractors from '../../sketch-common/strange-attractors'
 import joinVector from './joinVector'
-import { generateHslaColors } from '../../src/js/sketch-common/generateHslaColors'
-import Notification from '../../src/js/sketch-common/Notification'
+import { generateHslaColors } from '../../sketch-common/generateHslaColors'
+import Notification from '../../sketch-common/Notification'
 
 const container = document.getElementById('windowFrame')
 
@@ -39,7 +39,7 @@ const sketch = (p5) => {
     const strFromVar = (variable) => variable.replaceAll('_', ' ').toUpperCase()
 
     // draw function
-    const drawVariation = (x, y, h) => {
+    const drawVariation = (x, y) => {
         const v = p5.createVector(x, y)
         for (let i = 0; i < n; i++) {
             const v2 = funcs[planeFunction](v)
@@ -67,6 +67,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         margin = sketchWidth / 24
         canvas = p5.createCanvas(sketchWidth, sketchHeight)
+        canvas.elt.style.aspectRatio = '1 / 1'
 
         p5.pixelDensity(window.devicePixelRatio)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
@@ -74,7 +75,7 @@ const sketch = (p5) => {
         cartel = document.createElement('div')
         cartel.id = 'cartel'
         container.appendChild(cartel)
-        init_sketch()
+        sketch.init_sketch()
     }
     p5.draw = () => {
         if (drawing) {
@@ -84,7 +85,7 @@ const sketch = (p5) => {
                 p5.stroke(colors[i % colors.length])
 
                 for (let x = x1; x <= x2; x += step) {
-                    drawVariation(x, y, i)
+                    drawVariation(x, y)
                 }
                 y += step
                 if (y > y2) {
@@ -116,8 +117,8 @@ const sketch = (p5) => {
         )} <sup>Attractor</sup></p>`
         cartel.innerHTML += `<p>a ${getOperatorSymbol(choosenJoinFunc)} b</p>`
         const colorBlock = document.createElement('div')
-        colorBlock.classList.add('colorBlock')
-        colors = generateHslaColors(60, 70, 75, 4).map((c, index) => {
+        colorBlock.id = 'colorBlocks'
+        colors = generateHslaColors(60, 70, 75, 4).map(c => {
             const color = document.createElement('div')
             color.classList.add('color')
             let style = 'width: 24px; height: 24px; '

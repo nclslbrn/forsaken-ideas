@@ -1,4 +1,4 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import { createNoise2D } from 'simplex-noise'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
@@ -8,32 +8,13 @@ import Part from './Part'
 let margin, parts, tileSize
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
-    size: 'A3_Square',
+    size: 'A3_square',
     dpi: 72
 }),
     simplex = createNoise2D(),
     N = Math.ceil(Math.random() * 3),
     I = 48,
     lineStep = 6,
-    followLine = (line) => {
-        const points = []
-        const p = [...line[0]]
-        const angle = Math.atan2(
-            line[1][1] - line[0][1],
-            line[1][0] - line[0][0]
-        )
-        const size = Math.sqrt(
-            Math.abs(line[1][0] - line[0][0]) ** 2 +
-            Math.abs(line[1][1] - line[0][1]) ** 2
-        )
-        for (let d = 0; d <= size; d += lineStep * 4) {
-            points.push([
-                p[0] + d * Math.cos(angle),
-                p[1] + d * Math.sin(angle)
-            ])
-        }
-        return points
-    },
     noiseLine = (line) => {
         const noisedLine = []
         const freq = 0.003
@@ -177,12 +158,6 @@ const sketch = {
     drawTiles: () => {
         svg.clear()
         parts.forEach((p, i) => {
-            /* svg.path({
-                points: p.points,
-                stroke: 'black',
-                fill: 'none',
-                close: true
-            }) */
             const min = [
                 Math.min(...p.points.map((pt) => pt[0])),
                 Math.min(...p.points.map((pt) => pt[1]))

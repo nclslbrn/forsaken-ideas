@@ -1,5 +1,5 @@
 import biography from './biography'
-import Notification from '../../src/js/sketch-common/Notification'
+import Notification from '../../sketch-common/Notification'
 
 const sketch = (p5) => {
     let canvas,
@@ -17,7 +17,7 @@ const sketch = (p5) => {
         text = biography()
 
     sketch.canvasSize = (isResize = false) => {
-        const size = window.innerWidth < 800 ? window.innerWidth * 0.8 : 800
+        const size = 1200 //window.innerWidth < 800 ? window.innerWidth * 0.8 : 800
         upscale = size / 58
         if (isResize) {
             p5.resizeCanvas(size, size)
@@ -45,7 +45,7 @@ const sketch = (p5) => {
     }
     p5.setup = () => {
         sketch.canvasSize()
-        canvas.elt.style = 'padding: 0; max-width: 100vw; height: auto;'
+        canvas.elt.style.aspectRatio = '1 / 1'
         numRow = muhammad_ali_portrait[0].height - 1
         rippleCenter = [
             Math.floor(Math.random() * numRow),
@@ -57,9 +57,8 @@ const sketch = (p5) => {
         sketch.init(portraitId)
 
         new Notification(
-            'Text : <a href="https://en.wikipedia.org/wiki/Muhammad_Ali">wikipedia</a>' +
-                '<br>' +
-                'Image : <a href="https://www.gettyimages.fr/photos/the-stanley-weston-archive-ali">Gettyimage</a>',
+            `Text : <a href="https://en.wikipedia.org/wiki/Muhammad_Ali">wikipedia</a><br>
+            Image : <a href="https://www.gettyimages.fr/photos/the-stanley-weston-archive-ali">Gettyimage</a>`,
             document.getElementById('windowFrame'),
             'light'
         )

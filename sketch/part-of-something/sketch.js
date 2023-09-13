@@ -1,8 +1,7 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
-import { createNoise2D } from 'simplex-noise'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
-import Notification from '../../src/js/sketch-common/Notification'
+import Notification from '../../sketch-common/Notification'
 import Part from './Part'
 import {
     random,
@@ -18,52 +17,35 @@ import {
     min,
     max,
     PI
-} from '../../src/js/sketch-common/Math'
+} from '../../sketch-common/Math'
 
 let margin, parts, tileSize, colors
 const container = document.getElementById('windowFrame'),
     svg = new SvgTracer({
         parentElem: container,
-        size: 'A3_landscape',
-        background: 'black'
+        size: {w: 40, h: 40},
+        background: '#000',
     }),
-    simplex = createNoise2D(),
     N = ceil(random() * 3),
-    I = 72,
-    noiseLine = (line) => {
-        const noisedLine = []
-        const freq = 0.003
-        const turbulence = 15
-        const force = 2
-        line.forEach((pt) => {
-            const nValue =
-                turbulence * simplex.noise2D(pt[0] * freq, pt[1] * freq)
-            noisedLine.push([
-                pt[0] + cos(nValue) * force,
-                pt[1] + sin(nValue) * force
-            ])
-        })
-        return noisedLine
-    }
+    I = 64
+
 const sketch = {
     // setup
     launch: () => {
         svg.init()
-        svg.elem.style.width = '100vw'
-        svg.elem.style.maxWidth = '100vw'
-        svg.elem.style.maxHeight = '100vh'
-        margin = svg.cmToPixels(3)
+        margin = svg.cmToPixels(1)
         tileSize = [
             round((svg.width - margin * 2) / N),
             round((svg.height - margin * 2) / N)
         ]
-        const accent = ['mistyrose', 'aliceblue', 'linen', 'tomato', 'steelblue']
-        colors = ['black', 'white', accent[floor(random() * accent.length)]]
+        const accent = ['yellow', 'orange', 'purple',  'tomato', 'steelblue']
+        colors = ['black', '#ffff33', '#33ffff', '#ff33ff', 'white', accent[floor(random() * accent.length)]]
         colors.forEach((color) =>
             svg.group({
                 name: color,
                 id: color,
-                stroke: color
+                stroke: color,
+                strokeWidth: 2
             })
         )
         sketch.init()
@@ -205,7 +187,7 @@ const sketch = {
             const maxRadius = max(...radiuses)
             let minAngle = min(...angles)
             let maxAngle = max(...angles)
-            const radiusStep = svg.cmToPixels(randBetween(0.07, 0.4))
+            const radiusStep = svg.cmToPixels(randBetween(0.1, 0.7))
             // only for dashed line
             const gapIndex = 2 + round(random() * 10)
             // Ugly hack to loop between -PI & PI
@@ -254,30 +236,29 @@ const sketch = {
                                 // full line
                                 svg.path({
                                     points: arc,
-                                    stroke: colors[(i % 2) + 1],
+                                    stroke: colors[(i % 4) + 1],
                                     fill: 'none',
                                     close: false,
-                                    group: colors[(i % 2) + 1]
+                                    group: colors[(i % 4) + 1]
                                 })
                                 break
                             case 2:
-                                const dashed = arc.reduce(
-                                    (acc, curr, i) => (
-                                        i % gapIndex
-                                            ? acc[acc.length - 1].push(curr)
-                                            : acc.push([curr]),
-                                        acc
-                                    ),
-                                    []
-                                )
-                                dashed.forEach((line, d) => {
+                                // eslint-disable-next-line no-case-declarations
+                                const dashed = arc.reduce((acc, curr, i) => {
+                                    if (i % gapIndex) acc[acc.length - 1].push(curr)
+                                    else acc.push([curr])
+                                    return acc
+                                },[])
+                                
+                                
+                                dashed.forEach(line => {
                                     // if (d % 2 == 0) {
                                     svg.path({
                                         points: line,
-                                        stroke: colors[(i % 2) + 1],
+                                        stroke: colors[(i % 4) + 1],
                                         fill: 'none',
                                         close: false,
-                                        group: colors[(i % 2) + 1]
+                                        group: colors[(i % 4) + 1]
                                     })
                                     // }
                                 })

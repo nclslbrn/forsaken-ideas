@@ -1,4 +1,4 @@
-import ease from '../../src/js/sketch-common/ease'
+import ease from '../../sketch-common/ease'
 import switchMode from './switchMode'
 let canvas
 const numFrame = 45
@@ -10,7 +10,7 @@ window.drawAsSingleLine = switchMode()
 const sketch = (p5) => {
     let canvasSize, cellByLine, curves, nextCurves, margin
 
-    const switchLine = () => {
+    const switchLine = function () {
         // Deep copy of current curves
         let switchCurves = [...curves]
         // Choose two random index to decide which col|row will swap with another
@@ -57,7 +57,7 @@ const sketch = (p5) => {
         h: window.innerHeight * 0.7
     })
 
-    p5.setup = () => {
+    p5.setup = function () {
         canvasSize = sketchSize()
         canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
         p5.stroke(230, 230)
@@ -66,7 +66,7 @@ const sketch = (p5) => {
         sketch.init_sketch()
     }
 
-    sketch.init_sketch = () => {
+    sketch.init_sketch = function () {
         cellByLine = {
             w: Math.floor(canvasSize.w / cellSize) - 2,
             h: Math.floor(canvasSize.h / cellSize) - 2
@@ -75,22 +75,10 @@ const sketch = (p5) => {
             x: (canvasSize.w % cellSize) / 2,
             y: (canvasSize.h % cellSize) / 2
         }
-        console.log(
-            'wrong width computation',
-            canvasSize.w,
-            '=',
-            cellByLine.w * cellSize + margin.x,
-            '\n',
-            'wrong height computation',
-            canvasSize.h,
-            '=',
-            cellByLine.h * cellSize + margin.y
-        )
 
         curves = []
         nextCurves = []
-        console.log('d', margin)
-        console.log('cellByLine', cellByLine)
+        
         const radiusChoices = [2, 3, 5, 8].map((factor) => {
             const side = p5.random() > 0.5 ? -1 : 1
             return cellSize / 2 + ((cellSize / 2) * side) / factor
@@ -108,7 +96,7 @@ const sketch = (p5) => {
         }
         nextCurves = switchLine()
     }
-    p5.draw = () => {
+    p5.draw = function () {
         if (p5.frameCount % numFrame !== 0) {
             const t = (p5.frameCount % numFrame) / numFrame
             p5.background(15)
@@ -158,16 +146,12 @@ const sketch = (p5) => {
         }
     }
 
-    p5.keyPressed = () => {
+    p5.keyPressed = function () {
         // p or P == 80 (Arch Linux)
-        if (p5.keyCode === '80') {
-            p5.save(canvas, 'capture', 'jpg')
-        } else {
-            console.log(p5.keyCode)
-        }
+        p5.save(canvas, 'capture', 'jpg')
     }
 
-    p5.windowResized = () => {
+    p5.windowResized = function () {
         canvasSize = sketchSize()
         p5.resizeCanvas(canvasSize.w, canvasSize.h)
         sketch.init_sketch()

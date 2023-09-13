@@ -1,15 +1,15 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import { createNoise3D } from 'simplex-noise'
-import ease from '../../src/js/sketch-common/ease'
+import ease from '../../sketch-common/ease'
 import isPointInsidePolygon from './isPointInsidePolygon'
 const tracer = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
-    size: 'A3_Square',
+    size: 'A3_portrait',
     dpi: 150
 })
 const sketch = {
     step: tracer.cmToPixels(0.2),
-    margin: tracer.cmToPixels(2),
+    margin: tracer.cmToPixels(1),
     points: [],
     noiseFrequency: 105,
     noiseAmplitude: 20,

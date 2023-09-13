@@ -14,7 +14,7 @@ const generateHeight = (width, height, seed, buildNum) => {
     let quality = 1
     const middle = { x: width / 2, y: height / 2 }
     const maxBuildSize = { w: 4, h: 4 }
-    const builds = Array.from(new Array(buildNum), (a, b) => {
+    const builds = Array.from(new Array(buildNum), () => {
         return {
             x: Math.floor(width / 2 + (Math.random() / 4 - 0.125) * width), // x pos
             y: Math.floor(height / 2 + (Math.random() / 4 - 0.125) * height), // y pos

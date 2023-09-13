@@ -1,10 +1,8 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
+
 import { generateHeight } from './generate'
-import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils'
-import paramSlider from '../../src/js/sketch-common/param-slider'
-import Notification from '../../src/js/sketch-common/Notification'
+import paramSlider from '../../sketch-common/param-slider'
+import Notification from '../../sketch-common/Notification'
 
 const windowFrame = document.getElementById('windowFrame')
 
@@ -22,7 +20,7 @@ const params = {
 const paramBox = document.createElement('div')
 paramBox.id = 'interactiveParameter'
 for (const i in params) {
-    const elems = paramSlider(params[i])
+    const elems = paramSlider({ ...params[i], callback: () => window.init()})
     elems.forEach((elem) => {
         paramBox.appendChild(elem)
     })
@@ -42,7 +40,7 @@ const sketch = {
         20000
     ),
     renderer: new THREE.WebGLRenderer({ antialias: true }),
-    exporter: new STLExporter(),
+    exporter: new THREE.STLExporter(),
     launch: () => {
         sketch.scene.background = new THREE.Color(0x2c3e50)
         sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
@@ -72,7 +70,7 @@ const sketch = {
             sketch.meshSize.h * 0.5
         )
         sketch.camera.lookAt(0, 0, 0)
-        sketch.controls = new OrbitControls(
+        sketch.controls = new THREE.OrbitControls(
             sketch.camera,
             sketch.renderer.domElement
         )
@@ -120,7 +118,7 @@ const sketch = {
                 transparent: true
             })
         ]
-        sketch.object = createMultiMaterialObject(
+        sketch.object = THREE.SceneUtils.createMultiMaterialObject(
             sketch.geometry,
             meshMaterials
         )
@@ -155,7 +153,7 @@ const sketch = {
             H = date.getHours(),
             i = date.getMinutes()
 
-        const filename = `landline.${Y}-${m}-${d}_${H}.${i}.stl`
+        const filename = `yard.${Y}-${m}-${d}_${H}.${i}.stl`
 
         const land = new THREE.Mesh(
             sketch.geometry,

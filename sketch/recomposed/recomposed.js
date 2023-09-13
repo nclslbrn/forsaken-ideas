@@ -1,5 +1,5 @@
 //import * as tome from 'chromotome'
-import Notification from '../../src/js/sketch-common/Notification'
+import Notification from '../../sketch-common/Notification'
 import getPalette from './palette'
 
 const sketch = (p5) => {
@@ -10,7 +10,7 @@ const sketch = (p5) => {
         container = document.getElementById('windowFrame')
 
     sketch.canvasSize = () => {
-        const max = 800
+        const max = 1200
         const side = window.innerWidth * 0.8
         return window.innerWidth < max ? [side, side] : [max, max]
     }
@@ -73,6 +73,7 @@ const sketch = (p5) => {
     p5.setup = () => {
         canvas = p5.createCanvas(...sketch.canvasSize())
         p5.pixelDensity(window.devicePixelRatio)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.strokeWeight(4)
         sketch.init()
         sketch.nextMove()

@@ -1,4 +1,4 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import { getLineLineCollision } from './trigonometry'
 import Part from './Part'
 
@@ -13,7 +13,7 @@ const sketch = {
     // setup
     launch: () => {
         svg.init()
-        margin = svg.cmToPixels(3)
+        margin = svg.cmToPixels(1)
         tileSize = [
             Math.round((svg.width - margin * 2) / N),
             Math.round((svg.height - margin * 2) / N)
@@ -139,7 +139,7 @@ const sketch = {
             svg.path({
                 points: p.points,
                 fill: p.index % 2 === 0 ? 'black' : 'white',
-                stroke: p.index % 2 === 0 ? 'white' : 'black',
+                stroke: false, //p.index % 2 === 0 ? 'white' : 'black',
                 close: true
             })
         })

@@ -1,5 +1,5 @@
 const sketch = (p5) => {
-  let grid, cell, palette, margin;
+  let grid, cell, palette, margin, canvas;
   const palettes = [
     '#F1FAFD,#246023,#161922,#EA1703,#0C080B,#0173BB,#8B3014,#EEA600',
     '#FAF9E6,#5C4973,#1B0811,#321D19,#F4C808,#6487EE',
@@ -10,7 +10,7 @@ const sketch = (p5) => {
   const step = 0.35;
 
   p5.setup = () => {
-    p5.createCanvas(
+    canvas = p5.createCanvas(
       window.innerWidth < 800 ? window.innerWidth - 80 : window.innerWidth - 160,
       window.innerHeight - 160);
     p5.pixelDensity(window.devicePixelRatio);
@@ -78,6 +78,10 @@ const sketch = (p5) => {
   p5.windowResized = () => {
     p5.resizeCanvas(window.innerWidth - 80, window.innerWidth - 160)
   }
+  p5.keyPressed = function () {
+      p5.save(canvas, 'textile', 'jpg')
+  }
+
   sketch.init_sketch = () => p5.redraw()
 }
 

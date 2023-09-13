@@ -1,4 +1,4 @@
-import ease from '../../src/js/sketch-common/ease'
+import ease from '../../sketch-common/ease'
 import * as tome from 'chromotome'
 
 let isPlaying

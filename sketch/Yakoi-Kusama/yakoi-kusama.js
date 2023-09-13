@@ -1,6 +1,8 @@
+let canvas
+
 const sketch = (p5) => {
   p5.setup = () => {
-    p5.createCanvas(window.innerWidth - 80, window.innerHeight - 160);
+    canvas = p5.createCanvas(window.innerWidth - 80, window.innerHeight - 160);
     p5.background(20);
     p5.fill('#fce414');
     p5.noLoop();
@@ -58,6 +60,9 @@ const sketch = (p5) => {
   p5.windowResized = () => {
     p5.resizeCanvas(window.innerWidth - 80, window.innerHeight - 160)
     p5.redraw()
+  }
+  p5.keyPressed = function () {
+      p5.save(canvas, 'Yakoi-Kusama', 'jpg')
   }
   sketch.init_sketch = () => p5.redraw()
 }

@@ -1,7 +1,7 @@
 'use strict'
-// import ease from '../../src/js/sketch-common/ease'
+// import ease from '../../sketch-common/ease'
 import Layer from './Layer'
-import { makeNoise3D } from 'open-simplex-noise'
+import { makeNoise3D } from 'simplex-noise'
 
 const recording = true
 const numFrame = 60

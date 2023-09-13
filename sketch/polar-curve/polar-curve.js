@@ -1,6 +1,5 @@
 import * as tome from 'chromotome'
-import funcs from '../../src/js/sketch-common/plane-curve'
-import paramSlider from '../../src/js/sketch-common/param-slider'
+import funcs from '../../sketch-common/plane-curve'
 import darkPalettes from './darkPalettes'
 
 let canvas
@@ -10,7 +9,7 @@ const sketch = (p5) => {
 
     const scale = 0.01
     const alpha = 35
-    const margin = 0.08
+    const margin = 0.05
     const sample = 4
 
     const windowFrame = document.getElementById('windowFrame')
@@ -46,7 +45,7 @@ const sketch = (p5) => {
 
         paramBox.appendChild(funcSelector)
         // change selected function when user change it
-        funcSelector.addEventListener('change', (event) => {
+        funcSelector.addEventListener('change', () => {
             selectedFunc = funcSelector.value
             sketch.init()
         })
@@ -107,7 +106,8 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(1000, 1000)
+        canvas = p5.createCanvas(1200, 1200)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.pixelDensity(window.devicePixelRatio)
         p5.strokeWeight(2)
         p5.smooth(5)

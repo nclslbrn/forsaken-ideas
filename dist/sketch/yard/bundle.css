@@ -1,0 +1,55 @@
+html {
+    overflow: hidden;
+}
+#windowFrame svg,
+#windowFrame canvas {
+    display: block;
+    width: 100vw;
+    max-width: 100%;
+    height: auto;
+}
+
+#windowFrame #interactiveParameter {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  align-items: center;
+}
+#windowFrame #interactiveParameter label,
+#windowFrame #interactiveParameter input[type='range'],
+#windowFrame #interactiveParameter input[type='text'] {
+  line-height: 16px;
+  font-size: 12px;
+}
+
+#windowFrame #interactiveParameter label {
+  padding: 0;
+  margin-left: 1.5em;
+  color: white;
+}
+#windowFrame #interactiveParameter input[type='text'] {
+  width: 3em;
+  text-align: center;
+}
+
+#notification {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  padding: 1em;
+  margin: 1em;
+}
+
+#notification.light {
+  color: #222;
+  background: #f1f1f1;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+#notification.dark {
+  color: #fff;
+  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+#notification a {
+  color: var(--color-primary);
+}

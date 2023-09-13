@@ -5,23 +5,23 @@ export default class PlottingFunction {
         this.cellSize = cellSize
     }
 
-    _d(point) {
+    _d (point) {
         return [point[0] * this.cellSize.w, point[1] * this.cellSize.h]
     }
 
-    fillCell(x, y, color) {
-        this.mirror.allCorners(x, y).forEach((p) => {
+    fillCell (x, y, color) {
+        this.mirror.allCorners(x, y).forEach(() => {
             const pos = this._d([x, y])
             this.svg.rect({
                 x: pos.x,
-                y: pos.y,
+                //y: pos.y,
                 w: this.cellSize.w,
                 y: this.cellSize.h,
                 group: color
             })
         })
     }
-    topLeftTriangle(x, y, color) {
+    topLeftTriangle (x, y, color) {
         this.mirror.topLeftCorner(x, y).forEach((p) => {
             const points = p.map((pos) => this._d(pos))
             this.svg.triangle({
@@ -30,7 +30,7 @@ export default class PlottingFunction {
             })
         })
     }
-    topRightTriangle(x, y, color) {
+    topRightTriangle (x, y, color) {
         this.mirror.topRightCorner(x, y).forEach((p) => {
             const points = p.map((pos) => this._d(pos))
             this.svg.triangle({
@@ -39,7 +39,7 @@ export default class PlottingFunction {
             })
         })
     }
-    bottomRightTriangle(x, y, color) {
+    bottomRightTriangle (x, y, color) {
         this.mirror.bottomRightCorner(x, y).forEach((p) => {
             const points = p.map((pos) => this._d(pos))
             this.svg.triangle({
@@ -48,7 +48,7 @@ export default class PlottingFunction {
             })
         })
     }
-    bottomLeftTriangle(x, y, color) {
+    bottomLeftTriangle (x, y, color) {
         this.mirror.bottomLeftCorner(x, y).forEach((p) => {
             const points = p.map((pos) => this._d(pos))
             this.svg.triangle({

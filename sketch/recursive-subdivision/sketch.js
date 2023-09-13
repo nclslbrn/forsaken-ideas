@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
-import Notification from '../../src/js/sketch-common/Notification'
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
+import Notification from '../../sketch-common/Notification'
 import * as tome from 'chromotome'
 
 const colors = tome.get().colors
@@ -49,7 +49,7 @@ const sketch = {
         opacity: 0.5
     }),
     controls: false,
-    exporter: new GLTFExporter(),
+    exporter: new THREE.GLTFExporter(),
     launch: () => {
         sketch.camera.position.z = sketch.cubeDimension * 2
         sketch.scene.background = new THREE.Color(0, 0, 0)
@@ -72,7 +72,7 @@ const sketch = {
             .getElementById('windowFrame')
             .appendChild(sketch.renderer.domElement)
 
-        sketch.controls = new OrbitControls(
+        sketch.controls = new THREE.OrbitControls(
             sketch.camera,
             sketch.renderer.domElement
         )
@@ -152,7 +152,6 @@ const sketch = {
         }
     },
     clean: () => {
-        const toKeep = ['DirectionalLight', 'AmbientLight']
         sketch.scene.children.forEach((child) => {
             if (child.type === 'Group') {
                 sketch.scene.remove(child)
@@ -192,10 +191,7 @@ const sketch = {
             )
             const cubeMat = new THREE.MeshStandardMaterial({ color: 0xfffffe })
             const cubeMesh = new THREE.Mesh(geometry, cubeMat)
-            /*  
-            const wireframe = new THREE.WireframeGeometry(geometry)
-            const cubeWire = new THREE.LineSegments(wireframe, sketch.wireMat)
-            */
+            
             const randColor =
                 threeColors[Math.floor(Math.random() * threeColors.length)]
             cubeMesh.material.color.set(randColor)
@@ -204,15 +200,8 @@ const sketch = {
                 sketch.divisions[i].y,
                 cubeDepth / 2
             )
-            /*   
-            cubeWire.position.set(
-                sketch.divisions[i].x,
-                sketch.divisions[i].y,
-                cubeDepth / 2
-            ) 
-            */
+            
             frontGroup.add(cubeMesh)
-            /* frontGroup.add(cubeWire) */
         }
         const baseGeo = new THREE.BoxGeometry(
             sketch.cubeDimension * 0.99,
@@ -294,6 +283,7 @@ const sketch = {
         new Notification(message, document.getElementById('windowFrame'))
     },
     export: () => {
+        
         sketch.exporter.parse(sketch.scene, (result) => {
             if (result instanceof ArrayBuffer) {
                 saveArrayBuffer(result, 'scene.glb')

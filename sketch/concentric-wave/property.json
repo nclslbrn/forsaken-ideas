@@ -9,7 +9,7 @@
             "icon": "sync"
         },
         {
-            "name": "export",
+            "name": "downloadSVG",
             "icon": "desktop-download"
         }
     ]

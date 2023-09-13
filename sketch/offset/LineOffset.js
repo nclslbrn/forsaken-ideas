@@ -22,8 +22,7 @@ export default class LineOffset {
 
     getOffsets() {
         let offsetId = 0,
-            previousAngle,
-            previousPos
+            previousAngle
 
         const offsets = {
             lines: [],
@@ -54,7 +53,6 @@ export default class LineOffset {
                 ]
                 offsets.lines[offsetId].push(pos)
                 previousAngle = angle
-                previousPos = pos
             }
             offsetId++
         }

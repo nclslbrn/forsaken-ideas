@@ -1,6 +1,5 @@
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import Walker from './Walker'
-import Notification from '../../src/js/sketch-common/Notification'
 import { randomIntBetween } from './randomBetween'
 import LineOffset from './LineOffset'
 
@@ -9,16 +8,16 @@ const container = document.getElementById('windowFrame')
 const sketch = {
     svg: new SvgTracer({
         parentElem: container,
-        size: 'A3_Square',
+        size: 'A3_landscape',
         dpi: 72,
-        background: 'black'
+        background: '#111'
     }),
     // setup svg anf its params
     launch: () => {
         sketch.svg.init()
         sketch.margin = {
-            x: sketch.svg.cmToPixels(2),
-            y: sketch.svg.cmToPixels(2)
+            x: sketch.svg.cmToPixels(0.5),
+            y: sketch.svg.cmToPixels(0.5)
         }
         sketch.init()
     },
@@ -30,7 +29,7 @@ const sketch = {
 
         sketch.walkers = []
         sketch.offset = movingDiagonally ? 6 : 5
-        sketch.cellSize = sketch.svg.cmToPixels(movingDiagonally ? 0.4 : 0.8)
+        sketch.cellSize = sketch.svg.cmToPixels(movingDiagonally ? 0.35 : 0.7)
         sketch.walkerNum = 60
 
         sketch.grid = {
@@ -42,8 +41,7 @@ const sketch = {
 
         sketch.svg.clear()
 
-        sketch.palette = ['white', Math.random() > 0.5 ? 'tomato' : 'steelblue']
-        console.log(sketch.palette)
+        sketch.palette = ['white', Math.random() > 0.5 ? 'tomato' : 'lime']
         sketch.palette.forEach((color, index) => {
             sketch.svg.group({
                 name: color,
@@ -80,9 +78,9 @@ const sketch = {
                         pos: [x, y],
                         step: {
                             min: 1,
-                            max: 6
+                            max: 8
                         },
-                        maxDirectionTries: 4,
+                        maxDirectionTries: 12,
                         limit: [sketch.grid.cols, sketch.grid.rows],
                         movingDiagonally: movingDiagonally
                     })
@@ -126,7 +124,7 @@ const sketch = {
                     isDiagComp: sketch.walkers[w].movingDiagonally,
                     offsetWidth:
                         sketch.cellSize *
-                        3 *
+                        2 *
                         (sketch.walkers[w].movingDiagonally ? 2 : 1),
                     tracer: sketch.svg
                 })
@@ -143,7 +141,7 @@ const sketch = {
     // export inline <svg> as SVG file
     export: () => {
         sketch.svg.export({
-            name: `jogged-lines-${sketch.palette[1]}-palette`
+            name: `offset-${sketch.palette[1]}`
         })
     }
 }

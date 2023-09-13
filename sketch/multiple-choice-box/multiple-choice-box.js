@@ -1,7 +1,7 @@
 import Stack from './Stack'
-import SvgTracer from '../../src/js/sketch-common/svg-tracer'
+import SvgTracer from '../../sketch-common/svg-tracer'
 import hatch from './hatch'
-// const simplex = new SimplexNoise()
+
 const svg = new SvgTracer({
     parentElem: document.getElementById('windowFrame'),
     size: 'P24x32'

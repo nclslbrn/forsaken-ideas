@@ -1,5 +1,7 @@
 {
-    "libs": ["p5"],
+    "libs": [
+        "p5"
+    ],
     "info": "Coming soon",
     "date": "2021-07-25",
     "topic": "Random distribution",
@@ -7,6 +9,10 @@
         {
             "name": "init",
             "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "file-media"
         }
     ]
 }

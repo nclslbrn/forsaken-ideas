@@ -1,50 +1,37 @@
 # Make
 
-P5.JS/THREE.JS sketchbook build with Webpack and Pug.
+P5.JS/THREE.JS sketchbook build with Rollup and Vue.
 
 
 ```
-+ public/ (Where projects are exported - production ready HTML/JS/CSS)
-+ sketch/ 
-|---+ your-fantastic-JS-project/ (Where we code)
-|-------+ assets/ (you can copy assets relative to a project)
-|-------+ index.js (Sketch entry point)
-|-------+ property.json (Sketch properties, details below) 
-|-------+ capture.jpg (1200 x 630 px illustration for Open Graph) 
-+ src/ (Gallery and project page templates)
-|---+ fonts/
-|---+ img/
-|---+ js/
-|--------+ gallery/
-|--------+ sketch-common/ (Shared JS functions & class between multiple sketch)
-|---+ json/
-|---+ pug/
-|---+ sass/
-|--------+ mixins/
-|--------+ modules/
-|--------+ variables/
-|--------+ _commons.sccs
-|--------+ _layout.scss
-|--------+ _mixins.scss
-|--------+ _variables.scss
-|--------+ frame-canvas.scss (A pre-styled frame surrounded <canvas> or <svg>)
-|--------+ full-canvas.scss (A full frame page style)
-|--------+ gallery.scss (Home page style)
-|--------+ notifications.scss
-|--------+ progressBar.scss
-|--------+ project.scss (Projects style)
-+ tasks/ (nodejs tasks declaration)
-+ templates/ (boilerplate/example/empty project)
-|---+ custom-svg-templates/
-|--------+ index.js
-|--------+ property.json
-|---+ p5-template/
-|---+ three-template/
++ dist/ Whole site exported (production ready)
++ public/ Where projects are exported (to be used on gallery Vue app)
++ sketch/
+|---+ your-fantastic-JS-project/ - Where you code new sketch
+|-------+ assets/ - A folder to store some files (fonts, img), rollup will lookat this specific folder name 
+|-------+ index.js - Sketch entry point
+|-------+ property.json - Sketch properties, details below 
+|-------+ capture.jpg - 1200px illustration for Open Graph
+|-------+ thumbnail.jpg - 600px image for gallery
++ sketch-common/ - Files you want to import in multiple sketch
++ src/ - Gallery Vue App (dev files)
++ tasks/ - Nodejs scripts used in rollup config
+|-------+ additional-menu-items.mjs - Check sketch property.json actions and return HTML markup for sketch action
+|-------+ cdn-script-tags.mjs - Check sketch property.json libs and return HTML <script> 
+|-------+ concat-sketch-properties.mjs - Read all sketch/**/property.json and concatane them in a file array to be used in Vue (gallery) app
+|-------+ file-list.mjs - A simple directory file reader
+|-------+ html-sketch-template.mjs - A function returning a html template with menu-items, cnd <script> and <meta> injected
+|-------+ read-json.mjs - A simple JSON reader
+|-------+ strip-tag.mjs - A function to remove HTML markup from sketch properties.info (injected in header <meta>)
+|-------+ title-from-slug.mjs - A function to build a sketch title from sketch folder name ('-' become ' ' and '_', ''')
+|-------+ ...- A bunch of dotfiles (nothing fancy here)
+|-------+ site-meta.json - Some info that will be injected in HTML <meta> (OpenGraph)
+|-------+ sketch.build-all.mjs - Rollup task to build all sketch (from sketch/ to public/sketch) 
+|-------+ sketch.rollup.config.mjs - Task to dev or build a specific sketch 
+
 ```
 
-
-
-### Sketch properties
+### Sketch properties example
 ```
 {
     "libs": [
@@ -54,11 +41,10 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
         "p5.collide2D", 
         "p5.js-svg", 
         "three", 
-        "svg", 
         "fabric", 
         "p5.createloop"
     ],
-    "info": "Coming soon",
+    "info": "What's I see, what's I try, what's I get",
     "date": "2021-06-15",
     "action": [
         {
@@ -74,47 +60,32 @@ P5.JS/THREE.JS sketchbook build with Webpack and Pug.
 ```
 
 
-```libs``` For each project you could import JS libraries (from CDN)
+```libs```: Array For each project you could import JS libraries (from CDN)
 
-```info``` Short text about the project (displayed on project page and on Open Graph)
+```info``` String: Short text about the project (displayed on project page and on Open Graph), accept HTML markup
 
-```date``` A YYYY/MM/DD date of creation
+```date``` String: A YYYY-MM-DD date of creation
 
-```action``` Additional icon menu action
+```action``` Array: action list (property below) Additional icon menu action
 
-```action.name``` A sketch function to call (must be declared as window.name)
+```action.name``` String: A sketch function to call (must be declared as window.name)
 
-```action.icon``` An icon name (must be defined in src/pug/svg-defs.pug)
+```action.icon``` String: An icon name (must be defined in src/pug/svg-defs.pug)
 
 
 
 ### Main NPM scripts
 
+```npm run sketch:dev --sketch=sketch-folder-name``` Launch sketch at localhost:10001 (if rollup find index.js & property.json)
 
+```npm run sketch:build --sketch=sketch-folder-name``` Build a sketch
 
-```npm run watch:sketch ./sketch/sketch-name/``` Launch sketch at localhost:8080 (index.js & property.json must be filled)
+```npm run sketch:list``` Concatenate all sketch/**/property.json in public/sketch/index.json (run it each time you want to include a new project in the gallery)
 
-```npm run build:sketch ./sketch/sketch-name/``` Build specific project (exported in public/sketch/sketch-name)
+```npm run sketch:publish``` Copy all bundled sketch into dist/ (add new sketch in production without rebundling the gallery app) 
 
-```npm run watch:gallery``` Launch gallery/homepage at localhost:8080 
+```npm run gallery:dev``` Launch gallery/homepage Vue app at localhost:5173 
 
-```npm run build:gallery``` Build the homepage (by referencing each sketches in public/sketch/)
-
-```npm run deploy``` Send the public folder to remote machine (you must fill server info into ./ftp.json, sample below)
+```npm run gallery:build``` Build the gallery app in dist/
 
 ```
-{
-    "user": "username",
-    "password": "************",
-    "host": "ftp.address.org",
-    "port": 21
-}
-```
-
-### Visual studio coders (the MS software not a real studio)
-
-You can watch and build specific sketch with :
-
-CMD/CTRL + SHIFT + P and choose ```Tasks: Run build task```
-
-Vscode will send current opened tab file directory as entry point to node JS (You have to open in the editor a ./sketch/sketch-name/***.** file before use this task).

@@ -1,8 +1,5 @@
 const sketch = (p5) => {
-    const sketchSize = () => {
-        const side = Math.min(window.innerWidth, window.innerHeight)
-        return [side > 800 ? 800 : side * 0.85, side > 800 ? 800 : side * 0.85]
-    }
+    
     const cols = 31
     const rows = 12
     const colors = [40, 245]
@@ -37,12 +34,9 @@ const sketch = (p5) => {
         }
     }
     p5.setup = () => {
-        p5.createCanvas(...sketchSize())
+        let canvas = p5.createCanvas(1200, 1200)
+        canvas.elt.style.aspectRatio = '1 / 1'
         p5.noStroke()
-        sketch.init()
-    }
-    p5.windowResized = () => {
-        p5.resizeCanvas(...sketchSize())
         sketch.init()
     }
 }

@@ -1,0 +1,18 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "The art deco style has been simplified to the extreme. After a quick search, I found a rule, an art deco principle: there must be no right angles. I don't know if this animation can be described as Art Deco, but the composition it suggests has no right angles. Done during #genuary2023.",
+    "date": "2023-01-27",
+    "topic": "Endless Loop",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}

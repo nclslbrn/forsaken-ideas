@@ -1,10 +1,10 @@
 const sketch = (p5) => {
     let arcs = []
     let numFrames = 125
-    let margin = 16, // margin between circle
-        noiseRadius = 0.9,
+    let margin = 32, // margin between circle
+        noiseRadius = 4,
         noiseStrength = 100,
-        lineSize = 8,
+        lineSize = 12,
         speed = 0, // the value wich increments circle's radiuses
         maxRadius = 0 // Limit the size of the arc circle
 
@@ -17,7 +17,7 @@ const sketch = (p5) => {
     }
     sketch.init = () => {
         const center = p5.createVector(p5.width / 2, p5.height / 2)
-        maxRadius = p5.width / 2.5
+        maxRadius = p5.width
         speed = maxRadius / numFrames
 
         for (var c = margin; c <= maxRadius; c += margin) {
@@ -30,15 +30,16 @@ const sketch = (p5) => {
     const getNoiseIntensity = function (x, y, t) {
         return (
             p5.noise(
-                noiseRadius * p5.cos(p5.TWO_PI * t),
-                noiseRadius * p5.sin(p5.TWO_PI * t)
+                x + noiseRadius * p5.cos(p5.TWO_PI * t),
+                y + noiseRadius * p5.sin(p5.TWO_PI * t)
             ) * noiseStrength
         )
     }
 
     p5.setup = () => {
         const sketchDim = sketchSize()
-        p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
+        let canvas = p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
+        canvas.elt.style.aspectRatio = '1 / 1'
         //p5.smooth(20)
         sketch.init()
     }
@@ -65,7 +66,7 @@ const sketch = (p5) => {
                 angleID += 2
             ) {
                 var strokeColor = p5.map(arc.radius, 0, maxRadius, 255, 0)
-                var lineWeight = p5.map(arc.radius, 0, maxRadius, 0.5, 4)
+                var lineWeight = p5.map(arc.radius, 0, maxRadius, 1, 8)
 
                 var start = currentAngle + arc.angles[angleID]
                 var end = currentAngle + arc.angles[angleID + 1]
@@ -129,7 +130,7 @@ const sketch = (p5) => {
             this.angles = angles
             this.center = center
         }
-        init() {
+        init () {
             var angles = []
             var initialAngle = 0
             var newAngle = 0

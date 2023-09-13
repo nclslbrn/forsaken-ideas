@@ -2,42 +2,37 @@ import Walker from './walker'
 import randomFromCircle from './randomFromCircle'
 
 const sketch = (p5) => {
-    const sketchSize = () => {
-        const side = p5.min(window.innerWidth, window.innerHeight)
-        return {
-            w: side > 800 ? 800 : side * 0.85,
-            h: side > 800 ? 800 : side * 0.85
-        }
-    }
-
     const walkerNum = 1200,
-        iteration = 12,
-        stickiness = 0.3,
-        walkerSpeed = 4,
+        iteration = 3,
+        stickiness = 0.2,
+        walkerSpeed = 6,
         strokeWidth = {
-            min: 0.5,
+            min: 1,
             max: 5
         },
-        sketchDim = sketchSize()
+        sketchDim = { w: 1080, h: 1200 }
     const center = { x: sketchDim.w / 2, y: sketchDim.h / 2 }
-    const margin = p5.round(sketchDim.w / 24)
-    const initBranchSize = sketchDim.h / 48
+    const margin = p5.round(sketchDim.w / 18)
+    const initBranchSize = sketchDim.h / 126
 
     let canvas = false,
         isTreeFinished = false,
-        radius = 120,
+        radius = 150,
         branchSize = initBranchSize,
         walkers = [],
         tree = [],
-        lines = []
+        lines = [],
+        treeCenter = { x: null, y: null }
 
     p5.setup = () => {
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h)
-        p5.fill(0)
+        canvas.elt.style.aspectRatio = '1 / 1'
+        p5.fill(255)
+        p5.stroke(255)
         p5.strokeWeight(0.5)
         p5.textSize(16)
         p5.textAlign(p5.CENTER, p5.CENTER)
-        init()
+        sketch.init()
     }
 
     sketch.init = () => {
@@ -45,13 +40,11 @@ const sketch = (p5) => {
         walkers = []
         tree = []
         lines = []
-        tree[0] = new Walker(
-            sketchDim.w / 2,
-            sketchDim.h / 2,
-            true,
-            0,
-            walkerSpeed
-        )
+        treeCenter = {
+            x: (0.5 + p5.random(-0.2, 0.2)) * sketchDim.w,
+            y: (0.5 + p5.random(-0.2, 0.2)) * sketchDim.h
+        }
+        tree[0] = new Walker(treeCenter.x, treeCenter.y, true, 0, walkerSpeed)
         branchSize = initBranchSize
         for (let w = 0; w < walkerNum; w++) {
             const walkerPos = randomFromCircle({
@@ -83,7 +76,7 @@ const sketch = (p5) => {
                         walkers[w].y > sketchDim.h - margin
                     ) {
                         const randPosition = randomFromCircle({
-                            center: center,
+                            center: treeCenter,
                             radius: radius
                         })
                         walkers[w].x = randPosition.x
@@ -91,8 +84,7 @@ const sketch = (p5) => {
                     }
                     for (let t = 0; t < tree.length; t++) {
                         if (
-                            walkers[w].distance(tree[t]) <
-                                Math.pow(branchSize, 2) &&
+                            walkers[w].distance(tree[t]) < branchSize ** 2 &&
                             Math.random() > stickiness
                         ) {
                             lines.push({
@@ -105,10 +97,10 @@ const sketch = (p5) => {
                             walkers[w].stop = true
                             p5.append(tree, walkers[w])
                             walkers.splice(w, 1)
-                            radius += 0.25
+                            radius += 0.1
 
                             if (branchSize > walkerSpeed * 2) {
-                                branchSize *= 0.995
+                                branchSize *= 0.999999
                             }
 
                             const randPosition = randomFromCircle({
@@ -130,7 +122,7 @@ const sketch = (p5) => {
     }
     p5.draw = () => {
         if (!isTreeFinished) {
-            p5.background(255)
+            p5.background(35)
             sketch.processTree()
         }
         if (lines.length == 0) {
@@ -197,7 +189,7 @@ const sketch = (p5) => {
             '.' +
             date.getSeconds() +
             '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        p5.saveCanvas(cacheCanvas, filename, 'png')
+        p5.saveCanvas(canvas, filename, 'png')
     }
 }
 

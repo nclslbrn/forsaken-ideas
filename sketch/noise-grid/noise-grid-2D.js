@@ -1,6 +1,5 @@
-'use strict'
 import Layer from './Layer'
-import { makeNoise3D } from 'open-simplex-noise'
+import { createNoise3D } from 'simplex-noise'
 
 const recording = false
 const numFrame = 100
@@ -12,7 +11,7 @@ const gifOptions = {
     download: true,
     fileName: 'noiseGrid.gif'
 }
-const noise3D = makeNoise3D(Date.now())
+const noise3D = createNoise3D()
 
 const sketch = (p5) => {
     // Layer need these two functions
@@ -44,8 +43,9 @@ const sketch = (p5) => {
     }
 
     p5.setup = () => {
-        init()
+        sketch.init()
         canvas = p5.createCanvas(sketchDim.w, sketchDim.h, p5.WEBGL)
+        canvas.elt.style.aspectRatio = `${sketchDim.w} / ${sketchDim.h}`
         p5.setAttributes('antialias', true)
         p5.strokeWeight(2)
         p5.smooth(10)
@@ -95,10 +95,6 @@ const sketch = (p5) => {
         p5.pop()
     }
 
-    p5.windowResized = () => {
-        init()
-        p5.resizeCanvas(sketchDim.w, sketchDim.h)
-    }
     sketch.exportJPG = () => {
         p5.saveFrames('capture', 'jpg', 1, 1)
     }

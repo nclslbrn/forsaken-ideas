@@ -1,0 +1,16 @@
+{
+    "libs": ["p5"],
+    "info": "Aesemic writing done with random points and automated bezier curve",
+    "date": "2023-01-14",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}

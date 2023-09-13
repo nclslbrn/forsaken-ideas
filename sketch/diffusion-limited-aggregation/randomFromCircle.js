@@ -5,7 +5,7 @@
  */
 
 export default function (props) {
-    if (typeof props !== undefined && props.radius && props.center) {
+    if (typeof props !== Object && props.radius && props.center) {
         const angle = Math.PI * 2 * Math.random()
         return {
             x: props.center.x + props.radius * Math.cos(angle),

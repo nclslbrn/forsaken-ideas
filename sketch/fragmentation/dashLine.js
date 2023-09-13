@@ -1,7 +1,7 @@
 /**
  * Create dash along a line
  * @param {Array} line [[x1, y1], [x2, y2]]
- * @param {Number} step maximum dash length
+ * @param {Number} step maximum dash length
  * @param {Number} mode 0: straight 1: random
  *
  * @returns {Array} of multiple line

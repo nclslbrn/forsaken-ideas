@@ -1,0 +1,112 @@
+#windowFrame  {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 80% 1fr;
+    grid-template-rows: 1fr 80% 1fr;
+    align-items: center;
+    justify-content: center;
+    grid-gap: 0;
+    margin: 0;
+    max-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(225deg, #f1f1f1, #f5f5f5);
+}
+
+#windowFrame > div p,
+#windowFrame > div small,
+#windowFrame > div label {
+    color: #333;
+}
+
+#windowFrame svg {
+    position: static;
+    z-index: 99;
+}
+
+#windowFrame #frame,
+#windowFrame canvas,
+#windowFrame svg {
+    position: static;
+    display: block;
+    grid-column-start: 2;
+    grid-row-start: 2;
+    object-fit: contain;
+    max-width: 96%;
+    max-height: 96%;
+    width: auto !important;
+    height: auto !important;
+}
+
+
+@media (min-width: 20rem) {
+    #windowFrame #frame,
+    #windowFrame svg,
+    #windowFrame canvas {
+        padding: 4px;
+        margin: 0 auto;
+        background: linear-gradient(to bottom, #222, #000);
+        box-shadow: 0 7px 21px #dadada;
+    }
+}
+
+@media (min-width: 54rem) {
+    #windowFrame #frame,
+    #windowFrame svg,
+    #windowFrame canvas {
+        padding: 20px;
+        background: linear-gradient(to bottom, #222, #000);
+        box-shadow: -15px 15px 15px rgba(0, 0, 0, 0.15);
+    }
+}
+
+
+svg {
+    float: left;
+}
+
+svg::after {
+    content: "";
+    display: table;
+    clear: both;
+    float: none;
+}
+
+
+
+#interactiveParameter {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 1em;
+}
+
+#interactiveParameter input,
+#interactiveParameter button {
+    margin-bottom: 1em;
+}
+
+#notification {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    padding: 1em;
+    margin: 1em;
+    &.dark {
+        color: #fff;
+        background: #333;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    &.light {
+        color: #222;
+        background: #f1f1f1;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+    z-index: 9999;
+}
+#progressBar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-bottom: 0.5em;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25));
+    z-index: 99;
+}

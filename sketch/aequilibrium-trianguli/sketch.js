@@ -1,5 +1,5 @@
 import Grid from './Grid'
-import Notification from '../../src/js/sketch-common/Notification'
+import Notification from '../../sketch-common/Notification'
 
 let grid = null
 let cacheCanvas = null
@@ -83,6 +83,7 @@ const sketch = (p5) => {
             window.innerHeight * 2
         )
         cacheCanvas.elt.style = 'width: 100%; height: 100%; max-width: unset;'
+        
         p5.noFill()
 
         frame = 0
@@ -172,8 +173,8 @@ const sketch = (p5) => {
         const c = p5.color(aColor)
         return p5.color(
             'rgba(' +
-                [p5.red(c), p5.green(c), p5.blue(c), alpha].join(',') +
-                ')'
+            [p5.red(c), p5.green(c), p5.blue(c), alpha].join(',') +
+            ')'
         )
     }
 

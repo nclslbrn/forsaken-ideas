@@ -41,14 +41,10 @@ const sketch = (p5) => {
             }
         }
     }
-    sketch.canvasSize = () => {
-        const max = 800
-        const side = window.innerWidth * 0.8
-        return window.innerWidth < max ? [side, side] : [max, max]
-    }
     p5.setup = () => {
-        canvas = p5.createCanvas(...sketch.canvasSize())
-        init()
+        canvas = p5.createCanvas(1000, 1000)
+        canvas.elt.style.aspectRatio = `1 / 1`
+        sketch.init()
     }
     p5.draw = () => {}
 }

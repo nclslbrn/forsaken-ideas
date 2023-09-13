@@ -1,6 +1,7 @@
 import { createNoise2D } from 'simplex-noise'
-import funcs from '../../src/js/sketch-common/plane-curve'
-import Notification from '../../src/js/sketch-common/Notification'
+import funcs from '../../sketch-common/plane-curve'
+import Notification from '../../sketch-common/Notification'
+import SvgTracer from '../../sketch-common/svg-tracer'
 
 const simplex = createNoise2D()
 const randomTrigoFunc = () => {
@@ -17,41 +18,26 @@ const circle = (theta) => {
     return { x: Math.cos(theta), y: Math.sin(theta) }
 }
 
-// Value from Inkscape (document properties)
-const size = {
-    a3: { w: 1587.40157, h: 1122.51969 },
-    a4: { w: 793.70079, h: 1122.51969 }
-}
-
 // Main sketch object
 const sketch = {
     nIter: 0,
-    iterations: 15, // print version 40
+    iterations: 30, // print version 40
     patternNum: [3, 5, 6, 7, 9, 10, 11, 12, 13, 15],
-    size: size.a4,
     trigoFunc: false,
     scale: 0.007,
-    step: 48, // print version 96
-    res: 10, // print version 6
+    step: 72, // print version 96
+    res: 12, // print version 6
     points: [],
     lines: [],
     root: document.getElementById('windowFrame'),
-    svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+    svg: null,
     init: () => {
-        sketch.svg.setAttribute('version', '1.1')
-        sketch.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-        sketch.svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        sketch.svg.setAttribute('width', sketch.size.w)
-        sketch.svg.setAttribute('height', sketch.size.h)
-        sketch.svg.setAttribute(
-            'viewBox',
-            `0 0 ${sketch.size.w} ${sketch.size.h}`
-        )
-        sketch.svg.setAttribute(
-            'style',
-            'height: 85vh; width: auto; background: #fff; box-shadow: 0 0.5em 1em rgba(0,0,0,0.1);'
-        )
-        sketch.root.appendChild(sketch.svg)
+        sketch.svg =  new SvgTracer({
+            parentElem: sketch.root,
+            size: 'A3_portrait',
+            dpi: 72
+        })
+        sketch.svg.init()
         sketch.reset()
     },
     init_points: () => {
@@ -63,28 +49,28 @@ const sketch = {
         sketch.lines = []
         sketch.nIter = 0
 
-        for (let x = 0; x <= sketch.size.w; x += sketch.step) {
-            for (let y = 0; y <= sketch.size.h; y += sketch.step) {
+        for (let x = 0; x <= sketch.svg.width; x += sketch.step) {
+            for (let y = 0; y <= sketch.svg.height; y += sketch.step) {
                 if ((x ^ y) % g) {
                     for (let dx = 0; dx <= sketch.step; dx += sketch.res) {
                         for (let dy = 0; dy <= sketch.step; dy += sketch.res) {
                             sketch.points.push({
-                                x: ((x + dx) / sketch.size.w) * 6 - 3,
-                                y: ((y + dy) / sketch.size.h) * 6 - 3
+                                x: ((x + dx) / sketch.svg.width) * 6 - 3,
+                                y: ((y + dy) / sketch.svg.height) * 6 - 3
                             })
+                            sketch.lines.push([])
                         }
                     }
                 }
             }
         }
-        for (let i = 0; i < sketch.points.length; i++) sketch.lines.push([])
     },
     update: () => {
         for (let p = 0; p < sketch.points.length; p++) {
-            const xx = map(sketch.points[p].x, -4, 4, 0, sketch.size.w)
-            const yy = map(sketch.points[p].y, -4, 4, 0, sketch.size.h)
+            const xx = map(sketch.points[p].x, -4, 4, 0, sketch.svg.width)
+            const yy = map(sketch.points[p].y, -4, 4, 0, sketch.svg.height)
             const n1 =
-                500 *
+                20 *
                 map(
                     simplex(sketch.points[p].x, sketch.points[p].y),
                     0,
@@ -98,8 +84,10 @@ const sketch = {
 
             sketch.points[p].x += sketch.scale * v.x
             sketch.points[p].y += sketch.scale * v.y
-
-            sketch.lines[p].push([xx, yy])
+            
+            if (!isNaN(xx) && !isNaN(yy)) {
+                sketch.lines[p].push([xx, yy])
+            }
         }
         sketch.print()
 
@@ -113,23 +101,14 @@ const sketch = {
         }
     },
     print: () => {
-        while (sketch.svg.firstChild) {
-            sketch.svg.removeChild(sketch.svg.firstChild)
-        }
+        sketch.svg.clear()
         for (let i = 0; i < sketch.lines.length; i++) {
-            const path = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'path'
-            )
-            let d = `M ${sketch.lines[i][0][0]} ${sketch.lines[i][0][1]}`
-
-            for (let j = 1; j < sketch.lines[i].length; j++) {
-                d += ` L${sketch.lines[i][j][0]} ${sketch.lines[i][j][1]}`
-            }
-            path.setAttribute('d', d)
-            path.setAttribute('fill', 'none')
-            path.setAttribute('stroke', '#333')
-            sketch.svg.appendChild(path)
+            sketch.svg.path({
+                points: sketch.lines[i],
+                stroke: "#333",
+                fill: 'none',
+                close: false
+            })
         }
     },
     reset: () => {
@@ -137,28 +116,7 @@ const sketch = {
         sketch.init_points()
         sketch.update()
     },
-    export: () => {
-        const date = new Date(),
-            Y = date.getFullYear(),
-            m = date.getMonth(),
-            d = date.getDay(),
-            H = date.getHours(),
-            i = date.getMinutes(),
-            filename = `Grow-from-pattern.${Y}-${m}-${d}_${H}.${i}.svg`,
-            content = new Blob([sketch.root.innerHTML], {
-                type: 'text/plain'
-            })
-
-        let svgFile = null
-        if (svgFile !== null) {
-            window.URL.revokeObjectURL(svgFile)
-        }
-        svgFile = window.URL.createObjectURL(content)
-
-        const link = document.createElement('a')
-        link.href = svgFile
-        link.download = filename
-        link.click()
-    }
+    export: () => sketch.svg.export({ name: 'Grow-from-pattern' })
+    
 }
 export default sketch
