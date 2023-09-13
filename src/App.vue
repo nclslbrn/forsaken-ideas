@@ -19,9 +19,15 @@ export default defineComponent({
   setup () {
   },
   mounted () {
+    this.queryUrlParams();
+
     fetch("sketch/index.json")
       .then(response => response.json())
-      .then(data => this.projects = this.sortProjectBy(data.filter((d: Project) => d !== undefined), 'date'));
+      .then(data =>
+        this.projects = this.sortProjectBy(
+          data.filter((d: Project) => d !== undefined),
+          this.sorting as keyof Project)
+      );
   },
   methods: {
     sortProjectBy: function (projects: Project[], prop: keyof Project) {
@@ -34,18 +40,48 @@ export default defineComponent({
     sortByName: function () {
       this.projects = this.sortProjectBy(this.projects, 'title');
       this.sorting = 'title';
+      this.setUrlParams({ 'sorting': 'title' });
     },
     sortByDate: function () {
       this.projects = this.sortProjectBy(this.projects, 'date');
       this.sorting = 'date';
+      this.setUrlParams({ 'sorting': 'date' });
     },
     sortByTopic: function () {
       this.projects = this.sortProjectBy(this.projects, 'topic');
       this.sorting = 'topic'
+      this.setUrlParams({ 'sorting': 'topic' });
     },
     sortInverse: function () {
       this.asc = !this.asc;
       this.projects = this.sortProjectBy(this.projects, this.sorting as keyof Project);
+      this.setUrlParams({ 'sorting': this.asc ? '1' : '2' });
+    },
+    queryUrlParams: function () {
+      console.log(window.location.search)
+      const queryString = window.location.search
+      const urlParams = new URLSearchParams(queryString)
+      const ascParam = urlParams.get('asc')
+      const sortingParam = urlParams.get('sorting')
+
+      if (ascParam !== null) {
+        this.asc = ascParam === '1'
+      }
+      if (sortingParam !== null) {
+        this.sorting = sortingParam
+      }
+    },
+    setUrlParams: function (params: { [key: string]: string }) {
+      console.log(window.location.search)
+      const url = new URL(window.location.href)
+      Object.keys(params).forEach(key => {
+        if (url.searchParams.has(key)) {
+          url.searchParams.set(key, params[key])
+        } else {
+          url.searchParams.append(key, params[key])
+        }
+      })
+      window.history.pushState({ path: url.href }, '', url.href);
     }
   }
 })
@@ -58,7 +94,7 @@ export default defineComponent({
       <svg class="site-title">
         <use xlink:href="#site-title"></use>
       </svg>
-      <p>A tool to quickly experiment idea, a place for abandoned experiments</p>
+      <p>WTF where am I ? A tool to quickly experiment idea, a place for abandoned experiments</p>
     </div>
     <form id="order-grid">
       <ul>
