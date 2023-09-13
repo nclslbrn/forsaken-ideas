@@ -60,7 +60,7 @@ P5.JS/THREE.JS sketchbook build with Rollup and Vue.
 ```
 
 
-```libs```: Array For each project you could import JS libraries (from CDN)
+```libs``` Array: For each project you could import JS libraries (from CDN)
 
 ```info``` String: Short text about the project (displayed on project page and on Open Graph), accept HTML markup
 
@@ -88,3 +88,4 @@ P5.JS/THREE.JS sketchbook build with Rollup and Vue.
 
 ```npm run gallery:build``` Build the gallery app in dist/
 
+```npm run build``` alias of ```npm run build``` (used by github actions)
