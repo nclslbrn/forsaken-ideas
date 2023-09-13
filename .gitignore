@@ -1,7 +1,3 @@
-public/
-.DS_Store
-src/img/*
-
 # Logs
 logs
 *.log
@@ -64,8 +60,6 @@ typings/
 # next.js build output
 .next
 
-# Ftp deploy config
-ftp.json
-
-# Generated thumbnail
-thumbnail.jpg
+# build 
+dist/
+public/sketch/
