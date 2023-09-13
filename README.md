@@ -88,4 +88,3 @@ P5.JS/THREE.JS sketchbook build with Rollup and Vue.
 
 ```npm run gallery:build``` Build the gallery app in dist/
 
-```
