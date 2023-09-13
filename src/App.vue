@@ -32,9 +32,9 @@ export default defineComponent({
   methods: {
     sortProjectBy: function (projects: Project[], prop: keyof Project) {
       if (this.asc) {
-        return projects.sort((a, b) => (a[prop] > b[prop]) ? -1 : 1)
-      } else {
         return projects.sort((a, b) => (a[prop] < b[prop]) ? -1 : 1)
+      } else {
+        return projects.sort((a, b) => (a[prop] > b[prop]) ? -1 : 1)
       }
     },
     sortByName: function () {
@@ -55,7 +55,7 @@ export default defineComponent({
     sortInverse: function () {
       this.asc = !this.asc;
       this.projects = this.sortProjectBy(this.projects, this.sorting as keyof Project);
-      this.setUrlParams({ 'sorting': this.asc ? '1' : '2' });
+      this.setUrlParams({ 'asc': this.asc ? '1' : '0' });
     },
     queryUrlParams: function () {
       console.log(window.location.search)
@@ -159,7 +159,6 @@ header {
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--color-border);
 }
 
 header h1 {
@@ -172,11 +171,13 @@ header h1 {
 header .acronym-block svg {
   display: block;
   margin: 0 auto;
-  fill: var(--color-primary);
+  fill: var(--color-text);
 }
 
 header .acronym-block p {
   text-align: center;
+  padding: 0 3em;
+  margin-bottom: 1em;
 }
 
 header .acronym-block h1 {
@@ -185,14 +186,7 @@ header .acronym-block h1 {
 }
 
 header form#order-grid ul {
-  padding: 0;
-  flex: 2 0 auto;
-  display: flex;
-  margin: 0.5em 0;
-  list-style-type: none;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
+  display: none;
 }
 
 
@@ -213,6 +207,7 @@ header form#order-grid ul li label button {
   }
 
   header .acronym-block {
+    padding: 0 0.5em;
     flex: 0 1 auto;
     display: inline-flex;
     align-items: center;
@@ -220,13 +215,21 @@ header form#order-grid ul li label button {
 
   header .acronym-block p {
     margin: 0 2em;
-    max-width: 246px;
     text-align: left;
   }
 
+
   header form#order-grid ul {
-    padding: 0.5em;
+    padding: 0;
+    flex: 2 0 auto;
+    display: flex;
+    margin: 0.5em 0;
+    list-style-type: none;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
   }
+
 
   header form#order-grid ul li {
     margin: 0 0.2em;

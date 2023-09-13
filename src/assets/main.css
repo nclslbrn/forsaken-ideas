@@ -1,222 +1,206 @@
 @import './color.css';
 
 html {
-  -webkit-font-smoothing: antialiased;
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
 }
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  font-weight: normal;
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: normal;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  background: var(--color-bg);
-  color: var(--color-text);
-  min-height: 100vh;
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  line-height: 1.6;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
-  font-size: 16px;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    transition:
+        color 0.5s,
+        background-color 0.5s;
+    line-height: 1.6;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Fira Sans',
+        'Droid Sans',
+        'Helvetica Neue',
+        sans-serif;
+    font-size: 16px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 main {
-  padding: 1rem 1rem 0 1rem;
+    padding: 1rem 1rem 0 1rem;
 }
 
 figure,
 video,
 audio {
-  margin: 1rem;
+    margin: 1rem;
 }
 
 img,
 video {
-  max-width: 100%;
-  height: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 a {
-  color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 label,
 button,
 .button {
-  padding: 1rem;
-  color: var(--text-color);
+    padding: 1rem;
+    color: var(--color-text);
 }
 
 button,
 .button {
-  border: 1px solid var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
-  cursor: pointer;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid var(--color-primary);
 }
 
 a.button {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 button.small {
-  padding: 0.5rem;
+    padding: 0.5rem;
 }
 
 button svg,
 .button svg {
-  fill: var(--color-primary);
-  width: 2em;
-  height: 2em;
+    fill: var(--color-text);
+    width: 2em;
+    height: 2em;
 }
 
 button.active,
 .button.active {
-  color: var(--color-text);
-  background: var(--color-secondary);
-  border: 1px solid var(--color-secondary);
+    background: transparent;
+    border: 1px solid var(--color-secondary);
 }
 
 button:hover,
 .button:hover {
-  color: var(--color-bg);
-  background: var(--color-primary);
-}
-
-button.active svg .button.active svg {
-  fill: var(--color-text);
+    color: var(--color-primary);
 }
 
 button:hover svg,
 button:focus svg,
 .button:hover svg,
 .button:focus svg {
-  fill: var(--color-bg);
-}
-/*
-.button {
-  background-color: var(--color-secondary);
-  color: var(--color-bg);
+    fill: var(--color-primary);
 }
 
-.button svg {
-  fill: var(--color-bg);
-}
-*/
 p,
 input {
-  font-size: 1em;
-  hyphens: auto;
-  word-wrap: break-word;
+    font-size: 1em;
+    hyphens: auto;
+    word-wrap: break-word;
 }
 
 small {
-  font-size: 0.8rem;
+    font-size: 0.8rem;
 }
 
 p span.invisible {
-  display: none;
+    display: none;
 }
 
 .app-footer p span {
-  padding: 1rem;
+    padding: 1rem;
 }
 
 .app-footer p button {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 100;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 100;
 }
 
 @media screen and (min-width: 900px) {
-  .app-footer p {
-    display: inline-flex;
-    width: 100%;
-    justify-content: space-between;
-  }
+    .app-footer p {
+        display: inline-flex;
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 /** 
   Settings  
 */
 button span.theme-color {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-color);
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
 }
 
 body[mode='dark'] button[title='blue'] span.theme-color {
-  background: var(--light-blue);
+    background: var(--light-blue);
 }
 
 body[mode='light'] button[title='blue'] span.theme-color {
-  background: var(--dark-blue);
+    background: var(--dark-blue);
 }
 
 body[mode='dark'] button[title='green'] span.theme-color {
-  background: var(--light-green);
+    background: var(--light-green);
 }
 
 body[mode='light'] button[title='green'] span.theme-color {
-  background: var(--dark-green);
+    background: var(--dark-green);
 }
 
 body[mode='dark'] button[title='purple'] span.theme-color {
-  background: var(--light-purple);
+    background: var(--light-purple);
 }
 
 body[mode='light'] button[title='purple'] span.theme-color {
-  background: var(--dark-purple);
+    background: var(--dark-purple);
 }
 
 body[mode='dark'] button[title='red'] span.theme-color {
-  background: var(--light-red);
+    background: var(--light-red);
 }
 
 body[mode='light'] button[title='red'] span.theme-color {
-  background: var(--dark-red);
+    background: var(--dark-red);
 }
 
 body[mode='dark'] button[title='orange'] span.theme-color {
-  background: var(--light-orange);
+    background: var(--light-orange);
 }
 
 body[mode='light'] button[title='orange'] span.theme-color {
-  background: var(--dark-orange);
+    background: var(--dark-orange);
 }
 
 body[mode='dark'] button[title='yellow'] span.theme-color {
-  background: var(--light-yellow);
+    background: var(--light-yellow);
 }
 
 body[mode='light'] button[title='yellow'] span.theme-color {
-  background: var(--dark-yellow);
+    background: var(--dark-yellow);
 }

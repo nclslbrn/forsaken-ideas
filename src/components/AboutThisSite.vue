@@ -37,7 +37,7 @@ export default {
   margin: 3em auto 1em auto;
   padding-top: 2em;
   width: calc(100% - 2em);
-  border-top: 1px solid var(--color-text);
+  border-top: 6px double var(--color-border);
 }
 
 .site-description p {
