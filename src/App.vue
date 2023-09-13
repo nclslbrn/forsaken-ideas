@@ -94,7 +94,7 @@ export default defineComponent({
       <svg class="site-title">
         <use xlink:href="#site-title"></use>
       </svg>
-      <p>WTF where am I ? A tool to quickly experiment idea, a place for abandoned experiments</p>
+      <p>A tool to quickly experiment idea, a place for abandoned experiments</p>
     </div>
     <form id="order-grid">
       <ul>
