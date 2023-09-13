@@ -12,7 +12,7 @@ import fs from "fs";
     await exec("npm", ["run", "gallery:build"]);
     // Understand if it's dist or build folder
     const folderName = fs.existsSync("dist") ? "dist" : "build";
-    await exec("git", ["--work-tree", folderName, "add", "--all", "."]);
+    await exec("git", ["--work-tree", folderName, "add", "--all", "./dist/"]);
     await exec("git", ["--work-tree", folderName, "commit", "-m", "deployment"]);
     console.log("Pushing to deployment...");
     await exec("git", ["push", "origin", "HEAD:deployment", "--force"]);
