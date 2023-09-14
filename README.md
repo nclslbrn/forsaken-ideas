@@ -1,7 +1,15 @@
 # Make
----
 
 P5.JS/THREE.JS/whatever libraries sketchbook build with Rollup and Vue.
+
+Make is a workflow to create a gallery from a folder which contains many bundled project.
+
+The gallery is developed with VueJS, it's quite simple, it's a classic project that queries a JSON file (in production) to list all the projects.
+
+The part that generates the projects is more interesting. The usual npm run dev command is prefixed with the project name, enabling you to generate a multitude of projects from a single configuration. So, to develop project x (contained in the sketch/x/ folder) you can run npm run sketch:dev --sketch=x, which will set sketch/x/index.js as the input to your application.
+
+This workflow is designed to be modular and space-saving, so the p5.js and three.js libraries are loaded from a cdn. To indicate how to load the library, simply specify it in a file named property.json, which must be present in all projects. It is used to indicate information that will be reinjected into the HTML template (interaction button with the program, display of a short note on the project, date, topic...). 
+
 
 
 ```
