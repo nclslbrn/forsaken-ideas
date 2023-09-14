@@ -2,7 +2,7 @@ import '../full-canvas.css'
 import p5 from 'p5'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-
+import { autoBezierCurve } from '../../sketch-common/bezierCurve'
 const { cos, sin, round, tan, atan2, hypot, PI } = Math
 
 const sketch = (p5) => {
@@ -14,10 +14,13 @@ const sketch = (p5) => {
     '#E4DCC8, #3C4755, #E5E2DC, #E3B228, #414042, #CC311A, #613A29, #372F50, #302D28',
     '#DEDFDB, #AD3F0D, #050003, #8C9F9B, #215707, #1B6D9E, #E2BB0C'
   ]
+  let diag
   p5.setup = () => {
     p5.createCanvas(window.innerWidth, window.innerHeight);
     p5.noLoop()
     p5.noStroke()
+
+    diag = hypot(p5.width, p5.height)
   }
   // Margin a percent of width & height
   const randPos = (margin = 0) => [
@@ -67,9 +70,9 @@ const sketch = (p5) => {
         }
       }
     }
-    p5.drawingContext.globalCompositeOperation = 'darken'
+    // p5.drawingContext.globalCompositeOperation = 'darken'
     // grid
-    const step = round(p5.width / p5.random(6, 12))
+    const step = round(p5.width / p5.random(12, 32))
     for (let x = step; x < p5.width - step * 2; x += step) {
       for (let y = step; y < p5.height - step * 2; y += step) {
         if (p5.random() > 0.5) {
@@ -81,15 +84,14 @@ const sketch = (p5) => {
     }
 
     p5.noFill()
-    // Spiral
-    for (let i = 0; i < 2; i++) {
-      p5.stroke(0, 125)
-      p5.strokeWeight(p5.random(1.5, 2))
+    // Spirali
+    const ellPoints = []
+    for (let i = 0; i < p5.random(2, 4); i++) {
       let [x, y] = randPos(0.1)
       let eX = x, eY = y, rot = 0, rad = 1
-      p5.beginShape()
       while (eX > 0 && eY > 0 && eX < p5.width && eY < p5.height) {
-        p5.vertex(eX, eY)
+        // p5.vertex(eX, eY)
+        ellPoints.push({ x: eX, y: eY })
         eX = x + cos(rot) * rad * (0.75 - p5.random(0.05, 0.08))
         eY = y + sin(rot) * rad * (1.24 + p5.random(0.05, 0.08))
         rad += rad * 0.003
@@ -104,18 +106,42 @@ const sketch = (p5) => {
 
           for (let d = 2; d < distance; d += 12) {
             const vd = ((d / distance) - 0.5) * theta * 2
-            p5.vertex(
-              x + d * cos(theta + cos(vd)) + p5.random(1, 3),
-              y + d * sin(theta + sin(vd)) + p5.random(1, 3))
+            ellPoints.push({
+              x: x + d * cos(theta + cos(vd)) + p5.random(0.01, 0.07) * diag,
+              y: y + d * sin(theta + sin(vd)) + p5.random(0.01, 0.07) * diag
+            })
+
+
           }
           x = nX
           y = nY
           rot = PI - rot
           rad = -rad
         }
+
       }
-      p5.endShape()
+      for (let j = 0; j < p5.random(1, 3); j++) {
+        let [x, y] = randPos(0.1)
+        ellPoints.push({ x, y })
+      }
     }
+
+    p5.stroke(50)
+    const bezier = autoBezierCurve(ellPoints, 3 * Math.random().toFixed(3))
+    for (let i = 0; i < bezier.length; i++) {
+      if (bezier[i].length > 2) {
+        p5.bezierVertex(
+          bezier[i][0].x,
+          bezier[i][0].y,
+          bezier[i][1].x,
+          bezier[i][1].y,
+          bezier[i][2].x,
+          bezier[i][2].y
+        )
+      }
+    }
+    //ellPoints.map(pt => p5.vertex(pt.x, pt.y))
+    p5.endShape()
   }
   sketch.initSketch = () => p5.redraw()
   sketch.exportJPG = () => p5.save('In-the-style-of-Hilma-Af-Klint')

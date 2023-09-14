@@ -24,7 +24,7 @@ const sketch = {
   cellSize: undefined,
   groupsByColor: [],
   plot: false,
-  neededAliveNeighboors: 2,
+  neededAliveNeighboors: 3,
   initPercentChanceAliveCell: 0.5,
   launch: () => {
     sketch.svg.init()
