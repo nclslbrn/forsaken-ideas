@@ -2,7 +2,7 @@ import '../framed-canvas.css'
 import p5 from 'p5'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { autoBezierCurve } from './bezierCurve'
+import { autoBezierCurve } from '../../sketch-common/bezierCurve'
 
 const { ceil, random } = Math
 
@@ -47,7 +47,7 @@ const sketch = (p5) => {
   p5.setup = () => {
     let canvas = p5.createCanvas(letterSize.x, letterSize.y)
     canvas.elt.style.aspectRatio = `${letterSize.x} / ${letterSize.y}`
-    
+
     pg = p5.createGraphics(letterSize.x, letterSize.y)
     p5.pixelDensity(window.devicePixelRatio || 1)
     p5.noLoop()
