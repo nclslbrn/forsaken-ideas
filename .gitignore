@@ -61,5 +61,7 @@ typings/
 .next
 
 # build
-public/sketch/*
+public/sketch/**
+!public/sketch/color.css
+!public/sketch/project.css
 dist/*
