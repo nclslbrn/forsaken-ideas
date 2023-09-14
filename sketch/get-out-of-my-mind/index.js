@@ -23,7 +23,6 @@ const sketch = (p5) => {
             cols = size / cellSize,
             rows = size / cellSize,
             margin = Math.round(p5.random(3, 8)),
-            readX = Math.random() < 0.5,
             g = patterns[Math.floor(Math.random() * patterns.length)]
 
         p5.background(20)
