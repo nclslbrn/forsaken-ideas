@@ -70,9 +70,9 @@ const sketch = (p5) => {
         }
       }
     }
-    // p5.drawingContext.globalCompositeOperation = 'darken'
+    p5.drawingContext.globalCompositeOperation = 'multiply'
     // grid
-    const step = round(p5.width / p5.random(12, 32))
+    const step = round(p5.width / p5.random(8, 16))
     for (let x = step; x < p5.width - step * 2; x += step) {
       for (let y = step; y < p5.height - step * 2; y += step) {
         if (p5.random() > 0.5) {
@@ -86,7 +86,7 @@ const sketch = (p5) => {
     p5.noFill()
     // Spirali
     const ellPoints = []
-    for (let i = 0; i < p5.random(2, 4); i++) {
+    for (let i = 0; i < p5.random(1, 3); i++) {
       let [x, y] = randPos(0.1)
       let eX = x, eY = y, rot = 0, rad = 1
       while (eX > 0 && eY > 0 && eX < p5.width && eY < p5.height) {
@@ -104,7 +104,7 @@ const sketch = (p5) => {
           const distance = hypot(x - nX, y - nY) * 0.66
           const theta = atan2(nY - y, nX - x)
 
-          for (let d = 2; d < distance; d += 12) {
+          for (let d = 2; d < distance; d += 64) {
             const vd = ((d / distance) - 0.5) * theta * 2
             ellPoints.push({
               x: x + d * cos(theta + cos(vd)) + p5.random(0.01, 0.07) * diag,
