@@ -1,7 +1,7 @@
 {
     "libs": [],
     "info": "The main process of this sketch is to cut a square in several parts. Then it draws diagonal strips with different types of lines to trace the fragments, with regular or random dashed lines (of different lengths and spacing). Randomly the lines are straight or follow a curve calculated with a Perlin noise.",
-    "topic": "Random distribution",
+    "topic": "Line line collision",
     "date": "2022-02-13",
     "action": [
         {

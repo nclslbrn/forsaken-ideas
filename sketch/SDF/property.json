@@ -1,6 +1,8 @@
 {
-    "libs": ["p5"],
-    "info": "Aesemic writing done with random points and automated bezier curve",
+    "libs": [
+        "p5"
+    ],
+    "info": "SDF stands for Signed Distance Function, a function used to evaluate the distance to a point, plane or polygon. This program in GLSL (shader) reuses functions written by Piter Pasma and Inigo Quilez.",
     "date": "2023-01-14",
     "topic": "Random distribution",
     "action": [

@@ -2,8 +2,8 @@
     "libs": [
         "p5"
     ],
-    "info": "Sketch created during #genuary code challenge in 2023",
-    "topic": "Genuary",
+    "info": "Sketch created during #genuary code challenge in 2023. Visit <a href='https://nicolas-lebrun.fr/project/more-random-moire/'>the project page</a> to find out more.",
+    "topic": "Line line collision",
     "date": "2023-01-23",
     "action": [
         {
