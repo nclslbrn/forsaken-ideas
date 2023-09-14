@@ -1,0 +1,18 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "<em>My words fly up, my thoughts remain below</em><br> -Quote by William Shakespeare or <em>My words have gone beyond my thought</em> - <br>by me (random choice), each letter move with a Perlin noise texture. Done during #genuary2023 (prompt: Definitely not a grid /Genuary 18) . ",
+    "date": "2023-01-18",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}

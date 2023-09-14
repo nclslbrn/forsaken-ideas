@@ -1,0 +1,18 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "Sketch done during #genuary2022 (prompt: Use text/typography). This program use solely the words of the sentence 'Get out of my mind' and the symbol '█'.",
+    "date": "2022-01-20",
+    "topic": "Perlin noise",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}
