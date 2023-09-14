@@ -22,9 +22,7 @@ body {
     background: var(--color-bg);
     color: var(--color-text);
     min-height: 100vh;
-    transition:
-        color 0.5s,
-        background-color 0.5s;
+    transition: color 0.5s, background-color 0.5s;
     line-height: 1.6;
     font-family:
         Inter,
@@ -43,6 +41,15 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+    font-family: Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+}
+
+p {
+    line-height: 2;
+    margin-bottom: 1.6em;
 }
 
 main {
@@ -76,7 +83,7 @@ button,
 .button {
     background: transparent;
     cursor: pointer;
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--color-text);
 }
 
 a.button {

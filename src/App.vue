@@ -142,7 +142,7 @@ export default defineComponent({
         <ProjectPreview :project="item" :index="index" />
       </template>
     </masonry-wall>
-    <AboutThisSite />
+    <AboutThisSite :project-count="projects.length"/>
   </main>
 </template>
 
