@@ -1,5 +1,8 @@
 import * as THREE from 'three'
-
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { createMultiMaterialObject } from 'three/addons/utils/SceneUtils.js';
+// import { SceneUtils } from '../../sketch-common/SceneUtils';
 import { generateHeight } from './generate'
 import paramSlider from '../../sketch-common/param-slider'
 import Notification from '../../sketch-common/Notification'
@@ -20,7 +23,7 @@ const params = {
 const paramBox = document.createElement('div')
 paramBox.id = 'interactiveParameter'
 for (const i in params) {
-    const elems = paramSlider({ ...params[i], callback: () => window.init()})
+    const elems = paramSlider({ ...params[i], callback: () => window.init() })
     elems.forEach((elem) => {
         paramBox.appendChild(elem)
     })
@@ -40,7 +43,7 @@ const sketch = {
         20000
     ),
     renderer: new THREE.WebGLRenderer({ antialias: true }),
-    exporter: new THREE.STLExporter(),
+    exporter: new STLExporter(),
     launch: () => {
         sketch.scene.background = new THREE.Color(0x2c3e50)
         sketch.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
@@ -70,7 +73,7 @@ const sketch = {
             sketch.meshSize.h * 0.5
         )
         sketch.camera.lookAt(0, 0, 0)
-        sketch.controls = new THREE.OrbitControls(
+        sketch.controls = new OrbitControls(
             sketch.camera,
             sketch.renderer.domElement
         )
@@ -118,7 +121,7 @@ const sketch = {
                 transparent: true
             })
         ]
-        sketch.object = THREE.SceneUtils.createMultiMaterialObject(
+        sketch.object = createMultiMaterialObject(
             sketch.geometry,
             meshMaterials
         )

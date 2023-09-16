@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-// import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter'
+import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter'
 import Notification from '../../sketch-common/Notification'
 import * as tome from 'chromotome'
 
@@ -49,7 +49,7 @@ const sketch = {
         opacity: 0.5
     }),
     controls: false,
-    exporter: new THREE.GLTFExporter(),
+    exporter: new GLTFExporter(), // new THREE.GLTFExporter(),
     launch: () => {
         sketch.camera.position.z = sketch.cubeDimension * 2
         sketch.scene.background = new THREE.Color(0, 0, 0)
@@ -72,7 +72,7 @@ const sketch = {
             .getElementById('windowFrame')
             .appendChild(sketch.renderer.domElement)
 
-        sketch.controls = new THREE.OrbitControls(
+        sketch.controls = new OrbitControls( //new THREE.OrbitControls(
             sketch.camera,
             sketch.renderer.domElement
         )
@@ -191,7 +191,7 @@ const sketch = {
             )
             const cubeMat = new THREE.MeshStandardMaterial({ color: 0xfffffe })
             const cubeMesh = new THREE.Mesh(geometry, cubeMat)
-            
+
             const randColor =
                 threeColors[Math.floor(Math.random() * threeColors.length)]
             cubeMesh.material.color.set(randColor)
@@ -200,7 +200,7 @@ const sketch = {
                 sketch.divisions[i].y,
                 cubeDepth / 2
             )
-            
+
             frontGroup.add(cubeMesh)
         }
         const baseGeo = new THREE.BoxGeometry(
@@ -219,47 +219,47 @@ const sketch = {
         topGroup.position.set(0, sketch.cubeDimension / 2, 0)
         topGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
-            THREE.Math.degToRad(-90)
+            THREE.MathUtils.degToRad(-90)
         )
         topGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
-            THREE.Math.degToRad(-90)
+            THREE.MathUtils.degToRad(-90)
         )
 
         bottomGroup.position.set(0, -sketch.cubeDimension / 2, 0)
         bottomGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
-            THREE.Math.degToRad(90)
+            THREE.MathUtils.degToRad(90)
         )
         bottomGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
-            THREE.Math.degToRad(-90)
+            THREE.MathUtils.degToRad(-90)
         )
 
         leftGroup.position.set(-sketch.cubeDimension / 2, 0, 0)
         leftGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
-            THREE.Math.degToRad(-90)
+            THREE.MathUtils.degToRad(-90)
         )
         leftGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
-            THREE.Math.degToRad(90)
+            THREE.MathUtils.degToRad(90)
         )
 
         rightGroup.position.set(sketch.cubeDimension / 2, 0, 0)
         rightGroup.rotateOnWorldAxis(
             new THREE.Vector3(0, 1, 0),
-            THREE.Math.degToRad(90)
+            THREE.MathUtils.degToRad(90)
         )
         rightGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
-            THREE.Math.degToRad(90)
+            THREE.MathUtils.degToRad(90)
         )
 
         backGroup.position.set(0, 0, -sketch.cubeDimension / 2)
         backGroup.rotateOnWorldAxis(
             new THREE.Vector3(1, 0, 0),
-            THREE.Math.degToRad(-180)
+            THREE.MathUtils.degToRad(-180)
         )
         sketch.scene.add(base)
         sketch.scene.add(frontGroup)
@@ -283,7 +283,7 @@ const sketch = {
         new Notification(message, document.getElementById('windowFrame'))
     },
     export: () => {
-        
+
         sketch.exporter.parse(sketch.scene, (result) => {
             if (result instanceof ArrayBuffer) {
                 saveArrayBuffer(result, 'scene.glb')

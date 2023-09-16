@@ -1,5 +1,7 @@
 import AutomataGrid from '../../sketch-common/AutomataGrid'
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { createMultiMaterialObject } from 'three/addons/utils/SceneUtils.js';
 
 const triangleGeometry = (width, height, depth) => {
     const shape = new THREE.Shape()
@@ -39,7 +41,7 @@ const s = {
     zRot: 0,
     renderer: new THREE.WebGLRenderer({ antialias: true }),
     launch: (windowFrame) => {
-        s.controls = new THREE.OrbitControls(s.camera, s.renderer.domElement)
+        s.controls = new OrbitControls(s.camera, s.renderer.domElement)
         s.controls.screenSpacePanning = true
         s.defaulMat = [
             new THREE.MeshBasicMaterial({
@@ -56,7 +58,7 @@ const s = {
             1 / s.grid.rows,
             1 / s.grid.rows
         )
-        s.object = THREE.SceneUtils.createMultiMaterialObject(s.defaultGeometry, s.defaulMat)
+        s.object = createMultiMaterialObject(s.defaultGeometry, s.defaulMat)
         s.renderer.setPixelRatio(window.devicePixelRatio)
         s.renderer.setSize(window.innerWidth, window.innerHeight)
         s.camera.position.z = Math.max(s.grid.cols, s.grid.rows) / 4

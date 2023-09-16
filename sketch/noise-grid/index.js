@@ -1,5 +1,4 @@
 import '../framed-canvas.css'
-import 'p5.createLoop'
 import sketch from './noise-grid-2D'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'

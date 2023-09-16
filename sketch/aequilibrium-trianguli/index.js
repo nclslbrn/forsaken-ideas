@@ -1,3 +1,4 @@
+import '../project.css'
 import '../full-canvas.css'
 import p5 from 'p5'
 import sketch from './sketch'
