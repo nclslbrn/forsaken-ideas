@@ -65,3 +65,6 @@ public/sketch/**
 !public/sketch/color.css
 !public/sketch/project.css
 dist/*
+
+sketch/**/index.html
+sketch/**/vite.config.js
