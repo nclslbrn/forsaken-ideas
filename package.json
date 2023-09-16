@@ -21,6 +21,11 @@
     "sketch:format": "prettier --write ${npm_config_sketch}/"
   },
   "dependencies": {
+    "@thi.ng/dl-asset": "^2.3.42",
+    "@thi.ng/geom": "^5.2.3",
+    "@thi.ng/hiccup-canvas": "^2.3.21",
+    "@thi.ng/random": "^3.6.4",
+    "@thi.ng/transducers": "^8.7.0",
     "@yeger/vue-masonry-wall": "^5.0.2",
     "p5": "^1.7.0",
     "simplex-noise": "^4.0.1",
