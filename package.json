@@ -25,6 +25,7 @@
     "@thi.ng/geom": "^5.2.3",
     "@thi.ng/hiccup-canvas": "^2.3.21",
     "@thi.ng/random": "^3.6.4",
+    "@thi.ng/timestep": "^0.4.14",
     "@thi.ng/transducers": "^8.7.0",
     "@yeger/vue-masonry-wall": "^5.0.2",
     "p5": "^1.7.0",

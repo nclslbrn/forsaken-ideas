@@ -1,0 +1,16 @@
+{
+    "libs": [],
+    "topic": "Only type",
+    "info": "Hybridization/mixing of texts with two paintings. The programme randomly pushes new characters (and the colours applied to them) left, right, up or down. The programme uses several <a href='https://github.com/thi-ng/umbrella'>@thi.ng/umbrella</a> libraries.",
+    "date": "2023-09-14",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "file-media"
+        }
+    ]
+}
