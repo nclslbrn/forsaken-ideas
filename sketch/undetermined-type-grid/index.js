@@ -19,6 +19,7 @@ const { floor } = Math,
         'LightCoral',
         'DarkSalmon'
     ],
+    dpr = window.devicePixelRatio || 1,
     windowFrame = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
@@ -37,8 +38,8 @@ let timer = 0,
     loop = 0,
     altering = false
 
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+canvas.width = window.innerWidth * dpr
+canvas.height = window.innerHeight * dpr
 canvas.captureStream()
 windowFrame.appendChild(canvas)
 
@@ -89,7 +90,10 @@ const init = () => {
     cancelAnimationFrame(timer)
     const margin = SYSTEM.minmaxInt(20, 100),
         cellSize = SYSTEM.minmaxInt(24, 72),
-        bounds = [canvas.width - margin * 2, canvas.height - margin * 2],
+        bounds = [
+            canvas.width - margin * 2, 
+            canvas.height - margin * 2
+        ],
         cols = floor(bounds[0] / cellSize),
         rows = floor(bounds[1] / cellSize),
         remains = [bounds[0] - cols * cellSize, bounds[1] - rows * cellSize]
@@ -189,9 +193,9 @@ init()
 windowFrame.removeChild(loader)
 window.onresize = init()
 
-//recorder.start()
 document.addEventListener('keydown', () => {
     frame = 0
+    recorder.start()
 })
 window.init = init
 window.export_JPG = () => downloadCanvas(canvas, `text`)
