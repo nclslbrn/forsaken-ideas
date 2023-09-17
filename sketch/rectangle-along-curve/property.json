@@ -1,0 +1,14 @@
+{
+    "libs":["p5"],
+    "info":"Playing with a feature of the canvas API setLineDash, which allows to draw dash along lines and curves. Sketch made during #genuary 2022 (The next Fidenza, 4th January)",
+    "topic":"Perlin noise",
+    "action":[
+        {
+            "name":"init",
+            "icon":"sync"
+        },{
+            "name":"download",
+            "icon":"file-media"}
+    ],
+    "date":"2022-01-04"
+}
