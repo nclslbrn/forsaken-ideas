@@ -2,29 +2,45 @@ import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { SYSTEM, pickRandom } from '@thi.ng/random'
-import { downloadCanvas, canvasRecorder } from '@thi.ng/dl-asset'
+//import { downloadCanvas, canvasRecorder } from '@thi.ng/dl-asset'
+import { downloadCanvas } from '@thi.ng/dl-asset'
 import { group, text, rect } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
 
 let state = {}
 
 const { floor } = Math,
-    sentence = [...'I like grid and grid likes me. '],
-    symbols = [...'=±≡⊥—⊫ǁ⊠⊡⊢⊣⊤⊥⊦⊧⊨⊩⊪⊫'],
-    palette = [
-        'tomato',
-        'white',
-        'yellow',
-        'orange',
-        'LightCoral',
-        'DarkSalmon'
-    ],
+    sentence = pickRandom([
+        [...'I like grid and grid likes me. '],
+        [...'Ingrid is in the grid'],
+        [...'CELL']
+    ]),
+    symbols = pickRandom([
+        [...'=±≡⊥—⊫ǁ⊠⊡⊢⊣⊤⊥⊦⊧⊨⊩⊪⊫'],
+        [...'/\\|-~!:><^v'],
+        [...'☐⚀⚄✤✕'],
+        [
+            ...'⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿'
+        ]
+    ]),
+    palette = pickRandom([
+        ['tomato', 'white', 'yellow', '#3b36d8'],
+        ['#bfc8ad', '#90b494', '#718f94', '#545775'],
+        ['#e9d758', '#297373', '#ff8552', '#e6e6e6'],
+        ['#0496ff', '#ffbc42', '#d81159', '#8f2d56'],
+        ['#8eb8e5', '#7c99b4', '#6b7f82', '#5b5750', '#492c1d'],
+        ['#ee6c4d', '#33312e', '#f38d68', '#662c91', '#17a398'],
+        ['#55d6be', '#2e5eaa', '#5b4e77', '#593959'],
+        ['#61304b', '#857c8d', '#94bfbe', '#acf7c1'],
+        ['#7a9e9f', '#4f6367', '#eef5db', '#fe5f55'],
+        ['#00bd9d', '#49c6e5', '#54defd', '#fffbfa', '#8bd7d2']
+    ]),
     dpr = window.devicePixelRatio || 1,
     windowFrame = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
-    fps = 24,
-    recorder = canvasRecorder(canvas, 'undetermined-type-grid', { fps: 24 }),
+    fps = 12,
+    //recorder = canvasRecorder(canvas, 'undetermined-type-grid', { fps: 24 }),
     ctx = canvas.getContext('2d'),
     doUpdate = true
 
@@ -90,10 +106,7 @@ const init = () => {
     cancelAnimationFrame(timer)
     const margin = SYSTEM.minmaxInt(20, 100),
         cellSize = SYSTEM.minmaxInt(24, 72),
-        bounds = [
-            canvas.width - margin * 2, 
-            canvas.height - margin * 2
-        ],
+        bounds = [canvas.width - margin * 2, canvas.height - margin * 2],
         cols = floor(bounds[0] / cellSize),
         rows = floor(bounds[1] / cellSize),
         remains = [bounds[0] - cols * cellSize, bounds[1] - rows * cellSize]
@@ -119,17 +132,17 @@ const init = () => {
 // draw loop
 const update = () => {
     const { cellSize, cols, rows, margin } = state
-    if (loop === fps * 120) recorder.stop()
+    //if (loop === fps * 120) recorder.stop()
     if (loop % 600 === 0) {
         inject = sentence
         currColor = 'white'
     }
-    if (loop % 150 === 0) {
+    if (loop % 250 === 0) {
         alterDir.sel = alterDir.sel === 'x' ? 'y' : 'x'
         currColor = pickRandom(palette)
     }
 
-    if (loop % 250 === 0) {
+    if (loop % 400 === 0) {
         if (SYSTEM.float() > 0.5) {
             inject = pickRandom(symbols)
             currColor = pickRandom(palette)
@@ -141,7 +154,7 @@ const update = () => {
             }
         }
     }
-    if (loop % 200 === 0 && SYSTEM.float() > 0.5) {
+    if (loop % 450 === 0 && SYSTEM.float() > 0.5) {
         alterDir.way = !alterDir.way
         currColor = pickRandom(palette)
     }
@@ -192,12 +205,8 @@ const update = () => {
 init()
 windowFrame.removeChild(loader)
 window.onresize = init()
-
-document.addEventListener('keydown', () => {
-    frame = 0
-    recorder.start()
-})
+// recorder.start()
 window.init = init
-window.export_JPG = () => downloadCanvas(canvas, `text`)
+window.export_JPG = () => downloadCanvas(canvas, `undetermined-type-grid`)
 window.infobox = infobox
 handleAction()
