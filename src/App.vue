@@ -30,34 +30,34 @@ export default defineComponent({
       );
   },
   methods: {
-    sortProjectBy: function (projects: Project[], prop: keyof Project) {
+    sortProjectBy: function (projects: Project[], prop: keyof Project): Project[] {
       if (this.asc) {
         return projects.sort((a, b) => (a[prop] < b[prop]) ? -1 : 1)
       } else {
         return projects.sort((a, b) => (a[prop] > b[prop]) ? -1 : 1)
       }
     },
-    sortByName: function () {
+    sortByName: function (): void {
       this.projects = this.sortProjectBy(this.projects, 'title');
       this.sorting = 'title';
       this.setUrlParams({ 'sorting': 'title' });
     },
-    sortByDate: function () {
+    sortByDate: function (): void {
       this.projects = this.sortProjectBy(this.projects, 'date');
       this.sorting = 'date';
       this.setUrlParams({ 'sorting': 'date' });
     },
-    sortByTopic: function () {
+    sortByTopic: function (): void {
       this.projects = this.sortProjectBy(this.projects, 'topic');
       this.sorting = 'topic'
       this.setUrlParams({ 'sorting': 'topic' });
     },
-    sortInverse: function () {
+    sortInverse: function (): void {
       this.asc = !this.asc;
       this.projects = this.sortProjectBy(this.projects, this.sorting as keyof Project);
       this.setUrlParams({ 'asc': this.asc ? '1' : '0' });
     },
-    queryUrlParams: function () {
+    queryUrlParams: function (): void {
       console.log(window.location.search)
       const queryString = window.location.search
       const urlParams = new URLSearchParams(queryString)
@@ -71,7 +71,7 @@ export default defineComponent({
         this.sorting = sortingParam
       }
     },
-    setUrlParams: function (params: { [key: string]: string }) {
+    setUrlParams: function (params: { [key: string]: string }): void {
       console.log(window.location.search)
       const url = new URL(window.location.href)
       Object.keys(params).forEach(key => {
@@ -142,23 +142,24 @@ export default defineComponent({
         <ProjectPreview :project="item" :index="index" />
       </template>
     </masonry-wall>
-    <AboutThisSite :project-count="projects.length"/>
+    <AboutThisSite :project-count="projects.length" />
   </main>
 </template>
 
 <style scoped>
+header,
 main {
   position: relative;
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
 }
 
 header {
   display: flex;
-  margin: 0 1em;
-  width: calc(100% - 2em);
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
+  border-bottom: 3px double var(--color-border);
 }
 
 header h1 {
@@ -236,7 +237,8 @@ header form#order-grid ul li label button {
   }
 }
 
-.mansonry-wall {
-  max-width: 100%;
+main {
+  padding: 0;
+  margin-top: 24px;
 }
 </style>

@@ -17,6 +17,7 @@ export default {
         <figure class="project-preview--illustrationœ">
             <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="`iteration of ${project.title}`" />
         </figure>
+
         <figcaption>
             <h2 class="project-preview--title">{{ project.title }}</h2>
             <div class="project-preview--meta">
@@ -34,39 +35,34 @@ export default {
                 </div>
             </div>
         </figcaption>
+
     </a>
 </template>
 
 <style scoped>
 a.project-preview {
+    display: block;
     text-decoration: none;
+    color: var(--color-bg);
+    transition: all 0.15s ease-in;
 }
 
 a.project-preview figure {
     display: block;
     margin: 0;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    overflow: hidden;
 }
-
-a.project-preview figure,
-a.project-preview figcaption {
-    border: 1px solid var(--color-border);
-    transition: all 0.15s ease-in;
-}
-
-a.project-preview:hover figure,
-a.project-preview:hover figcaption {
-    border: 1px solid var(--color-primary);
-}
-
 
 a.project-preview figure img {
-    padding: 1em;
+    float: left;
     opacity: 1;
     transition: opacity 0.15s ease-in;
 }
 
 a.project-preview:hover figure img {
-    opacity: 0.5;
+    opacity: 0.75;
 }
 
 a.project-preview figure img::before,
@@ -77,8 +73,12 @@ a.project-preview figure img::after {
 }
 
 a.project-preview figcaption {
+    clear: both;
+    float: none;
     padding: 1rem;
-    border-top: none;
+    background-color: var(--color-text);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 a.project-preview:hover figcaption {
@@ -87,8 +87,7 @@ a.project-preview:hover figcaption {
 
 a.project-preview .project-preview--title,
 a.project-preview .project-preview--meta {
-    color: var(--color-text);
-    transition: all 0.15s ease-in;
+    color: inherit;
 }
 
 a.project-preview:hover .project-preview--title {
@@ -105,7 +104,7 @@ a.project-preview:hover .project-preview--title {
 .icon {
     width: 1em;
     height: 1em;
-    fill: var(--color-text);
+    fill: var(--color-bg);
     margin-right: 0.25em;
 }
 
@@ -124,4 +123,5 @@ a.project-preview:hover .project-preview--title {
 
 .project--introduction--preview {
     max-width: 800px;
-}</style>
+}
+</style>
