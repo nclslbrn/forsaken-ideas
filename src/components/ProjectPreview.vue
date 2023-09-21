@@ -14,7 +14,7 @@ export default {
 </script>
 <template>
     <a :href="`./sketch/${project.src}/index.html`" class="project-preview">
-        <figure class="project-preview--illustrationœ">
+        <figure class="project-preview--illustration">
             <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="`iteration of ${project.title}`" />
         </figure>
 
@@ -43,15 +43,26 @@ export default {
 a.project-preview {
     display: block;
     text-decoration: none;
-    color: var(--color-bg);
-    transition: all 0.15s ease-in;
+    transition: all 0.01s ease-in;
+    box-shadow: 0 0 1px var(--color-primary);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-solid);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+a.project-preview:hover {
+    background-color: var(--color-secondary);
+    box-shadow: 0 0 1px var(--color-secondary);
+
 }
 
 a.project-preview figure {
     display: block;
     margin: 0;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
+    box-shadow: 0 0 1em var(--color-shadow);
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
     overflow: hidden;
 }
 
@@ -75,23 +86,30 @@ a.project-preview figure img::after {
 a.project-preview figcaption {
     clear: both;
     float: none;
-    padding: 1rem;
-    background-color: var(--color-text);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    padding: 0.5em 1em 1em;
+    background-color: var(--color-solid);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 0 1em var(--color-shadow);
+    transition: all 0.15s ease-in-out;
 }
+
 
 a.project-preview:hover figcaption {
     border-top: none;
+    box-shadow: 0 -0.5em 1em var(--color-shadow);
 }
-
-a.project-preview .project-preview--title,
+a.project-preview .project-preview--title {
+    color: var(--color-primary);
+    line-height: 1;
+    margin-bottom: 0.5em;
+}
 a.project-preview .project-preview--meta {
-    color: inherit;
+    color: var(--color-text);
 }
 
 a.project-preview:hover .project-preview--title {
-    color: var(--color-primary);
+    color: var(--color-secondary);
 }
 
 
@@ -99,12 +117,13 @@ a.project-preview:hover .project-preview--title {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
+    font-size: 0.85em;
 }
 
 .icon {
     width: 1em;
     height: 1em;
-    fill: var(--color-bg);
+    fill: var(--color-text);
     margin-right: 0.25em;
 }
 

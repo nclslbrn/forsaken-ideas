@@ -12,22 +12,21 @@ export default defineComponent({
   data () {
     return {
       projects: [] as Project[],
+      diplayedProjects: [] as Project[],
       sorting: 'date',
-      asc: false
+      asc: false,
     }
-  },
-  setup () {
   },
   mounted () {
     this.queryUrlParams();
 
     fetch("sketch/index.json")
       .then(response => response.json())
-      .then(data =>
+      .then(data => 
         this.projects = this.sortProjectBy(
           data.filter((d: Project) => d !== undefined),
-          this.sorting as keyof Project)
-      );
+          this.sorting as keyof Project
+      ));
   },
   methods: {
     sortProjectBy: function (projects: Project[], prop: keyof Project): Project[] {
@@ -58,7 +57,6 @@ export default defineComponent({
       this.setUrlParams({ 'asc': this.asc ? '1' : '0' });
     },
     queryUrlParams: function (): void {
-      console.log(window.location.search)
       const queryString = window.location.search
       const urlParams = new URLSearchParams(queryString)
       const ascParam = urlParams.get('asc')
@@ -72,7 +70,6 @@ export default defineComponent({
       }
     },
     setUrlParams: function (params: { [key: string]: string }): void {
-      console.log(window.location.search)
       const url = new URL(window.location.href)
       Object.keys(params).forEach(key => {
         if (url.searchParams.has(key)) {
@@ -89,48 +86,40 @@ export default defineComponent({
 
 <template>
   <header>
-    <div class="acronym-block">
-      <h1>Make</h1>
-      <svg class="site-title">
-        <use xlink:href="#site-title"></use>
-      </svg>
-      <p>A tool to quickly experiment idea, a place for abandoned experiments</p>
+    <div>
+      <h1>Forsaken ideas</h1>
+      <p>A tool to quickly experiment idea, a place for abandoned projects</p>
     </div>
+
     <form id="order-grid">
+      <p>
+        Sort
+        <button class="small" @click.prevent="sortInverse">
+          {{ asc ? 'ascending' : 'descending' }}
+        </button>
+        by
+      </p>
       <ul>
         <li>
-          <label>
-            Sort
-            <button class="small" @click.prevent="sortInverse">
-              {{ asc ? 'ascending' : 'descending' }}
-            </button>
-            by
-          </label>
+          <button :class="{ active: sorting === 'title' }" value="title" @click.prevent="sortByName">
+            <svg class="icon icon-sort-alphabetically">
+              <use xlink:href="#icon-sort-alphabetically"></use>
+            </svg>
+          </button>
         </li>
         <li>
-          <ul>
-            <li>
-              <button :class="{ active: sorting === 'title' }" value="title" @click.prevent="sortByName">
-                <svg class="icon icon-sort-alphabetically">
-                  <use xlink:href="#icon-sort-alphabetically"></use>
-                </svg>
-              </button>
-            </li>
-            <li>
-              <button :class="{ active: sorting === 'date' }" value="date" @click.prevent="sortByDate">
-                <svg class="icon icon-sort-numerically">
-                  <use xlink:href="#icon-sort-numerically"></use>
-                </svg>
-              </button>
-            </li>
-            <li>
-              <button :class="{ active: sorting === 'topic' }" value="topic" @click.prevent="sortByTopic">
-                <svg class="icon icon-tag">
-                  <use xlink:href="#icon-tag"></use>
-                </svg>
-              </button>
-            </li>
-          </ul>
+          <button :class="{ active: sorting === 'date' }" value="date" @click.prevent="sortByDate">
+            <svg class="icon icon-sort-numerically">
+              <use xlink:href="#icon-sort-numerically"></use>
+            </svg>
+          </button>
+        </li>
+        <li>
+          <button :class="{ active: sorting === 'topic' }" value="topic" @click.prevent="sortByTopic">
+            <svg class="icon icon-tag">
+              <use xlink:href="#icon-tag"></use>
+            </svg>
+          </button>
         </li>
       </ul>
     </form>
@@ -156,84 +145,74 @@ main {
 
 header {
   display: flex;
+  padding: 0.5em 0;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  border-bottom: 3px double var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
 }
 
 header h1 {
-  overflow: hidden;
-  width: 1px;
-  height: 1px;
-}
-
-
-header .acronym-block svg {
   display: block;
   margin: 0 auto;
   fill: var(--color-text);
+  font-weight: bolder;
 }
 
-header .acronym-block p {
-  text-align: center;
-  padding: 0 3em;
-  margin-bottom: 1em;
-}
-
-header .acronym-block h1 {
-  color: var(--color-primary);
-  font-family: monospace;
-}
-
-header form#order-grid ul {
-  display: none;
-}
-
-
-header form#order-grid ul li label {
+header form,
+header form ul {
   display: inline-flex;
-  padding: 1em 0.25em;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+header form ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+
+header form#order-grid ul li{
+  margin-right: 0.01em;
+}
+
+
+header form#order-grid p {
+  display: inline-flex;
+  padding: 0 0.3em;
+  margin: 0;
   align-items: baseline;
 }
-
-header form#order-grid ul li label button {
-  margin: 0 0.25em;
+header form#order-grid p button {
+  margin: 0 0.3em;
 }
+header form#order-grid ul > li:not(:last-child) > button {
+  border-right: none;
+  margin-right: 1px;
+}
+header form#order-grid ul > li:first-child > button {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+header form#order-grid ul > li:last-child > button {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+header form#order-grid ul li button {
+  padding: 0.5em;
+}
+
 
 @media screen and (min-width: 900px) {
   header {
     flex-flow: row nowrap;
-    justify-content: space-around;
-  }
-
-  header .acronym-block {
-    padding: 0 0.5em;
-    flex: 0 1 auto;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  header .acronym-block p {
-    margin: 0 2em;
+    justify-content: space-between;
     text-align: left;
-  }
-
-
-  header form#order-grid ul {
-    padding: 0;
-    flex: 2 0 auto;
-    display: flex;
-    margin: 0.5em 0;
-    list-style-type: none;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
-  }
-
-
-  header form#order-grid ul li {
-    margin: 0 0.2em;
   }
 }
 

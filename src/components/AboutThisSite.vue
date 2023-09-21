@@ -137,7 +137,7 @@ export default {
 #about h2 {
   margin-top: 2em;
   padding-top: 2em;
-  border-top: 3px double var(--color-border);
+  border-top: 1px solid var(--color-border);
   text-align: center;
 }
 
@@ -199,6 +199,12 @@ export default {
 
 .site-description a.button {
   display: inline-flex;
+  padding: 1em 1.35em 1em 1em;
   margin-top: 2em;
+  align-items: center;
+}
+
+.site-description a.button svg {
+  margin-right: 0.25em;
 }
 </style>
