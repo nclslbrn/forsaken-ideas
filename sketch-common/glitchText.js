@@ -4,14 +4,15 @@ const duration = 45
 export default class GlitchText {
     constructor(property) {
         this.element = property.element
-        this.trueText = property.element.innerText || property.element.innerHTML
+        this.trueText = property.element.getAttribute('data-text') || property.element.innerText || property.element.innerHTML
         this.numChar = this.trueText.length
         this.effect = property.effect
         this.curChar = 0
         this.biteChar = ''
+        this.element.setAttribute('data-text', this.trueText)
 
         for (let i = 0; i < this.numChar; i++) {
-            let charAtI = this.trueText.substr(i, 1)
+            let charAtI = [...this.trueText]
             if (charAtI && charAtI === ' ') {
                 this.biteChar += ' '
             } else {
@@ -29,7 +30,7 @@ export default class GlitchText {
             }, x * duration)
         }
     }
-    replaceChar() {
+    replaceChar () {
         let middleStringPart
         if (this.curChar + 1 < this.numChar) {
             middleStringPart = chars[Math.floor(Math.random() * chars.length)]
@@ -44,7 +45,7 @@ export default class GlitchText {
             firstStringPart + middleStringPart + lastStringPart
         this.curChar++
     }
-    addChar() {
+    addChar () {
         let middleStringPart
         if (this.curChar + 1 < this.numChar) {
             middleStringPart = chars[Math.floor(Math.random() * chars.length)]
