@@ -3,11 +3,10 @@ import { defineComponent } from 'vue';
 import type { Project } from '@/project';
 import ProjectPreview from '@/components/ProjectPreview.vue';
 import AboutThisSite from '@/components/AboutThisSite.vue';
-
 export default defineComponent({
   components: {
     ProjectPreview,
-    AboutThisSite
+    AboutThisSite,
   },
   data () {
     return {
@@ -22,11 +21,11 @@ export default defineComponent({
 
     fetch("sketch/index.json")
       .then(response => response.json())
-      .then(data => 
+      .then(data =>
         this.projects = this.sortProjectBy(
           data.filter((d: Project) => d !== undefined),
           this.sorting as keyof Project
-      ));
+        ));
   },
   methods: {
     sortProjectBy: function (projects: Project[], prop: keyof Project): Project[] {
@@ -126,7 +125,7 @@ export default defineComponent({
   </header>
 
   <main>
-    <masonry-wall :items="projects" :column-width="320" :gap="24">
+    <masonry-wall :items="projects" :column-width="400" :gap="24">
       <template #default="{ item, index }">
         <ProjectPreview :project="item" :index="index" />
       </template>
@@ -175,7 +174,7 @@ header form ul {
 }
 
 
-header form#order-grid ul li{
+header form#order-grid ul li {
   margin-right: 0.01em;
 }
 
@@ -186,19 +185,22 @@ header form#order-grid p {
   margin: 0;
   align-items: baseline;
 }
+
 header form#order-grid p button {
   margin: 0 0.3em;
 }
-header form#order-grid ul > li:not(:last-child) > button {
+
+header form#order-grid ul>li:not(:last-child)>button {
   border-right: none;
   margin-right: 1px;
 }
-header form#order-grid ul > li:first-child > button {
+
+header form#order-grid ul>li:first-child>button {
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
 }
 
-header form#order-grid ul > li:last-child > button {
+header form#order-grid ul>li:last-child>button {
   border-top-right-radius: 16px;
   border-bottom-right-radius: 16px;
 }

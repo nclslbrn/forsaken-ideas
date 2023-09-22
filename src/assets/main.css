@@ -1,16 +1,24 @@
 @import './color.css';
 
 @font-face {
-    font-family: 'office_code_probold';
-    src: url('officecodepro-bold-webfont.woff') format('woff');
+    font-family: 'uncut_sansbold';
+    src:
+        url('uncut-sans-bold-webfont.woff2') format('woff2'),
+        url('uncut-sans-bold-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
 
 html {
     -webkit-font-smoothing: antialiased;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI',
-        Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        SF Mono,
+        Menlo,
+        Consolas,
+        Liberation Mono,
+        monospace;
     font-size: 16px;
 }
 
@@ -46,10 +54,13 @@ h1,
 h2,
 h3,
 h4 {
-    font-family: office_code_probold, 'SFMono-Regular', Consolas,
-        'Liberation Mono', Menlo, Courier, monospace;
+    font-family:
+        'uncut_sansbold',
+        Helvetica Neue,
+        Helvetica,
+        Arial,
+        sans-serif;
 }
-
 p {
     line-height: 2;
     margin-bottom: 1.6em;
@@ -88,7 +99,7 @@ button,
     cursor: pointer;
     background-color: var(--color-solid);
     border: 1px solid var(--color-border);
-    box-shadow: 0 0 2px var(--color-shadow);
+    /* box-shadow: 0 0 2px var(--color-shadow); */
     transition: all 0.15s ease-in-out;
 }
 
@@ -110,18 +121,18 @@ button svg,
 button.active,
 .button.active {
     color: var(--color-secondary);
-    box-shadow: 0 0 2px var(--color-secondary);
+    /* box-shadow: 0 0 2px var(--color-secondary); */
 }
 
 button.active svg,
 .button.active svg {
-    fill: var(--color-secondary)
+    fill: var(--color-secondary);
 }
 
 button:hover,
 .button:hover {
     color: var(--color-primary);
-    box-shadow: 0 0 2px var(--color-primary);
+    /* box-shadow: 0 0 2px var(--color-primary); */
 }
 
 button:hover svg,

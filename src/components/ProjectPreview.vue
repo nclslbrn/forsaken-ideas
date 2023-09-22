@@ -42,28 +42,20 @@ export default {
 <style scoped>
 a.project-preview {
     display: block;
+    padding: 0.5em;
     text-decoration: none;
     transition: all 0.01s ease-in;
-    box-shadow: 0 0 1px var(--color-primary);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-solid);
-    border-radius: 4px;
     overflow: hidden;
-}
-
-a.project-preview:hover {
-    background-color: var(--color-secondary);
-    box-shadow: 0 0 1px var(--color-secondary);
-
 }
 
 a.project-preview figure {
     display: block;
     margin: 0;
-    box-shadow: 0 0 1em var(--color-shadow);
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
     overflow: hidden;
+}
+
+a.project-preview:hover figure {
+    background-color: var(--color-secondary);
 }
 
 a.project-preview figure img {
@@ -86,26 +78,20 @@ a.project-preview figure img::after {
 a.project-preview figcaption {
     clear: both;
     float: none;
-    padding: 0.5em 1em 1em;
-    background-color: var(--color-solid);
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 0 1em var(--color-shadow);
+    padding: 0.5em 0 0;
     transition: all 0.15s ease-in-out;
 }
 
-
-a.project-preview:hover figcaption {
-    border-top: none;
-    box-shadow: 0 -0.5em 1em var(--color-shadow);
-}
 a.project-preview .project-preview--title {
     color: var(--color-primary);
-    line-height: 1;
-    margin-bottom: 0.5em;
+    line-height: 1.2;
+    margin: 0.25em 0;
 }
+
 a.project-preview .project-preview--meta {
+    padding-top: 0.5em;
     color: var(--color-text);
+    border-top: 1px solid var(--color-border);
 }
 
 a.project-preview:hover .project-preview--title {
@@ -117,7 +103,6 @@ a.project-preview:hover .project-preview--title {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    font-size: 0.85em;
 }
 
 .icon {
