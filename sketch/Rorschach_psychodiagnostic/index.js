@@ -1,13 +1,13 @@
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import p5 from 'p5'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import Emitter from './Emitter';
 
-const {sin, cos, atan2, sqrt, PI, max, min, round}= Math
+const {sin, cos, atan2, sqrt, PI, max, min, round, hypot }= Math
 
-const numLoop = 100,
-    palette = [[255, 255, 0], [0, 255, 255], [255, 0, 255]],
+const numLoop = 50,
+    palette = [[200, 200, 200], [100, 100, 100], [50, 50, 50]],
     divStack = [2, 4, 6, 8, 10],
     verticeStack = [3, 4, 5]
 
@@ -18,7 +18,8 @@ const sketch = (p5) => {
     noiseTurbulence,
     division,
     angle,
-    size = [window.innerWidth * 0.8, window.innerHeight * 0.8],
+    size = [window.innerWidth, window.innerHeight],
+    diag = hypot(...size),
     center = size.map(d => d/2),
     shapeVertice = 0,
     dots = [], planes = []
@@ -31,9 +32,40 @@ const sketch = (p5) => {
         dots = []
         planes = []
         noiseFrequency  = round((3 + Math.random() * 4) * 10) / 1000
-        noiseTurbulence = 5 + round(Math.random() * 50)
+        noiseTurbulence = 40 + round(Math.random() * 40)
 
-        p5.background(255)
+        for (let i = 0; i < 100 / division; i++) {
+            const randPos = {
+				r: p5.random(0.05, 0.5) * diag * 0.5,
+				l: Math.random() * angle
+            }
+            dots.push(randPos)
+            const side = max(...center) * p5.random(0.02, 0.07)
+            const pts = []
+            const middle = unpolar(randPos)
+            for (let j = 0; j < shapeVertice; j++) {
+                const xy = [middle[0] + side * cos(j * PI * 0.5), middle[1] + side * sin(j * PI * 0.5)]
+                const pt = {
+                    l: atan2(center[1] - xy[1], center[0] - xy[0]),
+                    r: sqrt((center[0] - xy[0]) ** 2 + (center[1] - xy[1]) ** 2)
+                }
+                pts.push(pt)
+            }
+            const square = { pts: pts, col: i % palette.length}
+            planes.push(square)
+        }
+        emitter = new Emitter(noiseFrequency, noiseTurbulence, palette, dotP, p5)
+        planes.forEach(sq => rectangle(sq))
+        p5.updatePixels()
+        for (let x = 80; x <= p5.width - 80; x += 10) {
+            for (let y = 80; y <= p5.height - 80; y += 10) {
+                if (Math.random() > 0.25) {
+                    dotP([x, y], 1, [150])
+                }
+            }
+        }
+
+        p5.background(25)
 
     }
 	
@@ -70,36 +102,6 @@ const sketch = (p5) => {
         p5.createCanvas(...size)
         p5.noStroke()
         sketch.init()
-        for (let i = 0; i < 100 / division; i++) {
-            const randPos = {
-				r: p5.random(0.03, 0.5) * max(...center),
-				l: Math.random() * angle
-            }
-            dots.push(randPos)
-            const side = max(...center) * p5.random(0.02, 0.07)
-            const pts = []
-            const middle = unpolar(randPos)
-            for (let j = 0; j < shapeVertice; j++) {
-                const xy = [middle[0] + side * cos(j * PI * 0.5), middle[1] + side * sin(j * PI * 0.5)]
-                const pt = {
-                    l: atan2(center[1] - xy[1], center[0] - xy[0]),
-                    r: sqrt((center[0] - xy[0]) ** 2 + (center[1] - xy[1]) ** 2)
-                }
-                pts.push(pt)
-            }
-            const square = { pts: pts, col: i % palette.length}
-            planes.push(square)
-        }
-        emitter = new Emitter(noiseFrequency, noiseTurbulence, palette, dotP, p5)
-        planes.forEach(sq => rectangle(sq))
-        p5.updatePixels()
-        for (let x = 80; x <= p5.width - 80; x += 10) {
-            for (let y = 80; y <= p5.height - 80; y += 10) {
-                if (Math.random() > 0.25) {
-                    dotP([x, y], 1, [150])
-                }
-            }
-        }
     }
 
     p5.draw = () => {
@@ -109,7 +111,7 @@ const sketch = (p5) => {
                     unpolar(pt),
                     n % palette.length,
                     min(...center) / 3,
-                    currLoop + n * 7
+                    currLoop + n * 15
                 )
             )
             currLoop++

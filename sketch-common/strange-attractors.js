@@ -44,13 +44,12 @@ export default function () {
                 d = Math.random() * 2 - 0.5
                 break
         }
-        window.attractors = { a: a, b: b, c: c, d: d }
+        window.attractors = { a, b, c, d }
     }
 
     const redhead = (v) => {
         if (window.attractors) {
-            let a, b
-            ;({ a, b } = window.attractors)
+            const { a, b } = window.attractors
             return {
                 x: Math.sin((v.x * v.y) / b) * (v.y + Math.cos(a * v.x - v.y)),
                 y: v.x + Math.sin(v.y) / b
@@ -62,8 +61,7 @@ export default function () {
     }
     const de_jong = (v) => {
         if (window.attractors) {
-            let a, b, c, d
-            ;({ a, b, c, d } = window.attractors)
+            const { a, b, c, d } = window.attractors
             return {
                 x: Math.sin(a * v.y) - Math.cos(b * v.x),
                 y: Math.sin(c * v.x) - Math.cos(d * v.y)
@@ -76,8 +74,7 @@ export default function () {
 
     const clifford = (v) => {
         if (window.attractors) {
-            let a, b, c, d
-            ;({ a, b, c, d } = window.attractors)
+            const { a, b, c, d } = window.attractors
             return {
                 x: Math.sin(a * v.x) + c * Math.cos(a * v.x),
                 y: Math.sin(b * v.x) + d * Math.cos(b * v.y)
@@ -89,8 +86,7 @@ export default function () {
     }
     const fractal_dream = (v) => {
         if (window.attractors) {
-            let a, b, c, d
-            ;({ a, b, c, d } = window.attractors)
+            const { a, b, c, d } = window.attractors
             return {
                 x: Math.sin(v.y * b) + c * Math.sin(v.x * b),
                 y: Math.sin(v.x * a) + d * Math.cos(v.y * a)
@@ -103,8 +99,7 @@ export default function () {
 
     const gumowski_mira = (v) => {
         if (window.attractors) {
-            let a, b
-            ;({ a, b } = window.attractors)
+            const { a, b } = window.attractors
 
             const t = v.x
             const w = a * v.x + ((1 - a) * 2 * v.x * v.x) / (1 + v.x + v.x)
