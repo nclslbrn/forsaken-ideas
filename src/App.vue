@@ -86,7 +86,11 @@ export default defineComponent({
 <template>
   <header>
     <div>
-      <h1>Forsaken ideas</h1>
+      <h1>
+        <a title="forsaken ideas">
+          <img src="./assets/forsaken-ideas.svg">
+        </a>
+      </h1>
       <p>A tool to quickly experiment idea, a place for abandoned projects</p>
     </div>
 
