@@ -1,20 +1,17 @@
 /**
  * Plane curves function: used to displace vectors
- * https://www.wolframalpha.com/widgets/view.jsp?id=4e37f43fcbe8be03c20f977f32e20d15
- *
+ * https://www.wolframalpha.com/input?i=plane+curve&assumption=%7B%22C%22%2C+%22plane+curve%22%7D+-%3E+%7B%22PlaneCurveClass%22%7D
  * For every functions
  * @param {object} v 2D vector object with x & y (z will be ignored)
- * @param {float} amount the intensity of the displacement
+ * @param {number} amount the intensity of the displacement
  * @return {object} 2D vector object with x & y (z will be ignored)
  */
 
 const archimedean_spiral = (v, amount = 1.0) => {
     const theta = Math.atan2(v.y, v.x)
-    const a = 1
-    const n = 3
     return {
-        x: amount * a * Math.pow(theta, 1 / n) * Math.cos(theta),
-        y: amount * a * Math.pow(theta, 1 / n) * Math.sin(theta)
+        x: amount * Math.cbrt(theta) * Math.cos(theta),
+        y: amount * Math.cbrt(theta) * Math.sin(theta)
     }
 }
 
