@@ -2,7 +2,7 @@ import mix from './mix-color'
 import planeCurve from '../../sketch-common/plane-curve'
 
 const functionNames = Object.keys(planeCurve)
-
+// functions not compatible maltese_cross
 export default class Emitter {
     constructor(frequency, turbulence, palette, dot, p5) {
         this.frequency = frequency
