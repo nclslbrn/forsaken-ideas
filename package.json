@@ -21,6 +21,7 @@
     "sketch:format": "prettier --write ${npm_config_sketch}/"
   },
   "dependencies": {
+    "@thi.ng/date": "^2.4.22",
     "@thi.ng/dl-asset": "^2.3.42",
     "@thi.ng/geom": "^5.2.3",
     "@thi.ng/hiccup-canvas": "^2.3.21",
