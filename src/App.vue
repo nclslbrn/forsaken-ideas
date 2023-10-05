@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import type { Project } from '@/project'
 import OrderForm from '@/components/OrderForm.vue'
 import ProjectCapture from '@/components/ProjectCapture.vue'
@@ -17,22 +17,22 @@ export default defineComponent({
   data () {
     return {
       projects: [] as Project[],
-      currProject: {} as Project,
       currProjectIndex: 0,
-      scrollX: 0,
       sorting: 'date',
       asc: false,
-      observer: IntersectionObserver,
+      observer: null as IntersectionObserver | null,
     }
   },
   mounted () {
+    // Check URL and modify data
     this.queryUrlParams()
-
+    // Query sketches
     fetch('sketch/index.json')
       .then(response => response.json())
       .then(data => {
         this.projects = data.filter((d: Project) => d !== undefined)
         this.sortProjectBy(this.sorting as keyof Project)
+        this.addObserver()
       })
   },
   methods: {
@@ -78,27 +78,43 @@ export default defineComponent({
       })
       window.history.pushState({ path: url.href }, '', url.href)
     },
-    onXscroll: function (event: UIEvent) {
-      const { target } = event
-      if (target) {
-        this.scrollX = (target as HTMLElement).scrollLeft;
-      }
-    },
-    async addObserver () {
+    async addObserver() {
       await this.$nextTick();
+      const captures = Array.from(document.querySelectorAll('.project-preview'))
+      const containerWidth = (this.$refs.scrollableProject as HTMLElement).offsetWidth
+      const containerHeight = (this.$refs.scrollableProject as HTMLElement).offsetWidth
+      console.log(containerWidth, containerHeight)
       const options: IntersectionObserverInit = {
-        root: document,
-        rootMargin: "20px",
-        threshold: 1,
+        root: this.$refs.scrollableProject as Element,
+        rootMargin: '0px',
+        //rootMargin: `${(containerWidth/2) - 400}px ${(containerHeight/2) - 400}px`,
+        threshold: 0.1,
       };
-
+      console.log(options.rootMargin)
+      let prevRatio = 0
       const callback: IntersectionObserverCallback = (entries: any) => {
-        entries.forEach((entry) => {
-          this.currProjectIndex = (this.$refs.projects as typeof ProjectCapture).indexOf(entry.target)
+        entries.forEach((entry: IntersectionObserverEntry) => {
+          const elem = entry.target as HTMLElement 
+          const debugBox = elem?.querySelector('.debug-intersection')
+          debugBox.innerText = entry.intersectionRatio || 'undefined'
+          
+          if (
+            //entry.intersectionRatio > prevRatio &&
+            entry.isIntersecting
+            //!(entry.target as HTMLElement).classList.contains('active')
+          ) {
+            this.currProjectIndex = captures.indexOf(entry.target as HTMLElement);
+            (entry.target as HTMLElement).classList.add('active')
+          } else {
+            (entry.target as HTMLElement).classList.remove('active')
+          }
+          prevRatio = entry.intersectionRatio;
         })
       }
-      this.observer = new IntersectionObserver(callback, options)
-      this.$refs.projects.forEach((p: typeof ProjectCapture) => this.observer.observe(p))
+      this.observer = new IntersectionObserver(callback, options) as IntersectionObserver
+      captures.forEach((elem) => {
+        this.observer?.observe(elem)
+      })
     }
   }
 })
@@ -115,12 +131,16 @@ export default defineComponent({
   </header>
 
   <main>
-    <div @scroll="onXscroll" class="scrollable-project">
-      <ProjectCapture v-for="(item, index) in projects" :project="item" :index="index" @mouseenter="currProject = item"
-        v-bind:key="index" v-ref="projects" />
+    <div class="scrollable-project" ref="scrollableProject">
+      <ProjectCapture 
+        v-for="(item, index) in projects" 
+        v-bind:key="index"
+        @mouseover="currProjectIndex = index"
+        :project="item" 
+        :index="index"
+      />
     </div>
-    <p>{{ scrollX }}px</p>
-    <ProjectCaption v-if="currProject.title !== undefined" :project="currProject" />
+    <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"/>
     <AboutThisSite :project-count="projects.length" />
   </main>
 </template>
@@ -176,15 +196,36 @@ main {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
+/* 
 .scrollable-project::-webkit-scrollbar {
   display: none;
 }
-
+ */
 
 .scrollable-project>* {
   flex: 0 0 400px;
   margin: 0 1em;
   max-width: 100%;
 }
+
+.scrollable-project a.project-preview:first-child {
+  margin-left: 50%;
+}
+
+a.project-preview {
+    display: block;
+    position: relative;
+    text-decoration: none;
+    transition: all 0.01s ease-in;
+    overflow: hidden;
+    box-shadow: 0 0.5em 1em var(--color-shadow);
+    transition: all 0.01s linear;
+}
+a.project-preview.active,
+a.project-preview:hover {
+    background-color: var(--color-secondary);
+    box-shadow: 0 1em 1em var(--color-shadow);
+    border: 10px solid var(--color-primary);
+}
+
 </style>
