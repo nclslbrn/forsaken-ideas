@@ -61,6 +61,16 @@ h4 {
         Arial,
         sans-serif;
 }
+
+h1 {
+    font-size: 2.3em;
+}
+h2 {
+    font-size: 2em;
+}
+h3 {
+    font-size: 1.8em;
+}
 p {
     line-height: 2;
     margin-bottom: 1.6em;
