@@ -1,6 +1,6 @@
 :root {
     --color-text: #1d2021;
-    --color-bg: #fffdf4;
+    --color-bg: #f3f3f3;
     --color-solid: #ffffff;
     --color-border: #333;
     --color-shadow: rgba(0, 0, 0, 0.25);
@@ -8,9 +8,9 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-text: #fbf1c7;
+        --color-text: #f6f5f2;
         --color-bg: #1d2021;
-        --color-solid: #282828;
+        --color-solid: #424242;
         --color-border: #ccc;
         --color-shadow: rgba(0, 0, 0, 0.75);
     }

@@ -143,16 +143,8 @@
             </a>
 
             <div class="signature">
-                <img
-                    id="avatar"
-                    src="https://avatars.githubusercontent.com/u/1374627?v=1"
-                />
-                <span
-                    >Nicolas Lebrun (<a
-                        href="https://nicolas-lebrun.fr/contact/"
-                        >@nclslbrn</a
-                    >)</span
-                >
+                <img id="avatar" src="https://avatars.githubusercontent.com/u/1374627?v=1" />
+                <span>Nicolas Lebrun (<a href="https://nicolas-lebrun.fr/contact/">@nclslbrn</a>)</span>
             </div>
         </div>
     </div>
@@ -161,7 +153,7 @@
 <script lang="ts">
 export default {
     name: 'AboutThisSite',
-    data() {
+    data () {
         return { lang: 'en' }
     },
     props: {
@@ -172,18 +164,19 @@ export default {
 
 <style scoped>
 #about {
-    padding-top: 2em;
+    display: block;
+    padding: 2em 2em 2em;
     margin: 6em auto;
+    background-color: var(--color-solid);
 }
 
 #about h2 {
     margin-top: 2em;
     padding-top: 2em;
-    border-top: 1px solid var(--color-border);
     text-align: center;
 }
 
-#about > div {
+#about>div {
     display: flex;
     flex-flow: column nowrap;
     display: flex;

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import type { Project } from '@/project'
 import OrderForm from '@/components/OrderForm.vue'
 import ProjectCapture from '@/components/ProjectCapture.vue'
@@ -78,37 +78,23 @@ export default defineComponent({
       })
       window.history.pushState({ path: url.href }, '', url.href)
     },
-    async addObserver() {
+    async addObserver () {
       await this.$nextTick();
       const captures = Array.from(document.querySelectorAll('.project-preview'))
-      const containerWidth = (this.$refs.scrollableProject as HTMLElement).offsetWidth
-      const containerHeight = (this.$refs.scrollableProject as HTMLElement).offsetWidth
-      console.log(containerWidth, containerHeight)
       const options: IntersectionObserverInit = {
         root: this.$refs.scrollableProject as Element,
         rootMargin: '0px',
-        //rootMargin: `${(containerWidth/2) - 400}px ${(containerHeight/2) - 400}px`,
-        threshold: 0.1,
+        threshold: 1,
       };
-      console.log(options.rootMargin)
-      let prevRatio = 0
       const callback: IntersectionObserverCallback = (entries: any) => {
         entries.forEach((entry: IntersectionObserverEntry) => {
-          const elem = entry.target as HTMLElement 
-          const debugBox = elem?.querySelector('.debug-intersection')
-          debugBox.innerText = entry.intersectionRatio || 'undefined'
-          
+
           if (
-            //entry.intersectionRatio > prevRatio &&
+            (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
             entry.isIntersecting
-            //!(entry.target as HTMLElement).classList.contains('active')
           ) {
             this.currProjectIndex = captures.indexOf(entry.target as HTMLElement);
-            (entry.target as HTMLElement).classList.add('active')
-          } else {
-            (entry.target as HTMLElement).classList.remove('active')
           }
-          prevRatio = entry.intersectionRatio;
         })
       }
       this.observer = new IntersectionObserver(callback, options) as IntersectionObserver
@@ -127,20 +113,18 @@ export default defineComponent({
       </a>
     </h1>
     <p>A tool to quickly experiment idea, a place for abandoned projects</p>
-    <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
   </header>
 
   <main>
     <div class="scrollable-project" ref="scrollableProject">
-      <ProjectCapture 
-        v-for="(item, index) in projects" 
-        v-bind:key="index"
-        @mouseover="currProjectIndex = index"
-        :project="item" 
-        :index="index"
-      />
+      <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
+        :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
+        @focus="currProjectIndex = index" :project="item" :index="index" />
     </div>
-    <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"/>
+    <div class="row">
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
+      <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
+    </div>
     <AboutThisSite :project-count="projects.length" />
   </main>
 </template>
@@ -148,12 +132,17 @@ export default defineComponent({
 <style scoped>
 header {
   display: flex;
-  padding: 0.5em 2em;
+  padding: 0.5em 1em;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid var(--color-border);
   text-align: center;
+}
+
+@media screen and (min-width: 800px) {
+  header {
+    padding: 0.5em 2em;
+  }
 }
 
 header h1 {
@@ -161,7 +150,7 @@ header h1 {
   margin: 0;
   fill: var(--color-text);
   font-weight: bolder;
-  max-width: 30%;
+  max-width: 370px;
 }
 
 header h1 a {
@@ -183,7 +172,8 @@ header p {
 
 main {
   padding: 0;
-  margin-top: 24px;
+  min-height: 100vh;
+  max-height: 100vh;
 }
 
 
@@ -193,9 +183,13 @@ main {
   align-items: center;
   white-space: nowrap;
   overflow-x: scroll;
+  padding: 1em 0 3em 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  background: linear-gradient(to left, var(--color-solid), var(--color-bg));
+  background-attachment: fixed;
 }
+
 /* 
 .scrollable-project::-webkit-scrollbar {
   display: none;
@@ -203,29 +197,25 @@ main {
  */
 
 .scrollable-project>* {
-  flex: 0 0 400px;
+  flex: 0 0 300px;
   margin: 0 1em;
   max-width: 100%;
 }
 
+@media screen and (min-width: 900px) {
+  .scrollable-project>* {
+    flex: 0 0 420px;
+  }
+}
+
 .scrollable-project a.project-preview:first-child {
-  margin-left: 50%;
+  margin-left: 60%;
 }
 
-a.project-preview {
-    display: block;
-    position: relative;
-    text-decoration: none;
-    transition: all 0.01s ease-in;
-    overflow: hidden;
-    box-shadow: 0 0.5em 1em var(--color-shadow);
-    transition: all 0.01s linear;
+.row {
+  padding: 0 2em;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
 }
-a.project-preview.active,
-a.project-preview:hover {
-    background-color: var(--color-secondary);
-    box-shadow: 0 1em 1em var(--color-shadow);
-    border: 10px solid var(--color-primary);
-}
-
 </style>

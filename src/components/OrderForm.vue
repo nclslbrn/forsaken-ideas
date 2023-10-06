@@ -45,10 +45,18 @@ export default {
 <style scoped>
 form,
 form ul {
-  display: inline-flex;
+  display: none;
   flex-flow: row wrap;
   align-items: center;
   justify-content: center;
+}
+
+@media screen and (min-width: 800px) {
+
+  form,
+  form ul {
+    display: inline-flex;
+  }
 }
 
 form ul {
@@ -68,14 +76,20 @@ form#order-grid p {
   align-items: baseline;
 }
 
+form#order-grid button {
+  border: 1px solid transparent;
+}
+
 form#order-grid p button {
   margin: 0 0.3em;
 }
 
+/*
 form#order-grid ul>li:not(:last-child)>button {
   border-right: none;
   margin-right: 1px;
 }
+*/
 
 form#order-grid ul>li:first-child>button {
   border-top-left-radius: 16px;
