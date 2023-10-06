@@ -14,6 +14,7 @@ export default {
 </script>
 <template>
   <div class="project-caption">
+  <slot></slot>
     <a class="project-caption--title" :href="`./sketch/${project.src}/index.html`">
       <h2>{{ project.title }}</h2>
     </a>

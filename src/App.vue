@@ -3,6 +3,7 @@ import { defineComponent } from 'vue'
 import type { Project } from '@/project'
 import OrderForm from '@/components/OrderForm.vue'
 import ProjectCapture from '@/components/ProjectCapture.vue'
+import ScrollIndicator from './components/ScrollIndicator.vue'
 import ProjectCaption from '@/components/ProjectCaption.vue'
 import AboutThisSite from '@/components/AboutThisSite.vue'
 
@@ -10,6 +11,7 @@ export default defineComponent({
   components: {
     OrderForm,
     ProjectCapture,
+    ScrollIndicator,
     ProjectCaption,
     AboutThisSite
   },
@@ -78,6 +80,10 @@ export default defineComponent({
       })
       window.history.pushState({ path: url.href }, '', url.href)
     },
+    onWheel(event: WheelEvent) {
+      this.$nextTick(() => 
+        (this.$refs.scrollableProject as HTMLElement).scrollLeft += event.deltaY)
+    },
     async addObserver () {
       await this.$nextTick();
       const captures = Array.from(document.querySelectorAll('.project-preview'))
@@ -88,7 +94,6 @@ export default defineComponent({
       };
       const callback: IntersectionObserverCallback = (entries: any) => {
         entries.forEach((entry: IntersectionObserverEntry) => {
-
           if (
             (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
             entry.isIntersecting
@@ -116,13 +121,15 @@ export default defineComponent({
   </header>
 
   <main>
-    <div class="scrollable-project" ref="scrollableProject">
+    <div class="scrollable-project" ref="scrollableProject" @wheel.prevent="onWheel">
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
         :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
         @focus="currProjectIndex = index" :project="item" :index="index" />
     </div>
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]">
+        <ScrollIndicator :count="projects.length" :current="currProjectIndex"/>
+      </ProjectCaption>
       <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
     </div>
     <AboutThisSite :project-count="projects.length" />
@@ -150,7 +157,7 @@ header h1 {
   margin: 0;
   fill: var(--color-text);
   font-weight: bolder;
-  max-width: 370px;
+  max-width: 260px;
 }
 
 header h1 a {
@@ -190,21 +197,19 @@ main {
   background-attachment: fixed;
 }
 
-/* 
 .scrollable-project::-webkit-scrollbar {
   display: none;
 }
- */
 
 .scrollable-project>* {
-  flex: 0 0 300px;
+  flex: 0 0 260px;
   margin: 0 1em;
   max-width: 100%;
 }
 
 @media screen and (min-width: 900px) {
   .scrollable-project>* {
-    flex: 0 0 420px;
+    flex: 0 0 20vw;
   }
 }
 
