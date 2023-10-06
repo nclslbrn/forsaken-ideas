@@ -25,7 +25,11 @@ const writeIndexHTML = async (src, sketchDir) => {
       const regex = new RegExp(`{{${key}}}`, 'g')
       replaced = replaced.replaceAll(regex, toInject[key])
     })
-    fs.writeFile(`${sketchDir}/index.html`, replaced, 'utf-8', function (err) {
+    fs.writeFile(
+      `${sketchDir}/index.html`, 
+      replaced, 
+      { encoding: 'utf-8', flag:'w' }, 
+      function (err) {
       if (DEBUGG && err) console.error(err)
       return true
     })
@@ -38,7 +42,11 @@ const writeViteConfigJs = (src, sketchDir) => {
     if (DEBUGG && err) console.error(err)
     const regex = new RegExp('{{src}}', 'g')
     const replaced = contents.replaceAll(regex, src)
-    fs.writeFile(`${sketchDir}/vite.config.js`, replaced, 'utf-8', function (err) {
+    fs.writeFile(
+      `${sketchDir}/vite.config.js`, 
+      replaced, 
+      {encoding: 'utf-8', flag:'w'}, 
+      function (err) {
       if (DEBUGG && err) console.error(err)
       // console.log(`${sketchDir}/vite-config.js saved`)
       return true
