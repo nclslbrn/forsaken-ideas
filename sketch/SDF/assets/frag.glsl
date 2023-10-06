@@ -61,7 +61,7 @@ void main(){
   // float d=sdHexagon(p,ra);
   float t=ease((u_time<.5?u_time:1.-u_time)*2.,2.);
   float dx=.6+t;
-  float mx=.5+(u_mouse.x/u_resolution.x)*.5;
+  float mx= 0.5 + (u_mouse.x/u_resolution.x) * 0.1;
   float hex=2. * abs(sdf_rep(sdHexagon(p,t),mx+t*.5))-.05;
   float rb1=abs(sdf_rep(sdRhombus(vec2(p.x-dx,p.y),vec2(hex,.15)),mx))-.25;
   float rb2=abs(sdf_rep(sdRhombus(vec2(p.x+dx,p.y),vec2(hex,.15)),mx))-.25;
