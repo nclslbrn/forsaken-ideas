@@ -3,11 +3,13 @@ import GlitchText from './glitchText'
 const handleAction = () => {
     window['openOffFrame'] = () => {
         document.body.classList.toggle('openedOffWindow')
-        const titleElem = document.getElementById('projectTitle')
-        new GlitchText({
-            element: titleElem,
-            effect: 'add'
-        })
+        if (document.body.classList.contains('openedOffWindow')) {
+            const titleElem = document.getElementById('projectTitle')
+            new GlitchText({
+                element: titleElem,
+                effect: 'add'
+            })
+        }
     }
     const buttons = document.querySelectorAll('[data-action]')
 
