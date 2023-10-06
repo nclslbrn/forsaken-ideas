@@ -6,8 +6,8 @@ import Emitter from './Emitter'
 import getPalette from './palette'
 
 const { sin, cos, atan2, sqrt, PI, max, min, round, hypot } = Math,
-    numLoop = 50,
-    divStack = [2, 4, 6, 8, 10],
+    numLoop = 75,
+    divStack = [2, 3, 4, 5, 6, 8, 10],
     verticeStack = [3, 4, 5]
 
 const sketch = (p5) => {
@@ -19,7 +19,7 @@ const sketch = (p5) => {
         angle,
         palette,
         canvas,
-        minSize = min(window.innerWidth, window.innerHeight) * 1.2,
+        minSize = 1200, //min(window.innerWidth, window.innerHeight) * 1.2,
         size = [minSize, minSize],
         diag = hypot(...size),
         center = size.map((d) => d / 2),
@@ -50,11 +50,11 @@ const sketch = (p5) => {
 
         for (let i = 0; i < 100 / division; i++) {
             const randPos = {
-                r: p5.random(0.01, 0.6) * diag * 0.5,
+                r: p5.random(0.01, 0.6) * diag * 0.4,
                 l: Math.random() * angle
             }
             dots.push(randPos)
-            const side = max(...center) * p5.random(0.05, 0.1)
+            const side = max(...center) * p5.random(0.05, 0.08)
             const pts = []
             const middle = unpolar(randPos)
             for (let j = 0; j < shapeVertice; j++) {
@@ -143,8 +143,8 @@ const sketch = (p5) => {
                 emitter.spread(
                     unpolar(pt),
                     n % palette.length,
-                    min(center[0], center[1]) / 3,
-                    currLoop + n * palette.length
+                    min(center[0], center[1]) / 2,
+                    currLoop + n
                 )
             )
             currLoop++

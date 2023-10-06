@@ -2,6 +2,8 @@ import mix from './mix-color'
 import planeCurve from '../../sketch-common/plane-curve'
 
 const functionNames = Object.keys(planeCurve)
+const maltese_cross_index = functionNames.indexOf('maltese_cross')
+if (maltese_cross_index) functionNames.splice(maltese_cross_index)
 // functions not compatible maltese_cross
 export default class Emitter {
     constructor(frequency, turbulence, palette, dot, p5) {
@@ -12,11 +14,9 @@ export default class Emitter {
         this.p5 = p5
         this.func = p5.random(functionNames)
         this.sample = 2
-
-        console.log(this.func)
     }
 
-    spread(pos, color, length, pId) {
+    spread (pos, color, length, pId) {
         const bottomP5jsCol = this.p5.get(pos[0], pos[1])
         const bottomCol = [
             this.p5.red(bottomP5jsCol),
@@ -53,7 +53,7 @@ export default class Emitter {
                 x: Math.sin(n.x),
                 y: Math.sin(n.y)
             })
-            const size = this.p5.map(d, 0, this.turbulence, 0.5, 5)
+            const size = this.p5.map(d, 0, this.turbulence, 0.25, 5)
             this.dot(pos, size, multCol)
             pos[0] += (nn.x / this.sample) * size
             pos[1] += (nn.y / this.sample) * size

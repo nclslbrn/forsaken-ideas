@@ -1,1 +1,18 @@
-{"libs":["p5"],"info":"TODO","topic":"StrangeAttractor","action":[{"name":"init","icon":"sync"},{"name":"download","icon":"file-media"}],"date":"2023-9-21"}
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "A mix of to previous work minted on fxhash, <a href='https://www.fxhash.xyz/generative/15112'>Tes désirs sont désordres</a> and <a href='https://www.fxhash.xyz/generative/21272'>Lost in the attraction / abstraction</a>. Particles are emitted by different zones (with a nailer defined for each zone), the particles move according to a noise (Perlin Noise) but also a plane function (random), each time the color of the the particle is altered by the color that was in its position (add, multiply, lighten, darken).",
+    "topic": "StrangeAttractor",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "download",
+            "icon": "file-media"
+        }
+    ],
+    "date": "2023-9-21"
+}
