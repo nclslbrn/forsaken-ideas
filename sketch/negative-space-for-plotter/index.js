@@ -16,11 +16,11 @@ const dpr = window.devicePixelRatio || 1,
     ctx = canvas.getContext('2d')
 
 let decay = 0,
-    margin = [50, 0],
+    margin = [150, 0],
     composition
 
-canvas.width = 907.087 //window.innerWidth * dpr
-canvas.height = 1209.449 //window.innerHeight * dpr * ratio
+canvas.width = 1122.52 //window.innerWidth * dpr
+canvas.height = 1587.402 //window.innerHeight * dpr * ratio
 windowFrame.appendChild(canvas)
 
 const main = () => {
@@ -29,7 +29,8 @@ const main = () => {
         ground = Math.round(step / SYSTEM.minmax(6, 12)),
         scale = SYSTEM.minmax(0.5, 0.75)
 
-    margin[1] = (canvas.height % (Math.floor(canvas.height / step) * step)) / 2
+    margin[1] =
+        (canvas.height % ((Math.floor(canvas.height / step) - 2) * step)) / 2
 
     const [polys, lines] = generatePolygon(
         step,

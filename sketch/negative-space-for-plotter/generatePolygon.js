@@ -63,7 +63,10 @@ const generatePolygon = (
                     bottom.push(p1)
                 }
             }
-            if (SYSTEM.float() > 0.95) {
+            if (
+                (SYSTEM.float() > 0.95 && !drawWithLine) ||
+                (SYSTEM.float() > 0.99 && drawWithLine)
+            ) {
                 if (!drawWithLine) {
                     polys.push(
                         polyFromTopAndBottom(top, bottom, ground, colors, yID)
