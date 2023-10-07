@@ -1,4 +1,4 @@
-# Make
+# Forsaken ideas
 
 P5.JS/THREE.JS/whatever libraries sketchbook build with Vite and Vue.
 
@@ -75,17 +75,16 @@ This workflow is designed to be modular and space-saving, so the p5.js and three
 
 
 ### Main NPM scripts
+```npm run sketch:setup --sketch=sketch-folder-name``` Setup configuration of a new sketch (via a CLI) 
 
-```npm run sketch:dev --sketch=sketch-folder-name``` Launch sketch at localhost:10001 (if rollup find index.js & property.json)
+```npm run sketch:dev --sketch=sketch-folder-name``` Launch sketch at localhost:10001 
 
 ```npm run sketch:build --sketch=sketch-folder-name``` Build a sketch
 
 ```npm run sketch:list``` Concatenate all sketch/**/property.json in public/sketch/index.json (run it each time you want to include a new project in the gallery)
 
-```npm run sketch:publish``` Copy all bundled sketch into dist/ (add new sketch in production without rebundling the gallery app)
+```npm run sketch:publish``` Copy all bundled sketch into dist/ (add new sketch in production without rebuilding the gallery app)
 
 ```npm run gallery:dev``` Launch gallery/homepage Vue app at localhost:5173
 
 ```npm run gallery:build``` Build the gallery app in dist/
-
-```npm run deploy``` Deploy the site, send a build on a branch (gh-pages)
