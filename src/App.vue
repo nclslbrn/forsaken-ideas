@@ -26,9 +26,11 @@ export default defineComponent({
     }
   },
   mounted () {
-    // Check URL and modify data
+    /*
+     * Read URL params and modify state if need
+     * then query sketches
+     */
     this.queryUrlParams()
-    // Query sketches
     fetch('sketch/index.json')
       .then(response => response.json())
       .then(data => {
@@ -37,7 +39,17 @@ export default defineComponent({
         this.addObserver()
       })
   },
+  beforeUnmount () {
+    const captures = Array.from(document.querySelectorAll('.project-preview'))
+    captures.forEach((elem) => {
+      this.observer?.unobserve(elem)
+    })
+  },
   methods: {
+    /**
+     * Sort projects 
+     * @param prop a property of Project (title|date|topic)
+     */
     sortProjectBy: function (
       prop: keyof Project
     ): void {
@@ -51,11 +63,17 @@ export default defineComponent({
       this.setUrlParams({ sorting: prop })
 
     },
+    /**
+     * Reverse the projects array
+     */
     sortInverse: function (): void {
       this.asc = !this.asc
       this.sortProjectBy(this.sorting as keyof Project)
       this.setUrlParams({ asc: this.asc ? '1' : '0' })
     },
+    /**
+     * Read URL params
+     */
     queryUrlParams: function (): void {
       const queryString = window.location.search
       const urlParams = new URLSearchParams(queryString)
@@ -69,6 +87,10 @@ export default defineComponent({
         this.sorting = sortingParam
       }
     },
+    /**
+     * Set URL params 
+     * @param params with an object of {paramKey: paramValue}
+     */
     setUrlParams: function (params: { [key: string]: string }): void {
       const url = new URL(window.location.href)
       Object.keys(params).forEach((key) => {
@@ -80,10 +102,18 @@ export default defineComponent({
       })
       window.history.pushState({ path: url.href }, '', url.href)
     },
-    onWheel(event: WheelEvent) {
-      this.$nextTick(() => 
+    /**
+     * Make vertical scrol horizontal 
+     * @param event 
+     */
+    onWheel (event: WheelEvent) {
+      this.$nextTick(() =>
         (this.$refs.scrollableProject as HTMLElement).scrollLeft += event.deltaY)
     },
+    /**
+     * Add IntersectionObserver to set the current capture/project
+     * (Highlighted and described in <ProjectCaption/>) 
+     */
     async addObserver () {
       await this.$nextTick();
       const captures = Array.from(document.querySelectorAll('.project-preview'))
@@ -128,7 +158,7 @@ export default defineComponent({
     </div>
     <div class="row">
       <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]">
-        <ScrollIndicator :count="projects.length" :current="currProjectIndex"/>
+        <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
       </ProjectCaption>
       <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
     </div>
