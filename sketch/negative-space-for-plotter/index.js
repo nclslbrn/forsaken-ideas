@@ -1,4 +1,4 @@
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { SYSTEM } from '@thi.ng/random'
@@ -15,19 +15,21 @@ const dpr = window.devicePixelRatio || 1,
     canvas = document.createElement('canvas'),
     ctx = canvas.getContext('2d')
 
-let decay = 0,
+let decay = 1,
     margin = [150, 0],
     composition
 
 canvas.width = 1122.52 //window.innerWidth * dpr
 canvas.height = 1587.402 //window.innerHeight * dpr * ratio
 windowFrame.appendChild(canvas)
-
+windowFrame.style.overflowY = 'auto'
+document.documentElement.style.overflowY = 'auto'
+document.body.style.overflowY = 'auto'
 const main = () => {
     const palette = tome.get(),
-        step = Math.round(SYSTEM.minmax(0.03, 0.1) * canvas.height),
+        step = Math.round(SYSTEM.minmax(0.05, 0.1) * canvas.height),
         ground = Math.round(step / SYSTEM.minmax(6, 12)),
-        scale = SYSTEM.minmax(0.5, 0.75)
+        scale = SYSTEM.minmax(0.1, 0.3)
 
     margin[1] =
         (canvas.height % ((Math.floor(canvas.height / step) - 2) * step)) / 2

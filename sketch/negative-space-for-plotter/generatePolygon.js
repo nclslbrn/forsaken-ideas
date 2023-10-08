@@ -47,8 +47,11 @@ const generatePolygon = (
             bottom = []
 
         for (let x = margin[0]; x < width - margin[0]; x += 3) {
-            const n1 = noise2D((x / height) * step * scale, decay)
-            const n2 = noise2D((y / height) * step * scale, decay)
+            const n1 = noise2D((x / width) * step * scale, step * decay * scale)
+            const n2 = noise2D(
+                (y / height) * step * scale,
+                step * decay * scale
+            )
             const p1 = [x, y + Math.min(step / 4, n1 * step * 0.5)]
             const p2 = [x, y + Math.min(step / 4, n2 * step * 0.5)]
 
