@@ -10,8 +10,12 @@
       "icon": "sync"
     },
     {
-      "name": "download",
+      "name": "download_JPG",
       "icon": "file-media"
+    },
+    {
+      "name": "download_SVG",
+      "icon": "desktop-download"
     }
   ],
   "date": "2023-9-29"
