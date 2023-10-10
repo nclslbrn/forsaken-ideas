@@ -14,10 +14,11 @@ const dpr = window.devicePixelRatio || 1,
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
     ctx = canvas.getContext('2d'),
-    plotMode = false
+    urlParams = new URLSearchParams(window.location.search),
+    plotMode = urlParams.get('mode') === 'plotter'
 
 let decay = 1,
-    margin = [150, 0],
+    margin = [200, 0],
     composition
 
 canvas.width = plotMode ? 1122.52 : window.innerWidth * dpr
@@ -31,7 +32,7 @@ if (plotMode) {
 
 const main = () => {
     const palette = tome.get(),
-        step = Math.round(SYSTEM.minmax(0.05, 0.1) * canvas.height),
+        step = Math.round(SYSTEM.minmax(0.03, 0.1) * canvas.height),
         ground = Math.round(step / SYSTEM.minmax(6, 12)),
         scale = SYSTEM.minmax(0.1, 0.3)
 
@@ -59,7 +60,7 @@ const main = () => {
         style: palette.colors.map((col) => `background: ${col};`)
     }
     console.log(logColor.sign.join(' '), ...logColor.style)
-    console.log({ step, ground })
+    console.log({ step, ground, mode: plotMode ? 'plotter' : 'browser' })
 }
 main()
 windowFrame.removeChild(loader)
