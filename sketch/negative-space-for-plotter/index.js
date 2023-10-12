@@ -19,6 +19,7 @@ const dpr = window.devicePixelRatio || 1,
 
 let decay = 1,
     margin = [200, 0],
+    palette,
     composition
 
 canvas.width = plotMode ? 1122.52 : window.innerWidth * dpr
@@ -31,13 +32,14 @@ if (plotMode) {
 }
 
 const main = () => {
-    const palette = tome.get(),
-        step = Math.round(SYSTEM.minmax(0.03, 0.1) * canvas.height),
+    const step = Math.round(SYSTEM.minmax(0.02, 0.09) * canvas.height),
         ground = Math.round(step / SYSTEM.minmax(6, 12)),
-        scale = SYSTEM.minmax(0.1, 0.3)
+        scale = SYSTEM.minmax(0.3, 0.5)
 
-    margin[1] =
+    margin[1] = margin[0] +
         (canvas.height % ((Math.floor(canvas.height / step) - 2) * step)) / 2
+
+    palette = tome.get()
 
     const [polys, lines] = generatePolygon(
         step,
@@ -52,7 +54,7 @@ const main = () => {
     composition = group({}, [
         rect([canvas.width, canvas.height], { fill: '#f0f3f2' }),
         group({}, polys),
-        group({ stroke: '#333' }, lines)
+        group({ stroke: '#111' }, lines)
     ])
     draw(ctx, composition)
     const logColor = {
@@ -83,5 +85,8 @@ window.download_SVG = () =>
 window.download_JPG = () =>
     downloadCanvas(canvas, `NegativeSpace-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg')
 
+document.onkeydown = () => {
+    console.log(JSON.stringify(palette.colors))
+}
 window.infobox = infobox
 handleAction()

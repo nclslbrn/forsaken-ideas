@@ -2,15 +2,14 @@ import { polygon, line } from '@thi.ng/geom'
 import { createNoise2D } from 'simplex-noise'
 import { SYSTEM } from '@thi.ng/random'
 
-const polyFromTopAndBottom = (top, bottom, ground, colors, yID) => {
+const polyFromTopAndBottom = (top, bottom, ground, colors, cID) => {
     return polygon(
         [
             ...top.map((p) => [p[0], p[1] - ground / 2]),
             ...bottom.reverse().map((p) => [p[0], p[1] + ground / 2])
         ],
         {
-            fill: colors[yID % colors.length]
-            //stroke: '#333'
+            fill: colors[cID % colors.length]
         }
     )
 }
@@ -39,18 +38,17 @@ const generatePolygon = (
         lines = [],
         noise2D = createNoise2D()
 
-    let drawWithLine = false,
-        yID = 0
-
+    let drawWithLine = false
     for (let y = margin[1] + step; y < height - margin[1]; y += step) {
         let top = [],
-            bottom = []
-
-        for (let x = margin[0]; x < width - margin[0]; x += 3) {
-            const n1 = noise2D((x / width) * step * scale, step * decay * scale)
+            bottom = [],
+            splitPerLine = 0
+        const res = SYSTEM.minmaxInt(4, 8) / 2
+        for (let x = margin[0]; x < width - margin[0]; x += res) {
+            const n1 = noise2D((x / width) * step * scale, step * decay * scale * 0.01)
             const n2 = noise2D(
                 (y / height) * step * scale,
-                step * decay * scale
+                step * decay * scale * 0.01
             )
             const p1 = [x, y + Math.min(step / 4, n1 * step * 0.5)]
             const p2 = [x, y + Math.min(step / 4, n2 * step * 0.5)]
@@ -66,26 +64,22 @@ const generatePolygon = (
                     bottom.push(p1)
                 }
             }
-            if (
-                (SYSTEM.float() > 0.95 && !drawWithLine) ||
-                (SYSTEM.float() > 0.99 && drawWithLine)
-            ) {
+            if (SYSTEM.float() > 0.8) {
                 if (!drawWithLine) {
                     polys.push(
-                        polyFromTopAndBottom(top, bottom, ground, colors, yID)
+                        polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine)
                     )
                     top = []
                     bottom = []
-                    x += ground
+                    x += res
                 }
                 drawWithLine = !drawWithLine
+                splitPerLine++
             }
         }
         if (!drawWithLine) {
-            polys.push(polyFromTopAndBottom(top, bottom, ground, colors, yID))
+            polys.push(polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine))
         }
-
-        yID++
     }
 
     return [polys, lines]
