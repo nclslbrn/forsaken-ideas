@@ -45,10 +45,13 @@ const generatePolygon = (
             splitPerLine = 0
         const res = SYSTEM.minmaxInt(4, 8) / 2
         for (let x = margin[0]; x < width - margin[0]; x += res) {
-            const n1 = noise2D((x / width) * step * scale, step * decay * scale * 0.01)
+            const n1 = noise2D(
+                (x / width) * step * scale,
+                step * decay * scale * 5
+            )
             const n2 = noise2D(
                 (y / height) * step * scale,
-                step * decay * scale * 0.01
+                step * decay * scale * 5
             )
             const p1 = [x, y + Math.min(step / 4, n1 * step * 0.5)]
             const p2 = [x, y + Math.min(step / 4, n2 * step * 0.5)]
@@ -67,7 +70,13 @@ const generatePolygon = (
             if (SYSTEM.float() > 0.8) {
                 if (!drawWithLine) {
                     polys.push(
-                        polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine)
+                        polyFromTopAndBottom(
+                            top,
+                            bottom,
+                            ground,
+                            colors,
+                            splitPerLine
+                        )
                     )
                     top = []
                     bottom = []
@@ -78,7 +87,9 @@ const generatePolygon = (
             }
         }
         if (!drawWithLine) {
-            polys.push(polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine))
+            polys.push(
+                polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine)
+            )
         }
     }
 

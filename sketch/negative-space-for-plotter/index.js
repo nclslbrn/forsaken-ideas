@@ -4,6 +4,7 @@ import handleAction from '../../sketch-common/handle-action'
 import { SYSTEM } from '@thi.ng/random'
 import { downloadWithMime, downloadCanvas } from '@thi.ng/dl-asset'
 import { group, rect, asSvg, svgDoc } from '@thi.ng/geom'
+import { convertTree } from '@thi.ng/hiccup-svg'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { draw } from '@thi.ng/hiccup-canvas'
 import * as tome from 'chromotome'
@@ -20,7 +21,7 @@ const dpr = window.devicePixelRatio || 1,
 let decay = 1,
     margin = [200, 0],
     palette,
-    composition
+    svg
 
 canvas.width = plotMode ? 1122.52 : window.innerWidth * dpr
 canvas.height = plotMode ? 1587.402 : window.innerHeight * dpr
@@ -34,9 +35,10 @@ if (plotMode) {
 const main = () => {
     const step = Math.round(SYSTEM.minmax(0.02, 0.09) * canvas.height),
         ground = Math.round(step / SYSTEM.minmax(6, 12)),
-        scale = SYSTEM.minmax(0.3, 0.5)
+        scale = SYSTEM.minmax(0.5, 1)
 
-    margin[1] = margin[0] +
+    margin[1] =
+        margin[0] +
         (canvas.height % ((Math.floor(canvas.height / step) - 2) * step)) / 2
 
     palette = tome.get()
@@ -51,11 +53,12 @@ const main = () => {
         canvas.height,
         palette.colors
     )
-    composition = group({}, [
+    const composition = group({}, [
         rect([canvas.width, canvas.height], { fill: '#f0f3f2' }),
         group({}, polys),
         group({ stroke: '#111' }, lines)
     ])
+    svg = asSvg(svgDoc({}, composition))
     draw(ctx, composition)
     const logColor = {
         sign: palette.colors.map(() => '%c  '),
@@ -77,11 +80,10 @@ window.init = () => {
     main()
 }
 window.download_SVG = () =>
-    downloadWithMime(
-        `NegativeSpace-${FMT_yyyyMMdd_HHmmss()}`,
-        asSvg(svgDoc({}, composition)),
-        { mime: 'image/svg+xml' }
-    )
+    downloadWithMime(`NegativeSpace-${FMT_yyyyMMdd_HHmmss()}`, svg, {
+        mime: 'image/svg+xml',
+        utf8: true
+    })
 window.download_JPG = () =>
     downloadCanvas(canvas, `NegativeSpace-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg')
 
