@@ -13,6 +13,33 @@ const polyFromTopAndBottom = (top, bottom, ground, colors, cID) => {
         }
     )
 }
+const rectFromTopAndBottom = (top, bottom, ground, colors, cID) => {
+    const minY = Math.min(top[0][1], top[top.length - 1][1]) - ground * 2
+    const straightTop = [top[0], top[top.length - 1]].map((p) => [p[0], minY])
+    const maxY = Math.max(top[0][1], top[top.length - 1][1]) + ground * 2
+    const straightBottom = [bottom[0], bottom[bottom.length - 1]].map((p) => [
+        p[0],
+        maxY
+    ])
+    const attribs = { fill: colors[cID % colors.length] }
+
+    return [
+        polygon(
+            [
+                ...straightTop.reverse(),
+                ...top.map((p) => [p[0], p[1] - ground / 2])
+            ],
+            attribs
+        ),
+        polygon(
+            [
+                ...straightBottom.reverse(),
+                ...bottom.map((p) => [p[0], p[1] + ground / 2])
+            ],
+            attribs
+        )
+    ]
+}
 const lineFromTopAndBottom = (top, bottom, ground) => {
     if (top[1] < bottom[1]) {
         top[1] -= ground / 2
@@ -67,17 +94,29 @@ const generatePolygon = (
                     bottom.push(p1)
                 }
             }
-            if (SYSTEM.float() > 0.8) {
+            if (SYSTEM.float() > 0.9) {
                 if (!drawWithLine) {
-                    polys.push(
-                        polyFromTopAndBottom(
-                            top,
-                            bottom,
-                            ground,
-                            colors,
-                            splitPerLine
+                    if (SYSTEM.float() > 0.5) {
+                        polys.push(
+                            polyFromTopAndBottom(
+                                top,
+                                bottom,
+                                ground,
+                                colors,
+                                splitPerLine
+                            )
                         )
-                    )
+                    } else {
+                        polys.push(
+                            ...rectFromTopAndBottom(
+                                top,
+                                bottom,
+                                ground,
+                                colors,
+                                splitPerLine
+                            )
+                        )
+                    }
                     top = []
                     bottom = []
                     x += res

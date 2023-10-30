@@ -4,13 +4,13 @@ import handleAction from '../../sketch-common/handle-action'
 import { SYSTEM } from '@thi.ng/random'
 import { downloadWithMime, downloadCanvas } from '@thi.ng/dl-asset'
 import { group, rect, asSvg, svgDoc } from '@thi.ng/geom'
-import { convertTree } from '@thi.ng/hiccup-svg'
+// import { convertTree } from '@thi.ng/hiccup-svg'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { draw } from '@thi.ng/hiccup-canvas'
 import * as tome from 'chromotome'
 import { generatePolygon } from './generatePolygon'
 
-const dpr = window.devicePixelRatio || 1,
+const dpr = window.devicePixelRatio || 2,
     windowFrame = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
@@ -19,7 +19,7 @@ const dpr = window.devicePixelRatio || 1,
     plotMode = urlParams.get('mode') === 'plotter'
 
 let decay = 1,
-    margin = [200, 0],
+    margin = [plotMode ? 200 : 100, 0],
     palette,
     svg
 
@@ -33,8 +33,8 @@ if (plotMode) {
 }
 
 const main = () => {
-    const step = Math.round(SYSTEM.minmax(0.02, 0.09) * canvas.height),
-        ground = Math.round(step / SYSTEM.minmax(6, 12)),
+    const step = Math.round(SYSTEM.minmax(0.02, 0.05) * canvas.height),
+        ground = Math.round(step / SYSTEM.minmax(10, 16)),
         scale = SYSTEM.minmax(0.5, 1)
 
     margin[1] =
