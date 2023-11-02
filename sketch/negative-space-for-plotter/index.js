@@ -33,9 +33,9 @@ if (plotMode) {
 }
 
 const main = () => {
-    const step = Math.round(SYSTEM.minmax(0.02, 0.05) * canvas.height),
+    const step = Math.round(SYSTEM.minmax(0.05, 0.08) * canvas.height),
         ground = Math.round(step / SYSTEM.minmax(10, 16)),
-        scale = SYSTEM.minmax(0.5, 1)
+        scale = SYSTEM.minmax(0.07, 0.1)
 
     margin[1] =
         margin[0] +
