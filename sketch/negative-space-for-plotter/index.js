@@ -47,7 +47,7 @@ const main = () => {
     const composition = group({}, [
         rect([canvas.width, canvas.height], { fill: '#111' }),
         group({}, polys),
-        group({ stroke: '#eee' }, lines)
+        group({ stroke: '#fff', weight: STATE.dpr }, lines)
     ])
     svg = asSvg(svgDoc({}, composition))
     draw(ctx, composition)

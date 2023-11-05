@@ -4,7 +4,7 @@ import { randomSection } from './randomSection'
 
 const { floor, round } = Math
 const resolveState = (config) => {
-    const dpr = window.devicePixelRatio || 2
+    const dpr = window.devicePixelRatio || 1
     const width = config.width * dpr
     const height = config.height * dpr
     const step = round(SYSTEM.minmax(0.07, 0.12) * height)
@@ -12,7 +12,7 @@ const resolveState = (config) => {
     const scale = SYSTEM.minmax(0.03, 0.07)
     const margin = [
         config.mode === 'plotter' ? 200 : 100,
-        (height % ((floor(height / step) - 2) * step)) / 2
+        (height % ((floor(height / step) - 1) * step)) / 2
     ]
     const variationLabel = [
         'Varying noise & fixed section',

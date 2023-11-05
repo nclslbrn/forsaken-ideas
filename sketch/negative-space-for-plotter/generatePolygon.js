@@ -104,8 +104,8 @@ const generatePolygon = (STATE, colors) => {
                     top.map((v) => [
                         v[0],
                         v[1] + (i % 2 === 0 ? ground / 2 : ground)
-                    ]),
-                    { stroke: '#222' }
+                    ])
+                    //{ stroke: '#222' }
                 )
             )
 
@@ -114,8 +114,8 @@ const generatePolygon = (STATE, colors) => {
                     bottom.map((v) => [
                         v[0],
                         v[1] - (i % 2 === 0 ? ground / 2 : ground)
-                    ]),
-                    { stroke: '#222' }
+                    ])
+                    //{ stroke: '#222' }
                 )
             )
             /*
