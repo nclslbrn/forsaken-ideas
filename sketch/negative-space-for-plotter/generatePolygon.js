@@ -1,275 +1,190 @@
+/* eslint-disable no-case-declarations */
 import { polyline, polygon, line } from '@thi.ng/geom'
-import { createNoise2D } from 'simplex-noise'
-import { SYSTEM } from '@thi.ng/random'
+import { repeatedly } from '@thi.ng/transducers'
 
-
-const noisedLine = (step, scale, ground, margin, decay, width, height) => {
-    const noise2D = createNoise2D(), bands = []
-    for (let y = margin[1] + step; y < height - margin[1]; y += step) {
-        let top = [],
-            bottom = []
-
-        for (let x = margin[0]; x < width - margin[0]; x++) {
-            const n1 = noise2D(
-                (x / width) * step * scale,
-                step * scale * 5
-            )
-            const n2 = noise2D(
-                (y / height) * step * scale,
-                (step * scale) // + (x * scale * 0.003)
-            )
-            const y1 = y + Math.min(step / 4, n1 * step * 0.5)
-            const y2 = y + Math.min(step / 4, n2 * step * 0.5)
-
-            if (y1 >= y2) {
-                top.push([x, y2 - ground / 2])
-                bottom.push([x, y1 + ground / 2])
-            } else {
-                top.push([x, y1 - ground / 2])
-                bottom.push([x, y2 + ground / 2])
-            }
+const linesBlock = (top, bottom, lineSpacing) => {
+    const lines = []
+    for (let i = 1; i < Math.min(top.length, bottom.length); i += lineSpacing) {
+        if (top[i] && bottom[i]) {
+            lines.push(line(top[i], bottom[i]))
         }
-        bands.push([top, bottom])
     }
-    return bands
+    return lines
+}
+const solidBlock = (top, bottom, secId, colors) => {
+    return polygon([...top.reverse(), ...bottom], {
+        fill: colors[secId % colors.length]
+    })
 }
 
-const generatePolygon = (
-    step,
-    scale,
-    ground,
-    margin,
-    decay,
-    width,
-    height,
-    colors
-) => {
+const generatePolygon = (STATE, colors) => {
+    const { bands, sections, ground, margin, height, tickSpacing } = STATE
+    const lines = [],
+        polygons = [],
+        interbands = [],
+        processSection = (dx, top, bottom, sec, i, ground, colors) => {
+            const polyTop = [
+                ...repeatedly((i) => top[dx + i], sec.len - 1)
+            ].filter((v) => v !== undefined)
+            const polyBottom = [
+                ...repeatedly((i) => bottom[dx + i], sec.len - 1)
+            ].filter((v) => v !== undefined)
+            let sectionTop = polyTop,
+                sectionBottom = polyBottom
 
-    const bands = noisedLine(step, scale, ground, margin, decay, width, height)
-    const lines = [], polygons = []
-    const interbands = []
+            switch (sec.type) {
+                case 'lines':
+                    lines.push(
+                        ...linesBlock(polyTop, polyBottom, sec.lineSpacing)
+                    )
+                    break
+                case 'solid':
+                    polygons.push(solidBlock(polyTop, polyBottom, i, colors))
+                    sectionTop = sectionTop.reverse()
+                    break
+                case 'splitted-solid':
+                    const minY = Math.min(...polyTop.map((v) => v[1]))
+                    const maxY = Math.max(...polyBottom.map((v) => v[1]))
+                    sectionTop = polyTop.map((v) => [v[0], minY - ground])
+                    sectionBottom = polyBottom.map((v) => [v[0], maxY + ground])
+                    polygons.push(solidBlock(sectionTop, polyTop, i, colors))
+                    polygons.push(
+                        solidBlock(polyBottom, sectionBottom, i, colors)
+                    )
+                    sectionTop = sectionTop.reverse()
+                    break
+            }
+            return [sectionTop, sectionBottom]
+        }
 
     for (let i = 0; i <= bands.length; i++) {
         if (i < bands.length) {
             let [top, bottom] = bands[i]
-            const minY = Math.min(...top.map(v => v[1])) - ground / 2
-            const maxY = Math.max(...bottom.map(v => v[1])) + ground / 2
-            const interband = [
-                top.map(v => [v[0], minY]),
-                bottom.map(v => [v[0], maxY])
-            ]
-            let drawWithLine = false
-            let polyTop = [], polyBottom = [], splitPerLine = 0
+            const interband = [[], []]
 
-            for (let j = 0; j < Math.min(top.length, bottom.length); j++) {
-                // Draw or store point
-                if (drawWithLine) {
-                    if (j % 4 === 0) {
-                        lines.push(line(top[j], bottom[j]))
-                    }
-                } else {
-                    polyTop.push(top[j])
-                    polyBottom.push(bottom[j])
-                }
-
-                // Then decide future shape
-                if (SYSTEM.float() > 0.9) {
-                    if (!drawWithLine) {
-                        const attribs = { fill: colors[splitPerLine % colors.length] }
-                        // Draw solid shape
-                        if (SYSTEM.float() > 0.5) {
-                            polygons.push(polygon(
-                                [
-                                    ...polyTop.reverse(), ...polyBottom
-                                ],
-                                attribs
-                            ))
-                        }
-                        // Draw negatively top and bottom 
-                        else {
-                            const boxMinY = Math.min(...polyTop.map(v => v[1]))
-                            const boxMaxY = Math.max(...polyTop.map(v => v[1])) + ground * 2
-
-                            polygons.push(polygon(
-                                [
-                                    ...polyTop,
-                                    ...polyTop.map((v) => [v[0], boxMinY]).reverse()
-                                ],
-                                attribs
-                            ))
-
-                            polygons.push(polygon(
-                                [
-                                    ...polyBottom.map((v) => [v[0], boxMaxY]).reverse(),
-                                    ...polyBottom
-                                ],
-                                attribs
-                            ))
-
-                            // Then replace top and bottom 
-                            for (let r = 0; r < Math.min(polyTop.length, polyBottom.length); r++) {
-                                // top
-                                top[j - r] = [top[j - r][0], boxMinY]
-
-                                // bottom
-                                bottom[j - r] = [bottom[j - r][0], Math.max(bottom[j - r][1], boxMaxY)]
-
-                                interband[0][j - r] = [top[j - r][0], boxMinY - ground]
-                                interband[1][j - r] = [bottom[j - r][0], Math.max(boxMaxY, bottom[j - r][1]) + 1]
-
-                            }
-                        }
-                        polyTop = []
-                        polyBottom = []
-                    }
-                    drawWithLine = !drawWithLine
-                    splitPerLine++
-                }
+            // sections variations across bands
+            if (sections[1] !== undefined) {
+                let dx = 0
+                sections[i].forEach((sec, j) => {
+                    const [sectionTop, sectionBottom] = processSection(
+                        dx,
+                        top,
+                        bottom,
+                        sec,
+                        j,
+                        ground,
+                        colors
+                    )
+                    interband[0].push(...sectionTop)
+                    interband[1].push(...sectionBottom)
+                    dx += sec.len - 1
+                })
+            } // same distribution foreach bands
+            else {
+                let dx = 0
+                sections[0].forEach((sec, j) => {
+                    const [sectionTop, sectionBottom] = processSection(
+                        dx,
+                        top,
+                        bottom,
+                        sec,
+                        j,
+                        ground,
+                        colors
+                    )
+                    interband[0].push(...sectionTop)
+                    interband[1].push(...sectionBottom)
+                    dx += sec.len - 1
+                })
             }
-            if (polyTop.length > 0 && polyBottom.length > 0) {
-                polygons.push(polygon(
-                    [
-                        ...polyTop.reverse(), ...polyBottom
-                    ],
-                    { fill: colors[splitPerLine % colors.length] }
-                ))
-
-            }
-
-            lines.push(polyline(
-                top.map(p => [p[0], p[1] - 2]),
-            ))
-            lines.push(polyline(
-                bottom.map(p => [p[0], p[1] + 2]),
-                //{ fill: 'rgba(0, 0, 0, 0)})' }
-            ))
-            bands[i] = [top, bottom]
             interbands.push(interband)
+
+            lines.push(
+                polyline(
+                    top.map((v) => [
+                        v[0],
+                        v[1] + (i % 2 === 0 ? ground / 2 : ground)
+                    ]),
+                    { stroke: '#222' }
+                )
+            )
+
+            lines.push(
+                polyline(
+                    bottom.map((v) => [
+                        v[0],
+                        v[1] - (i % 2 === 0 ? ground / 2 : ground)
+                    ]),
+                    { stroke: '#222' }
+                )
+            )
+            /*
+            if (i % 2 === 0) {
+                lines.push(polyline(interband[1]))
+            } else {
+                lines.push(polyline(interband[0]))
+            }*
+*/
         }
 
-        const prevBottom = i === 0
-            ? interbands[i][1].map(v => [v[0], margin[1]])
-            : interbands[i - 1][1]
+        const prevBottom =
+            i === 0
+                ? interbands[i][1].map((v) => [v[0], margin[1]])
+                : interbands[i - 1][1]
 
-        const currTop = i < interbands.length
-            ? interbands[i][0]
-            : interbands[i - 1][0].map(v => [v[0], height - (margin[1] - ground * 2)])
+        const currTop =
+            i < interbands.length
+                ? interbands[i][0]
+                : interbands[i - 1][0].map((v) => [
+                      v[0],
+                      height - (margin[1] - ground * 2)
+                  ])
 
-
-        for (let k = 0; k < Math.min(prevBottom.length, currTop.length); k += 4) {
-            lines.push(line(prevBottom[k], currTop[k]))
+        let dx = 0
+        if (sections[1] !== undefined) {
+            sections[i].forEach((sec) => {
+                const idx = Math.round(dx + sec.len / 2)
+                if (idx < prevBottom.length) {
+                    lines.push(
+                        line(
+                            [prevBottom[idx][0], prevBottom[idx][1] + ground],
+                            [currTop[idx][0], currTop[idx][1] - ground]
+                        )
+                    )
+                    dx += sec.len - 1
+                }
+            })
+        } else {
+            sections[0].forEach((sec) => {
+                const idx = Math.round(dx + sec.len / 2)
+                if (idx < prevBottom.length) {
+                    lines.push(
+                        line(
+                            [prevBottom[idx][0], prevBottom[idx][1] + ground],
+                            [currTop[idx][0], currTop[idx][1] - ground]
+                        )
+                    )
+                    dx += sec.len - 1
+                }
+            })
         }
+        /*
+        for (
+            let k = 0;
+            k < Math.min(prevBottom.length, currTop.length);
+            k += tickSpacing
+        ) {
+            
+            lines.push(
+                line(
+                    [prevBottom[k][0], prevBottom[k][1] + ground],
+                    [currTop[k][0], currTop[k][1] - ground]
+                )
+            )
+        }
+        */
     }
     return [polygons, lines]
 }
-/*
-const generatePolygon = (
-    step,
-    scale,
-    ground,
-    margin,
-    decay,
-    width,
-    height,
-    colors
-) => {
-    const polys = [],
-        lines = [],
-        bands = [],
-        noise2D = createNoise2D()
 
-    let drawWithLine = false,
-        drawNegative = false
-
-    for (let y = margin[1] + step; y < height - margin[1]; y += step) {
-        let top = [],
-            bottom = [],
-            splitPerLine = 0
-        const res = 3 //SYSTEM.minmaxInt(4, 8) / 2
-        const band = [
-            [], // bottom
-            [] // top
-        ]
-
-        for (let x = margin[0]; x < width - margin[0]; x += res) {
-            const n1 = noise2D(
-                (x / width) * step * scale,
-                step * decay * scale * 5
-            )
-            const n2 = noise2D(
-                (y / height) * step * scale,
-                step * decay * scale * 100
-            )
-            const p1 = [x, y + Math.min(step / 4, n1 * step * 0.5)]
-            const p2 = [x, y + Math.min(step / 4, n2 * step * 0.5)]
-            if (drawWithLine) {
-                lines.push(lineFromTopAndBottom(p1, p2, ground))
-            } else {
-                if (p1[1] < p2[1]) {
-                    top.push(p1)
-                    bottom.push(p2)
-                } else {
-                    top.push(p2)
-                    bottom.push(p1)
-                }
-            }
-            if (SYSTEM.float() > 0.9) {
-                if (!drawWithLine) {
-                    if (SYSTEM.float() > 0.5) {
-                        polys.push(
-                            polyFromTopAndBottom(
-                                top,
-                                bottom,
-                                ground,
-                                colors,
-                                splitPerLine
-                            )
-                        )
-                    } else {
-                        polys.push(
-                            ...rectFromTopAndBottom(
-                                top,
-                                bottom,
-                                ground,
-                                colors,
-                                splitPerLine
-                            )
-                        )
-                    }
-                    top = []
-                    bottom = []
-                    x += res
-                }
-                drawWithLine = !drawWithLine
-                splitPerLine++
-            }
-            if (top.length === 0 && bottom.length === 0) {
-                if (p1[1] >= p2[1]) {
-                    band[0].push([x, p1[1]])
-                    band[1].push([x, p2[1]])
-                } else {
-                    band[0].push([x, p2[1]])
-                    band[1].push([x, p1[1]])
-                }
-            } else {
-                band[0].push([x, bottom[bottom.length - 1][1] + ground])
-                band[1].push([x, top[top.length - 1][1] - ground])
-            }
-        }
-        bands.push(band)
-
-        if (!drawWithLine) {
-            polys.push(
-                polyFromTopAndBottom(top, bottom, ground, colors, splitPerLine)
-            )
-        }
-    }
-    bands.forEach((b) => {
-        lines.push(polyline(b[0]))
-        lines.push(polyline(b[1]))
-    })
-
-    return [polys, lines]
-}
-*/
 export { generatePolygon }

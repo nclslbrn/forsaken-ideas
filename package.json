@@ -23,9 +23,11 @@
   "dependencies": {
     "@thi.ng/date": "^2.4.22",
     "@thi.ng/dl-asset": "^2.3.42",
+    "@thi.ng/expose": "^1.2.2",
     "@thi.ng/geom": "^5.2.3",
     "@thi.ng/hiccup-canvas": "^2.3.21",
     "@thi.ng/random": "^3.6.4",
+    "@thi.ng/resolve-map": "^7.1.40",
     "@thi.ng/timestep": "^0.4.14",
     "@thi.ng/transducers": "^8.7.0",
     "chromotome": "^1.21.4",
