@@ -45,9 +45,11 @@ const init = () => {
 const main = () => {
     const [polys, lines] = generatePolygon(STATE, palette.colors)
     const composition = group({}, [
-        rect([canvas.width, canvas.height], { fill: '#111' }),
+        rect([canvas.width, canvas.height], {
+            fill: palette.background || '#111'
+        }),
         group({}, polys),
-        group({ stroke: '#fff', weight: STATE.dpr }, lines)
+        group({ stroke: palette.stroke || '#222', weight: STATE.dpr }, lines)
     ])
     svg = asSvg(svgDoc({}, composition))
     draw(ctx, composition)
@@ -87,7 +89,7 @@ window.download_JPG = () =>
     downloadCanvas(canvas, `NegativeSpace-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg')
 
 document.onkeydown = () => {
-    console.log(JSON.stringify(palette.colors))
+    console.log(JSON.stringify(palette))
 }
 window.infobox = infobox
 handleAction()

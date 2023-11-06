@@ -5,13 +5,13 @@ import { repeatedly } from '@thi.ng/transducers'
  * { length, type : line, solid, splitted solid }
  */
 const types = ['lines', 'solid', 'splitted-solid']
-const randomSection = (width, numSection, varyingLinespacing) => {
+const randomSection = (width, numSection, varyingLinespacing, dpr) => {
     const distribution = [
         ...repeatedly(() => {
-            let remaining = 1
+            let remaining = dpr
             const widths = []
             while (remaining > 0) {
-                const lenght = SYSTEM.minmax(0.007, 0.1)
+                const lenght = SYSTEM.minmax(0.07, 0.1) * dpr
                 widths.push(lenght)
                 remaining -= lenght
             }
@@ -19,7 +19,8 @@ const randomSection = (width, numSection, varyingLinespacing) => {
             const sections = widths.map((len) => ({
                 len: Math.round((len / sum) * width),
                 type: pickRandom(types, SYSTEM),
-                lineSpacing: varyingLinespacing ? SYSTEM.minmaxInt(4, 8) : 4
+                lineSpacing:
+                    dpr * varyingLinespacing ? SYSTEM.minmaxInt(4, 8) : 4
             }))
             return sections
         }, numSection)

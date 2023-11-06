@@ -18,7 +18,7 @@ const solidBlock = (top, bottom, secId, colors) => {
 }
 
 const generatePolygon = (STATE, colors) => {
-    const { bands, sections, ground, margin, height, tickSpacing } = STATE
+    const { bands, sections, ground, margin, height, tickPadding } = STATE
     const lines = [],
         polygons = [],
         interbands = [],
@@ -99,13 +99,18 @@ const generatePolygon = (STATE, colors) => {
             }
             interbands.push(interband)
 
+            if (i % 2 === 0) {
+                lines.push(polyline(interband[1]))
+            } else {
+                lines.push(polyline(interband[0]))
+            }
             lines.push(
                 polyline(
                     top.map((v) => [
                         v[0],
                         v[1] + (i % 2 === 0 ? ground / 2 : ground)
-                    ])
-                    //{ stroke: '#222' }
+                    ]),
+                    { stroke: '#2f2f2f' }
                 )
             )
 
@@ -114,17 +119,10 @@ const generatePolygon = (STATE, colors) => {
                     bottom.map((v) => [
                         v[0],
                         v[1] - (i % 2 === 0 ? ground / 2 : ground)
-                    ])
-                    //{ stroke: '#222' }
+                    ]),
+                    { stroke: '#2f2f2f' }
                 )
             )
-            /*
-            if (i % 2 === 0) {
-                lines.push(polyline(interband[1]))
-            } else {
-                lines.push(polyline(interband[0]))
-            }*
-*/
         }
 
         const prevBottom =
@@ -148,7 +146,8 @@ const generatePolygon = (STATE, colors) => {
                     lines.push(
                         line(
                             [prevBottom[idx][0], prevBottom[idx][1] + ground],
-                            [currTop[idx][0], currTop[idx][1] - ground]
+                            [currTop[idx][0], currTop[idx][1] - ground],
+                            { weight: tickPadding, stroke: '#2f2f2f' }
                         )
                     )
                     dx += sec.len - 1
@@ -161,7 +160,8 @@ const generatePolygon = (STATE, colors) => {
                     lines.push(
                         line(
                             [prevBottom[idx][0], prevBottom[idx][1] + ground],
-                            [currTop[idx][0], currTop[idx][1] - ground]
+                            [currTop[idx][0], currTop[idx][1] - ground],
+                            { weight: tickPadding, stroke: '#2f2f2f' }
                         )
                     )
                     dx += sec.len - 1
@@ -174,7 +174,7 @@ const generatePolygon = (STATE, colors) => {
             k < Math.min(prevBottom.length, currTop.length);
             k += tickSpacing
         ) {
-            
+
             lines.push(
                 line(
                     [prevBottom[k][0], prevBottom[k][1] + ground],
