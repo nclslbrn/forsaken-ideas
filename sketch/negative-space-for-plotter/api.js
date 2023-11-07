@@ -22,7 +22,7 @@ const resolveState = (config) => {
     ]
     const variation = SYSTEM.float() > 0.5 ? 0 : 1
     const varyingLinespacing = SYSTEM.float() > 0.5 ? 0 : 1
-    const tickPadding = SYSTEM.minmaxInt(1, 16) * dpr
+    const tickPadding = SYSTEM.minmaxInt(1, 4) * dpr
     return {
         width,
         height,

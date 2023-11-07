@@ -11,7 +11,7 @@ const randomSection = (width, numSection, varyingLinespacing, dpr) => {
             let remaining = dpr
             const widths = []
             while (remaining > 0) {
-                const lenght = SYSTEM.minmax(0.07, 0.1) * dpr
+                const lenght = SYSTEM.minmax(0.01, 0.05) * dpr
                 widths.push(lenght)
                 remaining -= lenght
             }

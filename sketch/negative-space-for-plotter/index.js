@@ -34,6 +34,7 @@ const init = () => {
         height: plotMode ? 1587.402 : window.innerHeight
     })
     palette = tome.get()
+    // spatial01 kov_07 tundra2 slicks
     // { colors: ['#555', '#999', '#aaa', '#bbb'] }
 
     canvas.width = STATE.width
@@ -49,7 +50,7 @@ const main = () => {
             fill: palette.background || '#111'
         }),
         group({}, polys),
-        group({ stroke: palette.stroke || '#222', weight: STATE.dpr }, lines)
+        group({ stroke: palette.stroke || '#222' }, lines)
     ])
     svg = asSvg(svgDoc({}, composition))
     draw(ctx, composition)
