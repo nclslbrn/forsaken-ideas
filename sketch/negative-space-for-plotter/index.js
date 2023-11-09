@@ -21,22 +21,30 @@ const windowFrame = document.getElementById('windowFrame'),
 let STATE, palette, svg
 
 windowFrame.appendChild(canvas)
-
+/*
 if (plotMode) {
     windowFrame.style.overflowY = 'auto'
     document.documentElement.style.overflowY = 'auto'
     document.body.style.overflowY = 'auto'
 }
+*/
 const init = () => {
     STATE = resolveState({
         mode: plotMode ? 'plotter' : 'browser',
         width: plotMode ? 1122.52 : window.innerWidth,
         height: plotMode ? 1587.402 : window.innerHeight
     })
-    palette = tome.get()
+    console.log('Mode ', plotMode ? 'plotter' : 'browser', STATE.width, STATE.height)
+    palette =
+
+    // tome.get()
     // spatial01 kov_07 tundra2 slicks
     // { colors: ['#555', '#999', '#aaa', '#bbb'] }
-
+    {
+        background: "#fefefe", stroke: "#111", colors: [
+            "#ef9e0f", "#3f4cb5", "#b82f2f"
+        ]
+    }
     canvas.width = STATE.width
     canvas.height = STATE.height
     STATE.decay++
@@ -46,13 +54,16 @@ const init = () => {
 const main = () => {
     const [polys, lines] = generatePolygon(STATE, palette.colors)
     const composition = group({}, [
-        rect([canvas.width, canvas.height], {
+        rect([STATE.width, STATE.height], {
             fill: palette.background || '#111'
         }),
         group({}, polys),
         group({ stroke: palette.stroke || '#222' }, lines)
     ])
-    svg = asSvg(svgDoc({}, composition))
+    svg = asSvg(
+        svgDoc(
+            { width: STATE.width, height: STATE.height, viewBox: `0 0 ${STATE.width} ${STATE.height}` }, composition
+        ))
     draw(ctx, composition)
     const logColor = {
         sign: palette.colors.map(() => '%c  '),

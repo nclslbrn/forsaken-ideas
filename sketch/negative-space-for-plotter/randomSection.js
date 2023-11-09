@@ -20,7 +20,7 @@ const randomSection = (width, numSection, varyingLinespacing, dpr) => {
                 len: Math.round((len / sum) * width),
                 type: pickRandom(types, SYSTEM),
                 lineSpacing:
-                    dpr * varyingLinespacing ? SYSTEM.minmaxInt(4, 8) : 4
+                    dpr * varyingLinespacing ? SYSTEM.minmaxInt(2, 4) : 2
             }))
             return sections
         }, numSection)

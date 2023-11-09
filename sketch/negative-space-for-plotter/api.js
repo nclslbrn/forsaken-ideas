@@ -4,7 +4,7 @@ import { randomSection } from './randomSection'
 
 const { floor, round } = Math
 const resolveState = (config) => {
-    const dpr = window.devicePixelRatio || 1
+    const dpr = config.mode === 'plotter' ? 1 : window.devicePixelRatio || 1
     const width = config.width * dpr
     const height = config.height * dpr
     const step = round(SYSTEM.minmax(0.07, 0.12) * height)

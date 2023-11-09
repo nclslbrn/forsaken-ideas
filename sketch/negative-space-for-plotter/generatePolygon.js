@@ -39,8 +39,22 @@ const generatePolygon = (STATE, colors) => {
                     )
                     break
                 case 'solid':
-                    polygons.push(solidBlock(polyTop, polyBottom.map(v => [v[0], v[1] - ground]), i, colors))
-                    polygons.push(solidBlock(polyBottom.map(v => [v[0], v[1] - ground]), polyBottom, i + 1, colors))
+                    polygons.push(
+                        solidBlock(
+                            polyTop,
+                            polyBottom.map((v) => [v[0], v[1] - ground]),
+                            i,
+                            colors
+                        )
+                    )
+                    polygons.push(
+                        solidBlock(
+                            polyBottom.map((v) => [v[0], v[1] - ground]),
+                            polyBottom,
+                            i + 1,
+                            colors
+                        )
+                    )
 
                     sectionTop = sectionTop.reverse()
                     break
@@ -94,8 +108,12 @@ const generatePolygon = (STATE, colors) => {
                         ground,
                         colors
                     )
-                    interband[0].push(...sectionTop.map(v => [v[0], v[1] + ground]))
-                    interband[1].push(...sectionBottom.map(v => [v[0], v[1] - ground]))
+                    interband[0].push(
+                        ...sectionTop.map((v) => [v[0], v[1] + ground])
+                    )
+                    interband[1].push(
+                        ...sectionBottom.map((v) => [v[0], v[1] - ground])
+                    )
                     dx += sec.len - 1
                 })
             }
@@ -112,7 +130,7 @@ const generatePolygon = (STATE, colors) => {
                         v[0],
                         v[1] + (i % 2 === 0 ? ground / 2 : ground)
                     ]),
-                    { stroke: '#2f2f2f', weight: STATE.dpr * 4 }
+                    { stroke: '#2f2f2f', weight: STATE.dpr * 2 }
                 )
             )
 
@@ -122,7 +140,7 @@ const generatePolygon = (STATE, colors) => {
                         v[0],
                         v[1] - (i % 2 === 0 ? ground / 2 : ground)
                     ]),
-                    { stroke: '#2f2f2f', weight: STATE.dpr * 4 }
+                    { stroke: '#2f2f2f', weight: STATE.dpr * 2 }
                 )
             )
         }
@@ -130,18 +148,18 @@ const generatePolygon = (STATE, colors) => {
         const prevBottom =
             i === 0
                 ? interbands[i][1].map((v) => [v[0], margin[1]])
-                : interbands[i - 1][1]
+                : interbands[i - 1][1].map(v => [v[0], v[1] + ground])
 
         const currTop =
             i < interbands.length
                 ? interbands[i][0]
                 : interbands[i - 1][0].map((v) => [
                     v[0],
-                    height - (margin[1] - ground * 2)
+                    height - margin[1] / 2
                 ])
 
         let dx = 0
-        if (sections[1] !== undefined) {
+        if (sections[1] !== undefined && sections[1].lenght > 0) {
             sections[i].forEach((sec) => {
                 const idx = Math.round(dx)
                 if (idx < prevBottom.length) {
