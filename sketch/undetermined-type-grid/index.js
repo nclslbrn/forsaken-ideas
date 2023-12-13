@@ -6,14 +6,15 @@ import { SYSTEM, pickRandom } from '@thi.ng/random'
 import { downloadCanvas } from '@thi.ng/dl-asset'
 import { group, text, rect } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
-
+import { getPalette } from '@nclslbrn/iconic-palettes'
 let state = {}
 
 const { floor } = Math,
+    palette = getPalette(),
     sentence = pickRandom([
-        [...'I like grid and grid likes me. '],
-        [...'Ingrid is in the grid'],
-        [...'CELL']
+        [...'I like grid and grid likes me. ', ...palette.meta.title],
+        [...'Ingrid is in the grid ', ...palette.meta.title],
+        [...'CELL ', ...palette.meta.title]
     ]),
     symbols = pickRandom([
         [...'=±≡⊥—⊫ǁ⊠⊡⊢⊣⊤⊥⊦⊧⊨⊩⊪⊫'],
@@ -23,23 +24,10 @@ const { floor } = Math,
             ...'⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿'
         ]
     ]),
-    palette = pickRandom([
-        ['tomato', 'white', 'yellow', '#3b36d8'],
-        ['#bfc8ad', '#90b494', '#718f94', '#545775'],
-        ['#e9d758', '#297373', '#ff8552', '#e6e6e6'],
-        ['#0496ff', '#ffbc42', '#d81159', '#8f2d56'],
-        ['#8eb8e5', '#7c99b4', '#6b7f82', '#5b5750', '#492c1d'],
-        ['#ee6c4d', '#33312e', '#f38d68', '#662c91', '#17a398'],
-        ['#55d6be', '#2e5eaa', '#5b4e77', '#593959'],
-        ['#61304b', '#857c8d', '#94bfbe', '#acf7c1'],
-        ['#7a9e9f', '#4f6367', '#eef5db', '#fe5f55'],
-        ['#00bd9d', '#49c6e5', '#54defd', '#fffbfa', '#8bd7d2']
-    ]),
     dpr = window.devicePixelRatio || 1,
     windowFrame = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
-    fps = 12,
     //recorder = canvasRecorder(canvas, 'undetermined-type-grid', { fps: 24 }),
     ctx = canvas.getContext('2d'),
     doUpdate = true
@@ -139,13 +127,13 @@ const update = () => {
     }
     if (loop % 250 === 0) {
         alterDir.sel = alterDir.sel === 'x' ? 'y' : 'x'
-        currColor = pickRandom(palette)
+        currColor = pickRandom(palette.colors)
     }
 
     if (loop % 400 === 0) {
         if (SYSTEM.float() > 0.5) {
             inject = pickRandom(symbols)
-            currColor = pickRandom(palette)
+            currColor = pickRandom(palette.colors)
         } else {
             if (symbols.includes(inject) || sentence === inject) {
                 inject = SYSTEM.float() > 0.5 ? '_' : '|'
@@ -156,7 +144,7 @@ const update = () => {
     }
     if (loop % 450 === 0 && SYSTEM.float() > 0.5) {
         alterDir.way = !alterDir.way
-        currColor = pickRandom(palette)
+        currColor = pickRandom(palette.colors)
     }
     loop++
 
@@ -187,7 +175,7 @@ const update = () => {
     draw(
         ctx,
         group({}, [
-            rect([canvas.width, canvas.height], { fill: '#111' }),
+            rect([canvas.width, canvas.height], { fill: palette.background }),
             group(
                 {
                     font: `${cellSize}px monospace`,
