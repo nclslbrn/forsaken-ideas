@@ -6,8 +6,7 @@ import { group, rect, asSvg, svgDoc } from '@thi.ng/geom'
 // import { convertTree } from '@thi.ng/hiccup-svg'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { draw } from '@thi.ng/hiccup-canvas'
-import * as tome from 'chromotome'
-
+import { getPalette } from '@nclslbrn/artistry-swatch'
 import { resolveState } from './api'
 import { generatePolygon } from './generatePolygon'
 
@@ -34,17 +33,14 @@ const init = () => {
         width: plotMode ? 1122.52 : window.innerWidth,
         height: plotMode ? 1587.402 : window.innerHeight
     })
-    console.log('Mode ', plotMode ? 'plotter' : 'browser', STATE.width, STATE.height)
-    palette =
+    console.log(
+        'Mode ',
+        plotMode ? 'plotter' : 'browser',
+        STATE.width,
+        STATE.height
+    )
+    palette = getPalette()
 
-    // tome.get()
-    // spatial01 kov_07 tundra2 slicks
-    // { colors: ['#555', '#999', '#aaa', '#bbb'] }
-    {
-        background: "#fefefe", stroke: "#111", colors: [
-            "#ef9e0f", "#3f4cb5", "#b82f2f"
-        ]
-    }
     canvas.width = STATE.width
     canvas.height = STATE.height
     STATE.decay++
@@ -62,8 +58,14 @@ const main = () => {
     ])
     svg = asSvg(
         svgDoc(
-            { width: STATE.width, height: STATE.height, viewBox: `0 0 ${STATE.width} ${STATE.height}` }, composition
-        ))
+            {
+                width: STATE.width,
+                height: STATE.height,
+                viewBox: `0 0 ${STATE.width} ${STATE.height}`
+            },
+            composition
+        )
+    )
     draw(ctx, composition)
     const logColor = {
         sign: palette.colors.map(() => '%c  '),

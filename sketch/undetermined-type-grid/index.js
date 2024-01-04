@@ -6,7 +6,7 @@ import { SYSTEM, pickRandom } from '@thi.ng/random'
 import { downloadCanvas } from '@thi.ng/dl-asset'
 import { group, text, rect } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { getPalette } from '@nclslbrn/iconic-palettes'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 let state = {}
 
 const { floor } = Math,
