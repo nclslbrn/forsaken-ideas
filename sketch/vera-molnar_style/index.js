@@ -78,6 +78,7 @@ const molnar = (p5) => {
         }
         f = 0
         scribles = [...obliques, ...horizontals].map(line => scribleLine(line))
+        p5.loop()
     }
 
     molnar.download_JPG = function () {
@@ -106,14 +107,9 @@ const molnar = (p5) => {
                 p5.endShape();
             }
         }
-        if (!scribles.reduce((moreThanFrame, line) => line.length > f || moreThanFrame, true)) {
-            console.log()
+        if (!scribles.reduce((moreThanFrame, line) => line.length > f || moreThanFrame, false)) {
+            new Notification('Drawing done, do you want to <button onclick="window.init()">generate another</button> ?', windowFrame, 'light')
             p5.noLoop();
-            new Notification(
-                'Drawing done',
-                windowFrame,
-                'light'
-            )
         }
         f++
     }
