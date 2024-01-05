@@ -14,7 +14,9 @@ const writeIndexHTML = async (src, sketchDir) => {
   const siteProps = await readJson('site-meta.json');
   sketchProps.description = stripTag(sketchProps.info)
 
+  console.log(sketchProps.libs)
   const cdnScriptTags = getCdnTags(sketchProps.libs)
+  console.log(cdnScriptTags)
   const additionalMenuItems = getMenuItem(sketchProps.action)
   const toInject = { src, title, ...sketchProps, ...siteProps, cdnScriptTags, additionalMenuItems }
 

@@ -1,1 +1,18 @@
-{"libs":[""],"info":"Genuary 2024 #genuary3","topic":"Random distribution","action":[{"name":"init","icon":"sync"},{"name":"download_JPG", "icon": "file-media"}],"date":"2024-1-4"}
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "Sketch made during Genuary 2024 #genuary3. Colorscheme imported from <a href='https://github.com/nclslbrn/artistry-swatch'>Artistry Swatch</a> (npm package).",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "download_JPG",
+            "icon": "file-media"
+        }
+    ],
+    "date": "2024-1-3"
+}

@@ -1,0 +1,18 @@
+{
+    "libs": [
+        "p5"
+    ],
+    "info": "Sketch based on <a href='https://www.mayorgallery.com/news/117-vera-molnar-lemuseedes-beaux-arts-rennes/'>Untitled (6)</a>, 1972 Computer drawing. Made during #genuary (2024), prompt (day 5): In the style of Vera Molnár (1924-2023).",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "download_JPG",
+            "icon": "file-media"
+        }
+    ],
+    "date": "2024-1-5"
+}
