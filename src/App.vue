@@ -6,6 +6,7 @@ import ProjectCapture from '@/components/ProjectCapture.vue'
 import ScrollIndicator from './components/ScrollIndicator.vue'
 import ProjectCaption from '@/components/ProjectCaption.vue'
 import AboutThisSite from '@/components/AboutThisSite.vue'
+import {isoDate} from '@/isoDate'
 
 export default defineComponent({
   components: {
@@ -31,7 +32,7 @@ export default defineComponent({
      * then query sketches
      */
     this.queryUrlParams()
-    fetch('sketch/index.json')
+    fetch(`sketch/index.json?cache=${isoDate()}`)
       .then(response => response.json())
       .then(data => {
         this.projects = data.filter((d: Project) => d !== undefined)
