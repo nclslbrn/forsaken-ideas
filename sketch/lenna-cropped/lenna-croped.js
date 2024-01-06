@@ -1,7 +1,8 @@
 import { generateHslaColors } from '../../sketch-common/generateHslaColors'
+import { downloadCanvas, canvasRecorder } from '@thi.ng/dl-asset'
 
 const sketch = (p5) => {
-    let rectSize, canvas, canvasSize, palette, img
+    let rectSize, canvas, canvasSize, palette, img, recorder
     const numFrame = 460
     const res = 1 / 3
     const sketchSize = () => {
@@ -24,7 +25,8 @@ const sketch = (p5) => {
     p5.setup = () => {
         canvasSize = sketchSize()
         canvas = p5.createCanvas(canvasSize.w, canvasSize.h)
-        canvas.elt.style.aspectRatio = `${canvasSize.w} / ${canvasSize.h}`
+        ;(recorder = canvasRecorder(canvas.elt, 'lenna-cropped', { fps: 24 })),
+            (canvas.elt.style.aspectRatio = `${canvasSize.w} / ${canvasSize.h}`)
         p5.rectMode(p5.CENTER)
         p5.imageMode(p5.CENTER)
         p5.colorMode(p5.HSL, 360, 100, 100, 100)
@@ -39,6 +41,7 @@ const sketch = (p5) => {
         const t = (p5.frameCount % numFrame) / numFrame
         const s = 2.5 + t
 
+        if (p5.frameCount === 1) recorder.start()
         p5.background(270, 50, 15, 75)
         p5.push()
         p5.translate(p5.width * 0.5, p5.height * 0.5)
@@ -76,6 +79,7 @@ const sketch = (p5) => {
         }
 
         p5.pop()
+        if (p5.frameCount >= numFrame - 1) recorder.stop()
     }
     sketch.exportJPG = () => {
         p5.save(canvas, 'capture', 'jpg')
