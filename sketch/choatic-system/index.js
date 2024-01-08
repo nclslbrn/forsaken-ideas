@@ -20,10 +20,11 @@ const alop = (p5) => {
         palette = getPalette({ theme: 'bright' })
 
         window.attractors = p5.random(constant)
+        console.log(window.attractors)
         attr = attractors['clifford']
 
-        for (let x = -3.5; x < 3.5; x += 0.1) {
-            for (let y = -3.5; y < 3.5; y += 0.1) {
+        for (let x = -3.5; x < 3.5; x += 0.04) {
+            for (let y = -3.5; y < 3.5; y += 0.04) {
                 prtcl.push([
                     x + p5.random(-0.02, 0.02),
                     y + p5.random(-0.02, 0.02),
@@ -40,7 +41,7 @@ const alop = (p5) => {
     alop.download_JPG = function () {
         const date = new Date()
         const filename =
-            'A-lot-of-particles.' +
+            'Chaotic-system.' +
             '-' +
             date.getHours() +
             '.' +
@@ -50,18 +51,18 @@ const alop = (p5) => {
         p5.save(canvas, filename, 'jpg')
     }
     p5.setup = function () {
-        canvas = p5.createCanvas(2000, 2400)
+        canvas = p5.createCanvas(1920, 2400)
         alop.init()
     }
     p5.draw = function () {
         for (let i = 0; i < prtcl.length; i++) {
             let v = {
-                x: prtcl[i][0] / 3.5,
-                y: prtcl[i][1] / 3.5
+                x: prtcl[i][0] / 0.5,
+                y: prtcl[i][1] / 0.5
             }
-            for (let j = 1; j < 14; j++) {
-                const v1 = attr(v)
-                const a1 = f * p5.noise(v1.x, v1.y)
+            for (let j = 1; j < 10; j++) {
+                const v1 = attr({ x: v.x, y: v.y })
+                const a1 = f * 7.5 * p5.noise(v1.x, v1.y)
                 const v2 = { x: Math.cos(v1.y) / a1, y: Math.sin(v1.x) / a1 }
                 const a3 = Math.atan2(Math.sin(v2.y), Math.sin(v2.x))
 
