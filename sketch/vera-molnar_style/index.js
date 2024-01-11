@@ -94,7 +94,7 @@ const molnar = (p5) => {
         p5.save(canvas, filename, 'jpg')
     }
     p5.setup = function () {
-        const s = Math.min(window.innerWidth, window.innerHeight)
+        const s = Math.min(1200, 1200)
         canvas = p5.createCanvas(s, s)
         molnar.init()
     }
@@ -108,7 +108,11 @@ const molnar = (p5) => {
             }
         }
         if (!scribles.reduce((moreThanFrame, line) => line.length > f || moreThanFrame, false)) {
-            new Notification('Drawing done, do you want to <button onclick="window.init()">generate another</button> ?', windowFrame, 'light')
+          new Notification(
+            'Drawing done, do you want to <button onclick="window.init()">generate another</button> ?',
+            windowFrame,
+            'light'
+          );
             p5.noLoop();
         }
         f++
