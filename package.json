@@ -14,7 +14,7 @@
     "sketch:publish": "cp -r ./public/sketch ./dist/ && cp ./sketch/color.css ./dist/sketch && ./sketch/project.css ./dist/sketch",
     "argument": "echo \"The value of --sketch is '${npm_config_sketch}'\"",
     "sketch:setup": "node tasks/setup-vite-for-sketch.mjs sketch/${npm_config_sketch}",
-    "sketch:dev": "vite sketch/${npm_config_sketch}",
+    "sketch:dev": "vite sketch/${npm_config_sketch} --host",
     "sketch:build": "vite build sketch/${npm_config_sketch}",
     "sketch:buildAll": "node tasks/build-all-sketches.mjs",
     "sketch:lint": "eslint sketch/${npm_config_sketch}/*.js --fix",
