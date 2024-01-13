@@ -1,14 +1,7 @@
 {
-    "libs": ["p5"],
-    "info": "Kind of circular progress/loading bar made with Perlin noise. You can change dimension by adding ?dim={width}x{height} at the end of the url.",
+    "libs": [],
+  "info": "Data vizualisation of principles stock marketplace accordin to <a href='https://en.wikipedia.org/wiki/List_of_stock_exchanges'>wikipedia</a>.",
     "date": "2024-1-7",
     "topic": "Perlin noise",
-    "action": [{
-        "name": "init",
-        "icon": "sync"
-    }, {
-
-        "name": "capture",
-        "icon": "file-media"
-    }]
+    "action": []
 }

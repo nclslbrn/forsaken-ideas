@@ -1,0 +1,27 @@
+export default [
+  ["New York", false, -5, "US"],
+  ["Shangai", "上海", 8, "CN"],
+  [
+    "Euronext", 
+    'Amsterdam<br>Brussels<br>Dublin<br>Lisbon<br>Milan<br>Oslo<br>Paris', 1, "EU"],
+  ["Tokyo", "東京都", 9, "JP"],
+  ["Shenzhen", "深圳市", 8, "CN"],
+  ["Mumbai", false, 5.30, "IN"],
+  ["Toronto", false, -5, "CA"],
+  ["London", false, 0, "UK"],
+  ["Riyadh", "الرياض", 3, "SA"],
+  ["Frankfurt", false, 1, "DE"],
+  ["Zürich", false, 1, "CH"],
+  ["Copenhagen", "København", 1, "DK"],
+  ["Stockholm", false, 1, "SE"],
+  ["Helsinki", "Helsingfors", 2, "FI"],
+  ["Tallinn", false, 2, "EE"],
+  ["Riga", false, 2, "LV"],
+  ["Vilnius", false, 2, "LT"],
+  ["Reykjavik", false, 0, "IS"],
+  ["Seoul", "서울", 9, "KR"],
+  ["Taipei", "臺北市", 8, "TW"],
+  ["Sydney", false, 10, "AU"],
+  ["Johannesburg", false, 2, "ZA"],
+  ["Tehran", "تهران", 3.33, "IR"]
+]
