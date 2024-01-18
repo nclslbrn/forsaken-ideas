@@ -6,44 +6,57 @@ import { createNoise2D } from 'simplex-noise'
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
-    gl = canvas.getContext('webgl'),
+    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
     startTime = new Date().getTime(),
     noise = createNoise2D(),
     minmax = (min, max) => min + Math.random() * (max - min)
 
 let mouseX = 0,
     mouseY = 0,
-    particles = [],
+    partPos = [],
+    partAng = [],
     width,
     height
+
+const capture = () => {
+    const link = document.createElement('a')
+    link.download = `lava-lamp-${new Date().getTime()}.jpg`
+    link.href = canvas.toDataURL('image/jpg')
+    link.click()
+}
 
 async function loadShaderAndRun() {
     const vert = await fetch('./assets/shader.vert').then((r) => r.text())
     const frag = await fetch('./assets/shader.frag').then((r) => r.text())
 
-    const createParticles = (num) => {
-        particles = []
+    const createParticle = (num) => {
+        partPos = []
+        partAng = []
         for (let i = 0; i < num; i++) {
-            particles[i] = [minmax(0, 1), minmax(-0.5, 1.5), minmax(0.01, 0.09)]
+            partPos[i] = [
+                minmax(-0.5, 1.5),
+                minmax(-0.5, 1.5),
+                minmax(0.01, 0.09)
+            ]
+            partAng[i] = 2 * Math.PI * noise(...partPos[i])
         }
     }
-    const updateParticles = () => {
-        for (let i = 0; i < particles.length; i++) {
-            if (particles[i][1] < -0.1) {
-                particles[i][1] = 1.1
-            } else if (particles[i][1] > 1.1) {
-                particles[i][1] = -0.1
-            } else {
-                const a = Math.PI * 2 * noise(particles[i][0], particles[i][1])
-                particles[i][0] += Math.cos(a) * 0.0005
-                particles[i][1] += Math.sin(a) * 0.0005
-                particles[i][1] += 0.001
+    const updateParticle = () => {
+        for (let i = 0; i < partPos.length; i++) {
+            partPos[i][0] += Math.cos(partAng[i]) * 0.0005
+            partPos[i][1] += Math.sin(partAng[i]) * 0.0005
+            partPos[i][1] += 0.0005
+
+            partAng[i] += noise(...partPos[i].map((v) => v * 0.005))
+
+            if (
+                partPos[i][0] + partPos[i][2] * 2 < -0.5 ||
+                partPos[i][0] + partPos[i][2] * 2 > 1.5
+            ) {
+                partAng[i] += Math.PI
             }
-            if (particles[i][0] < -0.1) {
-                particles[i][0] = 1.1
-            }
-            if (particles[i][0] > 1.1) {
-                particles[i][0] = -0.1
+            if (partPos[i][1] + partPos[i][2] * 2 > 2) {
+                partPos[i][1] = -partPos[i][2] * 2 - 1.0
             }
         }
     }
@@ -51,10 +64,10 @@ async function loadShaderAndRun() {
     const animate = () => {
         const now = new Date().getTime()
         const currentTime = (now - startTime) / 1000
-        updateParticles()
+        updateParticle()
         uTime.set(currentTime)
         uMouse.set(mouseX, mouseY)
-        uPart.set(particles.flat())
+        uPart.set(partPos.flat())
         billboard.render(gl)
         requestAnimationFrame(animate)
     }
@@ -121,7 +134,7 @@ async function loadShaderAndRun() {
         positionLocation = gl.getAttribLocation(program, 'a_position')
     gl.enableVertexAttribArray(positionLocation)
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
-    createParticles(24)
+    createParticle(64)
     resize()
     animate()
     windowFrame.appendChild(canvas)
@@ -130,10 +143,11 @@ async function loadShaderAndRun() {
         mouseX = event.pageX
         mouseY = height - event.pageY
     })
-    containerElement.removeChild(loader)
-    window.infobox = infobox
-    // window.init = clouds.init
-    // window.capture = clouds.capture
-    handleAction()
 }
 loadShaderAndRun()
+
+containerElement.removeChild(loader)
+window.infobox = infobox
+window.init = loadShaderAndRun
+window.capture = capture
+handleAction()

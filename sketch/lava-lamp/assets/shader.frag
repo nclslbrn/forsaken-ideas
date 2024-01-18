@@ -3,11 +3,12 @@
 #endif
 
 #define PI 3.14159265359
+#define N 64.0
 
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
-uniform vec3 u_part[24];
+uniform vec3 u_part[int(N)];
 
 float sdCircle(vec2 p,float r){
   return length(p)-r;
@@ -24,19 +25,28 @@ float ease_y(float n) { // easeOutExpo modified by nd
   return expo - 0.04*nd(n);
 }
 void main() { 
-  vec2 st =gl_FragCoord.xy/u_resolution.xy;
-  vec2 p=(2.*gl_FragCoord.xy - u_resolution.xy)/u_resolution.y; 
-  
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  vec2 p= (2.*gl_FragCoord.xy - u_resolution.xy)/u_resolution.y; 
+  //float fade =  
   float d = 1.0;
-  vec3 globalCol = vec3(0.0);
-
-  for (int i = 0; i < 24; i++) {
-  
+  vec3 globalCol = vec3(1.0);
+  for (int i = 0; i < int(N); i++) {
     vec3 c = vec3(u_part[i]);
+    float cc = float(i)/(N/3.0);
+    vec3 col = vec3(
+      fract(cc+0.25),
+      fract(cc+0.5),
+      fract(cc+0.75)
+    );
     float dist = distance(c.xy, st);
-    d = min(d, dist);
+    if (dist < 0.5) {
+      globalCol += vec3(1.0 - (col * sin(1.0 - dist/(c.z*2.0))));
+    }
+    d = min(d, dist/c.z);
   }
-  vec3 depth = vec3(ease_x(d));
-  gl_FragColor = vec4(depth, 1.0 );
+  globalCol = fract(globalCol);
+  float lens = 1.0 - abs(st.x - 0.5) * abs(st.y - 0.5);
+  vec3 depth = vec3(min(fract(d), lens));
+  gl_FragColor = vec4(globalCol, 1.0);
 }
 
