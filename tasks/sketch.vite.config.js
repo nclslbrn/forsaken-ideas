@@ -1,7 +1,9 @@
+import { warn } from 'node:console'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import createExternal from 'vite-plugin-external'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/sketch/{{src}}/',
@@ -9,7 +11,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        format: 'iife',
+        format: 'iife', 
       }
     },
     outDir: '../../public/sketch/{{src}}/',
