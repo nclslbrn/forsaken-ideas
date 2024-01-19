@@ -1,7 +1,7 @@
 {
     "libs": ["p5"],
     "info": "Kind of circular progress/loading bar made with Perlin noise. You can change dimension by adding ?dim={width}x{height} at the end of the url.",
-    "date": "2024-1-7",
+    "date": "2024-01-07",
     "topic": "Perlin noise",
     "action": [{
         "name": "init",
