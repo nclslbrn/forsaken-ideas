@@ -51,8 +51,9 @@ const sketch = (p5) => {
                   (x + (y % 2 === 0 ? 0.5 : 0)) * w, 
                   y * h, 
                   r, 
-                  random() < 0.25 ? 4 : 3,
-                  random() > 0.25 ? floor(random() * 6) : false),
+                  random() < 0.5 ? 4 : 3,
+                  floor(random() * 6)
+                )
                 i++
             }
         }
