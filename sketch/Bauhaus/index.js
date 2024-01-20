@@ -6,7 +6,7 @@ import p5 from 'p5'
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 let canvas
-const colors = ['#fefefe', '#fdcf5f', '#4887e7', '#f5646d', '#222222']
+const colors = ['#f3f3f3', '#fdcf5f', '#4887e7', '#f5646d', '#333333']
 const sketch = (p5) => {
     sketch.init = () => {
         const mrg = p5.random(24, 48),
@@ -25,25 +25,29 @@ const sketch = (p5) => {
             ]
         p5.noStroke()
         p5.background('white')
+        p5.strokeWeight(cel / 8)
+        p5.strokeCap(p5.SQUARE)
 
         for (let a = 0; a < div; a++) {
             for (let b = 0; b < div; b++) {
                 const x = mrg + a * cel,
                     y = mrg + b * cel
-
+                p5.drawingContext.save()
                 p5.fill(colors[(a * div + b) % colors.length])
                 p5.rect(x, y, cel, cel)
+                p5.drawingContext.clip()
+                p5.push()
 
                 for (let c = 0; c < 4; c++) {
-                    const p = Math.floor(
-                        Math.random() * (a < 1 || b < 1 ? 4 : 8)
-                    )
+                    p5.noFill()
+
+                    const p = Math.floor(Math.random() * 8)
                     const r = (Math.PI / 2) * (p % 4)
 
-                    for (let d = 1; d < 3; d++) {
-                        const s = cel / d
+                    for (let d = 0.5; d < 3; d += 0.5) {
+                        const s = p5.map(d, 3, 0, cel / 2, cel * 2)
 
-                        p5.fill(colors[(c + (d % 2)) % colors.length])
+                        p5.stroke(colors[(c + ((d * 2) % 2)) % colors.length])
                         p5.arc(
                             x + cen[p][0],
                             y + cen[p][1],
@@ -54,6 +58,8 @@ const sketch = (p5) => {
                         )
                     }
                 }
+                p5.pop()
+                p5.drawingContext.restore()
             }
         }
     }
