@@ -1,0 +1,16 @@
+{
+    "libs": ["p5"],
+    "info": "Aesemic writing done with random points and automated bezier curve. A brush effect is created by tracing the curve with a succession of segments (with a slight space between) and varying the transparency. Made during #genuary 2024 day 20 (Generative typography)",
+    "date": "2024-01-20",
+    "topic": "Random distribution",
+    "action": [
+        {
+            "name": "init",
+            "icon": "sync"
+        },
+        {
+            "name": "export_JPG",
+            "icon": "desktop-download"
+        }
+    ]
+}
