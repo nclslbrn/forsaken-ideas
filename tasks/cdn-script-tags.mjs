@@ -28,6 +28,10 @@ export default function (libs) {
   if (libs.includes("p5.createloop"))
     htmlOut += `
   <script src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js"></script>`
+  
+  if (libs.includes("matter-js"))
+    htmlOut += `
+  <script src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js"></script>`
 
   return htmlOut;
 }

@@ -23,6 +23,7 @@ export default defineConfig({
         externals: {
           p5: 'p5',
           fabric: 'fabric',
+          matter: 'Matter'
         }
       }
     }),
