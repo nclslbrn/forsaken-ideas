@@ -1,14 +1,14 @@
 import p5 from 'p5'
-import { getPalette, albers, alys, martin, mura, freud } from '@nclslbrn/artistry-swatch'
+import { getPalette } from '@nclslbrn/artistry-swatch'
+import './physicsjs-full'
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { RGB_S3TC_DXT1_Format } from 'three'
 
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 let canvas, palette, margin
-
+console.log(window.Physics)
 const sketch = (p5) => {
     const _x = (x) => x * (p5.width - margin * 2),
         _y = (y) => y * (p5.height - margin * 2),
@@ -62,7 +62,7 @@ const sketch = (p5) => {
     sketch.jpg = function () {
         const date = new Date()
         const filename =
-            'Anni-Albers.' +
+            'Physics.' +
             '-' +
             date.getHours() +
             '.' +

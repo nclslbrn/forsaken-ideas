@@ -34,8 +34,8 @@ async function loadShaderAndRun() {
         partAng = []
         for (let i = 0; i < num; i++) {
             partPos[i] = [
-                minmax(-0.5, 1.5),
-                minmax(-0.5, 1.5),
+                minmax(-0.5, 0.5),
+                minmax(-0.5, 0.5),
                 minmax(0.01, 0.09)
             ]
             partAng[i] = 2 * Math.PI * noise(...partPos[i])
@@ -43,20 +43,20 @@ async function loadShaderAndRun() {
     }
     const updateParticle = () => {
         for (let i = 0; i < partPos.length; i++) {
-            partPos[i][0] += Math.cos(partAng[i]) * 0.0005
-            partPos[i][1] += Math.sin(partAng[i]) * 0.0005
-            partPos[i][1] += 0.0005
+            partPos[i][0] += Math.cos(partAng[i]) * 0.003
+            partPos[i][1] += Math.sin(partAng[i]) * 0.003
+            partPos[i][1] += 0.001
 
-            partAng[i] += noise(...partPos[i].map((v) => v * 0.005))
+            partAng[i] += noise(...partPos[i].map((v) => v * 0.0001))
 
             if (
                 partPos[i][0] + partPos[i][2] * 2 < -0.5 ||
-                partPos[i][0] + partPos[i][2] * 2 > 1.5
+                partPos[i][0] + partPos[i][2] * 2 > 0.5
             ) {
                 partAng[i] += Math.PI
             }
-            if (partPos[i][1] + partPos[i][2] * 2 > 2) {
-                partPos[i][1] = -partPos[i][2] * 2 - 1.0
+            if (partPos[i][1] + partPos[i][2] * 2 > 1.5) {
+                partPos[i][1] = -partPos[i][2] * 2 - 1.5
             }
         }
     }
@@ -134,7 +134,7 @@ async function loadShaderAndRun() {
         positionLocation = gl.getAttribLocation(program, 'a_position')
     gl.enableVertexAttribArray(positionLocation)
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
-    createParticle(64)
+    createParticle(24)
     resize()
     animate()
     windowFrame.appendChild(canvas)

@@ -38,15 +38,16 @@ void main() {
       fract(cc+0.5),
       fract(cc+0.75)
     );
-    float dist = distance(c.xy, st);
-    if (dist < 0.5) {
-      globalCol += vec3(1.0 - (col * sin(1.0 - dist/(c.z*2.0))));
+    float dist = distance(c.xy, p);
+    if (abs(dist) < c.z * 5.0) {
+      globalCol += vec3(1.0 - (col * sin(1.0 - dist/(c.z*1.5))));
+
     }
     d = min(d, dist/c.z);
   }
   globalCol = fract(globalCol);
-  float lens = 1.0 - abs(st.x - 0.5) * abs(st.y - 0.5);
-  vec3 depth = vec3(min(fract(d), lens));
-  gl_FragColor = vec4(globalCol, 1.0);
+  float lens = 1.0 - sin(abs(p.x - 0.5) * abs(p.y - 0.5));
+  // vec3 depth = vec3(min(fract(d), lens));
+  gl_FragColor = vec4(globalCol * vec3(lens), 1.0);
 }
 
