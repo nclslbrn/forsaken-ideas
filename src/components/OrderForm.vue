@@ -40,6 +40,7 @@ export default {
         </button>
       </li>
     </ul>
+    <slot></slot>
   </form>
 </template>
 <style scoped>
@@ -74,10 +75,6 @@ form#order-grid p {
   padding: 0 0.3em;
   margin: 0;
   align-items: baseline;
-}
-
-form#order-grid button {
-  border: 1px solid transparent;
 }
 
 form#order-grid p button {

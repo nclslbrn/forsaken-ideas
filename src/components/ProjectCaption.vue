@@ -13,8 +13,7 @@ export default {
 }
 </script>
 <template>
-  <div class="project-caption">
-  <slot></slot>
+  <div class="project-caption"> 
     <a class="project-caption--title" :href="`./sketch/${project.src}/index.html`">
       <h2>{{ project.title }}</h2>
     </a>
@@ -37,7 +36,7 @@ export default {
 
 <style scoped>
 .project-caption {
-  padding: 0 1em 1em;
+  padding:  0 1em;
 }
 
 .project-caption--title {
@@ -45,8 +44,9 @@ export default {
 }
 
 .project-caption--title h2 {
-  line-height: 1;
-  margin: 1em 0;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 500;
 }
 
 .project-caption--meta .date,

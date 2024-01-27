@@ -1,26 +1,23 @@
 @import './color.css';
 
 @font-face {
-    font-family: 'uncut_sansbold';
-    src:
-        url('uncut-sans-bold-webfont.woff2') format('woff2'),
-        url('uncut-sans-bold-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: InterVariable;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("InterVariable.woff2") format("woff2");
 }
+
+:root { font-family: "Inter", sans-serif; }
+
+@supports (font-variation-settings: normal) {
+  :root { font-family: "InterVariable", sans-serif; font-optical-sizing: auto; }
+} 
 
 html {
     -webkit-font-smoothing: antialiased;
-    font-family:
-        ui-monospace,
-        SFMono-Regular,
-        SF Mono,
-        Menlo,
-        Consolas,
-        Liberation Mono,
-        monospace;
     font-size: 16px;
-}
+}   
 
 *,
 *::before,
@@ -36,30 +33,32 @@ body {
     box-sizing: border-box;
     background: var(--color-bg);
     color: var(--color-text);
-    min-height: 100vh;
+    height: 100vh;
+    height: -webkit-fill-available;
     transition:
         color 0.5s,
         background-color 0.5s;
     line-height: 1.6;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol';
     font-size: 16px;
+    font-weight: 500;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+#app, #windowFrame {
+  height: 100vh;
+  height: -webkit-fill-available;
 }
 
 h1,
 h2,
 h3,
 h4 {
-    font-family:
-        'uncut_sansbold',
-        Helvetica Neue,
-        Helvetica,
-        Arial,
-        sans-serif;
+  font-weight: 900;
 }
 
 h1 {
@@ -109,7 +108,7 @@ button,
     cursor: pointer;
     background-color: var(--color-solid);
     border: 1px solid var(--color-border);
-    /* box-shadow: 0 0 2px var(--color-shadow); */
+
     transition: all 0.15s ease-in-out;
 }
 

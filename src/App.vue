@@ -28,7 +28,7 @@ export default defineComponent({
   },
   mounted () {
     /*
-     * Read URL params and modify state if need
+     *Read URL params and modify state if need
      * then query sketches
      */
     this.queryUrlParams()
@@ -104,7 +104,7 @@ export default defineComponent({
       window.history.pushState({ path: url.href }, '', url.href)
     },
     /**
-     * Make vertical scrol horizontal 
+     * Make vertical scroll horizontal 
      * @param event 
      */
     onWheel (event: WheelEvent) {
@@ -125,7 +125,7 @@ export default defineComponent({
       };
       const callback: IntersectionObserverCallback = (entries: any) => {
         entries.forEach((entry: IntersectionObserverEntry) => {
-          if (
+          if (  
             (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
             entry.isIntersecting
           ) {
@@ -142,72 +142,25 @@ export default defineComponent({
 })
 </script>
 <template>
-  <header>
-    <h1>
-      <a title="forsaken ideas">
-        <img src="./assets/forsaken-ideas.svg" />
-      </a>
-    </h1>
-    <p>A tool to quickly experiment idea, a place for abandoned projects</p>
-  </header>
-
-  <main>
+    <main>
     <div class="scrollable-project" ref="scrollableProject" @wheel.prevent="onWheel">
+      <h1>Forsaken ideas <span>&#8594;</span></h1>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
         :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
         @focus="currProjectIndex = index" :project="item" :index="index" />
     </div>
+    <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]">
-        <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
-      </ProjectCaption>
-      <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
+      <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy">
+        <button id="toggleAbout">i</button>
+      </OrderForm>
     </div>
     <AboutThisSite :project-count="projects.length" />
   </main>
 </template>
 
 <style scoped>
-header {
-  display: flex;
-  padding: 0.5em 1em;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-@media screen and (min-width: 800px) {
-  header {
-    padding: 0.5em 2em;
-  }
-}
-
-header h1 {
-  display: block;
-  margin: 0;
-  fill: var(--color-text);
-  font-weight: bolder;
-  max-width: 260px;
-}
-
-header h1 a {
-  display: block;
-}
-
-header p {
-  line-height: 1;
-  margin-bottom: 0;
-}
-
-@media screen and (min-width: 900px) {
-  header {
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    text-align: left;
-  }
-}
-
 main {
   padding: 0;
   min-height: 100vh;
@@ -217,15 +170,35 @@ main {
 
 .scrollable-project {
   display: flex;
+  height: 90vh;
   flex-flow: row nowrap;
   align-items: center;
   white-space: nowrap;
   overflow-x: scroll;
-  padding: 1em 0 3em 0;
+  padding: 3em 0 3em 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  background: linear-gradient(to left, var(--color-solid), var(--color-bg));
+  /* background: linear-gradient(to left, var(--color-solid), var(--color-bg)); */ 
+  background: url(./assets/light_toast.webp) repeat;
   background-attachment: fixed;
+}
+
+
+.scrollable-project h1 {
+  display: block;
+  margin: 0 0.1em;
+  fill: var(--color-text);
+  max-width: 60%;
+  font-size: 13vw;
+  font-weight: 600;
+  white-space: break-spaces;
+  line-height: 1;
+} 
+
+@media (orientation: portrait) {
+  .scrollable-project h1 {
+    font-size: 15vw;
+  }
 }
 
 .scrollable-project::-webkit-scrollbar {
@@ -234,18 +207,16 @@ main {
 
 .scrollable-project>* {
   flex: 0 0 260px;
-  margin: 0 1em;
+  margin: 0 1.5em;
   max-width: 100%;
 }
-
+  
 @media screen and (min-width: 900px) {
   .scrollable-project>* {
-    flex: 0 0 20vw;
+    flex: 1 0 fit-content;
+    max-height: 90vh;
+    height: max-content;
   }
-}
-
-.scrollable-project a.project-preview:first-child {
-  margin-left: 60%;
 }
 
 .row {
@@ -253,5 +224,20 @@ main {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  background: var(--color-bg);
+}
+
+button#toggleAbout {
+  display: inline-flex;
+  margin-left: 0.5em;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-solid);
+  color: var(--color-text);
+  font-size: 1.25em;
+  width: 1.5em;
+  line-height: 0.75;
+  font-weight: 700;
+  border-radius: 16px;
 }
 </style>

@@ -14,7 +14,7 @@ export default {
 </script>
 <template>
     <a :href="`./sketch/${project.src}/index.html`" class="project-preview">
-        <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="`iteration of ${project.title}`" />
+        <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="`Capture of ${project.title}`" />
     </a>
 </template>
 
