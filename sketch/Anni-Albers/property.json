@@ -1,1 +1,18 @@
-{"libs":["p5"],"info":"Inspired by <a href='https://www.artnet.com/artists/anni-albers/untitled-1-of-9-from-connections-1925-1983-a-S6vS3-qQppIBCAMdonWurg2'>'Untitled 1 of 9 (from Connections 1925-1983)', 1983</a> by Anni Albers. Made during #genuary (day 11)","topic":"Randomdistribution","action":[{"name":"init","icon":"sync"},{"name":"jpg","icon":"file-media"}],"date":"2024-01-18"}
+{
+  "libs": [
+    "p5"
+  ],
+  "info": "Inspired by <a href='https://www.artnet.com/artists/anni-albers/untitled-1-of-9-from-connections-1925-1983-a-S6vS3-qQppIBCAMdonWurg2'>'Untitled 1 of 9 (from Connections 1925-1983)', 1983</a> by Anni Albers. Made during #genuary (day 11)",
+  "topic": "Random distribution",
+  "action": [
+    {
+      "name": "init",
+      "icon": "sync"
+    },
+    {
+      "name": "jpg",
+      "icon": "file-media"
+    }
+  ],
+  "date": "2024-01-18"
+}

@@ -2,32 +2,27 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import p5 from 'p5'
-import { getPalette } from '@nclslbrn/artistry-swatch'
-// import { canvasRecorder } from '@thi.ng/dl-asset'
+
 const windowFrame = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
+const palette = ['#fff', '#555']
 const sketch = (p5) => {
-    let rectSize, canvas, palette //, recorder
+    let rectSize, canvas
     const numFrame = 240
-    //const record = false
-    const res = 1 / 2
+    const res = 1.5
     const scale = 2 + Math.random() * 1.5
 
     p5.setup = () => {
         canvas = p5.createCanvas(1200, 1200)
-        // recorder = canvasRecorder(canvas.elt, 'screen-saver', { fps: 24 })
         canvas.elt.style.aspectRatio = `1 / 1`
         p5.rectMode(p5.CENTER)
         p5.noStroke()
-        palette = getPalette({ theme: 'bright' })
         rectSize = Math.max(p5.width, p5.height) * res * 0.5
     }
     p5.draw = () => {
         const t = (p5.frameCount % numFrame) / numFrame
-        const s = Math.PI * 2 + t
-
-        // if (p5.frameCount === 1 && record) recorder.start()
-        p5.background(palette.background)
+        const s = Math.PI * (t+1)
+        p5.background(palette[0])
         p5.push()
         p5.drawingContext.globalCompositeOperation = 'xor'
         p5.translate(p5.width * 0.5, p5.height * 0.5)
@@ -44,7 +39,7 @@ const sketch = (p5) => {
                     w: rectSize * Math.abs(0.5 - Math.cos(i)),
                     h: rectSize * Math.abs(0.5 - Math.cos(i))
                 }
-                p5.fill(palette.stroke)
+                p5.fill(palette[1])
                 p5.rect(m.x, m.y, r.w * scale, r.h * scale)
             }
         }

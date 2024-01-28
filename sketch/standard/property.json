@@ -2,7 +2,7 @@
     "libs": [
         "p5"
     ],
-    "info": "Coming soon",
+    "info": "Modular grid created by recursively cutting a cell. Each cell has a size obtained from the margin value.",
     "date": "2021-07-25",
     "topic": "Random distribution",
     "action": [

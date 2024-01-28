@@ -2,6 +2,7 @@ import SvgTracer from '../../sketch-common/svg-tracer'
 import { getLineLineCollision } from './trigonometry'
 import isPointInsidePolygon from './isPointInsidePolygon'
 import Notification from '../../sketch-common/Notification'
+import palettes from './palette'
 import Part from './Part'
 import {
     random,
@@ -38,8 +39,7 @@ const sketch = {
             round((svg.width - margin * 2) / N),
             round((svg.height - margin * 2) / N)
         ]
-        const accent = ['yellow', 'orange', 'purple',  'tomato', 'steelblue']
-        colors = ['black', '#ffff33', '#33ffff', '#ff33ff', 'white', accent[floor(random() * accent.length)]]
+        colors = [...palettes[floor(random() * palettes.length)].split(';:')]
         colors.forEach((color) =>
             svg.group({
                 name: color,
@@ -58,9 +58,8 @@ const sketch = {
             y: 0,
             w: svg.width,
             h: svg.height,
-            fill: 'black',
-            stroke: 'black',
-            group: 'black'
+            fill: colors[0],
+            group: colors[0]
         })
         parts = []
         for (let x = 0; x < N; x++) {
@@ -187,7 +186,7 @@ const sketch = {
             const maxRadius = max(...radiuses)
             let minAngle = min(...angles)
             let maxAngle = max(...angles)
-            const radiusStep = svg.cmToPixels(randBetween(0.1, 0.7))
+            const radiusStep = svg.cmToPixels(randBetween(0.05, 0.5))
             // only for dashed line
             const gapIndex = 2 + round(random() * 10)
             // Ugly hack to loop between -PI & PI

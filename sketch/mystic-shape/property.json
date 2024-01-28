@@ -1,6 +1,6 @@
 {
     "libs": [],
-    "info": "Coming soon",
+    "info": "Particles in a force field are moved according to a plane curve function and Perlin noise. The resulting drawing is plottable, with color references (Stabilo felt-tip pen) are provided.",
     "date": "2021-06-15",
     "topic": "Plane curve",
     "action": [
