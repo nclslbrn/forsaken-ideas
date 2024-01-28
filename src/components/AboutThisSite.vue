@@ -1,11 +1,13 @@
 <template>
     <div id="about">
-        <h2>Currently, {{ projectCount }} projects archived.</h2>
+        <h2>Currently, {{ projectCount }} projects archived 
+          <button class="small" @click.prevent="switchLang">
+            {{ lang === 'en' ? 'fr' : 'en' }}
+          </button>
+        </h2>
+        
         <div class="site-description">
             <div v-if="lang === 'en'">
-                <button class="small" @click.prevent="lang = 'fr'">
-                    Version Française
-                </button>
                 <div class="text-column">
                     <p>
                         I can't quite remember how I came to want to create this
@@ -64,10 +66,6 @@
             </div>
 
             <div v-if="lang === 'fr'">
-                <button class="small" @click.prevent="lang = 'en'">
-                    English version
-                </button>
-
                 <div class="text-column">
                     <p>
                         Je ne me rappelle plus très bien comment j’ai eu envie
@@ -94,21 +92,19 @@
                     <p>
                         Évidemment après avoir créé ce workflow et après l’avoir
                         utilisé sur une dizaine de projets, je suis passé à
-                        autre chose mais l’idée revenait souvent, quand trouvais
+                        autre chose mais l’idée revenait souvent, quand je trouvais
                         des programmes abandonnés (qui n’avait pas aboutis, pas
                         montrés ou publiés en tant qu’œuvre), je les ajoutais au
                         catalogue.
                     </p>
-                </div>
 
-                <div class="text-column">
                     <p>
                         De l’idée initiale d’avoir une sorte de méta-outil qui
                         permette de rapidement passer d’une idée à un prototype,
                         ce catalogue est devenu un refuge pour projets en manque
                         d’amour. Le statut de cette aire de jeu évolue encore
-                        entre ces deux visions, j’apprécie qu'une nécessité
-                        technique devienne avec le temps un objet presque
+                        entre ces deux visions. La nécessité
+                        technique est devenu avec le temps un objet presque
                         poétique (recueil d’idées abandonnées ou de projets
                         autocensurés).
                     </p>
@@ -124,7 +120,7 @@
                         ouverte et c’est pour ça que je l’ai publié sous licence
                         MIT, il s'agit sans doute de rendre à la communauté
                         #creativeCoding et #generativeArt tout ce qu'elle a pu
-                        me donner.
+                        me donner.œ
                     </p>
 
                     <p>
@@ -158,6 +154,11 @@ export default {
     },
     props: {
         projectCount: Number
+    },
+    methods: {
+        switchLang: function(): void {
+            this.lang = (this.lang === 'en') ? 'fr' : 'en'
+        }
     }
 }
 </script>
@@ -165,15 +166,19 @@ export default {
 <style scoped>
 #about {
     display: block;
-    padding: 2em 2em 2em;
-    margin: 6em auto;
+    padding: 1em;
     background-color: var(--color-solid);
 }
 
 #about h2 {
-    margin-top: 2em;
-    padding-top: 2em;
-    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#about h2 button {
+  margin-left: 1em;
 }
 
 #about>div {
@@ -191,6 +196,8 @@ export default {
 .site-description p {
     clear: both;
     float: none;
+    line-height: 1.5;
+    font-weight: 500;
 }
 
 .site-description button.small {
@@ -200,22 +207,17 @@ export default {
 
 @media screen and (min-width: 900px) {
     .site-description {
-        padding: 2em 6em;
+      padding: 2em 6em;
     }
 
     .text-column {
-        display: block;
-        float: left;
-        width: calc(50% - 48px);
-        margin: 0 24px;
-    }
-
-    .site-description .text-column:first-of-type {
-        text-align: right;
+       display: block;
+       column-count: 4;
+       column-gap: 40px;
     }
 
     .site-description p {
-        align-self: start;
+        text-align: justify;
     }
 }
 

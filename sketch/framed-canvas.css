@@ -1,5 +1,6 @@
-#windowFrame  {
+#windowFrame {
     height: 100vh;
+    height: -webkit-fill-available;
     display: grid;
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows: 1fr 80% 1fr;
@@ -37,7 +38,6 @@
     height: auto !important;
 }
 
-
 @media (min-width: 20rem) {
     #windowFrame #frame,
     #windowFrame svg,
@@ -59,19 +59,16 @@
     }
 }
 
-
 svg {
     float: left;
 }
 
 svg::after {
-    content: "";
+    content: '';
     display: table;
     clear: both;
     float: none;
 }
-
-
 
 #interactiveParameter {
     display: flex;

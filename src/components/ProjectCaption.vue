@@ -36,21 +36,42 @@ export default {
 
 <style scoped>
 .project-caption {
-  padding:  0 1em;
+  flex-grow: 1;
 }
 
 .project-caption--title {
+  display: block;
   text-decoration: none;
+  color: var(--color-text);
+}
+
+.project-caption--title:hover,
+.project-caption--title:focus {
+  color: var(--color-primary);
 }
 
 .project-caption--title h2 {
+  font-size: 2.5em;
   line-height: 1.5;
   margin: 0;
   font-weight: 500;
 }
 
+@media (orientation: portrait) {
+  .project-caption--title h2 {
+    font-size: 1.25em;
+  }
+}
+@media (orientation: landscape) {
+  .project-caption--meta {
+    display: inline-flex;
+    border-top: 2px solid var(--color-border);
+  }
+}
+
 .project-caption--meta .date,
 .project-caption--meta .topic {
+  margin: 0.5em 2em 0.5em 0;
   line-height: 1.5;
 }
 

@@ -1,23 +1,28 @@
 @import './color.css';
 
 @font-face {
-  font-family: InterVariable;
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("InterVariable.woff2") format("woff2");
+    font-family: InterVariable;
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('InterVariable.woff2') format('woff2');
 }
 
-:root { font-family: "Inter", sans-serif; }
+:root {
+    font-family: 'Inter', sans-serif;
+}
 
 @supports (font-variation-settings: normal) {
-  :root { font-family: "InterVariable", sans-serif; font-optical-sizing: auto; }
-} 
+    :root {
+        font-family: 'InterVariable', sans-serif;
+        font-optical-sizing: auto;
+    }
+}
 
 html {
     -webkit-font-smoothing: antialiased;
     font-size: 16px;
-}   
+}
 
 *,
 *::before,
@@ -39,9 +44,18 @@ body {
         color 0.5s,
         background-color 0.5s;
     line-height: 1.6;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-family:
+        'Inter',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif,
+        'Apple Color Emoji',
+        'Segoe UI Emoji',
+        'Segoe UI Symbol';
     font-size: 16px;
     font-weight: 500;
     text-rendering: optimizeLegibility;
@@ -49,16 +63,17 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-#app, #windowFrame {
-  height: 100vh;
-  height: -webkit-fill-available;
+#app,
+#windowFrame {
+    height: 100vh;
+    height: -webkit-fill-available;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-weight: 900;
+    font-weight: 900;
 }
 
 h1 {
@@ -130,7 +145,6 @@ button svg,
 button.active,
 .button.active {
     color: var(--color-secondary);
-    /* box-shadow: 0 0 2px var(--color-secondary); */
 }
 
 button.active svg,

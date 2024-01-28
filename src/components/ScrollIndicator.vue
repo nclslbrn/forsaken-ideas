@@ -10,26 +10,13 @@ export default {
             type: Number,
             required: true
         }
-    },
-    methods: {
-        getIndicators(): string {
-            let out = ''
-            for (let i = 0; i  < this.count; i++) {
-                out += i === this.current 
-                    ? '<span class="current"></span>' 
-                    : '<span></span>'
-            }
-            out += ''
-            return out 
-        }
     }
-
 }
 </script>
 <template>
   <div class="scroll-indicator">
       <template v-for="i in count" v-bind:key="i">
-        <span :class="i === current ? 'current' : ''"></span>
+        <span :class="i <= current ? 'seen' : ''"></span>
       </template>
     </div>
 </template>
@@ -43,8 +30,10 @@ export default {
       flex: 1 0 auto;
       height: 2px;
       background: var(--color-bg);
+      transition: background 10ms ease-in; 
     }
-    .scroll-indicator span.current {
-      background: var(--color-primary)
+    .scroll-indicator span.seen {
+      background: var(--color-text);
+
     }
 </style>

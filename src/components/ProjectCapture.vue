@@ -1,16 +1,16 @@
 <script lang="ts">
-import type { Project } from '@/project'
+import type { Project } from "@/project";
 export default {
     props: {
         project: {
             type: Object as () => Project,
-            required: true
+            required: true,
         },
         index: {
-            type: Number
-        }
-    }
-}
+            type: Number,
+        },
+    },
+};
 </script>
 <template>
     <a :href="`./sketch/${project.src}/index.html`" class="project-preview">
@@ -25,24 +25,22 @@ a.project-preview {
     text-decoration: none;
     transition: all 0.01s ease-in;
     overflow: hidden;
-    box-shadow: 0 0.5em 1em var(--color-shadow);
+    box-shadow: 0 0.75em 0.66em var(--color-shadow);
     transition: all 0.01s linear;
 }
 
-
 a.project-preview {
-    border: 10px solid var(--color-text);
+    background: linear-gradient(to bottom, #000, #444);
+    padding: 12px;
+    border-radius: 2px;
 }
 
 a.project-preview.active,
 a.project-preview:focus,
-
 a.project-preview:hover {
-    background-color: var(--color-secondary);
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
     box-shadow: 0 1em 1em var(--color-shadow);
-    border: 10px solid var(--color-primary);
 }
-
 
 a.project-preview img {
     float: left;
@@ -67,7 +65,7 @@ a.project-preview span.debug-intersection {
 a.project-preview img::before,
 a.project-preview img::after {
     display: block;
-    content: '';
+    content: "";
     clear: both;
 }
 </style>

@@ -21,6 +21,7 @@ export default defineComponent({
     return {
       projects: [] as Project[],
       currProjectIndex: 0,
+      whatsThis: false,
       sorting: 'date',
       asc: false,
       observer: null as IntersectionObserver | null,
@@ -143,34 +144,46 @@ export default defineComponent({
 </script>
 <template>
     <main>
-    <div class="scrollable-project" ref="scrollableProject" @wheel.prevent="onWheel">
-      <h1>Forsaken ideas <span>&#8594;</span></h1>
+    <div class="scrollable-project" v-if="!whatsThis" ref="scrollableProject" @wheel.prevent="onWheel">
+      <header>
+        <h1 lang="en">Forsa&shy;ken ideas <span>{{projects.length}}&#8594;</span></h1>
+      </header>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
         :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
         @focus="currProjectIndex = index" :project="item" :index="index" />
     </div>
+    <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
     <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <div class="row">
       <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
       <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy">
-        <button id="toggleAbout">i</button>
+        <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">
+          <svg class="icon icon-question">
+            <use xlink:href="#icon-question"></use>
+          </svg>
+        </button>
       </OrderForm>
     </div>
-    <AboutThisSite :project-count="projects.length" />
   </main>
 </template>
 
 <style scoped>
 main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   padding: 0;
   min-height: 100vh;
   max-height: 100vh;
 }
 
+#about, 
+.scrollable-project {
+  height: 85vh;
+}
 
 .scrollable-project {
   display: flex;
-  height: 90vh;
   flex-flow: row nowrap;
   align-items: center;
   white-space: nowrap;
@@ -178,26 +191,48 @@ main {
   padding: 3em 0 3em 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  /* background: linear-gradient(to left, var(--color-solid), var(--color-bg)); */ 
-  background: url(./assets/light_toast.webp) repeat;
+  background: url(./assets/dust.png) repeat;
   background-attachment: fixed;
 }
 
+.scrollable-project header {
+  max-width: 30vw;
+  width: 100%;
+  text-align: right;
+  overflow: hidden;
+}
 
-.scrollable-project h1 {
+.scrollable-project header h1 {
   display: block;
   margin: 0 0.1em;
   fill: var(--color-text);
-  max-width: 60%;
-  font-size: 13vw;
+  font-size: 9vw;
   font-weight: 600;
-  white-space: break-spaces;
+  white-space: normal;
   line-height: 1;
-} 
+  webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto; 
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.scrollable-project header h1 span {
+  font-size: 0.5em;
+}
 
 @media (orientation: portrait) {
-  .scrollable-project h1 {
-    font-size: 15vw;
+  .scrollable-project {
+    height: 85vh;
+  }
+  .scrollable-project header {
+    max-width: 60vw;
+  }
+  .scrollable-project header h1 {
+    text-align: left;
+    font-size: 18vw;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
@@ -213,31 +248,46 @@ main {
   
 @media screen and (min-width: 900px) {
   .scrollable-project>* {
-    flex: 1 0 fit-content;
-    max-height: 90vh;
-    height: max-content;
+    flex: 0 0 auto;
+    max-width: 30%;
   }
 }
 
 .row {
-  padding: 0 2em;
+  padding: 0 1em;
   display: flex;
   flex-flow: row nowrap;
+  width: 100%;
   justify-content: space-between;
-  background: var(--color-bg);
+  align-items: flex-start;
+  background: var(--color-solid);
+}
+
+#about {
+  overflow-y: auto;
 }
 
 button#toggleAbout {
   display: inline-flex;
   margin-left: 0.5em;
+  padding: 4px;
   justify-content: center;
   align-items: center;
-  background: var(--color-solid);
+  background: var(--color-bg);
   color: var(--color-text);
-  font-size: 1.25em;
-  width: 1.5em;
-  line-height: 0.75;
-  font-weight: 700;
-  border-radius: 16px;
+  font-size: 1.1em;
+  border: none;
 }
+
+@media (orientation: landscape) {
+  button#toggleAbout {
+    border-bottom: 1px solid var(--color-text);
+  }
+
+  button#toggleAbout:focus,
+  button#toggleAbout:hover {
+    border-bottom: 1px solid var(--color-primary);
+  }
+}
+
 </style>
