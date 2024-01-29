@@ -13,25 +13,25 @@ This workflow is designed to be modular and space-saving, so the p5.js and three
 
 
 ```
-+ dist/ Whole site exported (production ready)
-+ public/ Where projects are exported (to be used on gallery Vue app)
-+ sketch/
-|---+ your-fantastic-JS-project/ - Where you code new sketch
-|-------+ assets/ - A folder to store some files (fonts, img), Vite will lookat this specific folder
-|-------+ index.js - Sketch entry point
-|-------+ property.json - Sketch properties, details below
-|-------+ capture.jpg - 1200px illustration for Open Graph (adapth the height to fit you image ratio)
-|-------+ thumbnail.jpg - 600px image for gallery (adapt the height too)
-+ sketch-common/ - Files you want to import in multiple sketch (not used in production, only on development)
-+ src/ - Gallery Vue App (dev files)
-+ tasks/ - Nodejs scripts used in Vite config (CLI to create a new project, batch building all project, merge each sketch metadata into a central file used by the gallery)
-|-------+ ...- A bunch of dotfiles (nothing fancy here)
-|-------+ site-meta.json - Some info that will be injected in HTML <meta> (OpenGraph)
-|-------+ sketch.rollup.config.mjs - Task to dev or build a specific sketch
+╠═══ dist/ Whole site exported (production ready)
+╠═══ public/ Where projects are exported (to be used on gallery Vue app)
+╠═══ sketch/
+║...╠═══ your-fantastic-JS-project/ Where you code new sketch
+║...╠═══ assets/ A folder to store some files (fonts, img), Vite will lookat this specific folder
+║...╠═══ index.js Sketch entry point
+║...╠═══ property.json Sketch properties, details below
+║...╠═══ capture.jpg 1200px illustration for Open Graph (adapt the height to fit you image ratio)
+║...╠═══ thumbnail.jpg 600px image for gallery (adapt the height too)
+╠═══ sketch-common/ Files you want to import in multiple sketch (not used in production, only on development)
+╠═══ src/ Gallery Vue App (dev files)
+╠═══ tasks/ Nodejs scripts used in Vite config (CLI to create a new project, batch building all project, merge each sketch metadata into a central file used by the gallery)
+║...╠═══ ...- A bunch of dotfiles (nothing fancy here)
+║...╠═══ site-meta.json Some info that will be injected in HTML <meta> (OpenGraph)
+║...╠═══ sketch.vite.config.js Task to dev or build a specific sketch
 
 ```
 
-### Sketch properties example
+### Sketch properties example (could be generated with a CLI, see NPM script below)
 ```
 {
     "libs": [
@@ -52,39 +52,32 @@ This workflow is designed to be modular and space-saving, so the p5.js and three
             "icon": "sync"
         },
         {
-            "name": "export",
+            "name": "capture",
             "icon": "desktop-download"
         }
     ]
 }
 ```
 
-
-```libs``` Array: For each project you could import JS libraries (from CDN you could also used file from node_modules)
-
-```info``` String: Short text about the project (displayed on project page and on Open Graph), accept HTML markup
-
-```date``` String: A YYYY-MM-DD date of creation
-
-```action``` Array of object (one per action): action list (property below) Additional icon menu action
-
-```action.name``` String: A sketch function to call (must be declared as window.name)
-
-```action.icon``` String: An icon name (must be defined in src/pug/svg-defs.pug)
+Property | Description
+--- | ---
+libs | (Array) For each project you could import JS libraries (from CDN you could also used file from node_modules)
+info | (String) Short text about the project (displayed on project page and on Open Graph), accept HTML markup
+date | (String) A YYYY-MM-DD date of creation
+action | (Array) An array of action objecct (property below) Additional icon menu action (to interact with your script)
+action.name | (String) A sketch function to call (must be declared as window.name)
+action.icon | (String) An icon name (must be declared in sketch-template.html)
 
 
 
 ### Main NPM scripts
-```npm run sketch:setup --sketch=sketch-folder-name``` Setup configuration of a new sketch (via a CLI) 
 
-```npm run sketch:dev --sketch=sketch-folder-name``` Launch sketch at localhost:10001 
-
-```npm run sketch:build --sketch=sketch-folder-name``` Build a sketch
-
-```npm run sketch:list``` Concatenate all sketch/**/property.json in public/sketch/index.json (run it each time you want to include a new project in the gallery)
-
-```npm run sketch:publish``` Copy all bundled sketch into dist/ (add new sketch in production without rebuilding the gallery app)
-
-```npm run gallery:dev``` Launch gallery/homepage Vue app at localhost:5173
-
-```npm run gallery:build``` Build the gallery app in dist/
+Command | Description
+--- | ---
+npm run sketch:setup --sketch=sketch-folder-name | Setup configuration of a new sketch (via a CLI) 
+npm run sketch:dev --sketch=sketch-folder-name | Launch sketch at localhost:5173 
+npm run sketch:build --sketch=sketch-folder-name | Build a sketch (exported in public/)
+npm run sketch:list | Concatenate all sketch/**/property.json in public/sketch/index.json (run it each time you want to include a new project in the gallery)
+npm run sketch:publish | Copy all bundled sketch into dist/ (add new sketch in production without rebuilding the gallery app)
+npm run gallery:dev | Launch gallery/homepage Vue app at localhost:5173
+npm run gallery:build | Build the gallery app in dist/

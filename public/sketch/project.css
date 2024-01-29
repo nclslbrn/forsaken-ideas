@@ -19,7 +19,7 @@ body {
     text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
     background: #333;
 }
