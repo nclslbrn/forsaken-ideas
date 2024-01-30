@@ -11,7 +11,7 @@
     "gallery:lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "gallery:format": "prettier --write src/",
     "sketch:list": "node tasks/concat-sketch-properties.mjs",
-    "sketch:publish": "cp -r ./public/sketch ./dist/ && cp ./sketch/color.css ./dist/sketch && ./sketch/project.css ./dist/sketch",
+    "sketch:publish": "cp -r ./public/sketch ./dist/ && cp ./sketch/color.css ./dist/sketch/ && ./sketch/project.css ./dist/sketch/",
     "argument": "echo \"The value of --sketch is '${npm_config_sketch}'\"",
     "sketch:setup": "node tasks/setup-vite-for-sketch.mjs sketch/${npm_config_sketch}",
     "sketch:dev": "vite sketch/${npm_config_sketch} --host",
