@@ -56,7 +56,7 @@ const htmlPlace = (p) => {
         ? `<h3>${title}</h3><p>${subtitle}</p>`
         : `<h3>${title}</h3>`
     c.innerHTML += `<div><span>${p[3]}</span><span>${
-        p[2] > 0 ? '+' + p[2] : p[2]
+        String(p[2] > 0 ? '+' + p[2] : p[2]).replace('.', ':')
     }</span></div>`
     return c
 }
