@@ -1,6 +1,5 @@
 import p5 from 'p5'
-//import { getPalette } from '@nclslbrn/artistry-swatch'
-import PALETTES from './palette'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
@@ -21,42 +20,44 @@ const sketch = (p5) => {
             return o.map((v) => v / sum)
         },
         drawCell = (x, y, w, h, b) => {
-            const cols = w / b,
-                rows = h / b
+            const cols = Math.ceil(w / b),
+                rows = Math.ceil(h / b)
             for (let c = 0; c < cols; c++) {
                 for (let r = 0; r < rows; r++) {
-                    const idx = c * Math.floor(cols) + r
-                    p5.fill(palette[idx % palette.length])
-                    p5.rect(x + c * b, y + r * b, b-2, b-2)
+                    const idx = c * cols + r,
+                        pos = [x + c * b, y + r * b],
+                        siz = [
+                            c === cols - 1 ? w - 2 - c * b : b-2,
+                            r === rows - 1 ? h - 2 - r * b : b-2
+                        ]
+
+                    p5.fill(palette.colors[idx % palette.colors.length])
+                    p5.rect(...pos, ...siz)
                 }
             }
         }
 
-    sketch.init = function () {
-        palette = [...(p5.random(PALETTES)).split(';:')]
-        p5.drawingContext.save()
-        p5.background(palette[0])
-        p5.stroke(palette[0])
-        p5.fill(palette[0])
-        palette.splice(0, 1)
+    sketch.randomize = function () {
+        palette = getPalette()
+        p5.background(palette.background)
+        p5.noStroke()
+        p5.fill(palette.background)
         p5.rect(margin, margin, p5.width - margin * 2, p5.height - margin * 2)
-        p5.drawingContext.clip()
 
-        const yRange = stack(p5.random(5, 10))
+        const yRange = stack(p5.random(8, 16))
         let y = margin
 
         for (let i = 0; i < yRange.length; i++) {
             const dy = _y(yRange[i])
-            const xRange = stack(p5.random(5, 10))
+            const xRange = stack(p5.random(8, 16))
             let x = margin
             for (let j = 0; j < xRange.length; j++) {
                 const dx = _x(xRange[j])
-                drawCell(x, y, dx, dy, margin * 0.15)
+                drawCell(x, y, dx, dy, margin * 0.2)
                 x += dx
             }
             y += dy
         }
-        p5.drawingContext.restore()
     }
 
     sketch.jpg = function () {
@@ -74,13 +75,13 @@ const sketch = (p5) => {
     p5.setup = function () {
         canvas = p5.createCanvas(1200, 1600)
         margin = Math.min(p5.width, p5.height) * 0.07
-        sketch.init()
+        sketch.randomize()
     }
 }
 
 new p5(sketch, windowFrame)
 windowFrame.removeChild(loader)
-window.init = sketch.init
+window.rand = sketch.randomize
 window.jpg = sketch.jpg
 window.infobox = infobox
 handleAction()

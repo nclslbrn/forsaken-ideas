@@ -1,1 +1,1 @@
-{"libs":["p5", "physics"],"info":"Inspired by ** by Anni Albers","topic":"Random distribution","action":[{"name":"init","icon":"sync"},{"name":"jpg","icon":"file-media"}],"date":"2024-01-18"}
+{"libs":["p5"],"info":"An offset game with nested grids, width differences create patterns with the blocks  ","topic":"Random distribution","action":[{"name":"rand","icon":"sync"},{"name":"jpg","icon":"file-media"}],"date":"2024-02-01"}
