@@ -1,0 +1,18 @@
+{
+  "libs": [
+    ""
+  ],
+  "info": "Particles animated with JavaScript drawn with (fragment) shader. Colors are computed by the distance betwwen a (screen) pixel and the center of a particle. Made during #genuary2024.",
+  "topic": "Perlin noise",
+  "action": [
+    {
+      "name": "init",
+      "icon": "sync"
+    },
+    {
+      "name": "capture",
+      "icon": "file-media"
+    }
+  ],
+  "date": "2024-01-16"
+}
