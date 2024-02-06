@@ -21,11 +21,11 @@ body {
     padding: 0;
     height: 100vh;
     overflow: hidden;
-    background: #333;
+    background: var(--color-bg);
 }
 
 ::selection {
-    color: var(--color-body);
+    color: var(--color-bg);
     background-color: var(--color-primary);
 }
 
@@ -201,11 +201,11 @@ nav#iconav a:hover svg {
 
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] {
     background: var(--color-primary);
-    color: var(--color-body);
+    color: var(--color-bg);
 }
 
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] svg {
-    fill: var(--color-body);
+    fill: var(--color-bg);
 }
 
 /**
@@ -243,7 +243,7 @@ body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] svg {
         width: 300px;
         max-width: 300px;
         transform: translate(-300px, 0);
-        background: #111;
+        background: var(--color-bg);
     }
 
 }

@@ -19,13 +19,13 @@ body {
     text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
     background: var(--color-bg);
 }
 
 ::selection {
-    color: var(--color-body);
+    color: var(--color-bg);
     background-color: var(--color-primary);
 }
 
@@ -201,11 +201,11 @@ nav#iconav a:hover svg {
 
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] {
     background: var(--color-primary);
-    color: var(--color-body);
+    color: var(--color-bg);
 }
 
 body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] svg {
-    fill: var(--color-body);
+    fill: var(--color-bg);
 }
 
 /**
@@ -243,6 +243,7 @@ body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] svg {
         width: 300px;
         max-width: 300px;
         transform: translate(-300px, 0);
+        background: var(--color-bg);
     }
 
 }
@@ -260,11 +261,8 @@ body.openedOffWindow nav#iconav ul li a[data-action='openOffFrame'] svg {
 }
 
 #offFrame #projectTitle {
-    max-width: 280px;
     min-height: 5rem;
     padding-bottom: 1rem;
-    hyphens: auto;
-    word-break: break-all;
     border-bottom: 1px solid var(--color-text);
 }
 
