@@ -33,7 +33,7 @@ async function loadShaderAndRun() {
 
     const animate = () => {
         const now = new Date().getTime()
-        const currentTime = (now - startTime) / 1000
+        const currentTime = (now - startTime) / 10000
         uTime.set(currentTime)
         uMouse.set(mouseX, mouseY)
         billboard.render(gl)
@@ -48,6 +48,7 @@ async function loadShaderAndRun() {
         canvas.style.height = window.innerHeight + 'px'
         uResolution.set(canvas.width, canvas.height)
         uBackground.set(...hex2Vec3(palette.background))
+        uStroke.set(...hex2Vec3(palette.stroke))
         uPalNum.set(palette.colors.length)
         uPalCols.set(palette.colors.map(hex => hex2Vec3(hex)).flat())
         gl.viewport(0, 0, canvas.width, canvas.height)
@@ -103,7 +104,8 @@ async function loadShaderAndRun() {
     const uResolution = new Uniform('u_resolution', '2f'),
         uMouse = new Uniform('u_mouse', '2f'),
         uTime = new Uniform('u_time', '1f'),
-        uBackground = new Uniform('u_background', '3f'), 
+        uBackground = new Uniform('u_background', '3f'),
+        uStroke = new Uniform('u_stroke', '3f'),
         uPalCols = new Uniform('u_palCols', '3fv'),
         uPalNum = new Uniform('u_palNum', '1i'),
         billboard = new Rect(gl),

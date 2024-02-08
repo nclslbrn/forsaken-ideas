@@ -10,6 +10,7 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform int u_palNum;
 uniform vec3 u_background;
+uniform vec3 u_stroke;
 uniform vec3 u_palCols[MAX_COLORS];
 
 float sdCircle(vec2 p, float r){
@@ -43,7 +44,7 @@ float sdf_rep(float x, float r){
 
 vec3 getColor(int num) {
   for (int i = 0; i < MAX_COLORS; i++) {
-    if (i >= u_palNum) return u_background;
+    if (i >= u_palNum) return u_stroke;
     if (i == num) return u_palCols[i];
   }
 }
@@ -56,9 +57,9 @@ void main() {
 
 
   // animation
-  vec2 v1 = cos( u_time*0.5 + vec2(.0,0.5) + 0.5 );
-  vec2 v2 = cos( u_time*0.25 + vec2(.0,0.5) + 0.25 );
-  float th = 0.5*(0.75+0.75*cos(u_time*1.1+1.0));
+  vec2 v1 = cos( u_time*0.25 + vec2(.0,1.) + .5 );
+  vec2 v2 = cos( u_time*0.5 + vec2(.0,.5) + .25 );
+  float th = .15*(.95+.15*cos(u_time*1.1+1.0));
 
   float l = sdOrientedBox(st, v1, v2, th );
 
@@ -67,14 +68,15 @@ void main() {
   float noise = random(ipos);
 
   float d = abs(sdf_rep(
-      sdCircle(vec2(.5)-st, clamp(l*noise, .1, .9)) - 0.05, 
-      sdBox(vec2(.5)-st, vec2(0.5*th))-0.01
-  )-0.95);
+      sdCircle(vec2(.5)-st, clamp(l*noise, .01, .9)) + .07, 
+      sdBox(vec2(.5)-st, vec2(.5 * th)) - .5
+  ) - .1);
 
   int col = int( floor(fract(d) * float(u_palNum) ) );
-  float lens = 1. - sin(abs(st.x - 0.5) * abs(st.y - 0.5));
-  vec3 back = mix(u_background, vec3(.0), vec3(pow(lens, 3.0)));
-  vec3 palColor = mix(back, getColor(col), vec3(sin(d)));
+  vec3 invBack = u_background-1.0;
+  float lens = 1. - cos(abs(st.x - .5) * abs(st.y - .5));
+  vec3 back = mix(u_background, invBack, lens);
+  vec3 palColor = mix(back, getColor(col), d);
   gl_FragColor = vec4(palColor, 1.0);
 }
 
