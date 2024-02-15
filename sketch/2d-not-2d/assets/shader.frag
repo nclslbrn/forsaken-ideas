@@ -53,7 +53,18 @@ vec3 getColor(int num) {
 
 void main() {  
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  vec2 px = gl_FragCoord.xy/u_texSize.xy;
+  
+  vec2 stx = vec2(st * 10.);
+  vec2 ipos = floor(stx);
+  vec2 fpos = fract(stx);
+  float noise = random(ipos);
+
   vec4 tex = texture2D(u_image, st);
-  gl_FragColor = tex;
+  float d = abs(sdf_rep(
+    sdCircle(vec2(.5)-st, (1.0-tex.r) * 100.0) + 0.1, 
+    0.5 
+    ) - 0.15);
+  gl_FragColor = vec4(vec3(d), 1.0);
 }
 

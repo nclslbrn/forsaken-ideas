@@ -34,9 +34,9 @@ async function loadShaderAndRun() {
     const vert = await fetch('./assets/shader.vert').then((r) => r.text()),
         frag = await fetch('./assets/shader.frag').then((r) => r.text()),
         palette = getPalette(),
-        scale = 1 / Math.ceil(Math.random() * 10),
-        cWidth = 4 * Math.round(window.innerWidth * scale * 0.2),
-        cHeight = 4 * Math.round(window.innerHeight * scale * 0.2)
+        //scale = 1 / Math.ceil(Math.random() * 10),
+        cWidth = 4 * Math.round(window.innerWidth * 0.2),
+        cHeight = 4 * Math.round(window.innerHeight * 0.2)
     console.table([cWidth, cHeight])
 
     const animate = () => {
@@ -76,7 +76,7 @@ async function loadShaderAndRun() {
         gl.attachShader(program, shader)
     }
   
-    const isPowerOf2 = (x) => (x & (x -1 )) == 0 
+    const isPowerOfTwo = (x) => (x & (x -1 )) == 0 
 
     const randGrey = () => {
         const value = (Math.random() * 0xff) | 0
@@ -85,13 +85,20 @@ async function loadShaderAndRun() {
     }
 
     const comp = () => {
+        const chars = [...'INSIDE_CELL/\\']
+        const cell = 16 + Math.floor(Math.random() * 4) * 4
         canvas2d.width = cWidth
         canvas2d.height = cHeight
-        const grid = [cWidth / 20, cHeight / 20]
+        ctx.font = `${cell}px "Helvetica Neue", Helvetica, Arial, sans-serif`
+
+        const grid = [cWidth / cell, cHeight / cell]
         for (let x = 0; x < grid[0]; x++) {
             for (let y = 0; y < grid[1]; y++) {
                 ctx.fillStyle = randGrey()
-                ctx.fillRect(x * 20, y * 20, 20, 20)
+                const l = chars[(x+y) % chars.length] 
+                // ctx.fillRect(x * 20, y * 20, 20, 20)
+                // ctx.fillStyle = randGrey()
+                ctx.fillText(l !== undefined ? l : " ", x * cell, y * cell)
             }
         }
     }
@@ -144,7 +151,7 @@ async function loadShaderAndRun() {
         texture = gl.createTexture()
   
     gl.bindTexture(gl.TEXTURE_2D, texture)
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
     gl.texImage2D(
         gl.TEXTURE_2D,
         0,
