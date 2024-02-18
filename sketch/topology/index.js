@@ -1,7 +1,8 @@
 import { getPalette } from '@nclslbrn/artistry-swatch'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { isPowerOfTwo } from 'three/src/math/MathUtils'
+import '../framed-canvas.css'
+// import { isPowerOfTwo } from 'three/src/math/MathUtils'
 
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
@@ -37,11 +38,12 @@ async function loadShaderAndRun() {
         //scale = 1 / Math.ceil(Math.random() * 10),
         cWidth = 4 * Math.round(window.innerWidth * 0.2),
         cHeight = 4 * Math.round(window.innerHeight * 0.2)
+
     console.table([cWidth, cHeight])
 
     const animate = () => {
         const now = new Date().getTime()
-        const currentTime = (now - startTime) / 10000
+        const currentTime = (now - startTime) % startTime
         uTime.set(currentTime)
         uMouse.set(mouseX, mouseY)
         billboard.render(gl)
@@ -59,6 +61,7 @@ async function loadShaderAndRun() {
         uStroke.set(...hex2Vec3(palette.stroke))
         uPalNum.set(palette.colors.length)
         uTexSize.set(cWidth, cHeight)
+        uNoiseOffset.set(Math.random() * 9, Math.random() * 9)
         uPalCols.set(palette.colors.map((hex) => hex2Vec3(hex)).flat())
         gl.viewport(0, 0, canvas3d.width, canvas3d.height)
     }
@@ -75,30 +78,23 @@ async function loadShaderAndRun() {
         }
         gl.attachShader(program, shader)
     }
-  
-    const isPowerOfTwo = (x) => (x & (x -1 )) == 0 
 
-    const randGrey = () => {
-        const value = (Math.random() * 0xff) | 0
-        const grayscale = (value << 16) | (value << 8) | value
-        return '#' + grayscale.toString(16)
-    }
-
+    const isPowerOfTwo = (x) => (x & (x - 1)) == 0
+    
     const comp = () => {
-        const chars = [...'INSIDE_CELL/\\']
-        const cell = 16 + Math.floor(Math.random() * 4) * 4
+        const chars = [...'abcdefghijklmopqrstuvwxyz']
+        const cell = 4 + Math.floor(Math.random() * 6) * 6
         canvas2d.width = cWidth
         canvas2d.height = cHeight
         ctx.font = `${cell}px "Helvetica Neue", Helvetica, Arial, sans-serif`
-
+        ctx.fillStyle = "black"
+        ctx.fillRect(0, 0, cWidth, cHeight)
         const grid = [cWidth / cell, cHeight / cell]
+        ctx.fillStyle = 'white'
         for (let x = 0; x < grid[0]; x++) {
             for (let y = 0; y < grid[1]; y++) {
-                ctx.fillStyle = randGrey()
-                const l = chars[(x+y) % chars.length] 
-                // ctx.fillRect(x * 20, y * 20, 20, 20)
-                // ctx.fillStyle = randGrey()
-                ctx.fillText(l !== undefined ? l : " ", x * cell, y * cell)
+                const l = chars[(x + y) % chars.length]
+                ctx.fillText(l !== undefined ? l : ' ', x * cell, y * cell)
             }
         }
     }
@@ -146,10 +142,11 @@ async function loadShaderAndRun() {
         uPalCols = new Uniform('u_palCols', '3fv'),
         uPalNum = new Uniform('u_palNum', '1i'),
         uTexSize = new Uniform('u_texSize', '2f'),
+        uNoiseOffset = new Uniform('u_noiseOffset', '2f'),
         billboard = new Rect(gl),
         positionLocation = gl.getAttribLocation(program, 'a_position'),
         texture = gl.createTexture()
-  
+
     gl.bindTexture(gl.TEXTURE_2D, texture)
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
     gl.texImage2D(
@@ -161,11 +158,11 @@ async function loadShaderAndRun() {
         canvas2d
     )
     if (isPowerOfTwo(canvas2d.width) && isPowerOfTwo(canvas2d.height)) {
-      gl.generateMipmap(gl.TEXTURE_2D)
+        gl.generateMipmap(gl.TEXTURE_2D)
     } else {
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
     }
 
     gl.useProgram(program)
