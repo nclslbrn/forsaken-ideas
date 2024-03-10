@@ -27,7 +27,9 @@
     "@thi.ng/expose": "^1.2.2",
     "@thi.ng/geom": "^5.2.3",
     "@thi.ng/hiccup-canvas": "^2.3.21",
+    "@thi.ng/hiccup-html": "^2.4.14",
     "@thi.ng/random": "^3.6.4",
+    "@thi.ng/rdom": "^1.1.13",
     "@thi.ng/resolve-map": "^7.1.40",
     "@thi.ng/timestep": "^0.4.14",
     "@thi.ng/transducers": "^8.7.0",
@@ -58,9 +60,11 @@
     "typescript": "~5.1.6",
     "vite": "^4.5.2",
     "vite-plugin-external": "^4.0.1",
+    "vite-plugin-glsl": "^1.2.1",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-static-copy": "^0.17.0",
     "vue-intersect": "^3.0.0",
     "vue-tsc": "^1.8.8"
-  }
+  },
+  "type": "module"
 }
