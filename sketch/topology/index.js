@@ -1,7 +1,7 @@
 import { getPalette } from '@nclslbrn/artistry-swatch'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import '../framed-canvas.css'
+// import '../framed-canvas.css'
 // import { isPowerOfTwo } from 'three/src/math/MathUtils'
 
 const containerElement = document.getElementById('windowFrame'),
@@ -83,7 +83,7 @@ async function loadShaderAndRun() {
     
     const comp = () => {
         const chars = [...'abcdefghijklmopqrstuvwxyz']
-        const cell = 4 + Math.floor(Math.random() * 6) * 6
+        const cell = 4 + Math.floor(Math.random() * 6) * 8
         canvas2d.width = cWidth
         canvas2d.height = cHeight
         ctx.font = `${cell}px "Helvetica Neue", Helvetica, Arial, sans-serif`

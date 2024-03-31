@@ -2,84 +2,93 @@
 import { rect, line, asSvg, group, polyline, svgDoc } from '@thi.ng/geom'
 import { repeatedly } from '@thi.ng/transducers'
 import { $compile, $list } from '@thi.ng/rdom'
-import { div } from '@thi.ng/hiccup-html'
 import { convertTree } from '@thi.ng/hiccup-svg'
 import { alphabet } from './alphabet'
-
-// import { svg } from '@thi.ng/hiccup-svg'
-import '../framed-canvas.css'
+import { glyphs } from './glyphs'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { subdiv } from './subdiv'
-import { SYSTEM } from '@thi.ng/random'
+//import { SYSTEM } from '@thi.ng/random'
 
 const WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
-    /*
+    SHAPES = Object.keys(glyphs),
     GRID = [
+        /*
         [...'abcdef'],
         [...'ghijkl'],
         [...'mnopqr'],
         [...'stuvwx'],
         [...'yz']
+        */
+
+        ...repeatedly(
+            () => [
+                ...repeatedly(
+                    () => SHAPES[Math.floor(Math.random() * SHAPES.length)],
+                    8
+                )
+            ],
+            7
+        )
     ],
-    CELL = [WIDTH / 8, HEIGHT / 7],
-  */
+    CELL = [WIDTH / 10, HEIGHT / 9],
     ROOT = document.getElementById('windowFrame')
 // start & collect subdivisions
-/*
-const glyphs = []
+console.log(JSON.stringify(GRID))
+const signs = []
 GRID.forEach((row, y) =>
-    row.forEach((letter, x) =>
-        alphabet[letter].map((path) => {
-            glyphs.push(
-                polyline(
-                    path.map((p) => [
-                        p[0] * CELL[0] + (x + 1) * CELL[0],
-                        p[1] * CELL[1] + (y + 1) * CELL[1]
+    row.forEach((glyph, x) =>
+        glyphs[glyph].map((path) => {
+            signs.push(
+                ...[
+                    polyline(
+                        path.map((p) => [
+                            p[0] * CELL[0] + (x + 1) * CELL[0],
+                            p[1] * CELL[1] + (y + 1) * CELL[1]
+                        ])
+                    ),
+                    // |
+                    polyline([
+                        [(x + 2) * CELL[0], (y + 1) * CELL[1]],
+                        [(x + 2) * CELL[0], (y + 2) * CELL[1]]
                     ])
-                )
+                ]
             )
         })
     )
 )
-*/
+
+/*
 const grid = subdiv(rect([0.05, 0.05], [0.9, 0.9]), [], 0)
 const comp = []
-const text = [...'ingrid_is_in_the_grid_']
+const text = [
+  ...(Math.random() > 0.5 
+  ? 'Letters written in white on a black background placed within each square of a modular grid in the order of this sentence'
+  : 'Lettres écrites en blanc sur fond noir placées au sein de chaque case d\'une grille modulaire dans l\'ordre de cette énoncé')
+]
 
-for (const cell of grid) {
+grid.forEach((cell, i) => {
     const cellPos = [cell.pos[0] * WIDTH, cell.pos[1] * HEIGHT]
     const cellSize = [cell.size[0] * WIDTH, cell.size[1] * HEIGHT]
-    const inner = [SYSTEM.minmaxInt(2, 9), SYSTEM.minmaxInt(2, 9)]
-    const charSize = [cellSize[0] / inner[0], cellSize[1] / inner[1]]
-    let c = 0
-    // comp.push(rect(cellPos, cellSize))
-
-    for (let y = 0; y < inner[1]; y++) {
-        for (let x = 0; x < inner[0]; x++) {
-            const char = text[c % text.length]
-            if (alphabet[char]) {
-                alphabet[char].forEach((line) => {
-                    comp.push(
-                        polyline(
-                            line.map((p) => [
-                                p[0] * charSize[0] +
-                                    cellPos[0] +
-                                    x * charSize[0],
-                                p[1] * charSize[1] +
-                                    cellPos[1] +
-                                    y * charSize[1]
-                            ])
-                        )
-                    )
-                })
-            }
-            c++
-        }
+    comp.push(rect(cellPos, cellSize, { fill: "#111" }))
+    const char = text[i % text.length]
+    if (alphabet[char]) {
+        alphabet[char].forEach((line) => {
+            comp.push(
+                polyline(
+                    line.map((p) => [
+                        p[0] * cellSize[0] + cellPos[0],
+                        p[1] * cellSize[1] + cellPos[1]
+                    ]),
+                    { stroke: "#fefefe" }
+                )
+            )
+        })
     }
-}
-
+})
+*/
 const init = () => {
     $compile(
         convertTree(
@@ -99,8 +108,8 @@ const init = () => {
                             fill: 'rgba(0,0,0,0)',
                             weight: 2
                         },
-                        //glyphs
-                        comp
+                        signs
+                        // comp
                     )
                 ])
             )
