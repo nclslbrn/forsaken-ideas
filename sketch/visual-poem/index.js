@@ -1,4 +1,4 @@
-import { rect, group, polyline, svgDoc, asSvg } from '@thi.ng/geom'
+import { rect, group, pathFromSvg, svgDoc, asSvg } from '@thi.ng/geom'
 import { $compile } from '@thi.ng/rdom'
 import { convertTree } from '@thi.ng/hiccup-svg'
 import { alphabet, getGlyph } from './alphabet/main'
@@ -7,73 +7,44 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { QUOTE } from './star-wars-quote';
+import { QUOTE } from './star-wars-quote'
+import path from 'path'
 
 const WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     GRID = [],
-    CELL = [
-      10 * Math.ceil(Math.random() * 10), 
-      10 * Math.ceil(Math.random() * 10)
-    ],
-    ROOT = document.getElementById('windowFrame'),
-    RAND_GRID = Math.random() > 0.15,
-    TABLE_SIZE = [
-      Math.floor(WIDTH / CELL[0]) - 2,  
-      Math.floor(HEIGHT / CELL[1]) - 2
-    ]
+    CELL = [WIDTH / 15, HEIGHT / 9],
+    ROOT = document.getElementById('windowFrame')
 /**
  * Build a 2D array of chars (from alphabet key)
  */
 const glyphList = Array.from(Object.keys(alphabet))
-if (!RAND_GRID) {
-  glyphList.forEach((char, i) => {
-      if (i % TABLE_SIZE[0] === 0) {
-          GRID.push([char])
-      } else {
-          GRID[Math.floor(i / TABLE_SIZE[0])].push(char)
-      }
-  })
-} else {
-  const randChars = QUOTE[Math.floor(Math.random() * QUOTE.length)]
-  for (let i = 0; i < TABLE_SIZE[1]; i++) {
-    const row = []
-    for (let j = 0; j < TABLE_SIZE[0]; j++) {
-      row.push(randChars[(i * (TABLE_SIZE[0]) + j) % randChars.length])
+
+glyphList.forEach((char, i) => {
+    if (i % 13 === 0) {
+        GRID.push([char])
+    } else {
+        GRID[Math.floor(i / 13)].push(char)
     }
-    GRID.push(row)
-  }
-}
+})
 
 const signs = []
 GRID.forEach((row, y) =>
     row.forEach((glyph, x) => {
-        const lines = getGlyph(glyph)
-        lines.map((segment) => {
-            signs.push(
-                ...[
-                    polyline(
-                        segment.map((p) => [
-                            p[0] * CELL[0] + (x + 1) * CELL[0],
-                            p[1] * CELL[1] + (y + 1) * CELL[1]
-                        ])
-                    ),
-                    // |_
-                    polyline(
-                        (x > 0 
-                        ? [
-                            [(x + 1) * CELL[0], (y + 1) * CELL[1]],
-                            [(x + 1) * CELL[0], (y + 2) * CELL[1]],
-                            [(x + 2) * CELL[0], (y + 2) * CELL[1]]
-                          ]
-                        : [
-                            [(x + 1) * CELL[0], (y + 2) * CELL[1]],
-                            [(x + 2) * CELL[0], (y + 2) * CELL[1]]
-                        ]),
-                        { stroke: '#333' }
-                    )
-                ]
-            )
+        const paths = getGlyph(
+            glyph,
+            [CELL[0], CELL[1]],
+            [(x + 1) * CELL[0], (y + 1) * CELL[1]]
+        )
+        // prevent drawing empty path <space>
+        // if (paths.length) {
+        //     paths.forEach((com) => signs.push(...pathFromSvg(com)))
+        /// }
+        paths.forEach((p) => {
+                console.log(p)
+            if (p.segments) {
+                signs.push(p)
+            }
         })
     })
 )
@@ -85,7 +56,6 @@ const text = [
   : 'Lettres écrites en blanc sur fond noir placées au sein de chaque case d\'une grille modulaire dans l\'ordre de cette énoncé')
 ]
 */
-
 
 const init = () => {
     $compile(
