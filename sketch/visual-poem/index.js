@@ -1,78 +1,78 @@
-import { rect, group, pathFromSvg, svgDoc, asSvg } from '@thi.ng/geom'
+import {
+  rect,
+	group,
+  svgDoc,
+  asSvg,
+  pathFromSvg
+} from "@thi.ng/geom";
+import { SYSTEM, pickRandom } from "@thi.ng/random";
 import { $compile } from '@thi.ng/rdom'
 import { convertTree } from '@thi.ng/hiccup-svg'
-import { alphabet, getGlyph } from './alphabet/main'
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { QUOTE } from './star-wars-quote'
-import path from 'path'
-
-const WIDTH = window.innerWidth,
-    HEIGHT = window.innerHeight,
-    GRID = [],
-    CELL = [WIDTH / 15, HEIGHT / 9],
-    ROOT = document.getElementById('windowFrame')
-/**
- * Build a 2D array of chars (from alphabet key)
- */
-const glyphList = Array.from(Object.keys(alphabet))
-
-glyphList.forEach((char, i) => {
-    if (i % 13 === 0) {
-        GRID.push([char])
-    } else {
-        GRID[Math.floor(i / 13)].push(char)
-    }
-})
-
-const signs = []
-GRID.forEach((row, y) =>
-    row.forEach((glyph, x) => {
-        const paths = getGlyph(
-            glyph,
-            [CELL[0], CELL[1]],
-            [(x + 1) * CELL[0], (y + 1) * CELL[1]]
-        )
-        // prevent drawing empty path <space>
-        // if (paths.length) {
-        //     paths.forEach((com) => signs.push(...pathFromSvg(com)))
-        /// }
-        paths.forEach((p) => {
-                console.log(p)
-            if (p.segments) {
-                signs.push(p)
-            }
-        })
-    })
-)
-
-/*
-const text = [
-  ...(Math.random() > 0.5 
-  ? 'Letters written in white on a black background placed within each square of a modular grid in the order of this sentence'
-  : 'Lettres écrites en blanc sur fond noir placées au sein de chaque case d\'une grille modulaire dans l\'ordre de cette énoncé')
-]
-*/
+import { getGlyphPath } from './plotWriter'
+const ROOT = document.getElementById('windowFrame'), RND = SYSTEM
+let signs, width, height, str
 
 const init = () => {
+    console.log('*------ INIT ------*')
+    const scale = 1 + RND.float() * 0.5,
+    cell = [8, 12].map((i) => i * scale),
+    chars = [...'l|1ijL!'],
+    m = pickRandom([3, 5, 6, 7, 9]),
+    string = [..."A picture is a picture of a picture of a picture of a picture of a picture"]
+    
+    width = window.innerWidth
+    height = window.innerHeight
+    const max_char = Math.ceil(((width / cell[0]) - 2) * ((height / cell[1]) - 2))
+    str = Array.from(Array(max_char)).map(() => chars[Math.floor(RND.float() * chars.length)])
+    // str = [...Array.from(Array()).reduce((acc) => (acc += [...chars.sort(() => RND.float() > 0.5)]), '')]
+    ROOT.innerHTML = ''
+    const lineLenght = Math.floor(width/cell[0]) - 2,
+        grid = str.reduce((acc, char, i) => {
+        const y = i % lineLenght, x = i - (y * lineLenght)
+        const c = (x ^ y) % m ? char : pickRandom([...'_-=~^'])
+          
+        if (y === 0) {
+            acc.push([c])
+        } else {
+            acc[Math.floor(i / lineLenght)].push(c)
+        }
+        return acc
+    }, [])
+
+    const signs = []
+    grid.forEach((row, y) =>
+        row.forEach((glyph, x) => {
+            const paths = getGlyphPath(
+                glyph,
+                [cell[0], cell[1]],
+                [(x+1) * cell[0], (y+1) * cell[1]]
+            )
+            paths.forEach((d) => {
+                signs.push(...pathFromSvg(d))
+            })
+        })
+    )
+
     $compile(
         convertTree(
             svgDoc(
                 {
-                    width: WIDTH,
-                    height: HEIGHT,
-                    viewBox: `0 0 ${WIDTH} ${HEIGHT}`
+                    width,
+                    height,
+                    viewBox: `0 0 ${width} ${height}`
                 },
                 group({}, [
-                    rect([WIDTH, HEIGHT], { fill: '#111' }),
+                    rect([width, height], { fill: '#ffeefe' }),
                     group(
                         {
                             lineJoin: 'round',
                             lineCap: 'round',
-                            stroke: '#fefefe',
+                            stroke: '#333',
                             fill: 'rgba(0,0,0,0)',
                             weight: 2
                         },
@@ -83,18 +83,20 @@ const init = () => {
         )
     ).mount(ROOT)
 }
+
 init()
 window.init = init
+window.onresize = init
 
 window.capture = () => {
     const cnvs = document.createElement('canvas')
-    cnvs.width = WIDTH
-    cnvs.height = HEIGHT
+    cnvs.width = width
+    cnvs.height = height
     const ctx = cnvs.getContext('2d')
     draw(
         ctx,
         group({}, [
-            rect([WIDTH, HEIGHT], { fill: '#111111' }),
+            rect([], { fill: '#111111' }),
             group(
                 {
                     lineJoin: 'round',
@@ -116,12 +118,12 @@ window.downloadSVG = () => {
         asSvg(
             svgDoc(
                 {
-                    width: WIDTH,
-                    height: HEIGHT,
-                    viewBox: `0 0 ${WIDTH} ${HEIGHT}`
+                    width,
+                    height,
+                    viewBox: `0 0 ${width} ${height}`
                 },
                 group({}, [
-                    rect([WIDTH, HEIGHT], { fill: '#111' }),
+                    rect([width, height], { fill: '#111' }),
                     group(
                         {
                             lineJoin: 'round',
@@ -146,16 +148,16 @@ group({ stroke: 'lightgray', weight: 4 }, [
     ...repeatedly(
         (x) =>
             line(
-                [(x * CELL[0]) / 2, 0],
-                [(x * CELL[0]) / 2, HEIGHT]
+                [(x * cell[0]) / 2, 0],
+                [(x * cell[0]) / 2, HEIGHT]
             ),
         16
     ),
     ...repeatedly(
         (y) =>
             line(
-                [0, (y * CELL[1]) / 2],
-                [WIDTH, (y * CELL[1]) / 2]
+                [0, (y * cell[1]) / 2],
+                [WIDTH, (y * cell[1]) / 2]
             ),
         14
     )
