@@ -1,1 +1,11 @@
-{"libs":[""],"info":"TODO","topic":"OnlyType","action":[{"name":"init","icon":"sync"},{"name":"capture","icon":"file-media"},{"name":"print","icon":"desktop-download"}],"date":"2024-05-04"}
+{
+  "libs":[""],
+  "info":"TODO",
+  "topic":"OnlyType",
+  "action":[
+    {"name":"init","icon":"sync"},
+    {"name":"capture","icon":"file-media"},
+    {"name":"export_svg","icon":"desktop-download"}
+  ],
+  "date":"2024-05-04"
+}

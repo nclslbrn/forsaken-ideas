@@ -2038,7 +2038,7 @@ const f = {
   ),
   ""
 ) : (console.warn(
-  "Can't retrieve this glyph, be sure to use this function with a single char"
+  "Can't retrieve this glyph, be sure to use this function with a single char", c
 ), []);
 export {
   l as font,
