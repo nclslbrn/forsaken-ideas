@@ -1,4 +1,4 @@
-import { rect, group, svgDoc, polyline, quad3, asSvg, transform } from '@thi.ng/geom'
+import { rect, group, svgDoc, polyline, asSvg, transform } from '@thi.ng/geom'
 import { SYSTEM, pickRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../full-canvas.css'
@@ -6,8 +6,26 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { getGlyphPath, getGlyphVector } from './plotWriter'
+import { getGlyphVector } from './plotWriter'
 import { repeatedly2d } from '@thi.ng/transducers'
+import {
+    skewXY33,
+    skewX22,
+    transform44,
+    transform23,
+    translation23,
+    skewX23,
+    mulV23,
+    skewXY44,
+    shearXZ33,
+    shearX22,
+    shearX23,
+    skewY23,
+    shearY23,
+    mul23,
+    mulM23,
+    mat23v
+} from '@thi.ng/matrices'
 
 const ROOT = document.getElementById('windowFrame'),
     canvas = document.createElement('canvas'),
@@ -27,9 +45,6 @@ const ROOT = document.getElementById('windowFrame'),
         'it happens again ',
         'undefined is ',
         "isNaN('Goldin') ",
-        'TypeError: Art is not an object ',
-        'Is art always political ? ',
-        'until it reach another bug ',
         '[____]|'
     ],
     ALT_TEXT = [
@@ -41,7 +56,7 @@ const ROOT = document.getElementById('windowFrame'),
         'NNZNNNN'
     ],
     EMPTY_CHANCE = 0.25,
-    INTERPO_CHANCE = 0.75
+    INTERPO_CHANCE = 0.5
 
 let signs, width, height, margin, chars
 
@@ -75,7 +90,6 @@ const fillPart = (text, x, y, w, h, b) => {
         ]
     return grid.flat()
 }
-
 // Return from a rectangle a trapeze for interpolate points/letters
 const trapeze = (x, y, w, h, d) => {
     const type = SYSTEM.minmaxInt(0, 3)
@@ -110,13 +124,14 @@ const trapeze = (x, y, w, h, d) => {
         ]
     }
 }
-
 const init = () => {
     margin = Math.hypot(window.innerWidth, window.innerHeight) * 0.05
     width = window.innerWidth - margin * 2
     height = window.innerHeight - margin * 2
     signs = []
     chars = [[...pickRandom(SENTENCES)], [...pickRandom(ALT_TEXT)]]
+
+    const d = margin * 0.2
 
     const _e = {
         x: (v) => v * width,
@@ -134,39 +149,39 @@ const init = () => {
             const dx = _e.x(xRange[j])
             // let some empty cell
             if (SYSTEM.float() > EMPTY_CHANCE) {
-                // if (SYSTEM.float() > INTERPO_CHANCE) {
+                const sx = margin + x,
+                    sy = margin + y,
+                    c = chars[SYSTEM.float() > 0.25 ? 0 : 1]
+
+                if (SYSTEM.float() > INTERPO_CHANCE) {
                     signs.push(
-                        ...fillPart(
-                            chars[SYSTEM.float() > 0.25 ? 0 : 1],
-                            margin + x,
-                            margin + y,
-                            dx,
-                            dy,
-                            margin * 0.2
-                        ).map(pts => polyline(pts))
-                    )              
-                /* } 
+                        ...fillPart(c, sx, sy, dx, dy, d).map((pts) =>
+                            polyline(pts)
+                        )
+                    )
+                }
                 // Anamorphic alteration of the glyphs
                 else {
-                    const src = quad3(
-                      [margin+x,margin+y], 
-                      [margin+x+dx, margin+y], 
-                      [margin+x+dx, margin+y+dy],
-                      [margin+x, margin+y+dy]
+                    const glyphs = fillPart(c, 0, 0, dx, dy, d),
+                        theta = (Math.PI / 4) * (j % 2 === 0 ? 1 : -1)
+                    //[t1, t2, t3, t4] = trapeze(sx, sy, dx, dy, d)
+
+                    signs.push(
+                        ...glyphs.map((line) =>
+                            transform(
+                                polyline(line),
+                                mulM23(
+                                    null,
+                                    //mat23v(t1, t2, t3, t4)
+
+                                    translation23(null, [sx, sy]),
+                                    skewY23(null, theta),
+                                    shearY23(null, theta)
+                                )
+                            )
+                        )
                     )
-                    const dest = quad3(...trapeze(margin + x, margin + y, dx, dy, margin*0.2))
-                    const glyphs = fillPart(
-                        chars[SYSTEM.float() > 0.25 ? 0 : 1],
-                        margin + x,
-                        margin + y,
-                        dx,
-                        dy,
-                        margin * 0.2
-                    )
-                    console.log(glyphs)
-                    signs.push(...glyphs.map(line => polyline(transform(line, dest, src))))
                 }
-                */
             }
             x += dx
         }
@@ -185,7 +200,6 @@ const init = () => {
 
 init()
 window.init = init
-window.onresize = init
 
 window['capture'] = () => {
     downloadCanvas(canvas, `block-type${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
