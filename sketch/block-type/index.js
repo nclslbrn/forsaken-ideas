@@ -8,59 +8,27 @@ import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { getGlyphVector } from './plotWriter'
 import { repeatedly2d } from '@thi.ng/transducers'
-import {
-    skewXY33,
-    skewX22,
-    transform44,
-    transform23,
-    translation23,
-    skewX23,
-    mulV23,
-    skewXY44,
-    shearXZ33,
-    shearX22,
-    shearX23,
-    skewY23,
-    shearY23,
-    mul23,
-    mulM23,
-    mat23v
-} from '@thi.ng/matrices'
+import * as mat from '@thi.ng/matrices'
+import { SENTENCES } from './SENTENCES'
+import { ALT_TEXT } from './ALT_TEXT'
 
 const ROOT = document.getElementById('windowFrame'),
-    canvas = document.createElement('canvas'),
-    ctx = canvas.getContext('2d'),
-    textStyle = {
+    CANVAS = document.createElement('canvas'),
+    CTX = CANVAS.getContext('2d'),
+    TXT_ST = {
         lineJoin: 'round',
         lineCap: 'round',
         stroke: '#333',
         fill: 'rgba(0,0,0,0)',
         weight: 1.25
     },
-    bgStyle = { fill: '#ffecea' },
-    SENTENCES = [
-        "no it's fine ",
-        'so far so good ',
-        'a picture of ',
-        'it happens again ',
-        'undefined is ',
-        "isNaN('Goldin') ",
-        '[____]|'
-    ],
-    ALT_TEXT = [
-        '/\\-|-|',
-        '////L__',
-        '#------',
-        '*-^-^-^-',
-        'L____n ',
-        'NNZNNNN'
-    ],
-    EMPTY_CHANCE = 0.25,
-    INTERPO_CHANCE = 0.5
+    BG_ST = { fill: '#ffecea' },
+    EMPTY_CHANCE = 0.33,
+    INTERPO_CHANCE = 0.16
 
 let signs, width, height, margin, chars
 
-ROOT.appendChild(canvas)
+ROOT.appendChild(CANVAS)
 
 // Return an array of {num} element with the sum equals 1
 const stack = (num) => {
@@ -90,40 +58,7 @@ const fillPart = (text, x, y, w, h, b) => {
         ]
     return grid.flat()
 }
-// Return from a rectangle a trapeze for interpolate points/letters
-const trapeze = (x, y, w, h, d) => {
-    const type = SYSTEM.minmaxInt(0, 3)
-    console.log(type)
-    if (type === 0) {
-        return [
-            [x, y],
-            [x + w - d, y + d],
-            [x + w - d, y + h - d],
-            [x, y + h]
-        ]
-    } else if (type === 1) {
-        return [
-            [x, y],
-            [x + w, y],
-            [x + w - d, y + h - d],
-            [x + d, y + h - d]
-        ]
-    } else if (type === 2) {
-        return [
-            [x + d, y + d],
-            [x + w, y],
-            [x + w, y + h],
-            [x + d, y + h - d]
-        ]
-    } else if (type === 3) {
-        return [
-            [x + d, y + d],
-            [x + w - d, y + d],
-            [x + w, y + h],
-            [x, y + h]
-        ]
-    }
-}
+
 const init = () => {
     margin = Math.hypot(window.innerWidth, window.innerHeight) * 0.05
     width = window.innerWidth - margin * 2
@@ -131,18 +66,18 @@ const init = () => {
     signs = []
     chars = [[...pickRandom(SENTENCES)], [...pickRandom(ALT_TEXT)]]
 
-    const d = margin * 0.2
+    const d = margin * 0.15
 
     const _e = {
         x: (v) => v * width,
         y: (v) => v * height
     }
 
-    const yRange = stack(SYSTEM.minmaxInt(6, 12))
+    const yRange = stack(SYSTEM.minmaxInt(8, 16))
     let y = 0
     for (let i = 0; i < yRange.length; i++) {
         const dy = _e.y(yRange[i])
-        const xRange = stack(SYSTEM.minmaxInt(6, 12))
+        const xRange = stack(SYSTEM.minmaxInt(8, 18))
         let x = 0
 
         for (let j = 0; j < xRange.length; j++) {
@@ -153,7 +88,13 @@ const init = () => {
                     sy = margin + y,
                     c = chars[SYSTEM.float() > 0.25 ? 0 : 1]
 
-                if (SYSTEM.float() > INTERPO_CHANCE) {
+                if (
+                    SYSTEM.float() > INTERPO_CHANCE ||
+                    i === 0 ||
+                    i === yRange.length - 1 ||
+                    j === 0 ||
+                    j === xRange.length - 1
+                ) {
                     signs.push(
                         ...fillPart(c, sx, sy, dx, dy, d).map((pts) =>
                             polyline(pts)
@@ -165,35 +106,71 @@ const init = () => {
                     const glyphs = fillPart(c, 0, 0, dx, dy, d),
                         theta = (Math.PI / 4) * (j % 2 === 0 ? 1 : -1)
                     //[t1, t2, t3, t4] = trapeze(sx, sy, dx, dy, d)
-
+                    
                     signs.push(
                         ...glyphs.map((line) =>
                             transform(
                                 polyline(line),
-                                mulM23(
-                                    null,
-                                    //mat23v(t1, t2, t3, t4)
+                                
+                                mat.concat(
+                                    [],
+ 
+                                    mat.translation23(null, [sx, sy]),
+                                    mat.skewY23(null, theta),
 
-                                    translation23(null, [sx, sy]),
-                                    skewY23(null, theta),
-                                    shearY23(null, theta)
+                                    //mat.scale23(null, [0.88, 0.66]),
                                 )
                             )
                         )
                     )
+                    /*
+                    signs.push(
+                        ...glyphs.map((line) =>
+                            polyline(
+                                line.map((pt) =>
+                                    mat.project3(
+                                        [],
+                                        mat.concat(
+                                            [],
+                                            mat.concat(
+                                              [],
+                                                                                                                              mat.translation23(null, [sx, sy])
+                                            ),
+                                            mat.lookAt(
+                                                [],
+                                                [0, 0, 2],
+                                                [0, 0, 0],
+                                                [0, 1, 0]
+                                            ),
+                                            mat.perspective(
+                                                [],
+                                                0.9,
+                                                sx / sy,
+                                                0.01,
+                                                1
+                                            )
+                                        ),
+                                        mat.viewport([], 0, sx, sy, 0),
+                                        [pt[0] / sx, pt[1] / sy]
+                                    )
+                                )
+                            )
+                        )
+                    )
+                    */
                 }
             }
             x += dx
         }
         y += dy
     }
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    CANVAS.width = window.innerWidth
+    CANVAS.height = window.innerHeight
     draw(
-        ctx,
+        CTX,
         group({}, [
-            rect([window.innerWidth, window.innerHeight], bgStyle),
-            group(textStyle, signs)
+            rect([window.innerWidth, window.innerHeight], BG_ST),
+            group(TXT_ST, signs)
         ])
     )
 }
@@ -202,7 +179,7 @@ init()
 window.init = init
 
 window['capture'] = () => {
-    downloadCanvas(canvas, `block-type${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(CANVAS, `block-type${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
 }
 
 window['export_svg'] = () => {
@@ -216,8 +193,8 @@ window['export_svg'] = () => {
                     viewBox: `0 0 ${window.innerWidth} ${window.innerHeight}`
                 },
                 group({}, [
-                    rect([window.innerWidth, window.innerHeight], bgStyle),
-                    group(textStyle, signs)
+                    rect([window.innerWidth, window.innerHeight], BG_ST),
+                    group(TXT_ST, signs)
                 ])
             )
         )
