@@ -23,8 +23,8 @@ const ROOT = document.getElementById('windowFrame'),
         weight: 1.25
     },
     BG_ST = { fill: '#ffecea' },
-    EMPTY_CHANCE = 0.33,
-    INTERPO_CHANCE = 0.16
+    EMPTY_CHANCE = 0.16,
+    INTERPO_CHANCE = 0.33
 
 let signs, width, height, margin, chars
 
@@ -104,7 +104,7 @@ const init = () => {
                 // Anamorphic alteration of the glyphs
                 else {
                     const glyphs = fillPart(c, 0, 0, dx, dy, d),
-                        theta = (Math.PI / 4) * (j % 2 === 0 ? 1 : -1)
+                        theta = (Math.PI / 8) * (j % 2 === 0 ? 1 : -1)
                     //[t1, t2, t3, t4] = trapeze(sx, sy, dx, dy, d)
                     
                     signs.push(
