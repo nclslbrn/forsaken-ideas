@@ -1447,6 +1447,11 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.10.3.tgz#391d528054f758f81e53210f1a1eebcf1a8b1d20"
   integrity sha512-qC/xYId4NMebE6w/V33Fh9gWxLgURiNYgVNObbJl2LZv0GUUItCcCqC5axQSwRaAgaxl2mELq1rMzlswaQ0Zxg==
 
+"@thi.ng/adapt-dpi@^2.2.48":
+  version "2.2.48"
+  resolved "https://registry.yarnpkg.com/@thi.ng/adapt-dpi/-/adapt-dpi-2.2.48.tgz#dc51facd278b3799cc389f1029322fa2a5663351"
+  integrity sha512-Q+QU4iZkoagOS/J2n/3BBwkoA0JhMoOsDaCp56XXWK0TEuwbvUNK0DsylAZrL0Q9RFaWUaQ9EwnS65GIVS/vsg==
+
 "@thi.ng/api@^8.11.2":
   version "8.11.2"
   resolved "https://registry.yarnpkg.com/@thi.ng/api/-/api-8.11.2.tgz#12a6234d62fb37193ef6f9450d2e111d3c236c26"

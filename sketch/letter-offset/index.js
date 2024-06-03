@@ -12,6 +12,7 @@ import { SYSTEM, pickRandom } from '@thi.ng/random'
 import { $compile } from '@thi.ng/rdom'
 import { canvas } from '@thi.ng/hiccup-html'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
+import { adaptDPI, isHighDPI } from '@thi.ng/canvas'
 
 const ROOT = document.getElementById('windowFrame'),
     RES = [256, 256], // A resolution to sample the letters composition
@@ -32,13 +33,17 @@ const init = () => {
     cnvs = document.getElementById('main')
     // Nothing fancy here we need a context to draw in the canvas
     const ctx = cnvs.getContext('2d'),
-        // The dimension of the composition we need to remove 30 pixels of the
-        // window height to get room for the two download buttons
+        // The dimension of the composition we need to remove
         frame = [window.innerWidth * 0.8, window.innerHeight * 0.8],
+        // A scale factor (depends of the DPI of the device)
+        dpr = adaptDPI(cnvs, ...frame),
         // The diagonal will be use later to compute distance (with more flexibility)
-        diag = Math.hypot(...frame),
+        diag = Math.hypot(...frame.map((d) => d * dpr)),
         // A crop zone [[x, y], [width, height]
-        crop = [[diag * 0.01, diag * 0.01], frame.map((d) => d - diag * 0.02)],
+        crop = [
+            [diag * 0.01, diag * 0.01],
+            frame.map((d) => d * dpr - diag * 0.02)
+        ],
         // Same thing but with four points (clockwisely, from top left to bottom right)
         cropPoly = [
             [crop[0][0], crop[0][1]],
@@ -53,7 +58,9 @@ const init = () => {
         // Then convert it to an array of lines
         lines = chars.reduce((polys, char) => {
             const size = Math.round(SYSTEM.minmax(0.1, 0.5) * diag)
-            const pos = frame.map((d) => d / 2 + SYSTEM.minmax(-0.35, 0.35) * d)
+            const pos = frame.map(
+                (d) => (d * dpr) / 2 + SYSTEM.minmax(-0.35, 0.35) * d
+            )
             // Get a nested list of point from a char (grouped by lines)
             // [
             //  first line
@@ -88,7 +95,12 @@ const init = () => {
         ),
         weight = diag * 0.0015
     comp = group({}, [
-        group({}, [rect(frame, { fill: '#121010' })]),
+        group({}, [
+            rect(
+                frame.map((d) => d * dpr),
+                { fill: '#121010' }
+            )
+        ]),
         group({ stroke: '#f3f6fa', weight }, contours),
         group(
             {
@@ -114,9 +126,6 @@ const init = () => {
             )
         )
     ])
-
-    cnvs.width = frame[0]
-    cnvs.height = frame[1]
     draw(ctx, comp)
 }
 
