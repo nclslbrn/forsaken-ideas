@@ -53,7 +53,7 @@ const fillPart = (text, x, y, w, h, b) => {
                         [x + i * b, y + j * b]
                     ),
                 cols,
-                rows
+                rows-1
             )
         ]
     return grid.flat()
@@ -103,61 +103,23 @@ const init = () => {
                 }
                 // Anamorphic alteration of the glyphs
                 else {
-                    const glyphs = fillPart(c, 0, 0, dx, dy, d),
-                        theta = (Math.PI / 8) * (j % 2 === 0 ? 1 : -1)
-                    //[t1, t2, t3, t4] = trapeze(sx, sy, dx, dy, d)
-                    
+                    const asc = j % 2 === 0,
+                        glyphs = fillPart(c, 0, 0, dx, dy, d),
+                        theta = (Math.PI / 8) * (asc ? 1 : -1)
+                                        
                     signs.push(
                         ...glyphs.map((line) =>
                             transform(
                                 polyline(line),
                                 
                                 mat.concat(
-                                    [],
- 
+                                    [], 
                                     mat.translation23(null, [sx, sy]),
                                     mat.skewY23(null, theta),
-
-                                    //mat.scale23(null, [0.88, 0.66]),
                                 )
                             )
                         )
                     )
-                    /*
-                    signs.push(
-                        ...glyphs.map((line) =>
-                            polyline(
-                                line.map((pt) =>
-                                    mat.project3(
-                                        [],
-                                        mat.concat(
-                                            [],
-                                            mat.concat(
-                                              [],
-                                                                                                                              mat.translation23(null, [sx, sy])
-                                            ),
-                                            mat.lookAt(
-                                                [],
-                                                [0, 0, 2],
-                                                [0, 0, 0],
-                                                [0, 1, 0]
-                                            ),
-                                            mat.perspective(
-                                                [],
-                                                0.9,
-                                                sx / sy,
-                                                0.01,
-                                                1
-                                            )
-                                        ),
-                                        mat.viewport([], 0, sx, sy, 0),
-                                        [pt[0] / sx, pt[1] / sy]
-                                    )
-                                )
-                            )
-                        )
-                    )
-                    */
                 }
             }
             x += dx

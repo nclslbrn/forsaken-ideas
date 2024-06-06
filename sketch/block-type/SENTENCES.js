@@ -5,12 +5,13 @@ const SENTENCES = [
     'undefined is ',
     "isNaN('Goldin') ",
     'AGAIN! ',
-    'A circle is a round straight line with a hole in the middle.', //Mark Twain
     'your eternity in each moment', // Henry David Thoreau
     'Every step is on the path.', // Lao Tzu
     'there is no point ',
-    'reality? yes which one? ',
-    'the past is now '
+    'the past is now ',
+    'Done ',
+    'once upon a line '
+    
 ]
 
 export { SENTENCES }
