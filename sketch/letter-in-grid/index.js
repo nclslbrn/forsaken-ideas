@@ -59,7 +59,7 @@ const sketch = (p5) => {
         link.click()
     }
     sketch.downloadJPG = () =>
-        saveCanvas(`letter-in-grid-${new Date().toISOString()}`, 'jpg')
+        p5.saveCanvas(`letter-in-grid-${new Date().toISOString()}`, 'jpg')
 
     const expand = (d, i) =>
         i % 2 === 0
