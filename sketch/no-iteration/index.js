@@ -13,9 +13,9 @@ import { adaptDPI, isHighDPI } from '@thi.ng/canvas'
 import { convert, mul, quantity, NONE } from '@thi.ng/units'
 
 const ROOT = document.getElementById('windowFrame')
-const A3 = quantity([297, 420], 'mm')
-const DPI_100 = quantity(100, 'dpi')
-const SIZE = convert(mul(A3, DPI_100), NONE)
+const A5 = quantity([148, 210], 'mm')
+const DPI = quantity(600, 'dpi')
+const SIZE = convert(mul(A5, DPI), NONE)
 
 document.body.style.overflowY = 'auto'
 document.body.style.height = '100vh'
@@ -24,19 +24,21 @@ let comp = group(),
     grids = [],
     cuts = [],
     cutSize = [0.33, 0.66, 0.5],
-    txtSize = 60
-
+    txtSize = convert(mul(quantity(10, 'mm'), DPI), NONE),
+    weight = convert(mul(quantity(0.35, 'mm'), DPI), NONE)
+    
+    
 const text = [
-    [...'+------------ ALL GRIDS -------------+'],
-    [...'|                                    |'],
-    [...'|    First cut the cell in half      |'],
-    [...'|  then in a third, in two thirds    |'],
-    [...'|              or in half.           |'],
-    [...'+------------------------------------+']
+    [...'+----------------------------------------------------------+---------+'],
+    [...'|                                                          |         |'],
+    [...'| Division of a square into three sections, the first half,|         |'],
+    [...'| then into one-third, two-thirds or two halves.           |         |'],
+    [...'| Alternating horizontal and vertical separations.         |         |'],
+    [...'|                                                          |         |'],
+    [...'+----------------------------------------------------------+---------+']
 ]
 
 const splitCell = (x, y, g, i) => {
-    console.log(grids[g].length < 2)
     // Get the last or penultimate cell ID
     const splitOn =
             y === 3 ? (x % 2 === 0 ? 'x' : 'y') : (x + i) % 2 === 0 ? 'x' : 'y',
@@ -127,7 +129,7 @@ const init = () => {
 
                 numbers.push(
                     ...getGlyphVector(
-                        `${c}`,
+                        ["A", "B", "C"][c],
                         [txtSize / 2, txtSize / 2],
                         pos.map((d, i) => d + siz[i] / 2 - txtSize / 4)
                     ).map((l) => polyline(l))
@@ -141,19 +143,19 @@ const init = () => {
                 numbers.push(
                     ...getGlyphVector(
                         letter,
-                        [txtSize / 2.3, txtSize / 2],
+                        [txtSize / 5.5, txtSize / 2],
                         [
-                            between * 2 + x * (txtSize / 2.3),
-                            SIZE[0] * 1.2 + between * y
+                            between * 1.75 + x * (txtSize / 5.595),
+                            SIZE[0] * 1.24 + between * 0.75 * y
                         ]
                     ).map((l) => polyline(l))
                 )
             }
         })
     })
-    comp = group({ stroke: '#333' }, [
+    comp = group({ stroke: '#333', weight }, [
         rect(SIZE, { fill: '#fff' }),
-        group({ fill: '#00000000', weight: 2 }, cells),
+        group({ fill: '#00000000' }, cells),
         group({}, numbers)
     ])
     ctx.scale(dpr, dpr)
