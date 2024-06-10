@@ -4,7 +4,8 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 
-const T = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'] // An array of possible char used in the composition
+// An array of possible char used in the composition
+const T = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789|||||||||||||||||///////////////?????!!!!!'] 
 const d = 0.025
 const extruderPoints = [
     [-d, -d],
@@ -55,10 +56,9 @@ class App {
     initStats() {
         this.stats = new Stats()
         windowFrame.appendChild(this.stats.dom)
-        this.stats.dom.style.top = 'auto'
         this.stats.dom.style.left = 'auto'
         this.stats.dom.style.right = '0'
-        this.stats.dom.style.bottom = '0'
+        this.stats.dom.style.pointerEvent = "none"
     }
 
     createGlyph(letter, pos, rx, ry) {
@@ -79,7 +79,7 @@ class App {
 
     initScene() {
         this.scene = new THREE.Scene()
-        this.glyphMat = new THREE.MeshLambertMaterial({ color: 0xffffff })
+        this.glyphMat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x222222 })
         this.camera = new THREE.PerspectiveCamera(
             75,
             window.innerWidth / window.innerHeight,
@@ -87,7 +87,7 @@ class App {
             20
         )
         this.camera.position.y = -4
-        this.camera.position.z = 2
+        this.camera.position.z = 4.5
         this.camera.lookAt(this.scene.position)
 
         this.renderer = new THREE.WebGLRenderer()
@@ -98,21 +98,20 @@ class App {
 
         windowFrame.appendChild(this.renderer.domElement)
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-        this.lightAmbient = new THREE.AmbientLight(0x222222)
+        this.lightAmbient = new THREE.AmbientLight(0x222222, 0.5)
         this.scene.add(this.lightAmbient)
 
         // Add a point light to add shadows
         // https://github.com/mrdoob/three.js/pull/14087#issuecomment-431003830
-        const shadowIntensity = 1
-
-        this.lightPoint = new THREE.PointLight(0xffffff)
-        this.lightPoint.position.set(0, 0, 3)
+        
+        this.lightPoint = new THREE.PointLight(0xffffff, 0.5)
+        this.lightPoint.position.set(0, 0, 6)
         this.lightPoint.castShadow = true
-        this.lightPoint.intensity = shadowIntensity
+        this.lightPoint.intensity = 6
         this.scene.add(this.lightPoint)
 
         const lightPoint2 = this.lightPoint.clone()
-        lightPoint2.intensity = 1 - shadowIntensity
+        lightPoint2.intensity = 3
         lightPoint2.castShadow = true
         this.scene.add(lightPoint2)
 
@@ -125,18 +124,18 @@ class App {
         this.lightPoint.shadow.camera.far = cameraFar
 
         this.glyphs = new THREE.Group()
-        for (let z = 0; z <= 2; z++) {
-            for (let y = -2; y <= 2; y++) {
-                for (let x = -2; x <= 2; x++) {
+        for (let z = 0; z <= 4; z++) {
+            for (let y = (4-z)*-1; y <= 4-z; y++) {
+                for (let x = (4-z)*-1; x <= 4-z; x++) {
                     this.createGlyph(
                         T[Math.ceil(Math.random() * T.length)],
-                        [x * 0.35, y * 0.5, z * 0.5],
+                        [x * 0.35, y * 0.35, z * 0.5],
                         -Math.PI / 2,
                         (x + z) % 2 === 0 ? Math.PI / 4 : -Math.PI / 4
                     )
                     this.createGlyph(
                         T[Math.ceil(Math.random() * T.length)],
-                        [x * 0.35, y * 0.5, z * 0.5],
+                        [x * 0.35, y * 0.35, z * 0.5],
                         0,
                         0
                     )
@@ -148,8 +147,8 @@ class App {
 
         // Add a plane
         const geometryPlane = new THREE.PlaneGeometry(
-            window.innerWidth / 60,
-            window.innerHeight / 60,
+            window.innerWidth / 30,
+            window.innerHeight / 30,
             1,
             1
         )
