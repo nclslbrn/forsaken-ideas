@@ -1,7 +1,7 @@
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { getGlyphVector } from '@nclslbrn/plot-writer'
+import { getGlyphPath, getGlyphVector } from '@nclslbrn/plot-writer'
 import { repeatedly, range } from '@thi.ng/transducers'
 import { polyline, rect, group, svgDoc, asSvg, line } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
@@ -14,7 +14,7 @@ import { convert, mul, quantity, NONE } from '@thi.ng/units'
 
 const ROOT = document.getElementById('windowFrame')
 const A5 = quantity([148, 210], 'mm')
-const DPI = quantity(600, 'dpi')
+const DPI = quantity(100, 'dpi')
 const SIZE = convert(mul(A5, DPI), NONE)
 
 document.body.style.overflowY = 'auto'
@@ -26,17 +26,43 @@ let comp = group(),
     cutSize = [0.33, 0.66, 0.5],
     txtSize = convert(mul(quantity(10, 'mm'), DPI), NONE),
     weight = convert(mul(quantity(0.35, 'mm'), DPI), NONE)
-    
-    
-const text = [
-    [...'+----------------------------------------------------------+---------+'],
-    [...'|                                                          |         |'],
-    [...'| Division of a square into three sections, the first half,|         |'],
-    [...'| then into one-third, two-thirds or two halves.           |         |'],
-    [...'| Alternating horizontal and vertical separations.         |         |'],
-    [...'|                                                          |         |'],
-    [...'+----------------------------------------------------------+---------+']
-]
+
+const text = {
+    en: [
+        [
+            ...'+----------------------------------------------------------+---------+'
+        ],
+        [
+            ...'| Division of a square into three sections, the first half,|         |'
+        ],
+        [
+            ...'| then into one-third, two-thirds or two halves.           |         |'
+        ],
+        [
+            ...'| Alternating horizontal and vertical separations.         |         |'
+        ],
+        [
+            ...'+----------------------------------------------------------+---------+'
+        ]
+    ],
+    fr: [
+        [
+            ...'+----------------------------------------------------------+---------+'
+        ],
+        [
+            ..."| Division d'un carré en trois parties, la première à la   |         |"
+        ],
+        [
+            ...'| moitié, puis au tiers, au deux tiers ou à la moitié.     |         |'
+        ],
+        [
+            ...'| Alternance de séparations horizontales et verticales.    |         |'
+        ],
+        [
+            ...'+----------------------------------------------------------+---------+'
+        ]
+    ]
+}
 
 const splitCell = (x, y, g, i) => {
     // Get the last or penultimate cell ID
@@ -96,9 +122,8 @@ const init = () => {
             }
         }
     }
-
-    const gridWidth = (SIZE[0] - between * 3 - between * rowCol) / (rowCol - 1)
-    const gridHeight = (SIZE[0] * 1.2 - between * 3 - between * rowCol) / rowCol
+    const gridWidth = (SIZE[0] - between * 2 - between * rowCol) / (rowCol - 1)
+    const gridHeight = (SIZE[0] * 1.2 - between * 2 - between * rowCol) / rowCol
     const cells = [],
         numbers = []
 
@@ -129,7 +154,7 @@ const init = () => {
 
                 numbers.push(
                     ...getGlyphVector(
-                        ["A", "B", "C"][c],
+                        [...'abc'][c],
                         [txtSize / 2, txtSize / 2],
                         pos.map((d, i) => d + siz[i] / 2 - txtSize / 4)
                     ).map((l) => polyline(l))
@@ -137,7 +162,7 @@ const init = () => {
             }
         }
     }
-    text.forEach((txtLine, y) => {
+    text.fr.forEach((txtLine, y) => {
         txtLine.forEach((letter, x) => {
             if (letter !== ' ') {
                 numbers.push(
@@ -145,8 +170,8 @@ const init = () => {
                         letter,
                         [txtSize / 5.5, txtSize / 2],
                         [
-                            between * 1.75 + x * (txtSize / 5.595),
-                            SIZE[0] * 1.24 + between * 0.75 * y
+                            between * 1.75 + x * (txtSize / 5.287),
+                            SIZE[0] * 1.23 + between * 0.9 * y
                         ]
                     ).map((l) => polyline(l))
                 )
@@ -191,3 +216,7 @@ infobox()
 handleAction()
 
 init()
+
+cnvs.style.aspectRatio = '148 / 210'
+cnvs.style.maxWidth = '100%'
+cnvs.style.height = 'auto'
