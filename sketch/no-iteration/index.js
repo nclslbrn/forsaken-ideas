@@ -1,7 +1,7 @@
-import '../full-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { getGlyphPath, getGlyphVector } from '@nclslbrn/plot-writer'
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 import { repeatedly, range } from '@thi.ng/transducers'
 import { polyline, rect, group, svgDoc, asSvg, line } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
@@ -103,7 +103,7 @@ const splitCell = (x, y, g, i) => {
     grids[g].push(...splitted)
 }
 
-const init = () => {
+const init = (lang) => {
     cnvs = document.getElementById('main')
     // Nothing fancy here we need a context to draw in the canvas
     const ctx = cnvs.getContext('2d')
@@ -162,7 +162,7 @@ const init = () => {
             }
         }
     }
-    text.fr.forEach((txtLine, y) => {
+    text[lang].forEach((txtLine, y) => {
         txtLine.forEach((letter, x) => {
             if (letter !== ' ') {
                 numbers.push(
@@ -188,11 +188,11 @@ const init = () => {
 }
 
 const downloadJPG = () =>
-    downloadCanvas(cnvs, `all-grids-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(cnvs, `no-iteration-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
 
 const downloadSVG = () =>
     downloadWithMime(
-        `all-grids-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `no-iteration-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -209,14 +209,23 @@ const downloadSVG = () =>
 $compile(canvas('#main')).mount(ROOT)
 
 /* stuff relative to forsaken-ideas */
+let language = 'en'
 window.init = init
+window.changeLanguage = () => {
+  if (language === 'en') { 
+    language = 'fr'
+  } else if (language === 'fr') {
+    language = 'en'
+  }
+  init(language)
+}
 window.downloadJPG = downloadJPG
 window.downloadSVG = downloadSVG
 infobox()
 handleAction()
-
-init()
-
+init(language)
+/*
 cnvs.style.aspectRatio = '148 / 210'
 cnvs.style.maxWidth = '100%'
 cnvs.style.height = 'auto'
+*/
