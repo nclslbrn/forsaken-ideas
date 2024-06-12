@@ -9,13 +9,12 @@ import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { $compile } from '@thi.ng/rdom'
 import { canvas } from '@thi.ng/hiccup-html'
-import { adaptDPI, isHighDPI } from '@thi.ng/canvas'
-import { convert, mul, quantity, NONE } from '@thi.ng/units'
+import { adaptDPI } from '@thi.ng/canvas'
+import { convert, mul, quantity, NONE, mm, dpi, DIN_A5 } from '@thi.ng/units'
 
-const ROOT = document.getElementById('windowFrame')
-const A5 = quantity([148, 210], 'mm')
-const DPI = quantity(100, 'dpi')
-const SIZE = convert(mul(A5, DPI), NONE)
+const ROOT = document.getElementById('windowFrame'),
+      DPI_100 = quantity(100, dpi),
+      SIZE = mul(DIN_A5, DPI_100).deref()
 
 document.body.style.overflowY = 'auto'
 document.body.style.height = '100vh'
@@ -24,8 +23,8 @@ let comp = group(),
     grids = [],
     cuts = [],
     cutSize = [0.33, 0.66, 0.5],
-    txtSize = convert(mul(quantity(10, 'mm'), DPI), NONE),
-    weight = convert(mul(quantity(0.35, 'mm'), DPI), NONE)
+    txtSize = convert(mul(quantity(10, mm), DPI_100), NONE),
+    weight = convert(mul(quantity(0.35, mm), DPI_100), NONE)
 
 const text = {
     en: [
