@@ -11,9 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 
 // An array of possible char used in the composition
-const T = [
-    ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789|||||||||||||||||///////////////?????!!!!!'
-]
+const T = [...'₠₡₢₣₤₥₦₧₩₪₫€₭₮₯₰₱₲₳₴₵₶₷₸₹₺₻₼₽₾₿₨$£¤¥']
 const d = 0.02
 const extruderPoints = [
     [-d, -d],
@@ -46,7 +44,7 @@ const glyphGeom = (letter, size) => {
 
     return closedSplines.map((spl) => {
         const extrusion = {
-            steps: spl.arcLengthDivisions,
+            steps: spl.arcLengthDivisions / 10,
             bevelEnabled: false,
             extrudePath: spl
         }
@@ -70,7 +68,7 @@ class App {
     }
 
     createGlyph(letter, pos, rx, ry) {
-        const glyphGeometry = glyphGeom(letter, [0.35, 1])
+        const glyphGeometry = glyphGeom(letter, [0.5, 0.85])
         glyphGeometry.map((geom) => {
             const m = new THREE.Mesh(geom, this.glyphMat)
             m.position.x = pos[0]
@@ -114,10 +112,10 @@ class App {
             new THREE.Vector2(window.innerWidth, window.innerHeight),
             1.5,
             0.4,
-            0.85
+            0.5
         )
-        bloomPass.threshold = 0
-        bloomPass.strength = 0.5
+        bloomPass.threshold = 0.1
+        bloomPass.strength = 0.75
         bloomPass.radius = 1
         const outputPass = new OutputPass()
 
@@ -151,7 +149,7 @@ class App {
         lightPoint2.castShadow = true
         this.scene.add(lightPoint2)
 
-        const mapSize = 2048 // Default 512
+        const mapSize = 1024 // Default 512
         const cameraNear = 0.5 // Default 0.5
         const cameraFar = 50 // Default 500
         this.topLight.shadow.mapSize.width = mapSize
@@ -178,23 +176,18 @@ class App {
                 for (let x = (4 - z) * -1; x <= 4 - z; x++) {
                     this.createGlyph(
                         T[Math.ceil(Math.random() * T.length)],
-                        [x * 0.35, y * 0.35, z * 0.5],
+                        [x * 0.35, y * 0.45, z * 0.5],
                         -Math.PI / 2,
-                        x === 0 || x === 4
+                        x === -z || x === z
                             ? Math.PI / 2
-                            : y === 0 || y === 4
+                            : y === -z || y === -z
                               ? -Math.PI / 2
                               : 0
                     )
                     this.createGlyph(
                         T[Math.ceil(Math.random() * T.length)],
-                        [x * 0.35, y * 0.35, z * 0.5],
-                        x === 0 || x === 4
-                            ? Math.PI / 2
-                            : y === 0 || y === 4
-                              ? -Math.PI / 2
-                              : 0,
-
+                        [x * 0.35, y * 0.45, z * 0.5 + 0.285],
+                        0,
                         0
                     )
                 }
