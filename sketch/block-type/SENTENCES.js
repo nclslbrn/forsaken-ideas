@@ -4,14 +4,19 @@ const SENTENCES = [
     'a picture of ',
     'undefined is ',
     "isNaN('Goldin') ",
-    'AGAIN! ',
-    'your eternity in each moment', // Henry David Thoreau
-    'Every step is on the path.', // Lao Tzu
     'there is no point ',
     'the past is now ',
     'Done ',
-    'once upon a line '
-    
+    'once upon a line ',
+    'feel free to ',
+    'it happens again ',
+    'this word is yours ',
+    'no one can tell ',
+    'Is this real ? ',
+    'Somewhere between the void and the antimatter ',
+    'nothing ',
+    "Don't mind if I do ",
+    "let me insist "
 ]
 
 export { SENTENCES }

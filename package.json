@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@nclslbrn/artistry-swatch": "^0.0.3",
-    "@nclslbrn/plot-writer": "^0.0.5-a",
+    "@nclslbrn/plot-writer": "0.1.0",
     "@thi.ng/adapt-dpi": "^2.2.48",
     "@thi.ng/date": "^2.7.18",
     "@thi.ng/dl-asset": "^2.3.81",

@@ -1314,10 +1314,10 @@
   resolved "https://registry.yarnpkg.com/@nclslbrn/artistry-swatch/-/artistry-swatch-0.0.3.tgz#e5f34d268d57cdb7de718f954d34a1b6c0de14e7"
   integrity sha512-ggaTXuuqltmEWy8lgSLyuFqP9eCf6e8gamiWUQAtpCemJ3qKZHecb6hLShYmkcJc08YZD54tVKLGeU93IKKmdQ==
 
-"@nclslbrn/plot-writer@^0.0.5-a":
-  version "0.0.5-a"
-  resolved "https://registry.yarnpkg.com/@nclslbrn/plot-writer/-/plot-writer-0.0.5-a.tgz#4ec388ebba660d8037c6730fb5b95de62feb3d27"
-  integrity sha512-2h/9i0k2Azyh7q3xKkM7cppNyaf4hDKCh676xJBA2Sbis74Ev4xSO9MhoHw72IoPQxBffvJfL3bjTXNsnshRMg==
+"@nclslbrn/plot-writer@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@nclslbrn/plot-writer/-/plot-writer-0.1.0.tgz#9265d64af4ca6b31a3f81261df04fd1afc1e2758"
+  integrity sha512-RnrnDqaOVC13HusHF5l20U3eOcS4ljvNN13WLrekn3Eap3TmddOY5DEi6fZNnC7f0GkXbLqHI7Y2DEZWABnp9w==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
