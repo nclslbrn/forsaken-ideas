@@ -10,7 +10,7 @@ const SENTENCES = [
     'once upon a line ',
     'feel free to ',
     'it happens again ',
-    'this word is yours ',
+    'the word is yours ',
     'no one can tell ',
     'Is this real ? ',
     'Somewhere between the void and the antimatter ',
