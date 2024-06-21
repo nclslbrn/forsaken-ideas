@@ -27,7 +27,7 @@ const DPI = quantity(96, dpi), // default settings in inkscape
         fill: 'rgba(0,0,0,0)',
         weight: convert(mul(quantity(0.3, mm), DPI), NONE)
     },
-    BG_ST = { fill: '#ffecea' },
+    BG_ST = { fill: '#fefefe' },
     EMPTY_CHANCE = 0.33,
     INTERPO_CHANCE = 1
 
