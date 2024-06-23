@@ -9,12 +9,12 @@ import { draw } from '@thi.ng/hiccup-canvas'
 import { button, canvas, div } from '@thi.ng/hiccup-html'
 import { reactive } from '@thi.ng/rstream'
 import { adaptDPI } from '@thi.ng/canvas'
-import { THEMES } from './THEMES'
+// import { THEMES } from './THEMES'
 import { set1, set2 } from './CHARS'
 import sentences from './SENTENCES'
-import { repeatedly2d } from '@thi.ng/transducers'
+import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import { $compile } from '@thi.ng/rdom'
-//import { getPalette } from '@nclslbrn/artistry-swatch'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 
 const { floor } = Math
 
@@ -24,8 +24,8 @@ let state = {
         alter: '',
         stop: 1,
         idx: false,
-        char: false,
-        fixedType: false
+        fixedType: false,
+        seq: false
     },
     frame = [0, 0],
     frameReqest = null,
@@ -39,13 +39,18 @@ let state = {
     timerID = null,
     gridLength = 0,
     isRecording = reactive(false),
-    recorder = null
+    recorder = null,
+    recordedFrame = 0
 
 const FPS = 12,
+    fontFace = new FontFace(
+        'FiraCode-Regular',
+        'url(./assets/FiraCode-Regular.otf)'
+    ),
     windowFrame = document.getElementById('windowFrame'),
     diag = Math.hypot(window.innerWidth, window.innerHeight),
-    cell = [diag * 0.0258, diag * 0.0305],
-    margin = diag * 0.05
+    cell = [diag * 0.0178, diag * 0.0452],
+    margin = diag * 0.03
 
 const init = () => {
     if (state.types.length) {
@@ -58,17 +63,9 @@ const init = () => {
     inner = frame.map((d) => d - margin * 2)
     colsRows = inner.map((d, i) => floor(d / cell[i]))
     padding = inner.map((d, i) => (d - colsRows[i] * cell[i]) / 2)
-    palette = pickRandom(THEMES)
+    palette = getPalette()
 
-    state.types = [
-        ...repeatedly2d(
-            (x, y) => [
-                SYSTEM.float() > 0.5 ? ' ' : set2[x % set2.length],
-                pickRandom(palette)
-            ],
-            ...colsRows
-        )
-    ]
+    state.types = [...repeatedly2d((x, y) => randType(y), ...colsRows)]
     gridLength = state.types.length
     ctx.scale(dpr, dpr)
     draw(ctx, comp())
@@ -78,15 +75,18 @@ const init = () => {
 //
 const alter = {
     slideDown: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             for (let x = 0; x < colsRows[0]; x++) {
-                if ((!idx && SYSTEM.float() > 0.66) || (idx && x !== idx)) {
+                if ((!idx && SYSTEM.float() > 0.5) || (idx && x !== idx)) {
                     for (let y = 0; y < colsRows[1]; y++) {
                         const top = y * colsRows[0] + x,
                             bottom =
-                                (y < colsRows - 2 ? y + 1 : 0) * colsRows[0] +
+                                (y < colsRows - 1 ? y + 1 : 0) * colsRows[0] +
                                 x,
-                            tType = y === 0 && type ? type : state.types[top],
+                            tType =
+                                y === 0 && seq
+                                    ? seq[idx % seq.length]
+                                    : state.types[top],
                             bType = state.types[bottom]
                         state.types[bottom] = tType
                         state.types[top] = bType
@@ -94,21 +94,22 @@ const alter = {
                 }
             }
         },
-        () => [colsRows[1] / 2, SYSTEM.minmaxInt(0, colsRows[0])]
+        () => [colsRows[1], SYSTEM.minmaxInt(0, colsRows[0])]
     ],
     slideUp: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             for (let x = 0; x < colsRows[0]; x++) {
-                if ((!idx && SYSTEM.float() > 0.66) || (idx && x !== idx)) {
+                if ((!idx && SYSTEM.float() > 0.5) || (idx && x !== idx)) {
                     for (let y = colsRows[1] - 1; y >= 0; y--) {
                         const top = y * colsRows[0] + x,
                             bottom =
-                                (y < colsRows - 2 ? y + 1 : 0) * colsRows[0] +
+                                (y === colsRows - 1 ? y + 1 : 0) *
+                                    (colsRows[0] - 1) +
                                 x,
                             tType = state.types[top],
                             bType =
-                                y === colsRows[1] - 1 && type
-                                    ? type
+                                y === colsRows[1] - 1 && seq
+                                    ? seq[idx % seq.length]
                                     : state.types[bottom]
                         state.types[bottom] = tType
                         state.types[top] = bType
@@ -116,85 +117,96 @@ const alter = {
                 }
             }
         },
-        () => [colsRows[1] / 2, SYSTEM.minmaxInt(0, colsRows[0])]
+        () => [colsRows[1], SYSTEM.minmaxInt(0, colsRows[0])]
     ],
     slideLeft: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             for (let y = 0; y < colsRows[1]; y++) {
-                if ((!idx && SYSTEM.float() > 0.66) || (idx && y !== idx)) {
-                    const right = colsRows[0] * y + colsRows[0] - 1,
+                if ((!idx && SYSTEM.float() > 0.5) || (idx && y !== idx)) {
+                    const right = colsRows[0] * y + colsRows[0],
                         left = colsRows[0] * y,
                         lType = state.types[left]
                     state.types.splice(left, 1)
-                    state.types.splice(right, 0, type || lType)
+                    state.types.splice(
+                        right,
+                        0,
+                        seq ? seq[idx % seq.length] : lType
+                    )
                 }
             }
         },
-        () => [colsRows[0] / 2, SYSTEM.minmaxInt(0, colsRows[1])]
+        () => [colsRows[0], SYSTEM.minmaxInt(0, colsRows[1])]
     ],
     slideRight: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             for (let y = 0; y < colsRows[1]; y++) {
-                if ((!idx && SYSTEM.float() > 0.66) || (idx && y !== idx)) {
+                if ((!idx && SYSTEM.float() > 0.5) || (idx && y !== idx)) {
                     const right = colsRows[0] * y + colsRows[0] - 1,
                         left = colsRows[0] * y,
                         rType = state.types[right]
 
                     state.types.splice(right, 1)
-                    state.types.splice(left, 0, type || rType)
+                    state.types.splice(
+                        left,
+                        0,
+                        seq ? seq[idx % seq.length] : rType
+                    )
                 }
             }
         },
-        () => [colsRows[0] / 2, SYSTEM.minmaxInt(0, colsRows[1])]
+        () => [colsRows[0], SYSTEM.minmaxInt(0, colsRows[1])]
     ],
     fillLeftMidRow: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             const y = idx || Math.round(colsRows[1] / 2)
             const c = y * colsRows[0] + state.t
-            state.types[c] = type || state.types[c - 1]
+            state.types[c] = seq ? seq[idx % seq.length] : state.types[c - 1]
         },
         () => [colsRows[0], SYSTEM.minmaxInt(0, colsRows[1])]
     ],
     fillRightMidRow: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             const y = idx || Math.round(colsRows[1] / 2)
             const c = y * colsRows[0] + (colsRows[0] - state.t - 1)
-            state.types[c] = type || state.types[c - 1]
+            state.types[c] = seq ? seq[idx % seq.length] : state.types[c - 1]
         },
         () => [colsRows[0], SYSTEM.minmaxInt(0, colsRows[1])]
     ],
     fillTopMidColum: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             const x = idx || Math.round(colsRows[0] / 2)
             const c = state.t * colsRows[0] + x
             const p =
                 state.t > 0
                     ? (state.t - 1) * colsRows[0] + x
                     : colsRows[0] * (colsRows[1] - 1) + x
-            state.types[c] = type || state.types[p]
+            state.types[c] = seq ? seq[idx % seq.length] : state.types[p]
         },
         () => [colsRows[1], SYSTEM.minmaxInt(0, colsRows[0])]
     ],
     fillBottomMidColum: [
-        (type = false, idx = false) => {
+        (seq = false, idx = false) => {
             const x = idx || Math.round(colsRows[0] / 2)
             const c = (colsRows[1] - state.t - 1) * colsRows[0] + x
             const p =
                 state.t === colsRows[1] - 1
                     ? colsRows[0] + x
                     : colsRows[0] * (state.t + 1) + x
-            state.types[c] = type || state.types[p]
+            state.types[c] = seq ? seq[idx % seq.length] : state.types[p]
         },
         () => [colsRows[1], SYSTEM.minmaxInt(0, colsRows[0])]
     ],
     alert: [
-        (type = false, idx = false) => {
-            const phrase = [...sentences[idx]],
-                col = pickRandom(palette)
-            const y = colsRows[0] * (idx || 0)
+        (seq = false, idx = false) => {
+            const phrase = [
+                    ...sentences[(seq ? seq.length : idx) % sentences.length]
+                ],
+                col = pickRandom(palette.colors),
+                y = colsRows[0] * (idx || 0),
+                x = Math.round((colsRows[0] - phrase.length) / 2)
 
             for (let i = 0; i < phrase.length; i++) {
-                state.types[(y + i) % state.types.length] = [phrase[i], col]
+                state.types[(y + x + i) % state.types.length] = [phrase[i], col]
             }
         },
         () => [3, SYSTEM.minmaxInt(0, sentences.length)]
@@ -203,10 +215,10 @@ const alter = {
 
 const comp = () =>
     group({}, [
-        rect(frame, { fill: '#111114' }),
+        rect(frame, { fill: palette.background }),
         group(
             {
-                font: `${cell[0]}px monospace`,
+                font: `${cell[1] * 0.66}px FiraCode-Regular`,
                 align: 'center',
                 baseline: 'middle'
             },
@@ -227,31 +239,47 @@ const comp = () =>
             }, [])
         )
     ])
-const randType = () =>
+const randType = (idx = false) => [
     SYSTEM.float() > 0.5
-        ? [
-              SYSTEM.float() > 0.3 ? pickRandom([...set1, ...set2]) : ' ',
-              pickRandom(palette)
-          ]
-        : false
+        ? set1[idx ? idx % set1.length : SYSTEM.minmaxInt(0, set1.length)]
+        : set2[idx ? idx % set2.length : SYSTEM.minmaxInt(0, set2.length)],
+    palette.colors[(idx ? idx : state.t) % palette.colors.length]
+]
 
 const update = () => {
-    clearTimeout(timerID)
-    timerID = window.setTimeout(() => {
-        frameReqest = requestAnimationFrame(update)
-    }, 50)
+    if (isRecording) {
+        if (recordedFrame === FPS * 60) {
+            stopRecording()
+        } else {
+            recordedFrame++
+        }
+    }
+
+    //clearTimeout(timerID)
+    //timerID = window.setTimeout(() => {
+    frameReqest = requestAnimationFrame(update)
+    //}, 40)
 
     if (state.t >= state.stop) {
         state.t = 0
         state.alter = pickRandomKey(alter)
         const [max, idx] = alter[state.alter][1]()
-        state.stop = SYSTEM.minmaxInt(0, max)
+        state.stop = SYSTEM.minmaxInt(1, max / 2)
         state.idx = idx
-        state.fixedType = SYSTEM.float() > 0.33
-        state.char = randType()
+        //state.fixedType = SYSTEM.float() > 0.9
+        state.seq =
+            SYSTEM.float() > 0.5
+                ? false
+                : SYSTEM.float() > 0.5
+                  ? [randType(false), randType(false), [' ', '#ffffff']]
+                  : [
+                        randType(frameReqest),
+                        randType(frameReqest),
+                        [' ', '#ffffff']
+                    ]
     } else {
-        if (!state.fixedType) state.char = randType()
-        alter[state.alter][0](state.char, state.idx)
+        //if (!state.fixedType) state.seq = [randType(false)]
+        alter[state.alter][0](state.seq, state.idx)
         if (state.types.length > gridLength) {
             console.log(state.alter)
             cancelAnimationFrame(frameReqest)
@@ -264,8 +292,9 @@ const update = () => {
 // function to trigger canvas recording (if not yet active)
 const startRecording = () => {
     if (isRecording.deref()) return
+    recordedFrame = 0
     recorder = canvasRecorder(cnvs, 'undetermined-type-grid', {
-        mimeType: 'video/webm;codecs=vp8',
+        mimeType: 'video/webm;codecs=vp9',
         fps: FPS
     })
     recorder.start()
@@ -314,6 +343,11 @@ ctx = cnvs.getContext('2d')
 window.init = init
 window.onresize = init
 
-init()
-infobox()
-handleAction()
+document.addEventListener('keypress', update)
+
+fontFace.load().then(function (font) {
+    document.fonts.add(font)
+    init()
+    infobox()
+    handleAction()
+})

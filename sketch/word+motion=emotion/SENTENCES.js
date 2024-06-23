@@ -1,6 +1,7 @@
 export default [
-    'CORRUPTED SECTOR',
-    'PROGRAM NOT RESPONDING',
-    '1234567890',
-    'ABCDEFGHIJKLMNOPQRST'
+    '▖   ▖   ▖   ',
+    '■  ■  ■  ■  ',
+    '▘▘▘▘▘▘▘▘▘▘▘▘',
+    '█ █ █ █ █ █ ',
+    ' ▃ ▃ ▃ ▃ ▃ ▃'
 ]
