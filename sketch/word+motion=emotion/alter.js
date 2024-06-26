@@ -1,5 +1,5 @@
-import sentences from './SENTENCES'
-import { SYSTEM, pickRandom } from '@thi.ng/random'
+import SENTENCES from './SENTENCES'
+import { SYSTEM } from '@thi.ng/random'
 // Default grid setup (at sketch launch)
 let state = {
     types: [],
@@ -11,8 +11,10 @@ let state = {
     seq: false,
     colsRows: [],
     modMotionLength: 0,
-    palette: {}
+    palette: {},
+    rand: SYSTEM
 }
+
 
 // A list of function for altering the type grid
 // Each property of this object is a possible alteration, an array with the first value
@@ -21,13 +23,17 @@ let state = {
 // the current number of loop within this alteration occurs)
 const alter = {
     slideDown: [
-        (seq = false, idx = false) => {
-            for (let x = 0; x < state.colsRows[0]; x++) {
-                if ((!idx && SYSTEM.float() > 0.5) || (idx && x !== idx)) {
-                    for (let y = 0; y < state.colsRows[1]; y++) {
-                        const top = y * state.colsRows[0] + x,
-                            nextRow = y < state.colsRows - 1 ? y + 1 : 0,
-                            bottom = nextRow * state.colsRows[0] + x,
+        (seq = false) => {
+            const {idx, colsRows, t, rand } = state
+            for (let x = 0; x < colsRows[0]; x++) {
+                if (
+                    (!idx && rand.float() < 1 / colsRows[0]) ||
+                    (idx && x !== idx)
+                ) {
+                    for (let y = 0; y < colsRows[1]; y++) {
+                        const top = y * colsRows[0] + x,
+                            nextRow = y < colsRows - 1 ? y + 1 : 0,
+                            bottom = nextRow * colsRows[0] + x,
                             tType = state.types[top],
                             bType = state.types[bottom]
 
@@ -37,16 +43,23 @@ const alter = {
                 }
             }
         },
-        () => [state.colsRows[1], state.colsRows[0]/4]
+        () => {
+          state.stop = state.rand.minmaxInt(1, state.colsRows[1]/4)
+          state.idx = state.rand.minmaxInt(1, state.colsRows[0]-1)
+        }
     ],
     slideUp: [
-        (seq = false, idx = false) => {
-            for (let x = 0; x < state.colsRows[0]; x++) {
-                if ((!idx && SYSTEM.float() > 0.5) || (idx && x !== idx)) {
-                    for (let y = state.colsRows[1] - 1; y >= 0; y--) {
-                        const top = y * state.colsRows[0] + x,
-                            nextRow = y === state.colsRows - 1 ? y + 1 : 0,
-                            bottom = nextRow * state.colsRows[0] + x,
+        (seq = false) => {
+            const {idx, colsRows, t, rand } = state
+            for (let x = 0; x < colsRows[0]; x++) {
+                if (
+                    (!idx && rand.float() < 1 / colsRows[0]) ||
+                    (idx && x !== idx)
+                ) {
+                    for (let y = colsRows[1] - 1; y >= 0; y--) {
+                        const top = y * colsRows[0] + x,
+                            nextRow = y === colsRows - 1 ? y + 1 : 0,
+                            bottom = nextRow * colsRows[0] + x,
                             tType = state.types[top],
                             bType = state.types[bottom]
 
@@ -56,91 +69,117 @@ const alter = {
                 }
             }
         },
-        () => [state.colsRows[1], state.colsRows[0]/4]
+        () => {
+          state.stop =  state.rand.minmaxInt(1, state.colsRows[1]/4)
+          state.idx = SYSTEM.minmaxInt(1, state.colsRows[0]-1)
+        }
     ],
     slideLeft: [
-        (seq = false, idx = false) => {
-            for (let y = 0; y < state.colsRows[1]; y++) {
-                if ((!idx && SYSTEM.float() > 0.5) || (idx && y !== idx)) {
-                    const right = state.colsRows[0] * y + state.colsRows[0] - 1,
-                        left = state.colsRows[0] * y,
+        (seq = false) => {
+            const {idx, colsRows, t, rand } = state
+            for (let y = 0; y < colsRows[1]; y++) {
+                if ((!idx && rand.float() > 0.5) || (idx && y !== idx)) {
+                    const right = colsRows[0] * y + colsRows[0] - 1,
+                        left = colsRows[0] * y,
                         lType = state.types[left]
                     state.types.splice(left, 1)
-                    state.types.splice(
-                        right,
-                        0,
-                        lType
-                    )
+                    state.types.splice(right, 0, lType)
                 }
             }
         },
-        () => [state.colsRows[0], state.colsRows[1]/4]
+        () => {
+          state.stop = state.rand.minmaxInt(1, state.colsRows[0]/4)
+          state.idx = SYSTEM.minmaxInt(1, state.colsRows[1]-1)
+        }
     ],
     slideRight: [
-        (seq = false, idx = false) => {
-            for (let y = 0; y < state.colsRows[1]; y++) {
-                if ((!idx && SYSTEM.float() > 0.5) || (idx && y !== idx)) {
-                    const right = state.colsRows[0] * y + state.colsRows[0] - 1,
-                        left = state.colsRows[0] * y,
+        (seq = false) => {
+            const {idx, colsRows, t, rand } = state
+            for (let y = 0; y < colsRows[1]; y++) {
+                if ((!idx && rand.float() > 0.5) || (idx && y !== idx)) {
+                    const right = colsRows[0] * y + colsRows[0] - 1,
+                        left = colsRows[0] * y,
                         rType = state.types[right]
 
                     state.types.splice(right, 1)
-                    state.types.splice(
-                        left,
-                        0,
-                        rType
-                    )
+                    state.types.splice(left, 0, rType)
                 }
             }
         },
-        () => [state.colsRows[0], state.colsRows[1]/4]
+        () => {
+          state.stop = state.rand.minmaxInt(1, state.colsRows[0]/4)
+          state.idx = state.rand.minmaxInt(1, state.colsRows[1]-1)
+        }
     ],
-
-    fillLeftMidRow: [
-        (seq = false, idx = false) => {
-            const y = idx || Math.round(state.colsRows[1] / 2)
-            const c = y * state.colsRows[0] + state.t
-            state.types[c] = seq ? seq[(idx ?idx : c) % seq.length] : state.types[c - 1]
+    fillLeftRow: [
+        (seq = false) => {
+            const {idx, colsRows, t} = state
+            const y = idx >= 0 ? idx : Math.floor(colsRows[1] / 2)
+            const c = y * colsRows[0] + t
+            state.types[c] = seq
+                ? seq[(idx >= 0 ? idx : c) % seq.length]
+                : state.types[c + 1]
         },
-        () => [state.colsRows[0], state.colsRows[1]]
+        () => {
+          state.stop = state.rand.minmaxInt(0, state.colsRows[0])
+          state.idx = state.rand.minmaxInt(0, state.colsRows[1]-1)
+        }
     ],
-    fillRightMidRow: [
-        (seq = false, idx = false) => {
-            const y = idx || Math.round(state.colsRows[1] / 2)
-            const c = y * state.colsRows[0] + (state.colsRows[0] - state.t - 1)
-            state.types[c] = seq ? seq[(idx ?idx : c)  % seq.length] : state.types[c - 1]
+    fillRightRow: [
+        (seq = false) => {
+            const {idx, colsRows, t} = state
+            const y = idx >= 0 ? idx : Math.ceil(colsRows[1] / 2)
+            const c = y * colsRows[0] + (colsRows[0] - t - 1)
+            state.types[c] = seq
+                ? seq[(idx >= 0 ? idx : c) % seq.length]
+                : state.types[c - 1]
         },
-        () => [state.colsRows[0], state.colsRows[1]]
+        () => {
+          state.stop = state.rand.minmaxInt(0, state.colsRows[0])
+          state.idx = state.rand.minmaxInt(0, state.colsRows[1])
+        }
     ],
-    fillTopMidColum: [
-        (seq = false, idx = false) => {
-            const x = idx || Math.round(state.colsRows[0] / 2)
-            const c = state.t * state.colsRows[0] + x
+    
+    fillTopColum: [
+        (seq = false) => {
+            const {idx, colsRows, t} = state
+            const x = idx >= 0 ? idx : Math.floor(colsRows[0] / 2)
+            const c = t * colsRows[0] + x
+            const p = t
+                ? t * colsRows[0] + x
+                : colsRows[0] * (colsRows[1] - 1) + x
+            state.types[c] = seq
+                ? seq[(idx >= 0 ? idx : c) % seq.length]
+                : state.types[p]
+        },
+        () => {
+          state.stop = state.rand.minmaxInt(0, state.colsRows[1])
+          state.idx = state.rand.minmaxInt(0, state.colsRows[0])
+        }
+    ],
+    fillBottomColum: [
+        (seq = false) => {
+            const {idx, colsRows, t} = state
+            const x = idx >= 0 ? idx : Math.ceil(colsRows[0] / 2)
+            const c = (colsRows[1] - t - 1) * state.colsRows[0] + x
             const p =
-                state.t > 0
-                    ? (state.t - 1) * state.colsRows[0] + x
-                    : state.colsRows[0] * (state.colsRows[1] - 1) + x
-            state.types[c] = seq ? seq[(idx ?idx : c)  % seq.length] : state.types[p]
+                t === colsRows[1] - 1
+                    ? colsRows[0] + x
+                    : colsRows[0] * t+1 + x
+            state.types[c] = seq
+                ? seq[idx % seq.length]
+                : state.types[p]
         },
-        () => [state.colsRows[1], state.colsRows[0]]
-    ],
-    fillBottomMidColum: [
-        (seq = false, idx = false) => {
-            const x = idx || Math.round(state.colsRows[0] / 2)
-            const c = (state.colsRows[1] - state.t - 1) * state.colsRows[0] + x
-            const p =
-                state.t === state.colsRows[1] - 1
-                    ? state.colsRows[0] + x
-                    : state.colsRows[0] * (state.t + 1) + x
-            state.types[c] = seq ? seq[(idx ?idx : c) % seq.length] : state.types[p]
-        },
-        () => [state.colsRows[1], state.colsRows[0]]
+        () => {
+          //console.log(state.colsRows[0])
+          state.stop = state.rand.minmaxInt(0, state.colsRows[1]), 
+          state.idx = SYSTEM.minmaxInt(0, state.colsRows[0])
+        }
     ]
-    /* 
-    alert: [
+    /* alert: [
         (seq = false, idx = false) => {
             const phrase = [
-                    ...sentences[(seq ? seq.length : idx) % sentences.length]
+                    ...SENTENCES[(seq ? seq.length : idx) % SENTENCES.length]
                 ],
                 col = pickRandom(state.palette.colors),
                 y = state.colsRows[0] * (idx || 0),

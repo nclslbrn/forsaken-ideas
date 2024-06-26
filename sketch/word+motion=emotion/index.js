@@ -1,7 +1,7 @@
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { SYSTEM, pickRandomKey } from '@thi.ng/random'
+import { SYSTEM, pickRandom, pickRandomKey } from '@thi.ng/random'
 import { downloadCanvas, canvasRecorder } from '@thi.ng/dl-asset'
 import { group, text, rect } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
@@ -37,7 +37,7 @@ const FPS = 12,
     ),
     windowFrame = document.getElementById('windowFrame'),
     diag = Math.hypot(window.innerWidth, window.innerHeight),
-    cell = [diag * 0.0178, diag * 0.0452].map((d) => d * 1.5),
+    cell = [diag * 0.0178, diag * 0.0452], //.map((d) => d * 1),
     margin = diag * 0.03
 
 const init = () => {
@@ -52,7 +52,9 @@ const init = () => {
     state.colsRows = inner.map((d, i) => floor(d / cell[i]))
     padding = inner.map((d, i) => (d - state.colsRows[i] * cell[i]) / 2)
     state.palette = getPalette()
-    state.types = [...repeatedly2d((x, y) => randType(x + y * state.colsRows[0]), ...state.colsRows)]
+    state.types = [
+        ...repeatedly2d((x, y) => randType(x + y), ...state.colsRows)
+    ]
 
     state.modMotionLength = Math.min(...state.colsRows)
     // debug purpose variable
@@ -88,18 +90,18 @@ const comp = () =>
         )
     ])
 const randType = (idx = false) => [
-    SYSTEM.float() > 0.5
-        ? set1[idx ? idx % set1.length : SYSTEM.minmaxInt(0, set1.length)]
-        : set2[idx ? idx % set2.length : SYSTEM.minmaxInt(0, set2.length)],
+    state.rand.float() > 0.5
+        ? set1[idx ? idx % set1.length : state.rand.minmaxInt(0, set1.length)]
+        : set2[idx ? idx % set2.length : state.rand.minmaxInt(0, set2.length)],
     state.palette.colors[
         (idx ? idx % state.colsRows[0] : state.t) % state.palette.colors.length
     ]
 ]
-const randSeq = (idx) => {
-    return Array(...SENTENCES[idx % SENTENCES.length]).map((char) => [
-        char,
-        state.palette.colors[idx % state.palette.colors.length]
-    ])
+
+const randSeq = () => {
+    const seq = pickRandom(SENTENCES, state.rand)
+    const col = pickRandom(state.palette.colors, state.rand)
+    return seq.map((char) => [char, col])
 }
 
 const update = () => {
@@ -114,21 +116,23 @@ const update = () => {
     clearTimeout(timerID)
     timerID = window.setTimeout(() => {
         frameReqest = requestAnimationFrame(update)
-    }, 60)
+    }, 50)
 
     if (state.t >= state.stop) {
         state.t = 0
-        state.alter = pickRandomKey(alter)
-        const [maxFrame, maxItem] = alter[state.alter][1]()
-        state.stop = SYSTEM.minmaxInt(1, maxFrame)
-        state.idx = SYSTEM.minmaxInt(0, maxItem - 1)
-        state.fixedType = SYSTEM.float() > 0.1
-        state.seq = SYSTEM.float() > 0.9 ? randSeq(state.t) : false
+        state.alter = pickRandomKey(alter, state.rand)
+        alter[state.alter][1]()
+        state.fixedType = state.rand.float() > 0.1
+        state.seq = state.rand.float() > 0.25 ? randSeq(state.t) : false
     } else {
-        if (!state.fixedType && state.t % 8 === 0) state.seq = randSeq(state.idx)
-        alter[state.alter][0](state.seq, state.idx)
+        if (!state.fixedType && state.t % 8 === 0) {
+            state.seq = randSeq(state.idx)
+        }
+        alter[state.alter][0](state.seq)
         if (state.types.length > gridLength) {
-            console.log(state.alter)
+            console.log(
+                `${state.alter} create an offset of ${state.types.length - gridLength}`
+            )
             clearTimeout(timerID)
             cancelAnimationFrame(frameReqest)
         }
@@ -141,7 +145,7 @@ const update = () => {
 const startRecording = () => {
     if (isRecording.deref()) return
     recordedFrame = 0
-    recorder = canvasRecorder(cnvs, 'undetermined-type-grid', {
+    recorder = canvasRecorder(cnvs, 'word+motion=emotion', {
         mimeType: 'video/webm;codecs=vp9',
         fps: FPS
     })
@@ -190,6 +194,7 @@ cnvs = document.getElementById('main')
 ctx = cnvs.getContext('2d')
 window.init = init
 window.onresize = init
+window.download = () => downloadCanvas(cnvs, 'word+motion=emotion', 'jpeg', 1)
 
 document.addEventListener('keypress', update)
 
