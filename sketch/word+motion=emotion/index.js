@@ -30,14 +30,14 @@ let frame = [0, 0],
     recorder = null,
     recordedFrame = 0
 
-const FPS = 12,
+const FPS = 30,
     fontFace = new FontFace(
         'FiraCode-Regular',
         'url(./assets/FiraCode-Regular.otf)'
     ),
     windowFrame = document.getElementById('windowFrame'),
     diag = Math.hypot(window.innerWidth, window.innerHeight),
-    cell = [diag * 0.0178, diag * 0.0452], //.map((d) => d * 1),
+    cell = [diag * 0.0178, diag * 0.0452].map((d) => d * 1),
     margin = diag * 0.03
 
 const init = () => {
@@ -52,11 +52,18 @@ const init = () => {
     state.colsRows = inner.map((d, i) => floor(d / cell[i]))
     padding = inner.map((d, i) => (d - state.colsRows[i] * cell[i]) / 2)
     state.palette = getPalette()
-    state.types = [
-        ...repeatedly2d((x, y) => randType(x + y), ...state.colsRows)
-    ]
-
-    state.modMotionLength = Math.min(...state.colsRows)
+    
+  let seq = randSeq(), 
+        i = 0
+    state.types = Array.from(Array(state.colsRows[0] * state.colsRows[1])).reduce(arr => {
+      if (i === seq.length-1) {
+        seq = randSeq();
+        i = 0
+      }
+      i++ 
+      return [...arr, seq[i]];
+    }, [])
+    
     // debug purpose variable
     gridLength = state.types.length
     ctx.scale(dpr, dpr)
@@ -106,7 +113,7 @@ const randSeq = () => {
 
 const update = () => {
     if (isRecording) {
-        if (recordedFrame === FPS * 60) {
+        if (recordedFrame === FPS * 10) {
             stopRecording()
         } else {
             recordedFrame++
@@ -116,14 +123,14 @@ const update = () => {
     clearTimeout(timerID)
     timerID = window.setTimeout(() => {
         frameReqest = requestAnimationFrame(update)
-    }, 50)
-
+    }, 60) 
+    
     if (state.t >= state.stop) {
         state.t = 0
         state.alter = pickRandomKey(alter, state.rand)
         alter[state.alter][1]()
         state.fixedType = state.rand.float() > 0.1
-        state.seq = state.rand.float() > 0.25 ? randSeq(state.t) : false
+        state.seq = state.rand.float() > 0.33 ? randSeq(state.t) : false
     } else {
         if (!state.fixedType && state.t % 8 === 0) {
             state.seq = randSeq(state.idx)
