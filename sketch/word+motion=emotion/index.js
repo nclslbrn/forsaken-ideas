@@ -8,11 +8,11 @@ import { draw } from '@thi.ng/hiccup-canvas'
 import { button, canvas, div } from '@thi.ng/hiccup-html'
 import { reactive } from '@thi.ng/rstream'
 import { adaptDPI } from '@thi.ng/canvas'
-import { set1, set2 } from './CHARS'
 import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import { $compile } from '@thi.ng/rdom'
 import { getPalette } from '@nclslbrn/artistry-swatch'
 import { state, alter } from './alter'
+import logPalette from './logPalette'
 import SENTENCES from './SENTENCES'
 
 const { floor } = Math
@@ -37,7 +37,7 @@ const FPS = 30,
     ),
     windowFrame = document.getElementById('windowFrame'),
     diag = Math.hypot(window.innerWidth, window.innerHeight),
-    cell = [diag * 0.0178, diag * 0.0452].map((d) => d * 1),
+    cell = [diag * 0.0178, diag * 0.0452].map((d) => d * 0.75),
     margin = diag * 0.03
 
 const init = () => {
@@ -52,18 +52,20 @@ const init = () => {
     state.colsRows = inner.map((d, i) => floor(d / cell[i]))
     padding = inner.map((d, i) => (d - state.colsRows[i] * cell[i]) / 2)
     state.palette = getPalette()
-    
-  let seq = randSeq(), 
+    logPalette(state.palette)
+    let seq = randSeq(),
         i = 0
-    state.types = Array.from(Array(state.colsRows[0] * state.colsRows[1])).reduce(arr => {
-      if (i === seq.length-1) {
-        seq = randSeq();
-        i = 0
-      }
-      i++ 
-      return [...arr, seq[i]];
+    state.types = Array.from(
+        Array(state.colsRows[0] * state.colsRows[1])
+    ).reduce((arr) => {
+        if (i === seq.length - 1) {
+            seq = randSeq()
+            i = 0
+        }
+        i++
+        return [...arr, seq[i]]
     }, [])
-    
+
     // debug purpose variable
     gridLength = state.types.length
     ctx.scale(dpr, dpr)
@@ -113,7 +115,7 @@ const randSeq = () => {
 
 const update = () => {
     if (isRecording) {
-        if (recordedFrame === FPS * 10) {
+        if (recordedFrame === FPS * 30) {
             stopRecording()
         } else {
             recordedFrame++
@@ -123,8 +125,8 @@ const update = () => {
     clearTimeout(timerID)
     timerID = window.setTimeout(() => {
         frameReqest = requestAnimationFrame(update)
-    }, 60) 
-    
+    }, 60)
+
     if (state.t >= state.stop) {
         state.t = 0
         state.alter = pickRandomKey(alter, state.rand)

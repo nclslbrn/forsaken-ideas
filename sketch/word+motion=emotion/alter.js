@@ -21,7 +21,7 @@ let state = {
 // of the alteration (seq an array of char, and idx a number of column or rows or sumply
 // the current number of loop within this alteration occurs)
 const alter = {
-  
+    
     slideDown: [
         (seq = false) => {
             const { idx, colsRows, t, rand } = state
@@ -179,10 +179,11 @@ const alter = {
             state.idx = SYSTEM.minmaxInt(0, state.colsRows[0])
         }
     ],
+    
     mirrorizeXY: [
         (seq = false) => {
             const { colsRows, t, idx } = state,
-                midCols = Math.floor(colsRows[0] / 2)
+                midCols = Math.ceil(colsRows[0] / 2)
 
             for (let x = 0; x < midCols; x++) {
                 const src =
@@ -200,7 +201,7 @@ const alter = {
         },
         () => {
             state.stop = Math.ceil(state.colsRows[1] / 2)
-            state.idx = SYSTEM.minmaxInt(0, state.colsRows[0] / 4)
+            state.idx = SYSTEM.minmaxInt(2, state.colsRows[0] / 4)
         }
     ],
     mirrorY: [
@@ -218,7 +219,7 @@ const alter = {
         },
         () => {
             state.stop = Math.floor(state.colsRows[1] / 2)
-            state.idx = SYSTEM.minmaxInt(0, state.colsRows[0] / 2)
+            state.idx = SYSTEM.minmaxInt(2, state.colsRows[0] / 2)
         }
     ],
     mirrorX : [
@@ -229,20 +230,20 @@ const alter = {
                   ? seq[t % seq.length]
                   : state.types[y + t]
               state.types[y + t] = src 
-              state.types[y + (colsRows[0] - t)] = src
+              state.types[y + (colsRows[0] - (t+1))] = src
           }
       },
       () => {
           state.stop = Math.floor(state.colsRows[0]/ 2)
-          state.idx = SYSTEM.minmaxInt(0, state.colsRows[1] / 4)
+          state.idx = SYSTEM.minmaxInt(2, state.colsRows[1] / 4)
       }
     ],
      
     insert: [
         (seq = false) => {
             const { colsRows, t, idx, types } = state
-            const start = (idx * colsRows[1]) % (colsRows[0] * colsRows[1])
-            const decay = (idx * colsRows[0]) % colsRows[0]
+            const start = (idx * colsRows[0]) % state.types.length
+            const decay = (t * colsRows[0]) % colsRows[0]
             const len = seq ? seq.length % colsRows[0] : SYSTEM.minmaxInt(0, colsRows[0])
             const src = seq ? seq : [state.types[start]]
 
@@ -252,7 +253,7 @@ const alter = {
         },
         () => {
             state.stop = SYSTEM.minmaxInt(0, state.colsRows[1]+1)
-            state.idx = SYSTEM.minmaxInt(0, state.colsRows[0])
+            state.idx = SYSTEM.minmaxInt(0, state.colsRows[1])
         }
     ]
 }
