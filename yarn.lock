@@ -1311,7 +1311,7 @@
 
 "@nclslbrn/artistry-swatch@^0.0.4":
   version "0.0.4"
-  resolved "https://registry.npmjs.org/@nclslbrn/artistry-swatch/-/artistry-swatch-0.0.4.tgz#8417ffdbd14c7b8a807d4b2e1c137a7571d48654"
+  resolved "https://registry.yarnpkg.com/@nclslbrn/artistry-swatch/-/artistry-swatch-0.0.4.tgz#8417ffdbd14c7b8a807d4b2e1c137a7571d48654"
   integrity sha512-NsLBTHFZ4z4vEVnNqHbFdhxLSFCxBKOVowqr7XX/0rSAmeePrWCVdsv9utHt4oVTXaynumVcsEkn9aMz+Gt7gQ==
 
 "@nclslbrn/plot-writer@0.1.0":
