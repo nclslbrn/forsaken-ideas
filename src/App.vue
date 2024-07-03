@@ -1,6 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import type { Project } from '@/project'
+import type { Project, Sorting, Params } from '@/project'
+
+import { queryUrlParams, setUrlParams } from '@/methods/params'
+
 import OrderForm from '@/components/OrderForm.vue'
 import ProjectCapture from '@/components/ProjectCapture.vue'
 import ScrollIndicator from './components/ScrollIndicator.vue'
@@ -22,8 +25,10 @@ export default defineComponent({
       projects: [] as Project[],
       currProjectIndex: 0,
       whatsThis: false,
-      sorting: 'date',
-      asc: false,
+      params: {
+        sorting: 'date',
+        asc: false,
+      } as Params,
       observer: null as IntersectionObserver | null,
     }
   },
@@ -37,7 +42,7 @@ export default defineComponent({
       .then(response => response.json())
       .then(data => {
         this.projects = data.filter((d: Project) => d !== undefined)
-        this.sortProjectBy(this.sorting as keyof Project)
+        this.sortProjectBy(this.params.sorting as Sorting)
         this.addObserver()
       })
   },
@@ -52,57 +57,36 @@ export default defineComponent({
      * Sort projects 
      * @param prop a property of Project (title|date|topic)
      */
-    sortProjectBy: function (
-      prop: keyof Project
-    ): void {
+    sortProjectBy: function (prop: Sorting): void {
       const d = [...this.projects]
-      if (this.asc) {
+      if (this.params.asc) {
         this.projects = d.sort((a, b) => (a[prop] < b[prop] ? -1 : 1))
       } else {
         this.projects = d.sort((a, b) => (a[prop] > b[prop] ? -1 : 1))
       }
       this.sorting = prop
       this.setUrlParams({ sorting: prop })
-
     },
     /**
      * Reverse the projects array
      */
     sortInverse: function (): void {
-      this.asc = !this.asc
-      this.sortProjectBy(this.sorting as keyof Project)
-      this.setUrlParams({ asc: this.asc ? '1' : '0' })
+      this.params.asc = !this.params.asc
+      this.sortProjectBy(this.params.sorting as Sorting)
+      this.setUrlParams({ asc: this.params.asc ? '1' : '0' })
     },
     /**
      * Read URL params
      */
     queryUrlParams: function (): void {
-      const queryString = window.location.search
-      const urlParams = new URLSearchParams(queryString)
-      const ascParam = urlParams.get('asc')
-      const sortingParam = urlParams.get('sorting')
-
-      if (ascParam !== null) {
-        this.asc = ascParam === '1'
-      }
-      if (sortingParam !== null) {
-        this.sorting = sortingParam
-      }
+      this.params = queryUrlParams(this.params)
     },
     /**
      * Set URL params 
      * @param params with an object of {paramKey: paramValue}
      */
     setUrlParams: function (params: { [key: string]: string }): void {
-      const url = new URL(window.location.href)
-      Object.keys(params).forEach((key) => {
-        if (url.searchParams.has(key)) {
-          url.searchParams.set(key, params[key])
-        } else {
-          url.searchParams.append(key, params[key])
-        }
-      })
-      window.history.pushState({ path: url.href }, '', url.href)
+      setUrlParams(params)
     },
     /**
      * Make vertical scroll horizontal 
@@ -156,7 +140,7 @@ export default defineComponent({
     <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <div class="row">
       <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
-      <OrderForm :sorting="sorting" :asc="asc" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy">
+      <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy">
         <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">
           <svg class="icon icon-question">
             <use xlink:href="#icon-question"></use>
@@ -188,7 +172,7 @@ main {
   align-items: center;
   white-space: nowrap;
   overflow-x: scroll;
-  padding: 3em 0 3em 0;
+  padding: 1em 0 1em 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
   background: url(./assets/dust.png) repeat;
@@ -254,11 +238,11 @@ main {
 }
 
 .row {
-  padding: 0 1em;
   display: flex;
   flex-flow: row nowrap;
   width: 100%;
   justify-content: space-between;
+  align-items: baseline;
   align-items: flex-start;
   background: var(--color-solid);
 }
@@ -273,7 +257,6 @@ button#toggleAbout {
   padding: 4px;
   justify-content: center;
   align-items: center;
-  background: var(--color-bg);
   color: var(--color-text);
   font-size: 1.1em;
   border: none;

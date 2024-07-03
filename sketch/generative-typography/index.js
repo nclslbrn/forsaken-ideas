@@ -5,20 +5,7 @@ import handleAction from '../../sketch-common/handle-action'
 import p5 from 'p5'
 import { autoBezierCurve } from '../../sketch-common/bezierCurve'
 import { paperTexture } from '../../sketch-common/paperTexture'
-import {
-    anuszkiewicz,
-    klint,
-    judd,
-    newman,
-    bacon,
-    drei,
-    okeefe,
-    doesburg,
-    lewitt,
-    corbusier,
-    hockney,
-    vasarely
-} from '@nclslbrn/artistry-swatch'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 import { shadeColor } from '../../sketch-common/shadeColor'
 import ease from '../../sketch-common/ease'
 
@@ -115,20 +102,7 @@ const sketch = (p5) => {
     }
 
     p5.draw = () => {
-        palette = p5.random([
-            anuszkiewicz,
-            klint,
-            judd,
-            newman,
-            bacon,
-            drei,
-            okeefe,
-            doesburg,
-            lewitt,
-            corbusier,
-            hockney,
-            vasarely
-        ])
+        palette = getPalette() 
         p5.background(palette.background)
         paperTexture(
             canvas,

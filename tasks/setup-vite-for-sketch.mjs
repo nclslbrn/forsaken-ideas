@@ -5,11 +5,12 @@ import generatePropertyJson from './generate-property-json.mjs';
 import generateSketchSetup from './generate-sketch-setup.mjs';
 import titleFromSlug from './title-from-slug.mjs';
 
-if (process.env.npm_config_sketch === undefined) {
+if (process.env.npm_config_sketch === undefined && process.argv[2] === undefined) {
+  console.log(process.argv[2])
   throw new Error('No project path in command (use --sketch=folder with npm run sketch:setup)')
-}
+} 
 
-const src = process.env.npm_config_sketch
+const src = process.env.npm_config_sketch || process.argv[2]
 const title = titleFromSlug(src)
 
 

@@ -1,12 +1,13 @@
 <template>
     <div id="about">
-        <h2>Currently, {{ projectCount }} projects archived 
+        <h2>Forsaken ideas</h2>
+        <h3>Currently, {{ projectCount }} projects archived 
           <button class="small" @click.prevent="switchLang">
             {{ lang === 'en' ? 'fr' : 'en' }}
           </button>
-        </h2>
+        </h3>
         
-        <div class="site-description">
+        <div class="site-description"> 
             <div v-if="lang === 'en'">
                 <div class="text-column">
                     <p>
@@ -171,13 +172,19 @@ export default {
 }
 
 #about h2 {
+  font-weight: 300;
+  font-size: 4.5em;
+}
+
+#about h2,
+#about h3 {
     display: inline-flex;
     justify-content: center;
     align-items: center;
     width: 100%;
 }
 
-#about h2 button {
+#about h3 button {
   margin-left: 1em;
 }
 
@@ -196,8 +203,9 @@ export default {
 .site-description p {
     clear: both;
     float: none;
-    line-height: 1.5;
-    font-weight: 500;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    font-weight: 400;
 }
 
 .site-description button.small {

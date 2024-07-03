@@ -10,7 +10,7 @@ import { reactive } from '@thi.ng/rstream'
 import { adaptDPI } from '@thi.ng/canvas'
 import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import { $compile } from '@thi.ng/rdom'
-import { getPalette } from '@nclslbrn/artistry-swatch'
+import { getPalette, palettes } from '@nclslbrn/artistry-swatch'
 import { state, alter } from './alter'
 import logPalette from './logPalette'
 import SENTENCES from './SENTENCES'
@@ -52,6 +52,7 @@ const init = () => {
     state.colsRows = inner.map((d, i) => floor(d / cell[i]))
     padding = inner.map((d, i) => (d - state.colsRows[i] * cell[i]) / 2)
     state.palette = getPalette()
+    //console.log(palettes)
     logPalette(state.palette)
     let seq = randSeq(),
         i = 0

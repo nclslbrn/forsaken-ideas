@@ -1,13 +1,5 @@
 import p5 from 'p5'
-import {
-    klint,
-    newman,
-    albers,
-    alys,
-    martin,
-    mura,
-    freud
-} from '@nclslbrn/artistry-swatch'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
@@ -59,7 +51,7 @@ const sketch = (p5) => {
 
     sketch.init = function () {
         base = p5.random([4, 8, 16]) * 4
-        palette = p5.random([klint, newman, albers, alys, martin, mura, freud])
+        palette = getPalette()
         //p5.random([albers, alys, martin, mura, freud])
         p5.background(palette.background)
         p5.noStroke()

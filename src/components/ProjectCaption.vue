@@ -1,9 +1,10 @@
 <script lang="ts">
+import { PropType } from 'vue' 
 import type { Project } from '@/project'
 export default {
   props: {
     project: {
-      type: Object as () => Project,
+      type: Object as PropType<Project>,
       required: true
     },
     index: {
@@ -37,12 +38,15 @@ export default {
 <style scoped>
 .project-caption {
   flex-grow: 1;
+  border-right: 1px solid var(--color-text);
 }
 
 .project-caption--title {
   display: block;
+  padding: 1em 2em 0 2em;
   text-decoration: none;
   color: var(--color-text);
+  border-bottom: 1px solid var(--color-text);
 }
 
 .project-caption--title:hover,
@@ -62,10 +66,14 @@ export default {
     font-size: 1.25em;
   }
 }
+
+.project-caption--meta {
+  padding: 0 2em 1em 2em;
+}
+
 @media (orientation: landscape) {
   .project-caption--meta {
     display: inline-flex;
-    border-top: 2px solid var(--color-border);
   }
 }
 
