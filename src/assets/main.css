@@ -94,6 +94,10 @@ main {
     padding: 1rem 1rem 0 1rem;
 }
 
+strong {
+  font-weight: 700;
+}
+
 figure,
 video,
 audio {

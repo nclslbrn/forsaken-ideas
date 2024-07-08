@@ -24,6 +24,7 @@ export default defineComponent({
     return {
       projects: [] as Project[],
       currProjectIndex: 0,
+      prevClicked: false,
       whatsThis: false,
       params: {
         sorting: 'date',
@@ -44,6 +45,11 @@ export default defineComponent({
         this.projects = data.filter((d: Project) => d !== undefined)
         this.sortProjectBy(this.params.sorting as Sorting)
         this.addObserver()
+        if (window.location.hash.substring(1)) {
+          const prevSrcHash = window.location.hash.substring(1);
+          this.prevClicked = this.projects.indexOf(this.projects.filter((p) => p.src === prevSrcHash)[0]);
+          this.currProjectIndex = this.prevClicked;
+        }
       })
   },
   beforeUnmount () {
@@ -122,6 +128,11 @@ export default defineComponent({
       captures.forEach((elem) => {
         this.observer?.observe(elem)
       })
+    },
+    openProject (src: string) {
+      console.log(src)
+      window.history.pushState(null, null, `#${src}`)
+      window.location = `./sketch/${src}/`
     }
   }
 })
@@ -133,20 +144,25 @@ export default defineComponent({
         <h1 lang="en">Forsa&shy;ken ideas <span>{{projects.length}}&#8594;</span></h1>
       </header>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
-        :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
-        @focus="currProjectIndex = index" :project="item" :index="index" />
+        :class="index === currProjectIndex ? 'active' : ''" 
+        @mouseover="currProjectIndex = index"
+        @openProject="openProject"
+        @focus="currProjectIndex = index"
+        :autofocus="index === prevClicked"
+        :project="item" 
+        :index="index" />
     </div>
     <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
     <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" />
-      <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy">
-        <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">
-          <svg class="icon icon-question">
-            <use xlink:href="#icon-question"></use>
-          </svg>
-        </button>
-      </OrderForm>
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" @openProject="openProject" />
+      <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy"/>
+      <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">
+        <svg class="icon icon-question">
+          <use xlink:href="#icon-question"></use>
+        </svg>
+      </button>
+
     </div>
   </main>
 </template>
@@ -217,6 +233,10 @@ main {
     font-size: 18vw;
     word-wrap: break-word;
     overflow-wrap: break-word;
+  }
+
+  form {
+    display: none;
   }
 }
 

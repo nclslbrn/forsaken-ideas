@@ -15,21 +15,25 @@ export default {
 </script>
 <template>
   <div class="project-caption"> 
-    <a class="project-caption--title" :href="`./sketch/${project.src}/index.html`">
+    <button class="project-caption--title" @click.prevent="$emit('openProject', project.src)">
       <h2>{{ project.title }}</h2>
-    </a>
+    </button>
     <div class="project-caption--meta">
       <div class="date">
+        <!-- 
         <svg class="icon icon-calendar">
           <use xlink:href="#icon-calendar"></use>
         </svg>
-        <span>{{ project.date }}</span>
+        -->
+        <strong>Created:</strong> <span>{{ project.date }}</span>
       </div>
       <div class="topic">
+        <!--
         <svg class="icon icon-tag">
           <use xlink:href="#icon-tag"></use>
         </svg>
-        <span>{{ project.topic }}</span>
+        -->
+        <strong>Topic:</strong> <span>{{ project.topic }}</span>
       </div>
     </div>
   </div>
@@ -37,13 +41,12 @@ export default {
 
 <style scoped>
 .project-caption {
-  flex-grow: 1;
+  flex-basis: 75%;
   border-right: 1px solid var(--color-text);
 }
 
 .project-caption--title {
   display: block;
-  padding: 1em 2em 0 2em;
   text-decoration: none;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-text);
@@ -64,23 +67,36 @@ export default {
 @media (orientation: portrait) {
   .project-caption--title h2 {
     font-size: 1.25em;
+    line-height: 2;
   }
 }
 
-.project-caption--meta {
-  padding: 0 2em 1em 2em;
-}
 
 @media (orientation: landscape) {
+  .project-caption--title {
+    padding: 0 2em;
+  }
+
   .project-caption--meta {
     display: inline-flex;
+    padding: 0 1em;
+    width: 100%;
   }
+
+  .project-caption--meta .date,
+  .project-caption--meta .topic {
+    width: 50%;
+    padding: 0 0 1em 1em;
+  }
+  .project-caption--meta .date {
+    border-right: 1px solid var(--color-text);
+  } 
 }
+
 
 .project-caption--meta .date,
 .project-caption--meta .topic {
-  margin: 0.5em 2em 0.5em 0;
-  line-height: 1.5;
+  line-height: 3;
 }
 
 .project-caption--meta .icon {
