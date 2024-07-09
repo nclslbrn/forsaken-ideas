@@ -90,8 +90,17 @@ p {
     margin-bottom: 1.6em;
 }
 
+header h1 span {
+  font-size: 0.5em;
+}
+
 main {
-    padding: 1rem 1rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+  min-height: 100vh;
+  max-height: 100vh;
 }
 
 strong {
@@ -116,9 +125,11 @@ a {
 
 label,
 button,
-.button {
+.button,
+nav ul li span {
     padding: 1rem;
     color: var(--color-text);
+    border: none;
 }
 
 button,
@@ -126,7 +137,7 @@ button,
     background: transparent;
     cursor: pointer;
     background-color: var(--color-solid);
-    border: 1px solid var(--color-border);
+    /* border: 1px solid var(--color-border); */
 
     transition: all 0.15s ease-in-out;
 }
@@ -203,61 +214,5 @@ p span.invisible {
     }
 }
 
-/** 
-  Settings  
-*/
-button span.theme-color {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border-color);
-}
 
-body[mode='dark'] button[title='blue'] span.theme-color {
-    background: var(--light-blue);
-}
 
-body[mode='light'] button[title='blue'] span.theme-color {
-    background: var(--dark-blue);
-}
-
-body[mode='dark'] button[title='green'] span.theme-color {
-    background: var(--light-green);
-}
-
-body[mode='light'] button[title='green'] span.theme-color {
-    background: var(--dark-green);
-}
-
-body[mode='dark'] button[title='purple'] span.theme-color {
-    background: var(--light-purple);
-}
-
-body[mode='light'] button[title='purple'] span.theme-color {
-    background: var(--dark-purple);
-}
-
-body[mode='dark'] button[title='red'] span.theme-color {
-    background: var(--light-red);
-}
-
-body[mode='light'] button[title='red'] span.theme-color {
-    background: var(--dark-red);
-}
-
-body[mode='dark'] button[title='orange'] span.theme-color {
-    background: var(--light-orange);
-}
-
-body[mode='light'] button[title='orange'] span.theme-color {
-    background: var(--dark-orange);
-}
-
-body[mode='dark'] button[title='yellow'] span.theme-color {
-    background: var(--light-yellow);
-}
-
-body[mode='light'] button[title='yellow'] span.theme-color {
-    background: var(--dark-yellow);
-}

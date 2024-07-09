@@ -47,9 +47,11 @@ export default {
 
 .project-caption--title {
   display: block;
+  width: 100%;
+  text-align: left;
   text-decoration: none;
   color: var(--color-text);
-  border-bottom: 1px solid var(--color-text);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .project-caption--title:hover,
@@ -59,7 +61,7 @@ export default {
 
 .project-caption--title h2 {
   font-size: 2.5em;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
   font-weight: 500;
 }

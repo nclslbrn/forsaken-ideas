@@ -19,25 +19,24 @@ export default {
 </template>
 
 <style scoped>
-a.project-preview {
+.project-preview {
     display: block;
     position: relative;
-    text-decoration: none;
     transition: all 0.01s ease-in;
     overflow: hidden;
     box-shadow: 0 0.75em 0.66em var(--color-shadow);
     transition: all 0.01s linear;
 }
 
-a.project-preview {
-    background: linear-gradient(to bottom, #000, #444);
+.project-preview {
+    background: linear-gradient(to bottom, #222, #000);
     padding: 12px;
     border-radius: 2px;
 }
 
-a.project-preview.active,
-a.project-preview:focus,
-a.project-preview:hover {
+.project-preview.active,
+.project-preview:focus,
+.project-preview:hover {
     background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
     box-shadow: 0 1em 1em var(--color-shadow);
 }

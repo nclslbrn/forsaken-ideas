@@ -34,7 +34,7 @@ const init = () => {
     // Nothing fancy here we need a context to draw in the canvas
     const ctx = cnvs.getContext('2d'),
         // The dimension of the composition we need to remove
-        frame = [window.innerWidth * 0.8, window.innerHeight * 0.8],
+        frame = [window.innerWidth, window.innerHeight],
         // A scale factor (depends of the DPI of the device)
         dpr = adaptDPI(cnvs, ...frame),
         // The diagonal will be use later to compute distance (with more flexibility)
@@ -90,7 +90,7 @@ const init = () => {
             image,
             rect(...crop),
             RES,
-            range(diag * 0.003, diag, diag * 0.005),
+            range(diag * 0.002, diag, diag * 0.004),
             0.5
         ),
         weight = diag * 0.0015
@@ -112,7 +112,7 @@ const init = () => {
                 weight
             },
             // since letter can be larger than sdf, cut lines if they go outside
-            lines.reduce(
+            lines /*.reduce(
                 (crp, l) => [
                     ...crp,
                     // Usefull function from @thi.ng/geom-clip-line,
@@ -123,7 +123,8 @@ const init = () => {
                     )
                 ],
                 []
-            )
+            ) */
+          
         )
     ])
     draw(ctx, comp)

@@ -9,7 +9,7 @@ import ProjectCapture from '@/components/ProjectCapture.vue'
 import ScrollIndicator from './components/ScrollIndicator.vue'
 import ProjectCaption from '@/components/ProjectCaption.vue'
 import AboutThisSite from '@/components/AboutThisSite.vue'
-import {isoDate} from '@/isoDate'
+import { isoDate } from '@/isoDate'
 
 export default defineComponent({
   components: {
@@ -20,7 +20,7 @@ export default defineComponent({
     AboutThisSite
   },
   emits: ['mouseenter'],
-  data () {
+  data() {
     return {
       projects: [] as Project[],
       currProjectIndex: 0,
@@ -33,7 +33,7 @@ export default defineComponent({
       observer: null as IntersectionObserver | null,
     }
   },
-  mounted () {
+  mounted() {
     /*
      *Read URL params and modify state if need
      * then query sketches
@@ -52,7 +52,7 @@ export default defineComponent({
         }
       })
   },
-  beforeUnmount () {
+  beforeUnmount() {
     const captures = Array.from(document.querySelectorAll('.project-preview'))
     captures.forEach((elem) => {
       this.observer?.unobserve(elem)
@@ -98,25 +98,25 @@ export default defineComponent({
      * Make vertical scroll horizontal 
      * @param event 
      */
-    onWheel (event: WheelEvent) {
+    onWheel(event: WheelEvent) {
       this.$nextTick(() =>
-        (this.$refs.scrollableProject as HTMLElement).scrollLeft += event.deltaY)
+        (this.$refs.theWall as HTMLElement).scrollLeft += event.deltaY)
     },
     /**
      * Add IntersectionObserver to set the current capture/project
      * (Highlighted and described in <ProjectCaption/>) 
      */
-    async addObserver () {
+    async addObserver() {
       await this.$nextTick();
       const captures = Array.from(document.querySelectorAll('.project-preview'))
       const options: IntersectionObserverInit = {
-        root: this.$refs.scrollableProject as Element,
+        root: this.$refs.theWall as Element,
         rootMargin: '0px',
         threshold: 1,
       };
       const callback: IntersectionObserverCallback = (entries: any) => {
         entries.forEach((entry: IntersectionObserverEntry) => {
-          if (  
+          if (
             (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
             entry.isIntersecting
           ) {
@@ -129,60 +129,76 @@ export default defineComponent({
         this.observer?.observe(elem)
       })
     },
-    openProject (src: string) {
+    openProject(src: string) {
       console.log(src)
       window.history.pushState(null, null, `#${src}`)
       window.location = `./sketch/${src}/`
+    },
+    prevProj() {
+      if (this.currProjectIndex > 0) {
+        this.currProjectIndex--
+        this.prevClicked = this.currProjectIndex
+        this.scrollToCurrProject()
+      }
+    },
+    nextProj() {
+      if (this.currProjectIndex < this.projects.length - 1) {
+        this.currProjectIndex++
+        this.prevClicked = this.currProjectIndex
+        this.scrollToCurrProject()
+      }
+    },
+    async scrollToCurrProject() {
+      await this.$nextTick();
+      const captures = Array.from(document.querySelectorAll('.project-preview'))
+      captures[this.currProjectIndex]?.scrollIntoView({
+        behavior: 'smooth',
+      });
     }
   }
 })
 </script>
 <template>
-    <main>
-    <div class="scrollable-project" v-if="!whatsThis" ref="scrollableProject" @wheel.prevent="onWheel">
+  <main>
+    <!-- A component which indicates the x progression of the viewport in the wall (below) -->
+    <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
+    <!-- The wall : Vertical scrolling div -->
+    <div class="the-wall" v-if="!whatsThis" ref="theWall"> <!-- @wheel.prevent="onWheel" -->
       <header>
-        <h1 lang="en">Forsa&shy;ken ideas <span>{{projects.length}}&#8594;</span></h1>
+        <h1 lang="en">Forsa&shy;ken ideas <span>{{ projects.length }}&#8594;</span></h1>
       </header>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
-        :class="index === currProjectIndex ? 'active' : ''" 
-        @mouseover="currProjectIndex = index"
-        @openProject="openProject"
-        @focus="currProjectIndex = index"
-        :autofocus="index === prevClicked"
-        :project="item" 
+        :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
+        @openProject="openProject" @focus="currProjectIndex = index" :autofocus="index === prevClicked" :project="item"
         :index="index" />
     </div>
     <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
-    <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" @openProject="openProject" />
-      <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy"/>
-      <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">
-        <svg class="icon icon-question">
-          <use xlink:href="#icon-question"></use>
-        </svg>
-      </button>
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"
+        @openProject="openProject" />
+      <div class="ui">
+        <nav>
+          <ul>
+            <li><button class="prevProj" @click="prevProj">&#60;</button></li>
+            <li><label class="projectIdx">{{ currProjectIndex + 1 }} / {{ projects.length }}</label></li>
+            <li><button class="prevProj" @click="nextProj">&#62;</button></li>
+          </ul>
+        </nav>
+        <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
+      </div>
+      <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">INFO</button>
 
     </div>
   </main>
 </template>
 
 <style scoped>
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0;
-  min-height: 100vh;
-  max-height: 100vh;
-}
-
-#about, 
-.scrollable-project {
+#about,
+.the-wall {
   height: 85vh;
 }
 
-.scrollable-project {
+.the-wall {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -195,14 +211,14 @@ main {
   background-attachment: fixed;
 }
 
-.scrollable-project header {
+.the-wall header {
   max-width: 30vw;
   width: 100%;
   text-align: right;
   overflow: hidden;
 }
 
-.scrollable-project header h1 {
+.the-wall header h1 {
   display: block;
   margin: 0 0.1em;
   fill: var(--color-text);
@@ -212,23 +228,21 @@ main {
   line-height: 1;
   webkit-hyphens: auto;
   -moz-hyphens: auto;
-  -ms-hyphens: auto; 
+  -ms-hyphens: auto;
   hyphens: auto;
   overflow-wrap: break-word;
 }
 
-.scrollable-project header h1 span {
-  font-size: 0.5em;
-}
-
 @media (orientation: portrait) {
-  .scrollable-project {
+  .the-wall {
     height: 85vh;
   }
-  .scrollable-project header {
+
+  .the-wall header {
     max-width: 60vw;
   }
-  .scrollable-project header h1 {
+
+  .the-wall header h1 {
     text-align: left;
     font-size: 18vw;
     word-wrap: break-word;
@@ -240,18 +254,18 @@ main {
   }
 }
 
-.scrollable-project::-webkit-scrollbar {
+.the-wall::-webkit-scrollbar {
   display: none;
 }
 
-.scrollable-project>* {
+.the-wall>* {
   flex: 0 0 260px;
   margin: 0 1.5em;
   max-width: 100%;
 }
-  
+
 @media screen and (min-width: 900px) {
-  .scrollable-project>* {
+  .the-wall>* {
     flex: 0 0 auto;
     max-width: 30%;
   }
@@ -261,25 +275,51 @@ main {
   display: flex;
   flex-flow: row nowrap;
   width: 100%;
-  justify-content: space-between;
-  align-items: baseline;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: stretch;
+  border-top: 1px solid var(--color-border); 
+  border-bottom: 1px solid var(--color-border);
   background: var(--color-solid);
 }
 
 #about {
   overflow-y: auto;
 }
+.ui {
+  border-right: 1px solid var(--color-border);
+}
+
+.ui nav ul {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  padding: 0;
+  list-style-type: none;
+  width: 100%;
+}
+.ui nav ul li > * {
+  display: block;
+  font-size: 1.6em;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.ui nav ul li:nth-child(2) {
+  flex-grow: 1;
+}
+
+.ui nav ul li {
+  border-right: 1px solid var(--color-border);
+}
+.ui nav ul li:last-child {
+  border-right: none;
+}
 
 button#toggleAbout {
-  display: inline-flex;
-  margin-left: 0.5em;
-  padding: 4px;
-  justify-content: center;
-  align-items: center;
   color: var(--color-text);
-  font-size: 1.1em;
-  border: none;
+  font-size: 2em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 @media (orientation: landscape) {
@@ -292,5 +332,4 @@ button#toggleAbout {
     border-bottom: 1px solid var(--color-primary);
   }
 }
-
 </style>

@@ -48,7 +48,8 @@
 <style scoped>
 form {
   padding: 1em;
-  margin: 1em 0 0 0;
+  width: 100%;
+  border-top: 1px solid var(--color-border);
 }
 
 
