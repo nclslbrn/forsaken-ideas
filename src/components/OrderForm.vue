@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { type Params } from '../project.d.ts'
-  import { PropType } from 'vue' 
+  import { type Params } from '../project.d'
+  import { type PropType } from 'vue' 
   export default {
     name: "OrderForm",
-    props: { 
-      params: {
-        type: Object as PropType<Params>,
-        required: true
+    data() {
+      return {
+        params: {
+          type: Object as PropType<Params>,
+          required: true
+        }
       }
     }
   };
@@ -14,28 +16,13 @@
 <template>
   <form id="order-grid">
     <span>Sorted by </span>
-    <button :class="{ active: params.sorting === 'title' }" @click.prevent="$emit('sortProjectBy', 'title')">
-      <!---
-      <svg class="icon icon-sort-alphabetically">
-        <use xlink:href="#icon-sort-alphabetically"></use>
-      </svg>
-      -->
+    <button :class="{ active: params.sorting === 'title' }" @click.prevent="$emit('sortProjectBy', 'title')">
       title
     </button>
-    <button :class="{ active: params.sorting === 'date' }"  @click.prevent="$emit('sortProjectBy', 'date')">
-      <!--
-      <svg class="icon icon-sort-numerically">
-        <use xlink:href="#icon-sort-numerically"></use>
-      </svg>
-      -->
+    <button :class="{ active: params.sorting === 'date' }"  @click.prevent="$emit('sortProjectBy', 'date')">
       date
     </button>
     <button :class="{ active: params.sorting === 'topic' }" @click.prevent="$emit('sortProjectBy', 'topic')">
-      <!--
-      <svg class="icon icon-tag">
-        <use xlink:href="#icon-tag"></use>
-      </svg>
-      -->
       topic
     </button>
     <span> in </span> 
@@ -66,7 +53,7 @@ form {
     position: absolute;
     content: '';
     left: 10%;
-    bottom: 0;
+    bottom: 50%;
     width: 80%;
     height: 1px;
     background: var(--color-text);
@@ -74,12 +61,17 @@ form {
   }
 
   form button:hover::after,
-  form button:focus::after {
+  fomr button:focus::after {
     font-weight: 700;
   }
 
+  form button:hover::after,
+  form button:focus::after {
+    bottom: 0;
+  }
+
   form button.active::after {
-    bottom: 50%;
+    bottom: 0;
   }
 }
 </style>

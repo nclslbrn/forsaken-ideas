@@ -1,6 +1,6 @@
 <script lang="ts">
-import { PropType } from 'vue' 
-import type { Project } from '@/project'
+import type { PropType } from 'vue' 
+import type { Project } from '../project'
 export default {
   props: {
     project: {
@@ -16,7 +16,7 @@ export default {
 <template>
   <div class="project-caption"> 
     <button class="project-caption--title" @click.prevent="$emit('openProject', project.src)">
-      <h2>{{ project.title }}</h2>
+      {{ project.title }}
     </button>
     <div class="project-caption--meta">
       <div class="date">
@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 .project-caption {
-  flex-basis: 75%;
+  flex-grow: 1;
   border-right: 1px solid var(--color-text);
 }
 
@@ -59,32 +59,32 @@ export default {
   color: var(--color-primary);
 }
 
-.project-caption--title h2 {
-  font-size: 2.5em;
-  line-height: 1.6;
-  margin: 0;
-  font-weight: 500;
+.project-caption--meta .date,
+.project-caption--meta .topic {
+  line-height: 3;
 }
 
 @media (orientation: portrait) {
-  .project-caption--title h2 {
-    font-size: 1.25em;
+  .project-caption--title {
+    font-size: 2em;
+    line-height: 2;
+  }
+  .project-caption--meta {
+    padding: 0 1em;
+  }
+
+  .project-caption--meta .date,
+  .project-caption--meta .topic {
     line-height: 2;
   }
 }
 
 
 @media (orientation: landscape) {
-  .project-caption--title {
-    padding: 0 2em;
-  }
-
   .project-caption--meta {
     display: inline-flex;
-    padding: 0 1em;
     width: 100%;
   }
-
   .project-caption--meta .date,
   .project-caption--meta .topic {
     width: 50%;
@@ -95,16 +95,4 @@ export default {
   } 
 }
 
-
-.project-caption--meta .date,
-.project-caption--meta .topic {
-  line-height: 3;
-}
-
-.project-caption--meta .icon {
-  width: 1em;
-  height: 1em;
-  fill: var(--color-text);
-  margin-right: 0.25em;
-}
 </style>

@@ -63,8 +63,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-#app,
-#windowFrame {
+#app {
     height: 100vh;
     height: -webkit-fill-available;
 }
@@ -94,6 +93,24 @@ header h1 span {
   font-size: 0.5em;
 }
 
+
+.project-caption--title,
+.ui nav ul li > * {
+  display: block;
+  font-size: 1.6em;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.project-caption--title {
+  font-size: 2em;
+  font-weight: 800;
+}
+
+.ui nav ul li > * {
+  padding: 0.825em 1.1em;
+}
+
 main {
   display: flex;
   flex-direction: column;
@@ -107,14 +124,7 @@ strong {
   font-weight: 700;
 }
 
-figure,
-video,
-audio {
-    margin: 1rem;
-}
-
-img,
-video {
+img {
     max-width: 100%;
     height: auto;
 }
@@ -162,22 +172,10 @@ button.active,
     color: var(--color-secondary);
 }
 
-button.active svg,
-.button.active svg {
-    fill: var(--color-secondary);
-}
-
 button:hover,
 .button:hover {
     color: var(--color-primary);
     /* box-shadow: 0 0 2px var(--color-primary); */
-}
-
-button:hover svg,
-button:focus svg,
-.button:hover svg,
-.button:focus svg {
-    fill: var(--color-primary);
 }
 
 p,

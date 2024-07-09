@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Project } from "@/project";
+import type { Project } from "../project";
 export default {
     props: {
         project: {
@@ -14,7 +14,7 @@ export default {
 </script>
 <template>
     <button @click.prevent="$emit('openProject', project.src)" class="project-preview">
-        <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="project.title" />
+        <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="project.title" loading="lazy" />
     </button>
 </template>
 
@@ -38,7 +38,7 @@ export default {
 .project-preview:focus,
 .project-preview:hover {
     background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
-    box-shadow: 0 1em 1em var(--color-shadow);
+    box-shadow: 0 1.2em 1em var(--color-shadow);
 }
 
 a.project-preview img {
@@ -50,15 +50,6 @@ a.project-preview img {
 a.project-perview.active img,
 a.project-preview:hover img {
     opacity: 0.75;
-}
-
-a.project-preview span.debug-intersection {
-    position: absolute;
-    top: 50%;
-    display: block;
-    left: 50%;
-    font-size: 5em;
-    z-index: 9999;
 }
 
 a.project-preview img::before,

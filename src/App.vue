@@ -1,15 +1,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import type { Project, Sorting, Params } from '@/project'
-
-import { queryUrlParams, setUrlParams } from '@/methods/params'
-
-import OrderForm from '@/components/OrderForm.vue'
-import ProjectCapture from '@/components/ProjectCapture.vue'
+import type { Project, Sorting, Params } from './project'
+import { queryUrlParams, setUrlParams } from './methods/params'
+import OrderForm from './components/OrderForm.vue'
+import ProjectCapture from './components/ProjectCapture.vue'
 import ScrollIndicator from './components/ScrollIndicator.vue'
-import ProjectCaption from '@/components/ProjectCaption.vue'
-import AboutThisSite from '@/components/AboutThisSite.vue'
-import { isoDate } from '@/isoDate'
+import ProjectCaption from './components/ProjectCaption.vue'
+import AboutThisSite from './components/AboutThisSite.vue'
+import { isoDate } from './isoDate'
 
 export default defineComponent({
   components: {
@@ -24,7 +22,7 @@ export default defineComponent({
     return {
       projects: [] as Project[],
       currProjectIndex: 0,
-      prevClicked: false,
+      prevClicked: -1,
       whatsThis: false,
       params: {
         sorting: 'date',
@@ -47,7 +45,7 @@ export default defineComponent({
         this.addObserver()
         if (window.location.hash.substring(1)) {
           const prevSrcHash = window.location.hash.substring(1);
-          this.prevClicked = this.projects.indexOf(this.projects.filter((p) => p.src === prevSrcHash)[0]);
+          this.prevClicked = this.projects.indexOf(this.projects.filter((p: Project) => p.src === prevSrcHash)[0]);
           this.currProjectIndex = this.prevClicked;
         }
       })
@@ -131,8 +129,8 @@ export default defineComponent({
     },
     openProject(src: string) {
       console.log(src)
-      window.history.pushState(null, null, `#${src}`)
-      window.location = `./sketch/${src}/`
+      window.history.pushState(null, '', `#${src}`)
+      window.location.href = `./sketch/${src}/`
     },
     prevProj() {
       if (this.currProjectIndex > 0) {
@@ -160,10 +158,8 @@ export default defineComponent({
 </script>
 <template>
   <main>
-    <!-- A component which indicates the x progression of the viewport in the wall (below) -->
-    <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
     <!-- The wall : Vertical scrolling div -->
-    <div class="the-wall" v-if="!whatsThis" ref="theWall"> <!-- @wheel.prevent="onWheel" -->
+    <div class="the-wall" v-if="!whatsThis" ref="theWall" @wheel.prevent="onWheel">
       <header>
         <h1 lang="en">Forsa&shy;ken ideas <span>{{ projects.length }}&#8594;</span></h1>
       </header>
@@ -173,6 +169,10 @@ export default defineComponent({
         :index="index" />
     </div>
     <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
+    
+    <!-- A component which indicates the x progression of the viewport in the wall  -->
+    <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
+
     <div class="row">
       <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"
         @openProject="openProject" />
@@ -186,8 +186,8 @@ export default defineComponent({
         </nav>
         <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
       </div>
-      <button id="toggleAbout" @click.prevent="whatsThis = !whatsThis">INFO</button>
-
+      <button id="toggleAbout" @click="whatsThis = !whatsThis">
+        {{ whatsThis ? '×' : 'INFO' }}</button>
     </div>
   </main>
 </template>
@@ -226,9 +226,6 @@ export default defineComponent({
   font-weight: 600;
   white-space: normal;
   line-height: 1;
-  webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  -ms-hyphens: auto;
   hyphens: auto;
   overflow-wrap: break-word;
 }
@@ -249,7 +246,7 @@ export default defineComponent({
     overflow-wrap: break-word;
   }
 
-  form {
+  .ui {
     display: none;
   }
 }
@@ -259,15 +256,15 @@ export default defineComponent({
 }
 
 .the-wall>* {
-  flex: 0 0 260px;
-  margin: 0 1.5em;
+  flex: 0 0 320px;
+  margin: 0 2.5em;
   max-width: 100%;
 }
 
 @media screen and (min-width: 900px) {
   .the-wall>* {
     flex: 0 0 auto;
-    max-width: 30%;
+    max-width: 25%;
   }
 }
 
@@ -278,7 +275,6 @@ export default defineComponent({
   justify-content: flex-start;
   align-items: stretch;
   border-top: 1px solid var(--color-border); 
-  border-bottom: 1px solid var(--color-border);
   background: var(--color-solid);
 }
 
@@ -296,12 +292,6 @@ export default defineComponent({
   padding: 0;
   list-style-type: none;
   width: 100%;
-}
-.ui nav ul li > * {
-  display: block;
-  font-size: 1.6em;
-  text-align: center;
-  line-height: 1.6;
 }
 
 .ui nav ul li:nth-child(2) {
@@ -322,14 +312,4 @@ button#toggleAbout {
   text-orientation: mixed;
 }
 
-@media (orientation: landscape) {
-  button#toggleAbout {
-    border-bottom: 1px solid var(--color-text);
-  }
-
-  button#toggleAbout:focus,
-  button#toggleAbout:hover {
-    border-bottom: 1px solid var(--color-primary);
-  }
-}
 </style>

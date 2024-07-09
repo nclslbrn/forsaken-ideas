@@ -33,7 +33,6 @@ export default {
       transition: background 10ms ease-in; 
     }
     .scroll-indicator span.seen {
-      background: var(--color-text);
-
+      background: var(--color-primary);
     }
 </style>

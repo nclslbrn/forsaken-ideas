@@ -220,7 +220,7 @@ export default {
 
     .text-column {
        display: block;
-       column-count: 4;
+       column-count: 3;
        column-gap: 40px;
     }
 
