@@ -20,19 +20,9 @@ export default {
     </button>
     <div class="project-caption--meta">
       <div class="date">
-        <!-- 
-        <svg class="icon icon-calendar">
-          <use xlink:href="#icon-calendar"></use>
-        </svg>
-        -->
         <strong>Created:</strong> <span>{{ project.date }}</span>
       </div>
       <div class="topic">
-        <!--
-        <svg class="icon icon-tag">
-          <use xlink:href="#icon-tag"></use>
-        </svg>
-        -->
         <strong>Topic:</strong> <span>{{ project.topic }}</span>
       </div>
     </div>
@@ -42,7 +32,7 @@ export default {
 <style scoped>
 .project-caption {
   flex-grow: 1;
-  border-right: 1px solid var(--color-text);
+  border-right: 1px solid var(--color-border);
 }
 
 .project-caption--title {
@@ -66,8 +56,8 @@ export default {
 
 @media (orientation: portrait) {
   .project-caption--title {
-    font-size: 2em;
-    line-height: 2;
+    font-size: 1.4em;
+    line-height: 1;
   }
   .project-caption--meta {
     padding: 0 1em;
@@ -91,7 +81,7 @@ export default {
     padding: 0 0 1em 1em;
   }
   .project-caption--meta .date {
-    border-right: 1px solid var(--color-text);
+    border-right: 1px solid var(--color-border);
   } 
 }
 

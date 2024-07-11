@@ -24,21 +24,26 @@ export default {
     position: relative;
     transition: all 0.01s ease-in;
     overflow: hidden;
-    box-shadow: 0 0.75em 0.66em var(--color-shadow);
-    transition: all 0.01s linear;
+    box-shadow: var(--box-shadow-default);
+    transition: all 0.03s linear;
 }
 
 .project-preview {
-    background: linear-gradient(to bottom, #222, #000);
-    padding: 12px;
+    border: 1px solid #ffffff00;
+    background: var(--color-solid); 
+    padding: 1vw;
     border-radius: 2px;
 }
 
 .project-preview.active,
 .project-preview:focus,
 .project-preview:hover {
-    background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
-    box-shadow: 0 1.2em 1em var(--color-shadow);
+    box-shadow: var(--box-shadow-active);
+}
+
+.project-preview:focus-visible {
+  outline: none;
+  border: 1px solid var(--color-primary);
 }
 
 a.project-preview img {

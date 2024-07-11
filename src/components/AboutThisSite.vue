@@ -8,8 +8,8 @@
         </h3>
         
         <div class="site-description"> 
-            <div v-if="lang === 'en'">
-                <div class="text-column">
+            <div v-if="lang === 'en'" class="text-column">
+                <div>
                     <p>
                         I can't quite remember how I came to want to create this
                         compilation of programs (2019). I think I wanted to have
@@ -37,7 +37,7 @@
                     </p>
                 </div>
 
-                <div class="text-column">
+                <div>
                     <p>
                         From the initial idea of having a kind of meta-tool that
                         would enable you to quickly move from an idea to a
@@ -66,8 +66,8 @@
                 </div>
             </div>
 
-            <div v-if="lang === 'fr'">
-                <div class="text-column">
+            <div v-if="lang === 'fr'" class="text-column">
+                <div>
                     <p>
                         Je ne me rappelle plus très bien comment j’ai eu envie
                         de créer cette compilation de programmes (2019). Je
@@ -98,7 +98,8 @@
                         montrés ou publiés en tant qu’œuvre), je les ajoutais au
                         catalogue.
                     </p>
-
+                </div>
+                <div>
                     <p>
                         De l’idée initiale d’avoir une sorte de méta-outil qui
                         permette de rapidement passer d’une idée à un prototype,
@@ -166,9 +167,14 @@ export default {
 
 <style scoped>
 #about {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
     padding: 1em;
+    width: 100%;
     background-color: var(--color-solid);
+    z-index: 1;
 }
 
 #about h2 {
@@ -197,7 +203,6 @@ export default {
     align-items: center;
     margin-left: auto;
     margin-right: auto;
-    margin: 0 auto 1em auto;
 }
 
 .site-description p {

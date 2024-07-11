@@ -8,7 +8,14 @@ import ScrollIndicator from './components/ScrollIndicator.vue'
 import ProjectCaption from './components/ProjectCaption.vue'
 import AboutThisSite from './components/AboutThisSite.vue'
 import { isoDate } from './isoDate'
-
+interface AppData {
+  projects: Project[];
+  currProjectIndex: number;
+  prevClicked: number;
+  whatsThis: boolean;
+  params: Params,
+  observer: IntersectionObserver | null
+}
 export default defineComponent({
   components: {
     OrderForm,
@@ -18,17 +25,17 @@ export default defineComponent({
     AboutThisSite
   },
   emits: ['mouseenter'],
-  data() {
+  data(): AppData {
     return {
-      projects: [] as Project[],
+      projects: [],
       currProjectIndex: 0,
       prevClicked: -1,
       whatsThis: false,
       params: {
         sorting: 'date',
         asc: false,
-      } as Params,
-      observer: null as IntersectionObserver | null,
+      },
+      observer: null,
     }
   },
   mounted() {
@@ -68,7 +75,7 @@ export default defineComponent({
       } else {
         this.projects = d.sort((a, b) => (a[prop] > b[prop] ? -1 : 1))
       }
-      this.sorting = prop
+      this.params.sorting = prop
       this.setUrlParams({ sorting: prop })
     },
     /**
@@ -164,30 +171,45 @@ export default defineComponent({
         <h1 lang="en">Forsa&shy;ken ideas <span>{{ projects.length }}&#8594;</span></h1>
       </header>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
-        :class="index === currProjectIndex ? 'active' : ''" @mouseover="currProjectIndex = index"
-        @openProject="openProject" @focus="currProjectIndex = index" :autofocus="index === prevClicked" :project="item"
-        :index="index" />
+        :class="index === currProjectIndex ? 'active' : ''" 
+        :autofocus="index === prevClicked" 
+        :project="item"
+        :index="index"
+        @mouseover="currProjectIndex = index"
+        @openProject="openProject" 
+        @focus="currProjectIndex = index"
+      />
     </div>
-    <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
-    
+    <Transition name="slideDown">
+      <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
+    </Transition>
     <!-- A component which indicates the x progression of the viewport in the wall  -->
     <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
 
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"
-        @openProject="openProject" />
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" @openProject="openProject" />
+      
       <div class="ui">
         <nav>
           <ul>
             <li><button class="prevProj" @click="prevProj">&#60;</button></li>
-            <li><label class="projectIdx">{{ currProjectIndex + 1 }} / {{ projects.length }}</label></li>
+            <li><label class="projectIdx">{{ currProjectIndex + 1 }} / {{ projects.length }}</label><small>projects</small></li>
             <li><button class="prevProj" @click="nextProj">&#62;</button></li>
           </ul>
         </nav>
         <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
       </div>
-      <button id="toggleAbout" @click="whatsThis = !whatsThis">
-        {{ whatsThis ? '×' : 'INFO' }}</button>
+      
+      <footer>
+        <span>
+          <p>Forsaken ideas</p>
+          <p>Nicolas Lebrun</p>
+          <p>MIT License</p>
+        </span>
+        <button id="toggleAbout" @click="whatsThis = !whatsThis">
+          {{ whatsThis ? '×' : 'INFO' }}
+        </button>
+      </footer>
     </div>
   </main>
 </template>
@@ -195,41 +217,8 @@ export default defineComponent({
 <style scoped>
 #about,
 .the-wall {
-  height: 85vh;
+  height: 86vh;
 }
-
-.the-wall {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  white-space: nowrap;
-  overflow-x: scroll;
-  padding: 1em 0 1em 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  background: url(./assets/dust.png) repeat;
-  background-attachment: fixed;
-}
-
-.the-wall header {
-  max-width: 30vw;
-  width: 100%;
-  text-align: right;
-  overflow: hidden;
-}
-
-.the-wall header h1 {
-  display: block;
-  margin: 0 0.1em;
-  fill: var(--color-text);
-  font-size: 9vw;
-  font-weight: 600;
-  white-space: normal;
-  line-height: 1;
-  hyphens: auto;
-  overflow-wrap: break-word;
-}
-
 @media (orientation: portrait) {
   .the-wall {
     height: 85vh;
@@ -245,8 +234,11 @@ export default defineComponent({
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-
   .ui {
+    display: none;
+  }
+
+  footer span {
     display: none;
   }
 }
@@ -264,18 +256,8 @@ export default defineComponent({
 @media screen and (min-width: 900px) {
   .the-wall>* {
     flex: 0 0 auto;
-    max-width: 25%;
+    max-width: 35%;
   }
-}
-
-.row {
-  display: flex;
-  flex-flow: row nowrap;
-  width: 100%;
-  justify-content: flex-start;
-  align-items: stretch;
-  border-top: 1px solid var(--color-border); 
-  background: var(--color-solid);
 }
 
 #about {
@@ -305,7 +287,23 @@ export default defineComponent({
   border-right: none;
 }
 
+footer {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+
+footer span {
+  padding: 1em;
+}
+
+footer span p {
+  margin: 0
+}
+
 button#toggleAbout {
+  padding: 0.25em;
   color: var(--color-text);
   font-size: 2em;
   writing-mode: vertical-rl;

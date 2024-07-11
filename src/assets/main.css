@@ -7,14 +7,54 @@
     font-display: swap;
     src: url('GeistVF.woff2') format('woff2');
 }
-
 :root {
     font-family: 'Geist', sans-serif;
+    --color-text-light: #1d2021;
+    --color-bg-light: #fff;
+    --color-solid-light: #f2f2f2;
+    --color-border-light: #333;
+    --box-shadow-light-default: 0 0.6em 0.9em 0 #0000005e;
+    --box-shadow-light-active: 0 0.2em 0.4em 0 #0000006b;
+
+    --color-text-dark: #cfdde2;
+    --color-bg-dark: #19191e;
+    --color-solid-dark: #100d0e;
+    --color-border-dark: #474340;
+    --box-shadow-dark-default: 0 0 0 0.5em var(--color-solid-dark);
+    --box-shadow-dark-active: 0 0 0 2px var(--color-border-dark);
+}
+
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --color-text: var(--color-text-light);
+        --color-bg: var(--color-bg-light);
+        --color-solid: var(--color-solid-light);
+        --color-border: var(--color-border-light);
+        --color-shadow: var(--color-shadow-light);
+        --color-primary: var(--dark-blue);
+        --color-secondary: var(--dark-purple);
+        --box-shadow-default: var(--box-shadow-light-default);
+        --box-shadow-active: var(--box-shadow-light-active);
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-text: var(--color-text-dark);
+        --color-bg: var(--color-bg-dark);
+        --color-solid: var(--color-solid-dark);
+        --color-border: var(--color-border-dark);
+        --color-shadow: var(--color-shadow-light);
+        --color-primary: var(--light-green);
+        --color-secondary: var(--light-blue);
+        --box-shadow-default: var(--box-shadow-dark-default);
+        --box-shadow-active: var(--box-shadow-dark-active);
+    }
 }
 
 @supports (font-variation-settings: normal) {
     :root {
-        font-family: 'Geit', sans-serif;
+        font-family: 'Geist', sans-serif;
         font-optical-sizing: auto;
     }
 }
@@ -45,7 +85,7 @@ body {
         background-color 0.5s;
     line-height: 1.6;
     font-family:
-        'Inter',
+        'Geist',
         -apple-system,
         BlinkMacSystemFont,
         'Segoe UI',
@@ -90,38 +130,51 @@ p {
 }
 
 header h1 span {
-  font-size: 0.5em;
+    font-size: 0.5em;
 }
 
-
 .project-caption--title,
-.ui nav ul li > * {
-  display: block;
-  font-size: 1.6em;
-  text-align: center;
-  line-height: 1.6;
+.ui nav ul li button,
+.ui nav ul li label {
+    display: block;
+    font-size: 1.6em;
+    text-align: center;
+    line-height: 1.6;
 }
 
 .project-caption--title {
-  font-size: 2em;
-  font-weight: 800;
+    font-size: 2em;
+    font-weight: 800;
 }
 
-.ui nav ul li > * {
-  padding: 0.825em 1.1em;
+.ui nav ul li button {
+    padding: 0.825em 1.1em;
+}
+
+.ui nav ul li label {
+    padding: 0.5em 1.1em 0 1.1em;
+}
+
+.ui nav ul li small {
+    display: block;
+    padding: 0 1.1em 0.5em 1.1em;
+    font-size: 0.9;
+    line-height: 1;
+    text-align: center;
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 0;
-  min-height: 100vh;
-  max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-y: hidden;
 }
 
 strong {
-  font-weight: 700;
+    font-weight: 700;
 }
 
 img {
@@ -144,16 +197,10 @@ nav ul li span {
 
 button,
 .button {
-    background: transparent;
+    background: var(--color-bg);
     cursor: pointer;
-    background-color: var(--color-solid);
-    /* border: 1px solid var(--color-border); */
-
+    background-color: var(--color-bg);
     transition: all 0.15s ease-in-out;
-}
-
-a.button {
-    text-decoration: none;
 }
 
 button.small {
@@ -174,8 +221,48 @@ button.active,
 
 button:hover,
 .button:hover {
+    background: var(--color-solid);
     color: var(--color-primary);
-    /* box-shadow: 0 0 2px var(--color-primary); */
+}
+
+button:focus,
+.button:focus {
+    color: var(--color-secondary);
+}
+
+a.button {
+    text-decoration: none;
+}
+
+.the-wall {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    white-space: nowrap;
+    overflow-x: scroll;
+    padding: 1em 0 1em 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: var(--color-bg);
+}
+
+.the-wall header {
+    max-width: 30vw;
+    width: 100%;
+    text-align: right;
+    overflow: hidden;
+}
+
+.the-wall header h1 {
+    display: block;
+    margin: 0 0.1em;
+    fill: var(--color-text);
+    font-size: 9vw;
+    font-weight: 600;
+    white-space: normal;
+    line-height: 1;
+    hyphens: auto;
+    overflow-wrap: break-word;
 }
 
 p,
@@ -189,28 +276,36 @@ small {
     font-size: 0.8rem;
 }
 
-p span.invisible {
-    display: none;
+.row {
+    position: static;
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: stretch;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+    z-index: 2;
 }
 
-.app-footer p span {
-    padding: 1rem;
+.slideDown-enter-active,
+.slideDown-leave-active {
+    transform: translate(0, 0);
+    transition: transform 0.15s ease;
 }
 
-.app-footer p button {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    z-index: 100;
+.slideDown-enter-from,
+.slideDown-leave-to {
+    transform: translate(0, 100vh);
 }
 
-@media screen and (min-width: 900px) {
-    .app-footer p {
-        display: inline-flex;
-        width: 100%;
-        justify-content: space-between;
-    }
+.slideUp-enter-active,
+.slideUp-leave-active {
+    transform: translate(0, 0);
+    transition: transform 0.15s ease;
 }
 
-
-
+.slideUp-enter-from,
+.slideUp-leave-to {
+    transform: translate(0, 100vh);
+}

@@ -1,15 +1,13 @@
 <script lang="ts">
   import { type Params } from '../project.d'
-  import { type PropType } from 'vue' 
+  import { type PropType} from 'vue'
   export default {
     name: "OrderForm",
-    data() {
-      return {
+    props: {
         params: {
           type: Object as PropType<Params>,
           required: true
         }
-      }
     }
   };
 </script>
@@ -38,7 +36,6 @@ form {
   width: 100%;
   border-top: 1px solid var(--color-border);
 }
-
 
 @media screen and (min-width: 800px) {
 
