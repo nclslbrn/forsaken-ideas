@@ -35,30 +35,32 @@ export default {
     border-radius: 2px;
 }
 
-.project-preview.active,
 .project-preview:focus,
 .project-preview:hover {
     box-shadow: var(--box-shadow-active);
 }
 
+.project-preview.active,
 .project-preview:focus-visible {
   outline: none;
   border: 1px solid var(--color-primary);
 }
 
-a.project-preview img {
+.project-preview img {
     float: left;
+    max-height: 50vh;
+    width: auto;
     opacity: 1;
     transition: opacity 0.5s ease-in;
 }
 
-a.project-perview.active img,
-a.project-preview:hover img {
+.project-preview.active img,
+.project-preview:hover img {
     opacity: 0.75;
 }
 
-a.project-preview img::before,
-a.project-preview img::after {
+.project-preview img::before,
+.project-preview img::after {
     display: block;
     content: "";
     clear: both;

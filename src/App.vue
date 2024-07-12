@@ -8,13 +8,15 @@ import ScrollIndicator from './components/ScrollIndicator.vue'
 import ProjectCaption from './components/ProjectCaption.vue'
 import AboutThisSite from './components/AboutThisSite.vue'
 import { isoDate } from './isoDate'
+
 interface AppData {
   projects: Project[];
   currProjectIndex: number;
   prevClicked: number;
   whatsThis: boolean;
   params: Params,
-  observer: IntersectionObserver | null
+  observer: IntersectionObserver | null,
+  navButtonOccurs: boolean
 }
 export default defineComponent({
   components: {
@@ -36,6 +38,7 @@ export default defineComponent({
         asc: false,
       },
       observer: null,
+      navButtonOccurs: false
     }
   },
   mounted() {
@@ -104,8 +107,7 @@ export default defineComponent({
      * @param event 
      */
     onWheel(event: WheelEvent) {
-      this.$nextTick(() =>
-        (this.$refs.theWall as HTMLElement).scrollLeft += event.deltaY)
+      this.$nextTick(() => (this.$refs.theWall as HTMLElement).scrollLeft += event.deltaY)
     },
     /**
      * Add IntersectionObserver to set the current capture/project
@@ -120,14 +122,16 @@ export default defineComponent({
         threshold: 1,
       };
       const callback: IntersectionObserverCallback = (entries: any) => {
-        entries.forEach((entry: IntersectionObserverEntry) => {
-          if (
-            (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
-            entry.isIntersecting
-          ) {
-            this.currProjectIndex = captures.indexOf(entry.target as HTMLElement);
-          }
-        })
+        if (!this.navButtonOccurs) { // prevent selecting back slide when nav button clicked
+          entries.forEach((entry: IntersectionObserverEntry) => {
+            if (
+              (window.innerWidth < 800 || entry.intersectionRatio > 0.55) &&
+              entry.isIntersecting
+            ) {
+              this.currProjectIndex = captures.indexOf(entry.target as HTMLElement);
+            }
+          })
+        }
       }
       this.observer = new IntersectionObserver(callback, options) as IntersectionObserver
       captures.forEach((elem) => {
@@ -154,11 +158,17 @@ export default defineComponent({
       }
     },
     async scrollToCurrProject() {
-      await this.$nextTick();
-      const captures = Array.from(document.querySelectorAll('.project-preview'))
-      captures[this.currProjectIndex]?.scrollIntoView({
-        behavior: 'smooth',
-      });
+      this.navButtonOccurs = true;
+      await this.$nextTick(() => {
+        const captures = Array.from(document.querySelectorAll('.project-preview'))
+        captures[this.currProjectIndex]?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }).then(() => {
+        setTimeout(() => {
+          this.navButtonOccurs = false
+        }, 125)
+      })
     }
   }
 })
@@ -215,15 +225,27 @@ export default defineComponent({
 </template>
 
 <style scoped>
-#about,
-.the-wall {
-  height: 86vh;
+.the-wall,
+#about {
+  height: 85vh;
+  flex-grow: 1;
 }
-@media (orientation: portrait) {
-  .the-wall {
-    height: 85vh;
-  }
+.the-wall::-webkit-scrollbar {
+  display: none;
+}
 
+.the-wall>* {
+  flex: 0 0 320px;
+  margin: 0 2.5em;
+  max-width: 100%;
+}
+
+.the-wall button.project-preview > img {
+    max-height: 90%;
+    width: auto;
+}
+
+@media (orientation: portrait) {
   .the-wall header {
     max-width: 60vw;
   }
@@ -243,21 +265,11 @@ export default defineComponent({
   }
 }
 
-.the-wall::-webkit-scrollbar {
-  display: none;
-}
-
-.the-wall>* {
-  flex: 0 0 320px;
-  margin: 0 2.5em;
-  max-width: 100%;
-}
-
 @media screen and (min-width: 900px) {
   .the-wall>* {
     flex: 0 0 auto;
     max-width: 35%;
-  }
+  } 
 }
 
 #about {
