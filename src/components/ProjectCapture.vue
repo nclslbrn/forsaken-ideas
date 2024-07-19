@@ -14,7 +14,10 @@ export default {
 </script>
 <template>
     <button @click.prevent="$emit('openProject', project.src)" class="project-preview">
-        <img :src="`./sketch/${project.src}/thumbnail.jpg`" :alt="project.title" loading="lazy" />
+        <img 
+         :src="`./sketch/${project.src}/thumbnail.webp`" 
+         :alt="project.title" 
+         loading="lazy" />
     </button>
 </template>
 

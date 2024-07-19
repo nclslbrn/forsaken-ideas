@@ -235,7 +235,7 @@ export default defineComponent({
 }
 
 .the-wall>* {
-  flex: 0 0 320px;
+  flex: 0 0 284px;
   margin: 0 2.5em;
   max-width: 100%;
 }

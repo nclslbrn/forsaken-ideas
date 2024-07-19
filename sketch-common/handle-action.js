@@ -11,7 +11,7 @@ const handleAction = () => {
             })
         }
     }
-    const buttons = document.querySelectorAll('[data-action]')
+    const buttons = document.querySelectorAll('button[data-action]')
 
     if (typeof buttons != 'undefined') {
         for (let b = 0; b < buttons.length; b++) {

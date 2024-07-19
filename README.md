@@ -1,6 +1,6 @@
 # Forsaken ideas
 
-P5.JS/THREE.JS/whatever libraries sketchbook build with Vite and Vue.
+JavaScript sketchbook build with Vite and Vue.
 
 Forsaken-Ideas is a workflow to create a gallery from a folder which contains many bundled project.
 
@@ -22,7 +22,7 @@ This workflow is designed to be modular and space-saving, so the p5.js and three
 │   ├──  index.js 		Sketch entry point
 │   ├──  property.json 		Sketch properties, details below
 │   ├──  capture.jpg 		1200px illustration for Open Graph (adapt the height to fit you image ratio)
-│   └──  thumbnail.jpg 		600px image for gallery (adapt the height too)
+│   └──  thumbnail.webp 	600px image for gallery (adapt the height too)
 │
 ├── sketch-common/ 		Files you want to import in multiple sketch (not used in production, only on development)
 ├── src/ 			Gallery Vue App (dev files)
