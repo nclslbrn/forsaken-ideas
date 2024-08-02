@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import fs from 'fs';
 import { confirm } from '@inquirer/prompts';
-import generatePropertyJson from './generate-property-json.mjs';
+import generatePropertyJson from './cli-write-sketch-properties.mjs';
 import generateSketchSetup from './generate-sketch-setup.mjs';
 import titleFromSlug from './title-from-slug.mjs';
 
@@ -14,7 +14,7 @@ const src = process.env.npm_config_sketch || process.argv[2]
 const title = titleFromSlug(src)
 
 
-console.log('Generating a vite conf for', title)
+console.log(`Generating a vite conf for "${title}"`)
 // Found nothing
 if (!fs.existsSync(`./sketch/${src}`)) {
   const generateFolder = await confirm({

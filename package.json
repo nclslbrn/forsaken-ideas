@@ -38,6 +38,7 @@
     "@thi.ng/vectors": "^7.11.1",
     "@types/p5": "^1.7.6",
     "chromotome": "^1.21.4",
+    "enquirer": "^2.4.1",
     "p5": "^1.9.4",
     "simplex-noise": "^4.0.1",
     "three": "^0.166.0",
