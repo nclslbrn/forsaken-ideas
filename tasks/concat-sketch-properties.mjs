@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
-import titleFromSlug from './title-from-slug.mjs';
-import readJSON from './read-json.mjs';
-import fileList from './file-list.mjs';
+import titleFromSlug from './utils/title-from-slug.mjs';
+import readJSON from './utils/read-json.mjs';
+import fileList from './utils/file-list.mjs';
 
 const exportCallBack = (err) =>
   console.log(err ? err : 'Sketch list exported')

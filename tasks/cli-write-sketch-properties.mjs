@@ -2,7 +2,15 @@ import fs from 'fs'
 import Enquirer from 'enquirer'
 
 const pad = (x) => ('0' + x).slice(-2)
-
+const icons = [
+    'sync',
+    'plus-circle',
+    'clock',
+    'desktop-download',
+    'file-media',
+    'share-android',
+    'settings'
+]
 export default async function (path) {
     // let props = {}
     const questions = [
@@ -31,12 +39,14 @@ export default async function (path) {
             name: 'libs',
             type: 'select',
             multiple: true,
-            initial: 0,
             message:
                 'Library loaded by CDN you can also use files from sketch-common/' +
                 'or import something from @common/something in node_molules' +
                 '(Use <space> to select, <return> to submit)',
-            choices: ['none', 'p5', 'p5.sound', 'fabric'].map((c) => ({ name: c, value: c }))
+            choices: ['p5', 'p5.sound', 'fabric'].map((c) => ({
+                name: c,
+                value: c
+            }))
         },
         {
             name: 'actions',
@@ -44,9 +54,9 @@ export default async function (path) {
             message:
                 'Your sketch can interact with entry of a side menu (present by default). ' +
                 'If you want to use it you have to expose a function on the window object ' +
-                ' (ex: window.init = p5.redraw()). ' +
-                'Write here some pair action name=icon name ' +
-                '(possible icons are: sync, plus-circle, clock, desktop-download, file-media, share-android & settings), ' +
+                'Here is all possible icon' +
+                icons.reduce((acc, icon) => `${acc} \n-${icon}`, '') +
+                '\nWrite here some pair action name=icon name ' +
                 'You could had multiple actions separated by a coma (init=sync, download=file-media).',
             result(input) {
                 let out = []
@@ -67,29 +77,23 @@ export default async function (path) {
 
     const userInput = await Enquirer.prompt(questions)
     const tod = new Date()
-       const props = {
-      ...userInput, 
-      date: `${tod.getFullYear()}-${pad(tod.getMonth() + 1)}-${pad(tod.getDate())}`
+    const props = {
+        ...userInput,
+        date: `${tod.getFullYear()}-${pad(tod.getMonth() + 1)}-${pad(tod.getDate())}`
     }
     console.log(props)
-    const rewiewed = await new Enquirer.Confirm({
-        message: 'Does this configuration seem correct ?'
-    })
-    if (rewiewed) {
-        const jsonContent = JSON.stringify(props)
-        fs.writeFileSync(
-            `${path}/property.json`,
-            jsonContent,
-            'utf-8',
-            (err) => {
-                if (err) {
-                    throw new Error(err)
-                } else {
-                    console.log(
-                        `Your sketch preset are saved on ${path}/property.json`
-                    )
-                }
+    fs.writeFileSync(
+        `${path}/property.json`,
+        JSON.stringify(props),
+        'utf-8',
+        (err) => {
+            if (err) {
+                throw new Error(err)
+            } else {
+                console.log(
+                    `Your sketch preset are saved on ${path}/property.json`
+                )
             }
-        )
-    }
+        }
+    )
 }

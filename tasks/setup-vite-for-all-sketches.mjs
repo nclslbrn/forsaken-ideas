@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import path from 'path';
-import fileList from './file-list.mjs';
+import fileList from './utils/file-list.mjs';
 import { writeIndexHTML, writeViteConfigJs } from './writeSetup.mjs';
 
 const projects = fileList(path.resolve('./sketch/'));

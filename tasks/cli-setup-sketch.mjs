@@ -3,7 +3,7 @@ import fs from 'fs'
 import Enquirer from 'enquirer'
 import generatePropertyJson from './cli-write-sketch-properties.mjs'
 import generateSketchSetup from './generate-sketch-setup.mjs'
-import titleFromSlug from './title-from-slug.mjs'
+import titleFromSlug from './utils/title-from-slug.mjs'
 
 if (
     process.env.npm_config_sketch === undefined &&
@@ -18,7 +18,7 @@ if (
 const src = process.env.npm_config_sketch || process.argv[2]
 const title = titleFromSlug(src)
 
-console.log('Generating a vite conf for', title)
+console.log(`Generating a vite conf for "${title}"`)
 
 /*
  * Found nothing, ask user if he/she will generate new sketch folder
