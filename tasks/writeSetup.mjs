@@ -80,7 +80,7 @@ const writeIndexJS = async (src, sketchDir, template) => {
         function (err, contents) {
             err && console.error(err)
             let replaced = contents
-            const regex = new RegExp(`{{${title}}}`, 'g')
+            const regex = new RegExp(`{{title}}`, 'g')
             replaced = replaced.replaceAll(regex, title)
             fs.writeFile(
                 `${sketchDir}/index.js`,

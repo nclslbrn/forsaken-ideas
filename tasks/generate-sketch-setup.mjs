@@ -45,8 +45,9 @@ export default async function (sketchDir, src) {
             useAtemplate
                 .run()
                 .then(async (template) => {
-                    console.log(template)
-                    await writeIndexJS(src, sketchDir, template)
+                    if (template !== 'no') {
+                        await writeIndexJS(src, sketchDir, template)
+                    }
                     console.log(
                         `Your sketch is ready for dev, you can now run (w/ npm or yarn) :` +
                             `\n- npm run sketch:dev --sketch=${src}` +
