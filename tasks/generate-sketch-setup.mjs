@@ -22,39 +22,51 @@ export default async function (sketchDir, src) {
         confirmOverwrite
             .run()
             .then(async (_) => {
-                return async (src) => {
-                    await writeIndexHTML(src, sketchDir)
-                    writeViteConfigJs(src, sketchDir)
-                    console.log(
-                        `Your sketch is ready for dev, you can now run (w/ npm or yarn) :` +
-                            `\n- npm run sketch:dev --sketch=${src}` +
-                            `\n- yarn run sketch:dev ${src}`
-                    )
-                }
+                await writeIndexHTML(src, sketchDir).then(() => {
+                  writeViteConfigJs(src, sketchDir)
+                  return true
+                })
             })
-            .catch(console.error)
+            .catch((err) => { 
+                console.error(err)
+                return false
+            })
+            .then(() =>
+                console.log(
+                    `🚀 ${sketchDir} ready! You can now run (w/ npm or yarn) :` +
+                        `\n- npm run sketch:dev --sketch=${src}` +
+                        `\n- yarn run sketch:dev ${src}`
+                )
+            )
     } else {
         const writeRequest = writeIndexHTML(src, sketchDir)
-        writeRequest.then(() => {
-            writeViteConfigJs(src, sketchDir)
-            const useAtemplate = new Enquirer.Select({
-                name: 'template',
-                message: `Would you like to start coding with a template ?`,
-                choices: ['no', 'minimal', 'p5', 'umbrella']
-            })
-            useAtemplate
-                .run()
-                .then(async (template) => {
-                    if (template !== 'no') {
-                        await writeIndexJS(src, sketchDir, template)
-                    }
-                    console.log(
-                        `Your sketch is ready for dev, you can now run (w/ npm or yarn) :` +
-                            `\n- npm run sketch:dev --sketch=${src}` +
-                            `\n- yarn run sketch:dev ${src}`
-                    )
+        writeRequest
+            .then(() => {
+                writeViteConfigJs(src, sketchDir)
+                const useAtemplate = new Enquirer.Select({
+                    name: 'template',
+                    message: `Would you like to start coding with a template ?`,
+                    choices: ['no', 'minimal', 'p5', 'umbrella']
                 })
-                .catch(console.error)
-        })
+                useAtemplate
+                    .run()
+                    .then(async (template) => {
+                        if (template !== 'no') {
+                            return await writeIndexJS(src, sketchDir, template)
+                        }
+                        return true
+                    })
+                    .catch((err) => {
+                        console.error(err)
+                        return false
+                    })
+            })
+            .then(() => {
+                console.log(
+                    `🚀 ${sketchDir} ready! You can now run (w/ npm or yarn) :` +
+                        `\n- npm run sketch:dev --sketch=${src}` +
+                        `\n- yarn run sketch:dev ${src}`
+                )
+            })
     }
 }

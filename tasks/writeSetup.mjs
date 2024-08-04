@@ -16,12 +16,14 @@ const writeIndexHTML = async (src, sketchDir) => {
     }
     queryMeta().then(async (meta) => {
         const cdnScriptTags = getCdnTags(meta[0].libs)
-        const additionalMenuItems = getMenuItem(meta[0].action)
+        const additionalMenuItems = getMenuItem(meta[0].actions)
         const toInject = {
             src,
             title,
             ...meta[0],
-            description: meta[0].info ? stripTag(meta[0].info) : '',
+            description: meta[0].info 
+              ? stripTag(meta[0].info) 
+              : 'Coming soon',
             ...meta[1],
             cdnScriptTags,
             additionalMenuItems
@@ -45,6 +47,7 @@ const writeIndexHTML = async (src, sketchDir) => {
                         return true
                     }
                 )
+                console.log(`✅ ${sketchDir}/index.html`)
             }
         )
     })
@@ -70,7 +73,9 @@ const writeViteConfigJs = (src, sketchDir) => {
             )
         }
     )
+    console.log(`✅ ${sketchDir}/vite.config.js`)
 }
+
 // Write vite entry point (index.html)
 const writeIndexJS = async (src, sketchDir, template) => {
     const title = titleFromSlug(src)
@@ -93,5 +98,6 @@ const writeIndexJS = async (src, sketchDir, template) => {
             )
         }
     )
+    console.log(`✅ ${sketchDir}/index.js`)
 }
 export { writeIndexHTML, writeViteConfigJs, writeIndexJS }

@@ -13,5 +13,5 @@ for (let i = 0; i < projects.length; i++) {
   } catch (err) {
     console.error(err)
   }
-  console.log(`${projects[i]} ready`)
+  console.log(`✅ ${projects[i]}`)
 }

@@ -72,6 +72,12 @@ export default async function (path) {
                     })
                 return out
             }
+        },
+        {
+          name: 'info',
+          type: 'input',
+          message: 'Write a short sketch description:',
+          initial: 'todo'
         }
     ]
 
@@ -90,9 +96,7 @@ export default async function (path) {
             if (err) {
                 throw new Error(err)
             } else {
-                console.log(
-                    `Your sketch preset are saved on ${path}/property.json`
-                )
+                console.log(`✅ ${sketchDir}/property.json`)
             }
         }
     )
