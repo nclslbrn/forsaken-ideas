@@ -1,8 +1,8 @@
 {
   "libs":[""],
-  "info":"TODO",
+  "info":"A grid where some cells are filled with text then sometime skewed",
   "topic":"OnlyType",
-  "action":[
+  "actions":[
     {"name":"init","icon":"sync"},
     {"name":"capture","icon":"file-media"},
     {"name":"export_svg","icon":"desktop-download"}
