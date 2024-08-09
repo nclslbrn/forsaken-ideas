@@ -8,14 +8,18 @@ import {
     warpPoints,
     asSvg
 } from '@thi.ng/geom'
-import { SYSTEM } from '@thi.ng/random'
+import remap from '../../sketch-common/remap'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
+import {
+    downloadCanvas,
+    downloadWithMime,
+    canvasRecorder
+} from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { repeatedly2d } from '@thi.ng/transducers'
 import { dist } from '@thi.ng/vectors'
 import { convert, mul, quantity, NONE, mm, dpi } from '@thi.ng/units'
-import { createNoise2D } from 'simplex-noise'
+import { createNoise4D } from 'simplex-noise'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
@@ -23,21 +27,33 @@ import handleAction from '../../sketch-common/handle-action'
 import sortClockwise from './sortClockwise'
 import hatch from './hatch'
 // default settings in inkscape DPI = 96
-const DPI = quantity(200, dpi),
-    SIZE = mul(quantity([336, 420], mm), DPI).deref(),
-    MARGIN = convert(mul(quantity(25, mm), DPI), NONE),
+const DPI = quantity(250, dpi),
+    SIZE = mul(quantity([150, 150], mm), DPI).deref(),
+    MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    STEP = 118,
-    SENTENCES = 'structure'
-    /*
+    STEP = 58,
+    N_SCALE = 0.00003,
+    NUM_FRAME = 240,
+    SENTENCES = 'structure' 
+/*
+  'X↑↓O←→─│'
     'X↑↓O←→─│'
     '─│┌┐└┘├┤┬┴┼╌╎'
       '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
       'AreYouOK?'
     */
-let width, height, drawElems, noise
+let frameCount = 0,
+    isAnimated = false,
+    isBusy = false,
+    frameReqest,
+    width,
+    height,
+    drawElems,
+    noise,
+    recorder,
+    isRecording
 
 ROOT.appendChild(CANVAS)
 
@@ -51,16 +67,24 @@ const collectNearest = (v, stack) =>
     ])
 
 const init = () => {
+    if (drawElems) {
+        cancelAnimationFrame(frameReqest)
+    }
     width = SIZE[0] - MARGIN * 2
     height = SIZE[1] - MARGIN * 2
-    noise = createNoise2D()
+    noise = createNoise4D()
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    ROOT.style.display = 'block'
-    ROOT.style.height = `${Math.ceil((window.innerWidth / SIZE[0]) * SIZE[1])}px`
-    ROOT.style.maxHeight = '-webkit-fill-available'
-    ROOT.style.overflowY = 'scroll'
-    ROOT.style.paddingRight = '12px'
+    update()
+}
+const update = () => {
+    if (isBusy) return
+    isBusy = true
+    if (isAnimated) frameReqest = requestAnimationFrame(update)
+    if (frameCount === NUM_FRAME) {
+        isRecording && stopRecording()
+        frameCount = 0
+    }
     // random points in sketch
     const [points1, points2] = [
         ...repeatedly2d(
@@ -70,15 +94,21 @@ const init = () => {
         )
     ].reduce(
         (pts, p) => {
-            const n1 = noise(...p.map((d) => d * 0.000005 * STEP))
-            if (n1 > -0.33) {
-                const a1 = Math.PI * noise(...p.map((d) => SIZE[1] + d * 0.000005 * STEP))
+            const t = remap(frameCount, 0, NUM_FRAME, 0, 1) * Math.PI * 2
+            const n1 = noise(
+                p[0] * N_SCALE * STEP,
+                p[1] * N_SCALE * STEP,
+                0.1 * Math.cos(t),
+                0.1 * Math.sin(t)
+            )
+            if (n1 >= -0.2) {
+                const a1 = Math.abs(Math.PI * n1 * 2)
                 return [
                     [
                         ...pts[0],
                         [
-                            p[0] + Math.cos(a1) * STEP * n1,
-                            p[1] + Math.sin(a1) * STEP * n1
+                            p[0] + Math.cos(a1) * STEP * Math.abs(n1 * 2),
+                            p[1] + Math.sin(a1) * STEP * Math.abs(n1 * 2)
                         ]
                     ],
                     pts[1]
@@ -109,9 +139,11 @@ const init = () => {
 
     const remaining = [
         ...points1.filter((p) => {
-            return ptsGroups.reduce(function (used, g) {
-                return used + (g.indexOf(p) === 1 ? 1 : 0);
-            }, 0) !== 4
+            return (
+                ptsGroups.reduce(function (used, g) {
+                    return used + (g.indexOf(p) === 1 ? 1 : 0)
+                }, 0) !== 4
+            )
         }),
         ...points2
     ]
@@ -125,24 +157,28 @@ const init = () => {
         )
         if (nearEnough) {
             extraQuads.push(quadPoints)
-        }        
+        }
         remaining.splice(i, 1)
     }
 
     const charsHatch = ptsGroups.map((g, i) =>
-        SYSTEM.float() > 0.1
+        i % 8 !== 0
             ? getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
                   (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
               )
-            : hatch(quad(g), (Math.PI * 2) / SYSTEM.minmaxInt(4), 18)
+            : hatch(
+                  quad(g),
+                  Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4],
+                  8
+              )
     )
 
     drawElems = [
         rect(SIZE, { fill: '#111' }),
-        group({ stroke: '#fefefccc', weight: 4 }, [
-            ...[...points1, ...points2].map((p) => ellipse(p, 8)),
+        group({ stroke: '#fefefccc', weight: 1 }, [
+            ...[...points1, ...points2].map((p) => ellipse(p, 3)),
             group(
-                { lineCap: 'round', weight: 4 },
+                { lineCap: 'round', weight: 3 },
                 charsHatch.reduce(
                     (acc, glyph) => [
                         ...acc,
@@ -157,6 +193,8 @@ const init = () => {
     ]
 
     draw(CTX, group({}, drawElems))
+    isBusy = false
+    frameCount++
 }
 
 init()
@@ -182,24 +220,59 @@ window.exportSVG = () =>
 
 window.onkeydown = (e) => {
     switch (e.key.toLowerCase()) {
+        case ' ':
+            isAnimated = !isAnimated
+            update()
+            break
         case 'd':
             window.exportJPG()
             break
         case 'p':
             window.exportSVG()
             break
-        case 'r':
+        case 'g':
             window.init()
+            break
+        case 'r':
+            startRecording()
+            if (!isAnimated) {
+                isAnimated = true
+                update()
+            }
+            break
+        case 's':
+            stopRecording()
             break
         default:
             console.log(
                 `No action assigned to key [${e.key}]. Press key: \n` +
+                    `- [ ] (space) to play the animation \n` +
                     `- [d] to download a JPG \n` +
                     `- [p] for an SVG \n` +
-                    `- [r] to generate another variation`
+                    `- [g] to regenerate another variation \n`+
+                    `- [r] to start record \n`+
             )
     }
 }
+const startRecording = () => {
+    if (isRecording) return
+    frameCount = 0
+    recorder = canvasRecorder(CANVAS, 'structure', {
+        mimeType: 'video/webm;codecs=vp9',
+        fps: 30
+    })
+    recorder.start()
+    isRecording = true
+    console.log('%c Record started ', 'background: tomato; color: white')
+}
 
+// function to stop canvas recording (if active)
+const stopRecording = () => {
+    if (!isRecording) return
+    if (isAnimated) isAnimated = false
+    recorder.stop()
+    isRecording = false
+    console.log('%c Record stopped ', 'background: limegreen; color: black')
+}
 window.infobox = infobox
 handleAction()
