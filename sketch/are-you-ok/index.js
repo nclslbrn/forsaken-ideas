@@ -33,15 +33,16 @@ const DPI = quantity(250, dpi),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    STEP = 58,
-    N_SCALE = 0.00003,
+    STEP = 100,
+    N_SCALE = 0.007,
     NUM_FRAME = 240,
-    SENTENCES = 'structure' 
+    SENTENCES = 'infrathin' 
 /*
+  '─│┌┐└┘├┤┬┴┼╌╎'
+  '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
+  'structure' 
   'X↑↓O←→─│'
     'X↑↓O←→─│'
-    '─│┌┐└┘├┤┬┴┼╌╎'
-      '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
       'AreYouOK?'
     */
 let frameCount = 0,
@@ -98,17 +99,17 @@ const update = () => {
             const n1 = noise(
                 p[0] * N_SCALE * STEP,
                 p[1] * N_SCALE * STEP,
-                0.1 * Math.cos(t),
-                0.1 * Math.sin(t)
+                0.075 * Math.cos(t),
+                0.075 * Math.sin(t)
             )
-            if (n1 >= -0.2) {
+            if (n1 >= -0.15) {
                 const a1 = Math.abs(Math.PI * n1 * 2)
                 return [
                     [
                         ...pts[0],
                         [
-                            p[0] + Math.cos(a1) * STEP * Math.abs(n1 * 2),
-                            p[1] + Math.sin(a1) * STEP * Math.abs(n1 * 2)
+                            p[0] + Math.cos(a1) * STEP * Math.abs(n1) * 2.5,
+                            p[1] + Math.sin(a1) * STEP * Math.abs(n1) * 2.5
                         ]
                     ],
                     pts[1]
@@ -136,7 +137,7 @@ const update = () => {
         }
         ptsToGroup.splice(i, 1)
     }
-
+    /*
     const remaining = [
         ...points1.filter((p) => {
             return (
@@ -160,22 +161,19 @@ const update = () => {
         }
         remaining.splice(i, 1)
     }
+    */
 
     const charsHatch = ptsGroups.map((g, i) =>
-        i % 8 !== 0
+        i % 3 !== 0
             ? getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
                   (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
               )
-            : hatch(
-                  quad(g),
-                  Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4],
-                  8
-              )
+            : hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8)
     )
 
     drawElems = [
-        rect(SIZE, { fill: '#111' }),
-        group({ stroke: '#fefefccc', weight: 1 }, [
+        rect(SIZE, { fill: '#fff1fe' }),
+        group({ stroke: '#333', weight: 1 }, [
             ...[...points1, ...points2].map((p) => ellipse(p, 3)),
             group(
                 { lineCap: 'round', weight: 3 },
@@ -187,8 +185,8 @@ const update = () => {
                     []
                 )
             ),
-            ...ptsGroups.map((g) => quad(...g)),
-            ...extraQuads.map((g) => quad(...g))
+            ...ptsGroups.map((g) => quad(...g))
+            //...extraQuads.map((g) => quad(...g))
         ])
     ]
 
@@ -249,8 +247,8 @@ window.onkeydown = (e) => {
                     `- [ ] (space) to play the animation \n` +
                     `- [d] to download a JPG \n` +
                     `- [p] for an SVG \n` +
-                    `- [g] to regenerate another variation \n`+
-                    `- [r] to start record \n`+
+                    `- [g] to regenerate another variation \n` +
+                    `- [r] to start record \n`
             )
     }
 }
