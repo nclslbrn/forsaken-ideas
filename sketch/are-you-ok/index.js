@@ -28,15 +28,15 @@ import sortClockwise from './sortClockwise'
 import hatch from './hatch'
 // default settings in inkscape DPI = 96
 const DPI = quantity(250, dpi),
-    SIZE = [1620, 1620],//2880], // mul(quantity([150, 266.666], mm), DPI).deref(),
-    MARGIN = - 480, //convert(mul(quantity(15, mm), DPI), NONE),
+    SIZE = [1620, 2880], // mul(quantity([150, 266.666], mm), DPI).deref(),
+    MARGIN = -480, //convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    STEP = 96,
-    N_SCALE = 0.000009,
+    STEP = 128,
+    N_SCALE = 0.0000025,
     NUM_FRAME = 250, //240 -> 15sec
-    SENTENCES = '01001100011100001111'//'infrathin' 
+    SENTENCES = 'DIOV____________' //'infrathin'
 /*
   '─│┌┐└┘├┤┬┴┼╌╎'
   '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
@@ -82,7 +82,7 @@ const update = () => {
     if (isBusy) return
     isBusy = true
     if (isAnimated) frameReqest = requestAnimationFrame(update)
-    if (frameCount === NUM_FRAME) {
+    if (frameCount >= NUM_FRAME) {
         isRecording && stopRecording()
         frameCount = 0
     }
@@ -99,23 +99,18 @@ const update = () => {
             const n1 = noise(
                 p[0] * N_SCALE * STEP,
                 p[1] * N_SCALE * STEP,
-                0.33 * Math.cos(t),
-                0.33 * Math.sin(t)
+                0.5 * Math.cos(t),
+                0.5 * Math.sin(t)
             )
-            //if (n1 >= -0.15) {
-                const a1 = Math.PI * n1
-                return [
-                    [
-                        ...pts[0],
-                        [
-                            p[0] + Math.cos(a1) * STEP * n1 * 3,
-                            p[1] + Math.sin(a1) * STEP * n1 * 3
-                        ]
-                    ],
-                    pts[1]
-                ]
-            //}
-            return [pts[0], [...pts[1], p]]
+
+            const a1 = Math.PI * n1
+            const np = [
+                p[0] + Math.cos(a1) * STEP * n1 * 3,
+                p[1] + Math.sin(a1) * STEP * n1 * 3
+            ]
+            return n1 >= 0
+                ? [[...pts[0], np], pts[1]]
+                : [pts[0], [...pts[1], np]]
         },
         [[], []]
     )
@@ -137,15 +132,15 @@ const update = () => {
         }
         ptsToGroup.splice(i, 1)
     }
-    /*
+  
     const remaining = [
-        ...points1.filter((p) => {
+        /*...points1.filter((p) => {
             return (
                 ptsGroups.reduce(function (used, g) {
                     return used + (g.indexOf(p) === 1 ? 1 : 0)
                 }, 0) !== 4
             )
-        }),
+        }),*/
         ...points2
     ]
     const extraQuads = []
@@ -161,24 +156,35 @@ const update = () => {
         }
         remaining.splice(i, 1)
     }
-    */
 
-    const charsHatch = ptsGroups.map((g, i) =>
+    const hatches = ptsGroups.map((g, i) =>
         /* i % 2 !== 0
-            ? * getGlyphVector(SENTENCES[Math.floor((frameCount/NUM_FRAME) * SENTENCES.length)], [STEP, STEP]).map( */ 
+            ? * getGlyphVector(SENTENCES[Math.floor((frameCount/NUM_FRAME) * SENTENCES.length)], [STEP, STEP]).map( */
+        /*
             getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
                   (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
               )
-           /*: hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8) */
+           :
+              */
+        hatch(
+            quad(g),
+            Math.PI * 2 * [0.25, 0.5, 0.75, 1][Math.floor(i / 8) % 4],
+            24
+        )
     )
+    const chars = extraQuads.map((g, i) => 
+        getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
+            (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
+        )
+)
 
     drawElems = [
-        rect(SIZE, { fill: "#222433"}),
-        group({ stroke: '#fff1fe' , weight: 2 }, [
+        rect(SIZE, { fill: '#222433' }),
+        group({ stroke: '#fff1fe', weight: 3 }, [
             ...[...points1, ...points2].map((p) => ellipse(p, 3)),
             group(
-                { lineCap: 'round', weight: 8 },
-                charsHatch.reduce(
+                { lineCap: 'round', weight: 6 },
+                [...chars, ...hatches].reduce(
                     (acc, glyph) => [
                         ...acc,
                         ...glyph.map((line) => polyline(line))
@@ -187,7 +193,7 @@ const update = () => {
                 )
             ),
             ...ptsGroups.map((g) => quad(...g)),
-            //...extraQuads.map((g) => quad(...g))
+            ...extraQuads.map((g) => quad(...g))
         ])
     ]
 
@@ -257,8 +263,8 @@ const startRecording = () => {
     if (isRecording) return
     frameCount = 0
     recorder = canvasRecorder(CANVAS, 'structure', {
-        mimeType: 'video/webm;codecs=vp9',
-        fps: 25
+        mimeType: 'video/webm;codecs=H264',
+        fps: 25.0
     })
     recorder.start()
     isRecording = true
