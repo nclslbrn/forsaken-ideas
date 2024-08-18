@@ -28,15 +28,15 @@ import sortClockwise from './sortClockwise'
 import hatch from './hatch'
 // default settings in inkscape DPI = 96
 const DPI = quantity(250, dpi),
-    SIZE = [1620, 1620],//2880], // mul(quantity([150, 266.666], mm), DPI).deref(),
-    MARGIN = - 480, //convert(mul(quantity(15, mm), DPI), NONE),
+    SIZE = [1080, 1920], // mul(quantity([150, 266.666], mm), DPI).deref(),
+    MARGIN = -200, //convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    STEP = 96,
-    N_SCALE = 0.000009,
-    NUM_FRAME = 250, //240 -> 15sec
-    SENTENCES = '01001100011100001111'//'infrathin' 
+    STEP = 72,
+    N_SCALE = 0.0000095,
+    NUM_FRAME = 250,
+    SENTENCES = 'DIOV_______________ERUTCURTS________________' //'infrathin'
 /*
   '─│┌┐└┘├┤┬┴┼╌╎'
   '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
@@ -47,7 +47,6 @@ const DPI = quantity(250, dpi),
     */
 let frameCount = 0,
     isAnimated = false,
-    isBusy = false,
     frameReqest,
     width,
     height,
@@ -79,9 +78,10 @@ const init = () => {
     update()
 }
 const update = () => {
-    if (isBusy) return
-    isBusy = true
-    if (isAnimated) frameReqest = requestAnimationFrame(update)
+    if (isAnimated) {
+        frameReqest = requestAnimationFrame(update)
+    }
+
     if (frameCount === NUM_FRAME) {
         isRecording && stopRecording()
         frameCount = 0
@@ -103,17 +103,17 @@ const update = () => {
                 0.33 * Math.sin(t)
             )
             //if (n1 >= -0.15) {
-                const a1 = Math.PI * n1
-                return [
+            const a1 = Math.PI * n1
+            return [
+                [
+                    ...pts[0],
                     [
-                        ...pts[0],
-                        [
-                            p[0] + Math.cos(a1) * STEP * n1 * 3,
-                            p[1] + Math.sin(a1) * STEP * n1 * 3
-                        ]
-                    ],
-                    pts[1]
-                ]
+                        p[0] + Math.cos(a1) * STEP * n1 * 3,
+                        p[1] + Math.sin(a1) * STEP * n1 * 3
+                    ]
+                ],
+                pts[1]
+            ]
             //}
             return [pts[0], [...pts[1], p]]
         },
@@ -163,21 +163,22 @@ const update = () => {
     }
     */
 
-    const charsHatch = ptsGroups.map((g, i) =>
-        /* i % 2 !== 0
-            ? * getGlyphVector(SENTENCES[Math.floor((frameCount/NUM_FRAME) * SENTENCES.length)], [STEP, STEP]).map( */ 
+    const charsHatch = ptsGroups.map(
+        (g, i) =>
+            /* i % 2 !== 0
+            ? * getGlyphVector(SENTENCES[Math.floor((frameCount/NUM_FRAME) * SENTENCES.length)], [STEP, STEP]).map( */
             getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
-                  (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
-              )
-           /*: hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8) */
+                (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
+            )
+        /*: hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8) */
     )
 
     drawElems = [
-        rect(SIZE, { fill: "#222433"}),
-        group({ stroke: '#fff1fe' , weight: 2 }, [
+        rect(SIZE, { fill: '#fff3fc' }),
+        group({ stroke: '#333', weight: 3 }, [
             ...[...points1, ...points2].map((p) => ellipse(p, 3)),
             group(
-                { lineCap: 'round', weight: 8 },
+                { lineCap: 'round', weight: 4 },
                 charsHatch.reduce(
                     (acc, glyph) => [
                         ...acc,
@@ -186,21 +187,23 @@ const update = () => {
                     []
                 )
             ),
-            ...ptsGroups.map((g) => quad(...g)),
+            ...ptsGroups.map((g) => quad(...g))
             //...extraQuads.map((g) => quad(...g))
         ])
     ]
 
     draw(CTX, group({}, drawElems))
-    isBusy = false
+    downloadCanvas(CANVAS, `frame-${String(frameCount).padStart(3, '0')}`, 'jpeg', 1)
+
     frameCount++
+
 }
 
 init()
 window.init = init
 
 window.exportJPG = () =>
-    downloadCanvas(CANVAS, `Char in quad-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(CANVAS, `Char in quad-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg')
 
 window.exportSVG = () =>
     downloadWithMime(
@@ -257,7 +260,7 @@ const startRecording = () => {
     if (isRecording) return
     frameCount = 0
     recorder = canvasRecorder(CANVAS, 'structure', {
-        mimeType: 'video/webm;codecs=vp9',
+        mimeType: 'video/webm;codecs=h264',
         fps: 25
     })
     recorder.start()
