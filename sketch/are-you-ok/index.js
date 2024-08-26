@@ -16,40 +16,33 @@ import {
     canvasRecorder
 } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { length, repeatedly2d } from '@thi.ng/transducers'
+import { repeatedly2d } from '@thi.ng/transducers'
 import { dist } from '@thi.ng/vectors'
 import { convert, mul, quantity, NONE, mm, dpi } from '@thi.ng/units'
 import { createNoise4D } from 'simplex-noise'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
-import '../full-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import sortClockwise from './sortClockwise'
 import hatch from './hatch'
 // default settings in inkscape DPI = 96
-const DPI = quantity(250, dpi),
-    SIZE = [1080, 1920], // mul(quantity([150, 266.666], mm), DPI).deref(),
-    MARGIN = -200, //convert(mul(quantity(15, mm), DPI), NONE),
+const DPI = quantity(96, dpi),
+    SIZE = mul(quantity([297, 420], mm), DPI).deref(),
+    MARGIN = convert(mul(quantity(50, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    STEP = 72,
-    N_SCALE = 0.0000095,
+    N_SCALE = 0.0003,
     NUM_FRAME = 250,
-    SENTENCES = 'DIOV_______________ERUTCURTS________________' //'infrathin'
-/*
-  '─│┌┐└┘├┤┬┴┼╌╎'
-  '↖←↑→↓↖↗↘↙↔↕↰↱↲↳↴↵'
-  'structure' 
-  'X↑↓O←→─│'
-    'X↑↓O←→─│'
-      'AreYouOK?'
-    */
+    SENTENCES = 'DIOV_ERUTCURTS__' //'infrathin'
+
 let frameCount = 0,
     isAnimated = false,
     frameReqest,
     width,
     height,
+    step,
     drawElems,
     noise,
     recorder,
@@ -72,6 +65,7 @@ const init = () => {
     }
     width = SIZE[0] - MARGIN * 2
     height = SIZE[1] - MARGIN * 2
+    step = 48 + Math.ceil(Math.random() * 48) 
     noise = createNoise4D()
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
@@ -82,39 +76,39 @@ const update = () => {
         frameReqest = requestAnimationFrame(update)
     }
 
-    if (frameCount === NUM_FRAME) {
+    if (frameCount === NUM_FRAME && isAnimated) {
         isRecording && stopRecording()
         frameCount = 0
     }
     // random points in sketch
     const [points1, points2] = [
         ...repeatedly2d(
-            (x, y) => [MARGIN + STEP * x, MARGIN + STEP * y],
-            width / STEP,
-            height / STEP
+            (x, y) => [MARGIN + step * x, MARGIN + step * y],
+            width / step,
+            height / step
         )
     ].reduce(
         (pts, p) => {
             const t = remap(frameCount, 0, NUM_FRAME, 0, 1) * Math.PI * 2
             const n1 = noise(
-                p[0] * N_SCALE * STEP,
-                p[1] * N_SCALE * STEP,
+                p[0] * N_SCALE * step,
+                p[1] * N_SCALE * step,
                 0.33 * Math.cos(t),
                 0.33 * Math.sin(t)
             )
-            //if (n1 >= -0.15) {
-            const a1 = Math.PI * n1
-            return [
-                [
-                    ...pts[0],
+            if (n1 >= 0) {
+                const a1 = Math.PI * n1
+                return [
                     [
-                        p[0] + Math.cos(a1) * STEP * n1 * 3,
-                        p[1] + Math.sin(a1) * STEP * n1 * 3
-                    ]
-                ],
-                pts[1]
-            ]
-            //}
+                        ...pts[0],
+                        [
+                            p[0] + Math.cos(a1) * step * n1 * 5,
+                            p[1] + Math.sin(a1) * step * n1 * 5
+                        ]
+                    ],
+                    pts[1]
+                ]
+            }
             return [pts[0], [...pts[1], p]]
         },
         [[], []]
@@ -127,7 +121,7 @@ const update = () => {
         const quadPoints = collectNearest(ptsToGroup[i], ptsToGroup)
         const nearEnough = quadPoints.reduce(
             (b, p, i, pts) =>
-                b && dist(p, pts[(i + 1) % pts.length]) < STEP * 2.5,
+                b && dist(p, pts[(i + 1) % pts.length]) < step * 2.5,
             true
         )
         if (nearEnough) {
@@ -137,7 +131,7 @@ const update = () => {
         }
         ptsToGroup.splice(i, 1)
     }
-    /*
+
     const remaining = [
         ...points1.filter((p) => {
             return (
@@ -153,7 +147,7 @@ const update = () => {
         const quadPoints = collectNearest(remaining[i], remaining)
         const nearEnough = quadPoints.reduce(
             (b, p, i, pts) =>
-                b && dist(p, pts[(i + 1) % pts.length]) < STEP * 4,
+                b && dist(p, pts[(i + 1) % pts.length]) < step * 4,
             true
         )
         if (nearEnough) {
@@ -161,16 +155,14 @@ const update = () => {
         }
         remaining.splice(i, 1)
     }
-    */
+    const chars = ptsGroups.map((g, i) =>
+        getGlyphVector(SENTENCES[i % SENTENCES.length], [step, step]).map((l) =>
+            warpPoints(l, quad(g), rect([step, step]), [])
+        )
+    )
 
-    const charsHatch = ptsGroups.map(
-        (g, i) =>
-            /* i % 2 !== 0
-            ? * getGlyphVector(SENTENCES[Math.floor((frameCount/NUM_FRAME) * SENTENCES.length)], [STEP, STEP]).map( */
-            getGlyphVector(SENTENCES[i % SENTENCES.length], [STEP, STEP]).map(
-                (l) => warpPoints(l, quad(g), rect([STEP, STEP]), [])
-            )
-        /*: hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8) */
+    const hatches = extraQuads.map((g, i) =>
+        hatch(quad(g), Math.PI * 2 * [0.25, 0.5, 0.75, 1][(i / 8) % 4], 8)
     )
 
     drawElems = [
@@ -179,7 +171,7 @@ const update = () => {
             ...[...points1, ...points2].map((p) => ellipse(p, 3)),
             group(
                 { lineCap: 'round', weight: 4 },
-                charsHatch.reduce(
+                [...chars, ...hatches].reduce(
                     (acc, glyph) => [
                         ...acc,
                         ...glyph.map((line) => polyline(line))
@@ -187,27 +179,38 @@ const update = () => {
                     []
                 )
             ),
-            ...ptsGroups.map((g) => quad(...g))
-            //...extraQuads.map((g) => quad(...g))
+            ...ptsGroups.map((g) => quad(...g)),
+            ...extraQuads.map((g) => quad(...g))
         ])
     ]
 
     draw(CTX, group({}, drawElems))
-    downloadCanvas(CANVAS, `frame-${String(frameCount).padStart(3, '0')}`, 'jpeg', 1)
-
-    frameCount++
-
+    isAnimated && frameCount++
 }
 
 init()
 window.init = init
+window.prevFrame = () => {
+    if (frameCount > 0) frameCount--
+    else frameCount = NUM_FRAME
+    update()
+}
+window.nextFrame = () => {
+    if (frameCount < NUM_FRAME) frameCount++
+    else frameCount = 0
+    update()
+}
 
 window.exportJPG = () =>
-    downloadCanvas(CANVAS, `Char in quad-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg')
+    downloadCanvas(
+        CANVAS,
+        `Are-You-Ok-${FMT_yyyyMMdd_HHmmss()}-f${frameCount}`,
+        'jpeg'
+    )
 
 window.exportSVG = () =>
     downloadWithMime(
-        `Char in quad-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `Are-You-Ok-${FMT_yyyyMMdd_HHmmss()}-f${frameCount}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -245,6 +248,12 @@ window.onkeydown = (e) => {
         case 's':
             stopRecording()
             break
+        case 'arrowleft':
+            window.prevFrame()
+            break
+        case 'arrowright':
+            window.nextFrame()
+            break
         default:
             console.log(
                 `No action assigned to key [${e.key}]. Press key: \n` +
@@ -252,7 +261,9 @@ window.onkeydown = (e) => {
                     `- [d] to download a JPG \n` +
                     `- [p] for an SVG \n` +
                     `- [g] to regenerate another variation \n` +
-                    `- [r] to start record \n`
+                    `- [r] to start record` +
+                    `- [←] to jump to previous (animation) frame \n` +
+                    `- [→] to move to the next (animation) frame`
             )
     }
 }
