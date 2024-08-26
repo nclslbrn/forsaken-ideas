@@ -51,7 +51,7 @@ export default {
 
 .project-preview img {
     float: left;
-    max-height: 50vh;
+    max-height: 60vh;
     width: auto;
     opacity: 1;
     transition: opacity 0.5s ease-in;
