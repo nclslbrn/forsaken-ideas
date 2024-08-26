@@ -1,5 +1,4 @@
-import { rect, group, svgDoc, polyline } from '@thi.ng/geom'
-import { pickRandom } from '@thi.ng/random'
+import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
@@ -15,14 +14,14 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    NSCALE = 0.001
+    NSCALE = 0.0009
 
 let drawElems, step, noise
 
 ROOT.appendChild(CANVAS)
 
 const init = () => {
-    step = Math.ceil(3 + Math.random() * 3) * 4
+    step = Math.ceil(2 + Math.random() * 3) * 3
     noise = createNoise2D()
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
@@ -30,12 +29,13 @@ const init = () => {
     const lines = []
     for (let x = MARGIN - step; x < SIZE[0] - MARGIN; x += step) {
         let line = [],
-            penDown = true
+            penDown = true,
+            lastPenUpY = 0
         for (let y = MARGIN; y < SIZE[1] - MARGIN; y++) {
-            const n1 = noise(x * NSCALE, y * NSCALE * 70)
-            if (n1 >= -0.5) {
+            const n1 = noise(x * NSCALE * 0.5, y * NSCALE * 75)
+            if (n1 >= -0.7) {
                 if (penDown) {
-                    const n2 = noise(x * NSCALE, y * NSCALE * 15)
+                    const n2 = noise(x * NSCALE * 2, lastPenUpY + (line.length * NSCALE * 10))
                     line.push([
                         x + Math.cos(n2) * step,
                         y //+ Math.sin(n2) * step * 0.33
@@ -44,6 +44,7 @@ const init = () => {
                 penDown = true
             } else {
                 penDown = false
+                lastPenUpY = y
                 if (line.length) lines.push(line)
                 line = []
             }
