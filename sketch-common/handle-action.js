@@ -11,6 +11,19 @@ const handleAction = () => {
             })
         }
     }
+    window['back'] = () => {
+        // Check if user comes from the index (browser history) then redirect him to index
+        if (
+            document.referrer &&
+            document.referrer.indexOf(
+                location.protocol + '//' + location.host
+            ) > -1
+        ) {
+            history.back()
+        } else {
+            window.location.href = '/'
+        }
+    }
     const buttons = document.querySelectorAll('button[data-action]')
 
     if (typeof buttons != 'undefined') {

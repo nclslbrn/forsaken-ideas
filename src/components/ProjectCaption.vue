@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { PropType } from 'vue' 
 import type { Project } from '../project'
+// @ts-ignore
+import GlitchText from '../../sketch-common/glitchText'
 export default {
   props: {
     project: {
@@ -10,20 +12,35 @@ export default {
     index: {
       type: Number
     }
+  },
+  methods: {
+    GlitchText
   }
 }
 </script>
 <template>
   <div class="project-caption"> 
-    <button class="project-caption--title" @click.prevent="$emit('openProject', project.src)">
+    <button 
+      :ref="(element) => new GlitchText({ element, effect: 'replace'})" 
+      class="project-caption--title"
+      :data-text="project.title"
+      @click.prevent="$emit('openProject', project.src)">
       {{ project.title }}
     </button>
     <div class="project-caption--meta">
       <div class="date">
-        <strong>Created:</strong> <span>{{ project.date }}</span>
+        <strong>Created:</strong> <span 
+          :data-text="project.date" 
+          :ref="(element) => new GlitchText({ element, effect: 'add'})">
+          {{ project.date }}
+        </span>
       </div>
       <div class="topic">
-        <strong>Topic:</strong> <span>{{ project.topic }}</span>
+        <strong>Topic:</strong> <span 
+          :data-text="project.topic"
+          :ref="(element) => new GlitchText({ element, effect: 'add'})">
+          {{ project.topic }}
+        </span>
       </div>
     </div>
   </div>

@@ -14,48 +14,51 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    NSCALE = 0.0009
+    NSCALE = [0.000007, 0.3]
 
 let drawElems, step, noise
 
 ROOT.appendChild(CANVAS)
 
 const init = () => {
-    step = Math.ceil(2 + Math.random() * 3) * 3
+    step = Math.ceil(4 + Math.random() * 4) * 4
     noise = createNoise2D()
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
     const lines = []
-    for (let x = MARGIN - step; x < SIZE[0] - MARGIN; x += step) {
-        let line = [],
-            penDown = true,
-            lastPenUpY = 0
-        for (let y = MARGIN; y < SIZE[1] - MARGIN; y++) {
-            const n1 = noise(x * NSCALE * 0.5, y * NSCALE * 75)
-            if (n1 >= -0.7) {
-                if (penDown) {
-                    const n2 = noise(x * NSCALE * 2, lastPenUpY + (line.length * NSCALE * 10))
-                    line.push([
-                        x + Math.cos(n2) * step,
-                        y //+ Math.sin(n2) * step * 0.33
-                    ])
-                }
-                penDown = true
+    let x = MARGIN,
+        n = noise(x * NSCALE[0], MARGIN * NSCALE[1])
+
+    while (x < SIZE[0] - MARGIN) {
+        let y = MARGIN,
+            dx = step * Math.sin(n) * 0.15,
+            line = [],
+            penDown = 1
+
+        while (y < SIZE[1] - MARGIN) {
+            n = noise(x * NSCALE[0], y * NSCALE[1])
+            if (Math.abs(n) <= 0.8) {
+                penDown = 1
             } else {
-                penDown = false
-                lastPenUpY = y
-                if (line.length) lines.push(line)
-                line = []
+                if (penDown === 1) {
+                    line.length && lines.push(line)
+                    line = []
+                }
+                penDown = penDown < -3 ? 1 : penDown - 1
             }
+            penDown === 1 && line.push([dx + x, y])
+            dx = step * n * 0.05
+            y += step * Math.max(0.005, Math.abs(n) * 0.5)
         }
         if (line.length) lines.push(line)
+        x += step * Math.max(0.005, Math.abs(n) * 0.5)
     }
 
     drawElems = [
-        rect(SIZE, { fill: '#fefef3' }),
+        rect(SIZE, { fill: '#fff3ef' }),
         group(
-            { stroke: '#111', weight: 2 },
+            { stroke: '#222', weight: 2 },
             lines.map((l) => polyline(l))
         )
     ]

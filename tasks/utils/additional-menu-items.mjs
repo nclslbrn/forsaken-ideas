@@ -6,7 +6,7 @@ export default function (actions) {
         const actionName = act.name.replace('_', ' ');
         htmlOut += `
       <li>
-        <button href="#" data-action="${act.name}" title="${actionName}">
+        <button data-action="${act.name}" title="${actionName}">
           <span class="screen-reader-text">${actionName}</span>
           <svg class="icon">
               <use xlink:href="#icon-${act.icon ? act.icon : 'settings'}"></use>
