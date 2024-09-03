@@ -168,15 +168,31 @@ nav#iconav ul {
 
 nav#iconav button {
     display: block;
+    position: relative;
     margin: 0.5rem;
     padding: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
     line-height: 1rem;
     text-align: center;
-    text-decoration: none;
-    background-color: var(--color-bg);
+    border: none;
+    background-color: var(--color-text);
+}
+
+nav#iconav button,
+nav#iconav button::before {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+nav#iconav button::before {
+    content: "";
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    margin: 2px;
+    background: var(--color-bg);
+    width: 90%;
+    height: 90%;
+    z-index: -1;
 }
 
 nav#iconav button svg {
@@ -191,13 +207,16 @@ nav#iconav button:hover svg {
     fill: var(--color-primary);
 }
 
+nav#iconav button:hover {
+  background: var(--color-primary);
+}
+
 body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] {
     background: var(--color-primary);
-    color: var(--color-bg);
 }
 
 body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] svg {
-    fill: var(--color-bg);
+    fill: var(--color-primary);
 }
 
 /**

@@ -235,7 +235,7 @@ export default defineComponent({
 }
 
 .the-wall>* {
-  flex: 0 0 284px;
+  flex: 0 0 260px;
   margin: 0 2.5em;
   max-width: 100%;
 }
@@ -302,7 +302,7 @@ export default defineComponent({
 footer {
   display: flex;
   flex-flow: row nowrap;
-  align-items: center;
+  align-items: stretch;
 }
 
 

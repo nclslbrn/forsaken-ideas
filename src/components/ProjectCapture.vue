@@ -34,7 +34,7 @@ export default {
 .project-preview {
     border: 1px solid #ffffff00;
     background: var(--color-solid); 
-    padding: 1vw;
+    padding: 0.5vw;
     border-radius: 2px;
 }
 
@@ -47,6 +47,7 @@ export default {
 .project-preview:focus-visible {
   outline: none;
   border: 1px solid var(--color-primary);
+  background: var(--color-primary);
 }
 
 .project-preview img {
