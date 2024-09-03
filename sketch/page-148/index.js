@@ -13,46 +13,53 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d'),
-    NSCALE = [0.000007, 0.3]
+    CTX = CANVAS.getContext('2d')
 
-let drawElems, step, noise
+let drawElems, stepX, stepY, noise, nPosX, nRescale
 
 ROOT.appendChild(CANVAS)
 
 const init = () => {
-    step = Math.ceil(4 + Math.random() * 4) * 4
+    stepX = Math.ceil(8 + Math.random() * 4) * 2
+    stepY = Math.ceil(12 + Math.random() * 2) * 2
     noise = createNoise2D()
+    nPosX = SIZE[0] * Math.random()
+    nRescale = 0.7 / Math.pow(10, Math.ceil(Math.random() * 3))
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
+    const ns = (x, y) => {
+    const l = Math.atan2(SIZE[1]-y, SIZE[0]-x)
+    return noise(Math.cos(l) * nRescale * SIZE[0], Math.sin(l) * nRescale * SIZE[1])
+  }
     const lines = []
     let x = MARGIN,
-        n = noise(x * NSCALE[0], MARGIN * NSCALE[1])
+        n = ns(x, MARGIN)
 
     while (x < SIZE[0] - MARGIN) {
         let y = MARGIN,
-            dx = step * Math.sin(n) * 0.15,
             line = [],
             penDown = 1
 
         while (y < SIZE[1] - MARGIN) {
-            n = noise(x * NSCALE[0], y * NSCALE[1])
-            if (Math.abs(n) <= 0.8) {
+            if (ns(x, y) <= 0.5) {
                 penDown = 1
             } else {
                 if (penDown === 1) {
                     line.length && lines.push(line)
                     line = []
+                    // extra step to create jump in noise value 
+                    // to imitate human made drawing  
+                    nPosX += stepX
                 }
-                penDown = penDown < -3 ? 1 : penDown - 1
+                penDown =  penDown < -2 ? 1 : penDown - 1
             }
-            penDown === 1 && line.push([dx + x, y])
-            dx = step * n * 0.05
-            y += step * Math.max(0.005, Math.abs(n) * 0.5)
+            const n = ns(x + nPosX, y)
+            penDown === 1 && line.push([x + n * stepX * 0.03, y])
+            y += stepY * Math.max(0.123, Math.abs(n) * 0.66)
         }
         if (line.length) lines.push(line)
-        x += step * Math.max(0.005, Math.abs(n) * 0.5)
+        x += stepX * Math.max(0.123, Math.abs(n) * 0.66)
     }
 
     drawElems = [
@@ -63,6 +70,7 @@ const init = () => {
         )
     ]
 
+    console.log(`step: [${[stepX, stepY]}], scale: [${nRescale}]`)
     draw(CTX, group({}, drawElems))
 }
 
