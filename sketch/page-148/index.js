@@ -7,31 +7,86 @@ import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { createNoise2D } from 'simplex-noise'
+import { pickRandom } from '@thi.ng/random'
 
 const DPI = quantity(96, dpi), // default settings in inkscape
-    SIZE = mul(DIN_A3, DPI).deref(),
+    SIZE = mul(quantity([297,297], mm), DPI).deref(), // mul(DIN_A3, DPI).deref(),,
     MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d')
+    CTX = CANVAS.getContext('2d'),
+    STRETCH = [0.5, 5],
+    MAPPING_OPTIONS = [
+        'polarC',
+        'polarTL',
+        'polarTR',
+        'polarBL',
+        'polarBR',
+        'cartesian1D',
+        'cartesian2D'
+    ]
 
-let drawElems, stepX, stepY, noise, nPosX, nRescale
+const { cos, sin, atan2, random, ceil, round, floor, abs, max, pow } = Math
+
+let drawElems, stepX, stepY, noise, nPosX, nRescale, noiseMapping
 
 ROOT.appendChild(CANVAS)
 
 const init = () => {
-    stepX = Math.ceil(8 + Math.random() * 4) * 2
-    stepY = Math.ceil(12 + Math.random() * 2) * 2
+    stepX = 24 + ceil(random() * 4) * 8
+    stepY = 16 + ceil(random() * 4) * 8
     noise = createNoise2D()
-    nPosX = SIZE[0] * Math.random()
-    nRescale = 0.7 / Math.pow(10, Math.ceil(Math.random() * 3))
+    nPosX = round(SIZE[0] * random())
+    nRescale = round(4 + Math.random() * 4) / 100 / pow(10, floor(random() * 2))
+    noiseMapping = pickRandom(MAPPING_OPTIONS)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
     const ns = (x, y) => {
-    const l = Math.atan2(SIZE[1]-y, SIZE[0]-x)
-    return noise(Math.cos(l) * nRescale * SIZE[0], Math.sin(l) * nRescale * SIZE[1])
-  }
+        switch (noiseMapping) {
+            case 'polarC':
+                const lc = atan2(SIZE[1] / 2 - y, SIZE[0] / 2 - x)
+                return noise(
+                    cos(lc) * nRescale * SIZE[0] * STRETCH[0],
+                    sin(lc) * nRescale * SIZE[1] * STRETCH[1]
+                )
+            case 'polarTL':
+                const ltl = atan2(y, x)
+                return noise(
+                    cos(ltl) * nRescale * SIZE[0] * STRETCH[0],
+                    sin(ltl) * nRescale * SIZE[1] * STRETCH[1]
+                )
+            case 'polarTR':
+                const ltr = atan2(y, SIZE[0] - x)
+                return noise(
+                    cos(ltr) * nRescale * SIZE[0] * STRETCH[0],
+                    sin(ltr) * nRescale * SIZE[1] * STRETCH[1]
+                )
+            case 'polarBL':
+                const lbl = atan2(SIZE[1] - y, x)
+                return noise(
+                    cos(lbl) * nRescale * SIZE[0] * STRETCH[0],
+                    sin(lbl) * nRescale * SIZE[1] * STRETCH[1]
+                )
+            case 'polarBR':
+                const lbr = atan2(SIZE[1] - y, SIZE[0] - x)
+                return noise(
+                    cos(lbr) * nRescale * SIZE[0] * STRETCH[0],
+                    sin(lbr) * nRescale * SIZE[1] * STRETCH[1]
+                )
+            case 'cartesian2D':
+                return noise(
+                    x * nRescale * STRETCH[0],
+                    y * nRescale * STRETCH[1]
+                )
+            case 'cartesian1D':
+                return noise(
+                    (x * SIZE[1] + y) * nRescale * STRETCH[0],
+                    STRETCH[1]
+                )
+        }
+    }
+
     const lines = []
     let x = MARGIN,
         n = ns(x, MARGIN)
@@ -42,24 +97,24 @@ const init = () => {
             penDown = 1
 
         while (y < SIZE[1] - MARGIN) {
-            if (ns(x, y) <= 0.5) {
+            if (abs(ns(x, y)) ** 2 <= 0.25) {
                 penDown = 1
             } else {
                 if (penDown === 1) {
                     line.length && lines.push(line)
                     line = []
-                    // extra step to create jump in noise value 
-                    // to imitate human made drawing  
+                    // extra step to create jump in noise value
+                    // to imitate human made drawing
                     nPosX += stepX
                 }
-                penDown =  penDown < -2 ? 1 : penDown - 1
+                penDown = penDown < -2 ? 1 : penDown - 1
             }
             const n = ns(x + nPosX, y)
             penDown === 1 && line.push([x + n * stepX * 0.03, y])
-            y += stepY * Math.max(0.123, Math.abs(n) * 0.66)
+            y += stepY * max(0.125, abs(n))
         }
         if (line.length) lines.push(line)
-        x += stepX * Math.max(0.123, Math.abs(n) * 0.66)
+        x += stepX * max(0.125, abs(n))
     }
 
     drawElems = [
@@ -70,7 +125,9 @@ const init = () => {
         )
     ]
 
-    console.log(`step: [${[stepX, stepY]}], scale: [${nRescale}]`)
+    console.log(
+        `mapping: ${noiseMapping}, step: [${[stepX, stepY]}], scale: [${nRescale}]`
+    )
     draw(CTX, group({}, drawElems))
 }
 
@@ -95,6 +152,10 @@ window['downloadSVG'] = () => {
         )
     )
 }
-
+window.onkeydown = (e) => {
+    if (e.key.toLowerCase() === 'r') window.init()
+    if (e.key.toLowerCase() === 'd') window.downloadJPG()
+    if (e.key.toLowerCase() === 'p') window.downloadSVG()
+}
 window.infobox = infobox
 handleAction()
