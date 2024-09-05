@@ -8,14 +8,19 @@ import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { createNoise2D } from 'simplex-noise'
 import { pickRandom } from '@thi.ng/random'
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 
 const DPI = quantity(96, dpi), // default settings in inkscape
-    SIZE = mul(quantity([297,297], mm), DPI).deref(), // mul(DIN_A3, DPI).deref(),,
+    // A3 plot
+    SIZE = mul(DIN_A3, DPI).deref(),
+    // social network
+    // SIZE = mul(quantity([297, 297], mm), DPI).deref(), 
     MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     STRETCH = [0.5, 5],
+    CHARS = [...'13th september on fxhash '],
     MAPPING_OPTIONS = [
         'polarC',
         'polarTL',
@@ -37,7 +42,7 @@ const init = () => {
     stepY = 16 + ceil(random() * 4) * 8
     noise = createNoise2D()
     nPosX = round(SIZE[0] * random())
-    nRescale = round(4 + Math.random() * 4) / 100 / pow(10, floor(random() * 2))
+    nRescale = round(1 + Math.random() * 3) / 10 / pow(10, ceil(random() * 2))
     noiseMapping = pickRandom(MAPPING_OPTIONS)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
@@ -94,10 +99,12 @@ const init = () => {
     while (x < SIZE[0] - MARGIN) {
         let y = MARGIN,
             line = [],
-            penDown = 1
+            penDown = 1,
+            nStepX = stepX * max(0.125, abs(n)),
+            charIdx = 0
 
         while (y < SIZE[1] - MARGIN) {
-            if (abs(ns(x, y)) ** 2 <= 0.25) {
+            if (ns(x, y) ** 2 >= 0.5) {
                 penDown = 1
             } else {
                 if (penDown === 1) {
@@ -109,12 +116,24 @@ const init = () => {
                 }
                 penDown = penDown < -2 ? 1 : penDown - 1
             }
-            const n = ns(x + nPosX, y)
-            penDown === 1 && line.push([x + n * stepX * 0.03, y])
-            y += stepY * max(0.125, abs(n))
+            n = ns(x + nPosX, y)
+            const nStepY = stepY * max(0.125, abs(n))
+            if (penDown < 1) {
+                line.push([x + n * stepX * 0.03, y])
+            } else {
+                lines.push(
+                    ...getGlyphVector(
+                        CHARS[charIdx % CHARS.length],
+                        [nStepX, nStepY],
+                        [x - nStepX / 2, y - nStepY / 4]
+                    )
+                )
+                charIdx++
+            }
+            y += nStepY
         }
         if (line.length) lines.push(line)
-        x += stepX * max(0.125, abs(n))
+        x += nStepX
     }
 
     drawElems = [
