@@ -134,6 +134,10 @@ p {
     margin-bottom: 1.6em;
 }
 
+button {
+  font-family: inherit;
+}
+
 header h1 span {
     font-size: 0.5em;
 }
