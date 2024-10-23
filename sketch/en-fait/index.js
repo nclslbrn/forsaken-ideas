@@ -31,6 +31,7 @@ let currSentence = 0,
     height,
     drawElems,
     frameReqest,
+    read = [],
     prevDrawTime = performance.now()
 
 ROOT.appendChild(CANVAS)
@@ -40,7 +41,29 @@ const init = () => {
     height = SIZE[1]
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
+    storeCurrStr()
     update()
+}
+const storeCurrStr = () => {
+    const str = PRE + SENTENCES[currSentence]
+    const letters = getParagraphVector(
+        str,
+        26,
+        10,
+        SIZE[0] - MARGIN * 4,
+        [1, 0.8]
+    )
+    read = [
+        letters.vectors.reduce(
+            (polys, group) => [
+                ...polys,
+                ...group.map((line) => polyline(line))
+        ],
+        []),
+        ...read
+    ]
+
+    console.log(read)
 }
 
 const update = () => {
@@ -50,7 +73,11 @@ const update = () => {
         const readTime = SENTENCES[currSentence].length * LETTER_TIME
         //console.log(`${prevDrawTime} - ${performance.now()}`)
         if (performance.now() - prevDrawTime >= readTime + TRANSITION) {
+            if (read.length === 7) {
+                read.splice(6, 1)
+            }
             currSentence++
+            storeCurrStr()
             prevDrawTime = performance.now()
         }
 
@@ -66,59 +93,37 @@ const update = () => {
                 15
             )
         }
-
-        drawElems = [rect([width, height], { fill: '#111' })]
-
-        for (let i = -STR_ON_SCREEN; i <= 0; i++) {
-            if (currSentence + i >= 0) {
-                const str = PRE + SENTENCES[currSentence + i]
-                const letters = getParagraphVector(
-                    str,
-                    26,
-                    10,
-                    SIZE[0] - MARGIN * 4,
-                    [1, 0.8]
-                )
-
-                drawElems.push(
-                    translate(
-                        rotate(
-                            translate(
-                                group(
-                                    {
-                                        lineCap: 'round',
-                                        weight: 2,
-                                        stroke: 'white'
-                                    },
-                                    [
-                                        polyline(
-                                            [
-                                                [0, -16],
-                                                [120, -16]
-                                            ],
-                                            { weight: 4 }
-                                        ),
-                                        ...letters.vectors.reduce(
-                                            (polys, group) => [
-                                                ...polys,
-                                                ...group.map((line) =>
-                                                    polyline(line)
-                                                )
-                                            ],
-                                            []
-                                        )
-                                    ]
-                                ),
-                                [MARGIN * (i === 0 ? 2 : 0.3), 0]
+        drawElems = [
+            rect([width, height], { fill: '#111' }),
+            ...read.map((strPoly, i) => 
+                translate(
+                    rotate(
+                        translate(
+                            group(
+                                {
+                                    lineCap: 'round',
+                                    weight: 2,
+                                    stroke: 'white'
+                                },
+                                [
+                                    polyline(
+                                        [
+                                            [0, -16],
+                                            [120, -16]
+                                        ],
+                                        { weight: 4 }
+                                    ),
+                                    ...strPoly
+                                ]
                             ),
-                            (-i / 4) * Math.PI +
-                                (i === 0 ? 0 : (t * Math.PI) / 4)
+                            [MARGIN * (i === 0 ? 2 : 0.3), 0]
                         ),
-                        [MARGIN * 2, MARGIN * (i === 0 ? 0.6 : 1.8)]
-                    )
+                        (i / 4) * Math.PI + (i === 0 ? 0 : (t * Math.PI) / 4)
+                    ),
+                    [MARGIN * 2, MARGIN * (i === 0 ? 0.6 : 1.8)]
                 )
-            }
-        }
+            )
+        ]
     }
     draw(CTX, group({}, drawElems))
 }
