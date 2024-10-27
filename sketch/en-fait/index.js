@@ -214,7 +214,7 @@ const transform = (elem, i, t) =>
                     i === 0 ? 1 : 0.8
                 ),
                 // translaton to offset the rotation
-                [i === 0 ? 0 : 60, 16]
+                [i === 0 ? 0 : 60, 36]
             ),
             // rotation
             (i / 4) * Math.PI + (i === 0 ? 0 : (t * Math.PI) / 4)
@@ -255,8 +255,8 @@ const update = () => {
             cycle.map((p) => {
                 const n = nDisplace(...p.pos, 8)
                 p.pos = [
-                    p.pos[0] + Math.cos(n) * p.acc * -0.1,
-                    p.pos[1] + Math.sin(n) * p.acc * -0.1
+                    p.pos[0] + Math.cos(n) * (3.3 - p.acc) * -0.2,
+                    p.pos[1] + Math.sin(n) * (3.3 - p.acc) * -0.2
                 ]
                 p.age++
                 return p
@@ -300,7 +300,7 @@ const update = () => {
             ...particles.map((cycle, i) =>
                 transform(
                     cycle.map((p) =>
-                        circle(p.pos, p.acc, {
+                        circle(p.pos, 0.1+p.acc, {
                             stroke: `${p.color}${norm2Hex(1 - p.age / p.dur)}`,
                             fill: `${p.color}${norm2Hex(1 - p.age / p.dur)}`
                         })
