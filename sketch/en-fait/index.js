@@ -30,12 +30,13 @@ const ROOT = document.getElementById('windowFrame'),
     SIZE = [1920, 1080],
     MARGIN = 300,
     PRE = 'En fait ',
-    LETTER_TIME = 100,
-    TRANSITION = 10000,
+    LETTER_TIME = 12,
+    TRANSITION = 100,
     COLORS = ['#FFFF33', '#33FFFF', '#FF33FF'],
     IS_RECORDING = true
 
 let currSentence = 0,
+    frameCount = 0,
     back = [],
     width,
     height,
@@ -122,6 +123,7 @@ const init = () => {
     noise = createNoise2D()
     storeCurrStr()
     IS_RECORDING && startRecording()
+    frameCount = 0
     update()
 }
 
@@ -224,13 +226,14 @@ const transform = (elem, i, t) =>
 const update = () => {
     frameReqest = requestAnimationFrame(update)
     const readTime = SENTENCES[currSentence].length * LETTER_TIME
-    if (performance.now() - prevDrawTime >= readTime + TRANSITION) {
+    if (frameCount >= readTime + TRANSITION) {
         if (read.length === 7) read.splice(6, 1)
         //if (particles.length === 7) particles.splice(6, 1)
         if (currSentence === SENTENCES.length - 1) {
             stopRecording()
             cancelAnimationFrame(frameReqest)
         } else {
+            frameCount = 0;
             currSentence++
         }
         // create new text vectors
@@ -240,9 +243,9 @@ const update = () => {
 
     // compute transition index
     let t = 0
-    if (performance.now() - prevDrawTime >= readTime) {
+    if (frameCount >= readTime) {
         t = remap(
-            performance.now() - (prevDrawTime + readTime),
+            frameCount - readTime,
             0,
             TRANSITION,
             0,
@@ -329,6 +332,7 @@ const update = () => {
         )
     ]
     draw(CTX, group({ stroke: '#444', weight: 2 }, drawElems))
+    frameCount++ 
 }
 
 const startRecording = () => {
