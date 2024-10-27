@@ -30,9 +30,10 @@ const ROOT = document.getElementById('windowFrame'),
     SIZE = [1920, 1080],
     MARGIN = 300,
     PRE = 'En fait ',
-    LETTER_TIME = 20, //60,
-    TRANSITION = 8000,
-    COLORS = ['#FFFF33', '#33FFFF', '#FF33FF']
+    LETTER_TIME = 100,
+    TRANSITION = 10000,
+    COLORS = ['#FFFF33', '#33FFFF', '#FF33FF'],
+    IS_RECORDING = true
 
 let currSentence = 0,
     back = [],
@@ -44,7 +45,8 @@ let currSentence = 0,
     prevDrawTime = performance.now(),
     particles = [],
     noise,
-    cubes = []
+    cubes = [],
+    recorder
 
 ROOT.appendChild(CANVAS)
 
@@ -119,6 +121,7 @@ const init = () => {
     }
     noise = createNoise2D()
     storeCurrStr()
+    IS_RECORDING && startRecording()
     update()
 }
 
@@ -178,7 +181,7 @@ const createParticle = (polyGroup) => {
                                 (p) => new Particle(p, poly.attribs.stroke)
                             )
                         ],
-                        Math.ceil(Math.random() * 13)
+                        Math.ceil(Math.random() * 17)
                     ).reduce((acc, val) => [...acc, ...val], [])
                 ],
                 []
@@ -189,13 +192,8 @@ const createParticle = (polyGroup) => {
 }
 
 const nDisplace = (x, y, scale) => {
-    const lc = Math.atan2( 
-      (SIZE[1] * 0.5) - y, 
-      (SIZE[0] * 0.33) - x)
-    return noise(
-        Math.cos(lc) * scale,
-        Math.sin(lc) * scale
-    )
+    const lc = Math.atan2(SIZE[1] * 0.5 - y, SIZE[0] * 0.33 - x)
+    return noise(Math.cos(lc) * scale, Math.sin(lc) * scale)
 }
 // a function to transform text and rotation based on their index
 const transform = (elem, i, t) =>
@@ -224,115 +222,130 @@ const transform = (elem, i, t) =>
     )
 
 const update = () => {
-    if (currSentence < SENTENCES.length - 1) {
-        frameReqest = requestAnimationFrame(update)
-        const readTime = SENTENCES[currSentence].length * LETTER_TIME
-        if (performance.now() - prevDrawTime >= readTime + TRANSITION) {
-            if (read.length === 7) read.splice(6, 1)
-            if (particles.length === 7) particles.splice(6, 1)
+    frameReqest = requestAnimationFrame(update)
+    const readTime = SENTENCES[currSentence].length * LETTER_TIME
+    if (performance.now() - prevDrawTime >= readTime + TRANSITION) {
+        if (read.length === 7) read.splice(6, 1)
+        //if (particles.length === 7) particles.splice(6, 1)
+        if (currSentence === SENTENCES.length - 1) {
+            stopRecording()
+            cancelAnimationFrame(frameReqest)
+        } else {
             currSentence++
-            // create new text vectors
-            storeCurrStr()
-            prevDrawTime = performance.now()
         }
-
-        // compute transition index
-        let t = 0
-        if (performance.now() - prevDrawTime >= readTime) {
-            t = remap(
-                performance.now() - (prevDrawTime + readTime),
-                0,
-                TRANSITION,
-                0,
-                1
-            )
-        }
-
-        particles = particles.map((group) => group.filter((p) => p.age < p.dur))
-
-        // update particles
-        particles = particles.map((cycle) =>
-            cycle.map((p) => {
-                const n = nDisplace(...p.pos, 8)
-                p.pos = [
-                    p.pos[0] + Math.cos(n) * (3.3 - p.acc) * -0.2,
-                    p.pos[1] + Math.sin(n) * (3.3 - p.acc) * -0.2
-                ]
-                p.age++
-                return p
-            })
-        )
-
-        // noise read text
-        if (read.length > 0) {
-            read = read.map((letter, i) => {
-                if (i === 0) return letter
-                return letter.map((poly) =>
-                    polyline(
-                        poly.points.map((pt) => {
-                            const n = nDisplace(...pt, 24)
-                            return [
-                                pt[0] + Math.cos(n) * -0.2,
-                                pt[1] + Math.sin(n) * -0.2
-                            ]
-                        }),
-                        poly.attribs
-                    )
-                )
-            })
-        }
-        drawElems = [
-            ...back,
-            ...cubes,
-            ...read.map((letter, i) =>
-                transform(
-                    i === 6
-                        ? letter.map((poly) =>
-                              polyline(poly.points, {
-                                  stroke: `${poly.attribs.stroke}${norm2Hex(1 - t)}`
-                              })
-                          )
-                        : letter,
-                    i,
-                    ease(t, 15)
-                )
-            ),
-            ...particles.map((cycle, i) =>
-                transform(
-                    cycle.map((p) =>
-                        circle(p.pos, p.acc, {
-                            stroke: `${p.color}${norm2Hex(1 - p.age / p.dur)}`,
-                            fill: `${p.color}${norm2Hex(1 - p.age / p.dur)}`
-                        })
-                    ),
-                    i + 1,
-                    t
-                )
-            ),
-            polygon(
-                [
-                    ...repeatedly(
-                        (x) => [
-                            width * 0.65 + x,
-                            height * 0.87 -
-                                nDisplace(
-                                    x,
-                                    1,
-                                    performance.now() * 0.0001,
-                                    0.07
-                                ) *
-                                    25
-                        ],
-                        width * 0.25
-                    ),
-                    [width * 0.9, height * 0.9],
-                    [width * 0.65, height * 0.9]
-                ],
-                { fill: '#444', stroke: '#333' }
-            )
-        ]
-        draw(CTX, group({ stroke: '#444', weight: 2 }, drawElems))
+        // create new text vectors
+        storeCurrStr()
+        prevDrawTime = performance.now()
     }
+
+    // compute transition index
+    let t = 0
+    if (performance.now() - prevDrawTime >= readTime) {
+        t = remap(
+            performance.now() - (prevDrawTime + readTime),
+            0,
+            TRANSITION,
+            0,
+            1
+        )
+    }
+
+    particles = particles.map((group) => group.filter((p) => p.age < p.dur))
+
+    // update particles
+    particles = particles.map((cycle) =>
+        cycle.map((p) => {
+            const n = nDisplace(...p.pos, 8)
+            p.pos = [
+                p.pos[0] + Math.cos(n) * (3.3 - p.acc) * -0.4,
+                p.pos[1] + Math.sin(n) * (3.3 - p.acc) * -0.4
+            ]
+            p.age++
+            return p
+        })
+    )
+
+    // noise read text
+    if (read.length > 0) {
+        read = read.map((letter, i) => {
+            if (i === 0) return letter
+            return letter.map((poly) =>
+                polyline(
+                    poly.points.map((pt) => {
+                        const n = nDisplace(...pt, 24)
+                        return [
+                            pt[0] + Math.cos(n) * -0.2,
+                            pt[1] + Math.sin(n) * -0.2
+                        ]
+                    }),
+                    poly.attribs
+                )
+            )
+        })
+    }
+    drawElems = [
+        ...back,
+        ...cubes,
+        ...read.map((letter, i) =>
+            transform(
+                i === 6
+                    ? letter.map((poly) =>
+                          polyline(poly.points, {
+                              stroke: `${poly.attribs.stroke}${norm2Hex(1 - t)}`
+                          })
+                      )
+                    : letter,
+                i,
+                ease(t, 15)
+            )
+        ),
+        ...particles.map((cycle, i) =>
+            transform(
+                cycle.map((p) =>
+                    circle(p.pos, p.acc * 0.5, {
+                        stroke: `${p.color}${norm2Hex(1 - p.age / p.dur)}`,
+                        fill: `${p.color}${norm2Hex(1 - p.age / p.dur)}`
+                    })
+                ),
+                i + 1,
+                t
+            )
+        ),
+        polygon(
+            [
+                ...repeatedly(
+                    (x) => [
+                        width * 0.65 + x,
+                        height * 0.87 -
+                            nDisplace(x, 1, performance.now() * 0.0001, 0.07) *
+                                25
+                    ],
+                    width * 0.25
+                ),
+                [width * 0.9, height * 0.9],
+                [width * 0.65, height * 0.9]
+            ],
+            { fill: '#444', stroke: '#333' }
+        )
+    ]
+    draw(CTX, group({ stroke: '#444', weight: 2 }, drawElems))
+}
+
+const startRecording = () => {
+    if (!IS_RECORDING) return
+    recorder = canvasRecorder(CANVAS, 'en-fait', {
+        mimeType: 'video/webm;codecs=vp9',
+        fps: 30
+    })
+    recorder.start()
+    console.log('%c Record started ', 'background: tomato; color: white')
+}
+
+// function to stop canvas recording (if active)
+const stopRecording = () => {
+    if (!IS_RECORDING) return
+    recorder.stop()
+    console.log('%c Record stopped ', 'background: limegreen; color: black')
 }
 
 window.init = init
