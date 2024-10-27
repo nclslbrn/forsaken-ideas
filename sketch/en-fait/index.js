@@ -1,33 +1,28 @@
+import '../framed-canvas.css'
 import {
+    arc,
     rect,
     polyline,
+    polygon,
     circle,
     line,
     group,
     translate,
     rotate,
-    scale,
-    svgDoc
+    scale
 } from '@thi.ng/geom'
-import { pickRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import {
-    downloadCanvas,
-    downloadWithMime,
-    canvasRecorder
-} from '@thi.ng/dl-asset'
-import { getParagraphVector } from '@nclslbrn/plot-writer'
+import { downloadCanvas, canvasRecorder } from '@thi.ng/dl-asset'
+import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { createNoise2D } from 'simplex-noise'
+import { repeatedly } from '@thi.ng/transducers'
 import remap from '../../sketch-common/remap'
 import ease from '../../sketch-common/ease'
 import SENTENCES from './johnfluo-text'
 import Particle from './Particle'
-import { repeatedly } from '@thi.ng/transducers'
-import { dist } from '@thi.ng/vectors'
 
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -35,27 +30,90 @@ const ROOT = document.getElementById('windowFrame'),
     SIZE = [1920, 1080],
     MARGIN = 300,
     PRE = 'En fait ',
-    LETTER_TIME = 10, //50,
-    TRANSITION = 3000
+    LETTER_TIME = 20, //60,
+    TRANSITION = 8000,
+    COLORS = ['#FFFF33', '#33FFFF', '#FF33FF']
 
 let currSentence = 0,
+    back = [],
     width,
     height,
     drawElems,
     frameReqest,
     read = [],
-    textHeights = [],
     prevDrawTime = performance.now(),
     particles = [],
-    noise
+    noise,
+    cubes = []
 
 ROOT.appendChild(CANVAS)
+
+const norm2Hex = (x) =>
+    `0${Math.round(255 * x).toString(16)}`.slice(-2).toUpperCase()
 
 const init = () => {
     width = SIZE[0]
     height = SIZE[1]
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
+    const wheelPos = [width * 0.33, height * 0.5]
+    back = [
+        rect([width, height], { fill: '#010101' }),
+        circle(wheelPos, height * 0.4),
+        ...[...'RÉSISTANCE'].reduce(
+            (lines, c, i) => [
+                ...lines,
+                ...getGlyphVector(
+                    c,
+                    [24, 48],
+                    [width * 0.25 + i * 32, 48]
+                ).reduce((glyph, line) => [...glyph, polyline(line)], [])
+            ],
+            []
+        ),
+        ...[...'RÉSILIENCE'].reduce(
+            (lines, c, i) => [
+                ...lines,
+                ...getGlyphVector(
+                    c,
+                    [24, 48],
+                    [width * 0.25 + i * 32, height - 96]
+                ).reduce((glyph, line) => [...glyph, polyline(line)], [])
+            ],
+            []
+        ),
+        ...[...'ENTROPIE'].reduce(
+            (lines, c, i) => [
+                ...lines,
+                ...getGlyphVector(
+                    c,
+                    [24, 48],
+                    [width * 0.71 + i * 32, height - 96]
+                ).reduce((glyph, line) => [...glyph, polyline(line)], [])
+            ],
+            []
+        ),
+        ...repeatedly(
+            (l) =>
+                line(
+                    [
+                        wheelPos[0] + Math.cos(l * 0.06) * height * 0.4,
+                        wheelPos[1] + Math.sin(l * 0.06) * height * 0.4
+                    ],
+                    [
+                        wheelPos[0] +
+                            Math.cos(l * 0.06) *
+                                height *
+                                (l % 5 === 0 ? 0.35 : 0.38),
+                        wheelPos[1] +
+                            Math.sin(l * 0.06) *
+                                height *
+                                (l % 5 === 0 ? 0.35 : 0.38)
+                    ]
+                ),
+            Math.PI / 0.03
+        )
+    ]
     if (drawElems) {
         cancelAnimationFrame(frameReqest)
     }
@@ -63,62 +121,107 @@ const init = () => {
     storeCurrStr()
     update()
 }
-const randPointInPoly = (poly, t) => {
-    const toSegment = t * (poly.points.length - 1)
-    //return poly.points[Math.floor(toSegment)]
-
-    const from = Math.floor(toSegment)
-    const selected = [poly.points[from], poly.points[from + 1]]
-    const angle = Math.atan2(
-        selected[1][1] - selected[0][1],
-        selected[1][0] - selected[0][0]
-    )
-    const len = dist(selected[0], selected[1])
-    const at = toSegment % 1
-    return [
-        poly.points[from][0] * Math.cos(angle) * len * at,
-        poly.points[from][1] * Math.sin(angle) * len * at
-    ]
-}
 
 const storeCurrStr = () => {
     const str = PRE + SENTENCES[currSentence]
     const letters = getParagraphVector(
         str,
-        26,
+        20,
         10,
         SIZE[0] - MARGIN * 4.5,
-        [1, 0.8]
+        [1.2, 0.7]
     )
-    textHeights = [letters.height, ...textHeights]
     const newPoly = letters.vectors.reduce(
-        (polys, group) => [...polys, ...group.map((line) => polyline(line))],
+        (polys, polyGroup, i) => [
+            ...polys,
+            ...polyGroup.map((line) =>
+                polyline(line, {
+                    stroke:
+                        i < 7 ? COLORS[currSentence % COLORS.length] : '#ffffff'
+                })
+            )
+        ],
         []
     )
-
+    // text
     read = [newPoly, ...read]
-    createParticle(newPoly)
+    // particles
+    if (read[1]) createParticle(read[1])
+    // hid
+    cubes = [
+        ...repeatedly((y) => {
+            const val = Math.random() * 9
+            return [
+                ...repeatedly((x) => {
+                    const attribs =
+                        val <= x ? { fill: '#010101' } : { fill: '#1c1c1c' }
+                    return rect(
+                        [width * 0.66 + x * 54, 100 + y * 54],
+                        34,
+                        attribs
+                    )
+                }, 9)
+            ]
+        }, 5).reduce((arr, curr) => [...arr, ...curr], [])
+    ]
 }
 
-const createParticle = (section) => {
+const createParticle = (polyGroup) => {
     particles = [
-        ...section.map((poly) => {
-            const num = Math.ceil(100 + Math.random(200 * poly.points.length))
-            return [
-                ...repeatedly(
-                    () => new Particle(randPointInPoly(poly, Math.random())),
-                    num
-                )
-            ]
-        }),
+        [
+            ...polyGroup.reduce(
+                (parts, poly) => [
+                    ...parts,
+                    ...repeatedly(
+                        () => [
+                            ...poly.points.map(
+                                (p) => new Particle(p, poly.attribs.stroke)
+                            )
+                        ],
+                        Math.ceil(Math.random() * 13)
+                    ).reduce((acc, val) => [...acc, ...val], [])
+                ],
+                []
+            )
+        ],
         ...particles
-    ].reverse()
+    ]
 }
 
 const nDisplace = (x, y, scale) => {
-    const lc = Math.atan2(SIZE[1] / 2 - y, SIZE[0] / 2 - x)
-    return noise(Math.cos(lc) * 800 * scale, Math.sin(lc) * 2400 * scale) * 15
+    const lc = Math.atan2( 
+      (SIZE[1] * 0.5) - y, 
+      (SIZE[0] * 0.33) - x)
+    return noise(
+        Math.cos(lc) * scale,
+        Math.sin(lc) * scale
+    )
 }
+// a function to transform text and rotation based on their index
+const transform = (elem, i, t) =>
+    translate(
+        rotate(
+            translate(
+                scale(
+                    group(
+                        {
+                            lineCap: 'round',
+                            weight: 2
+                        },
+                        elem
+                    ),
+                    // scaling
+                    i === 0 ? 1 : 0.8
+                ),
+                // translaton to offset the rotation
+                [i === 0 ? 0 : 60, 16]
+            ),
+            // rotation
+            (i / 4) * Math.PI + (i === 0 ? 0 : (t * Math.PI) / 4)
+        ),
+        // translation
+        [width * (i === 0 ? 0.66 : 0.33), height * (i === 0 ? 0.33 : 0.5)]
+    )
 
 const update = () => {
     if (currSentence < SENTENCES.length - 1) {
@@ -126,7 +229,7 @@ const update = () => {
         const readTime = SENTENCES[currSentence].length * LETTER_TIME
         if (performance.now() - prevDrawTime >= readTime + TRANSITION) {
             if (read.length === 7) read.splice(6, 1)
-            if (particles.length === 7) particles.splice(0, 1)
+            if (particles.length === 7) particles.splice(6, 1)
             currSentence++
             // create new text vectors
             storeCurrStr()
@@ -136,26 +239,24 @@ const update = () => {
         // compute transition index
         let t = 0
         if (performance.now() - prevDrawTime >= readTime) {
-            t = ease(
-                remap(
-                    performance.now() - (prevDrawTime + readTime),
-                    0,
-                    TRANSITION,
-                    0,
-                    1
-                ),
-                15
+            t = remap(
+                performance.now() - (prevDrawTime + readTime),
+                0,
+                TRANSITION,
+                0,
+                1
             )
         }
 
         particles = particles.map((group) => group.filter((p) => p.age < p.dur))
+
         // update particles
-        particles = particles.map((group) =>
-            group.map((p) => {
-                const n = nDisplace(...p.pos, 0.07)
+        particles = particles.map((cycle) =>
+            cycle.map((p) => {
+                const n = nDisplace(...p.pos, 8)
                 p.pos = [
-                    p.pos[0] + Math.cos(n) * p.acc,
-                    p.pos[1] + Math.sin(n) * p.acc
+                    p.pos[0] + Math.cos(n) * p.acc * -0.1,
+                    p.pos[1] + Math.sin(n) * p.acc * -0.1
                 ]
                 p.age++
                 return p
@@ -164,105 +265,78 @@ const update = () => {
 
         // noise read text
         if (read.length > 0) {
-            read = read.map((group, i) => {
-                if (i === 0) return group
-                return group.map((poly) =>
+            read = read.map((letter, i) => {
+                if (i === 0) return letter
+                return letter.map((poly) =>
                     polyline(
                         poly.points.map((pt) => {
-                            const n = nDisplace(...pt, 1)
+                            const n = nDisplace(...pt, 24)
                             return [
-                                pt[0] + Math.cos(n) * 0.5,
-                                pt[1] + Math.sin(n) * 0.5
+                                pt[0] + Math.cos(n) * -0.2,
+                                pt[1] + Math.sin(n) * -0.2
                             ]
-                        })
+                        }),
+                        poly.attribs
                     )
                 )
             })
         }
-
         drawElems = [
-            rect([width, height], { fill: '#111' }),
-            line([0, height / 2], [width, height / 2]),
-            line([width * 0.33, 0], [width * 0.33, height]),
-            line([width * 0.66, 0], [width * 0.66, height]),
-
-            ...read.map((strPoly, i) =>
-                translate(
-                    rotate(
-                        translate(
-                            scale(
-                                group(
-                                    {
-                                        lineCap: 'round',
-                                        weight: 2,
-                                        stroke:
-                                            i === 6
-                                                ? `rgba(255,255,255, ${1 - t})`
-                                                : 'white'
-                                    },
-                                    [
-                                        polyline(
-                                            [
-                                                [0, -16],
-                                                [120, -16]
-                                            ],
-                                            { stroke: '#ffffff33' }
-                                        ),
-                                        ...strPoly
-                                    ]
-                                ),
-                                i === 0 ? 1 : 0.85
-                            ),
-                            // rotation offset
-                            [i === 0 ? 0 : 60, 16]
-                        ),
-                        (i / 4) * Math.PI + (i === 0 ? 0 : (t * Math.PI) / 4)
-                    ),
-                    [
-                        width * (i === 0 ? 0.66 : 0.33),
-                        height / 2 - textHeights[i] / 2 + 64
-                    ]
+            ...back,
+            ...cubes,
+            ...read.map((letter, i) =>
+                transform(
+                    i === 6
+                        ? letter.map((poly) =>
+                              polyline(poly.points, {
+                                  stroke: `${poly.attribs.stroke}${norm2Hex(1 - t)}`
+                              })
+                          )
+                        : letter,
+                    i,
+                    ease(t, 15)
                 )
             ),
-            ...particles.map((partGroup, i) =>
-                translate(
-                    rotate(
-                        translate(
-                            scale(
-                                group(
-                                    {
-                                        fill:
-                                            i === 6
-                                                ? `rgba(255,255,255, ${1 - t})`
-                                                : 'white'
-                                    },
-
-                                    i > 0
-                                        ? partGroup.map((p) =>
-                                              circle(p.pos, (1 - p.acc) * 1.5)
-                                          )
-                                        : []
-                                ),
-                                i === 0 ? 1 : 0.85
-                            ),
-                            // rotation offset
-                            [i === 0 ? 0 : 60, 16]
-                        ),
-                        (i / 4) * Math.PI + (i === 0 ? 0 : (t * Math.PI) / 4)
+            ...particles.map((cycle, i) =>
+                transform(
+                    cycle.map((p) =>
+                        circle(p.pos, p.acc, {
+                            stroke: `${p.color}${norm2Hex(1 - p.age / p.dur)}`,
+                            fill: `${p.color}${norm2Hex(1 - p.age / p.dur)}`
+                        })
                     ),
-                    [
-                        width * (i === 0 ? 0.66 : 0.33),
-                        height / 2 - textHeights[i] / 2 + 64
-                    ]
+                    i + 1,
+                    t
                 )
+            ),
+            polygon(
+                [
+                    ...repeatedly(
+                        (x) => [
+                            width * 0.65 + x,
+                            height * 0.87 -
+                                nDisplace(
+                                    x,
+                                    1,
+                                    performance.now() * 0.0001,
+                                    0.07
+                                ) *
+                                    25
+                        ],
+                        width * 0.25
+                    ),
+                    [width * 0.9, height * 0.9],
+                    [width * 0.65, height * 0.9]
+                ],
+                { fill: '#444', stroke: '#333' }
             )
         ]
+        draw(CTX, group({ stroke: '#444', weight: 2 }, drawElems))
     }
-    draw(CTX, group({}, drawElems))
 }
 
-init()
 window.init = init
+init()
 
 window['download'] = () => {
     downloadCanvas(CANVAS, `En fait-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)

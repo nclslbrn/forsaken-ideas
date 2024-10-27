@@ -1,9 +1,10 @@
 export default class Particle {
-  constructor(pos) {
+  constructor(pos, col) {
     this.pos = pos
-    this.acc = Math.random()
-    this.dur = Math.ceil(300  + Math.random() * 1000)
-    this.age = 0
+    this.acc = 0.3 + Math.random() * 3
+    this.dur = Math.ceil(50  + Math.random() * 2000)
+    this.age = 0,
+    this.color = col
   }
 }
 

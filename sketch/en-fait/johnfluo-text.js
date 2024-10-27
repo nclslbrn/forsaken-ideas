@@ -22,7 +22,7 @@ export default [
     'il pouvait tout à fait reprendre sa carrière après ça',
     'les frappes étaient réalisées avec un marteau piqueur chirurgical',
     'il y avait pas tant de missiles cachés dans les salons à côté des télévisions',
-    'il y a peut-être eu quelques victimes collatérales mais en fait  ça a été un massacre mais en fait c’était ça depuis le début ???',
+    'il y a peut-être eu quelques victimes collatérales mais en fait ça a été un massacre mais en fait c’était ça depuis le début ???',
     'la démocratie est une marque déposée qu’il faut payer pour utiliser',
     'les actionnaires s’en branlent du bien commun',
     'les dauphins sont des violeurs',
