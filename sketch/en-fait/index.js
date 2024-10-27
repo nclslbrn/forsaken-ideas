@@ -300,7 +300,7 @@ const update = () => {
             ...particles.map((cycle, i) =>
                 transform(
                     cycle.map((p) =>
-                        circle(p.pos, 0.1+p.acc, {
+                        circle(p.pos, p.acc, {
                             stroke: `${p.color}${norm2Hex(1 - p.age / p.dur)}`,
                             fill: `${p.color}${norm2Hex(1 - p.age / p.dur)}`
                         })
