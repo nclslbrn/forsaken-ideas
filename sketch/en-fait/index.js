@@ -1,6 +1,5 @@
 import '../framed-canvas.css'
 import {
-    arc,
     rect,
     polyline,
     polygon,
@@ -33,7 +32,7 @@ const ROOT = document.getElementById('windowFrame'),
     LETTER_TIME = 12,
     TRANSITION = 100,
     COLORS = ['#FFFF33', '#33FFFF', '#FF33FF'],
-    IS_RECORDING = true
+    IS_RECORDING = false
 
 let currSentence = 0,
     frameCount = 0,
@@ -43,7 +42,6 @@ let currSentence = 0,
     drawElems,
     frameReqest,
     read = [],
-    prevDrawTime = performance.now(),
     particles = [],
     noise,
     cubes = [],
@@ -238,7 +236,6 @@ const update = () => {
         }
         // create new text vectors
         storeCurrStr()
-        prevDrawTime = performance.now()
     }
 
     // compute transition index
