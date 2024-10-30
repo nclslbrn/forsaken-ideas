@@ -1,1 +1,12 @@
-{"topic":"Strange Attractor","libs":[],"actions":[{"name":"init","icon":"sync"},{"name":"capture","icon":"file-media"},{"name":"download","icon":"desktop-download"}],"info":"todo","date":"2024-10-06"}
+{
+    "topic": "Strange Attractor",
+    "libs": [],
+    "actions": [
+        { "name": "init", "icon": "sync" },
+        { "name": "exportJPG", "icon": "file-media" },
+        { "name": "exportSVG", "icon": "desktop-download" }
+    ],
+    "info": "todo",
+    "date": "2024-10-06"
+}
+
