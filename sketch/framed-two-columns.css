@@ -1,5 +1,5 @@
 body.project #windowFrame {
-  grid-template-columns: 0 80% 0;
+  grid-template-columns: 0 75%  25% 0 !important;
   grid-template-rows: 40px 64% 10% 80px;
 }
 

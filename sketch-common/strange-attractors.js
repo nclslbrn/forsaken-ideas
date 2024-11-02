@@ -3,15 +3,14 @@
  *
  * you need to setup an attractors object in the JS file which include this one
  * window.attractors = { a: 0.1, b: 1.2, c -1.2, d: -1.8 }
- * @param {obect} v 2D coordinates object with x & y (z will be ignored)
+ * @param {object} v 2D coordinates object with x & y (z will be ignored)
  * @param {float} amount the intensity of the displacement
  * @return {object} a 2D coordinates object object with x & y
  */
 
 export default function () {
-    const setConstants = (attractor, rand) => {
+    const init = (attractor, rand) => {
         let a, b, c, d
-
         switch (attractor) {
             case 'redhead':
                 a = rand() * 2 - 1
@@ -111,8 +110,7 @@ export default function () {
     }
 
     return {
-        init: (attractor, rand = Math.random) =>
-            setConstants(attractor, rand),
+        init,
         attractors: {
             redhead,
             de_jong,
