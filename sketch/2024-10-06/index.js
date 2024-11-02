@@ -1,8 +1,20 @@
+import '../framed-canvas.css'
+import '../framed-two-columns.css'
+import './assets/style.css'
+import {
+    getRandSeed,
+    saveSeed,
+    getSavedSeed,
+    cleanSavedSeed
+} from '../../sketch-common/random-seed'
+import { $compile } from '@thi.ng/rdom'
+import { ul, li, para, div} from '@thi.ng/hiccup-html'
+import Notification from '../../sketch-common/Notification'
 import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { pickRandomUnique, pickRandomKey } from '@thi.ng/random'
+import { pickRandomUnique, pickRandomKey, Smush32 } from '@thi.ng/random'
+import alea from 'alea'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -18,30 +30,56 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    ATTRACT_ENGINE = strangeAttractor()
+    ATTRACT_ENGINE = strangeAttractor(),
+    ITER_LIST = document.createElement('div')
 
-let width, height, drawElems, attractor, prtcls, trails, noise
+let seed, rnd, width, height, drawElems, attractor, prtcls, trails, noise
 
-ROOT.appendChild(CANVAS)
-const randColor = (num) =>
-    pickRandomUnique(num, [
-        'tomato',
-        'steelblue',
-        'limegreen',
-        'indigo',
-        'gold',
-        'white',
-        'black'
-    ])
+const iterMenu = () => {
+    ITER_LIST.innerHTML = ''
+    const saved = getSavedSeed()
+    $compile(
+        div(
+            {},
+            para(null, 'Saved iteration'),
+            ul(
+                null,
+                saved.length ? 'Click on hash to render edition' : '',
+                ...saved.map((iter, i) =>
+                    li(
+                        `.seeds`,
+                        { onclick: () => init(iter[1]) },
+                        null,
+                        iter[1]
+                    )
+                )
+            ),
+            para(null, `Press key:`),
+            ul(
+                null,
+                ...[
+                    `[r] to render a new random edition`,
+                    `[s] to save the current seed`,
+                    `[c] to clean stored seeds`
+                ].map((txt) => li(null, null, null, txt))
+            )
+        )
+    ).mount(ITER_LIST)
+    //  }
+    // { listStyleType: 'none' }
+}
 
-const init = () => {
+const init = (newSeed) => {
+    seed = newSeed
+    console.log(seed)
     width = SIZE[0] - MARGIN * 2
     height = SIZE[1] - MARGIN * 2
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    noise = createNoise2D()
+    rnd = new Smush32(seed)
+    noise = createNoise2D(alea(seed))
     // create generative things here
-    attractor = pickRandomKey(ATTRACT_ENGINE.attractors)
+    attractor = pickRandomKey(ATTRACT_ENGINE.attractors, rnd.flaot)
     ATTRACT_ENGINE.init(attractor)
 
     prtcls = [...repeatedly2d((x, y) => [(x - 15) / 30, (y - 15) / 30], 30, 30)]
@@ -65,7 +103,22 @@ const init = () => {
         // ATTRACT_ENGINE.init(attractor)
     }
 
-    const colors = randColor(3)
+    const colors = pickRandomUnique(
+        3,
+        [
+            'tomato',
+            'steelblue',
+            'limegreen',
+            'indigo',
+            'gold',
+            'white',
+            'black'
+        ],
+        [],
+        1000,
+        rnd
+    )
+
     const cropPoly = [
         [MARGIN, MARGIN],
         [width - MARGIN, MARGIN],
@@ -96,7 +149,7 @@ const init = () => {
     draw(CTX, group({}, drawElems))
 }
 
-window.init = init
+window.init = () => init(getRandSeed())
 
 window.exportJPG = () =>
     downloadCanvas(CANVAS, `2024 10 60-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
@@ -116,6 +169,44 @@ window.exportSVG = () =>
         )
     )
 
+window.onkeydown = (e) => {
+    switch (e.key.toLowerCase()) {
+        case 'r':
+            init(getRandSeed())
+            break
+        // save the seed
+        case 's':
+            saveSeed(seed)
+            iterMenu()
+            break
+        // open the hash menu
+        case 'g':
+            iterMenu()
+            break
+
+        case 'c':
+            cleanSavedSeed()
+            iterMenu()
+            break
+
+        default:
+            new Notification(
+                `No action assigned to key [${e.key}]. Press key: <br>` +
+                    `- [s] to save the current seed <br>` +
+                    `- [c] to clean stored seeds <br>`,
+                ROOT
+            )
+    }
+}
+
+
+
 window.infobox = infobox
-init()
+init(getRandSeed())
+iterMenu()
+
+ROOT.removeChild(document.getElementById('loading'))
+ROOT.appendChild(CANVAS)
+ROOT.appendChild(ITER_LIST)
+
 handleAction()

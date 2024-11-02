@@ -9,39 +9,39 @@
  */
 
 export default function () {
-    const setConstants = (attractor) => {
+    const setConstants = (attractor, rand) => {
         let a, b, c, d
 
         switch (attractor) {
             case 'redhead':
-                a = Math.random() * 2 - 1
-                b = Math.random() * 2 - 1
+                a = rand() * 2 - 1
+                b = rand() * 2 - 1
                 break
 
             case 'clifford':
-                a = Math.random() * 6 - 3
-                b = Math.random() * 6 - 3
-                c = Math.random() * 6 - 3
-                d = Math.random() * 6 - 3
+                a = rand() * 6 - 3
+                b = rand() * 6 - 3
+                c = rand() * 6 - 3
+                d = rand() * 6 - 3
                 break
 
             case 'de_jong':
-                a = Math.random() * 2 - 1
-                b = Math.random() * 2 - 1
-                c = Math.random() * 2 - 1
-                d = Math.random() * 2 - 1
+                a = rand() * 2 - 1
+                b = rand() * 2 - 1
+                c = rand() * 2 - 1
+                d = rand() * 2 - 1
                 break
 
             case 'gumowski_mira':
-                a = Math.random() * 2 - 1
-                b = Math.random() * 2 - 1
+                a = rand() * 2 - 1
+                b = rand() * 2 - 1
                 break
 
             case 'fractal_dream':
-                a = Math.random() * 8 - 5
-                b = Math.random() * 8 - 5
-                c = Math.random() * 2 - 0.5
-                d = Math.random() * 2 - 0.5
+                a = rand() * 8 - 5
+                b = rand() * 8 - 5
+                c = rand() * 2 - 0.5
+                d = rand() * 2 - 0.5
                 break
         }
         window.attractors = { a, b, c, d }
@@ -111,7 +111,8 @@ export default function () {
     }
 
     return {
-        init: (attractor) => setConstants(attractor),
+        init: (attractor, rand = Math.random) =>
+            setConstants(attractor, rand),
         attractors: {
             redhead,
             de_jong,
