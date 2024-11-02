@@ -65,7 +65,7 @@ const sketch = (p5) => {
     sketch.init = () => {
         console.log('init')
 
-        strangeAttractors(p5).init('clifford')
+        strangeAttractors(p5).init('clifford', () => p5.random())
         points = []
         pointsHistory = []
         for (let x = 0; x < width; x += res) {

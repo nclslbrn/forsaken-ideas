@@ -75,7 +75,7 @@ const sketch = (p5) => {
         }
     }
     sketch.init = () => {
-        strangeAttractors(p5).init('de_jong')
+        strangeAttractors().init('de_jong', () => Math.random())
         points = initPoints.map((p) => ({
             ...p
         }))

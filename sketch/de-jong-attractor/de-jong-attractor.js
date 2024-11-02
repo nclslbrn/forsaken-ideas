@@ -80,7 +80,7 @@ const sketch = {
     },
     init: () => {
         progressBar.reset()
-        strangeAttractors().init('de_jong')
+        strangeAttractors().init('de_jong', () => Math.random())
         scale = 0.5 + Math.ceil(Math.random() * 12)
         points = []
         lines = []

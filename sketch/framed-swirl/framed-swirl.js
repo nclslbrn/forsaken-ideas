@@ -107,7 +107,7 @@ const sketch = (p5) => {
             functionNames[p5.floor(p5.random() * functionNames.length)]
         attractor =
             attractorNames[p5.floor(p5.random() * attractorNames.length)]
-        strangeAttractors(p5).init(attractor)
+        strangeAttractors(p5).init(attractor, () => p5.random())
         cartel.innerHTML = ''
         cartel.innerHTML += `<p>a ${strFromVar(
             planeFunction

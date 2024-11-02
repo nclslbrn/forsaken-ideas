@@ -1,4 +1,4 @@
-import p5 from 'p5'
+//import p5 from 'p5'
 import '../framed-canvas.css'
 import { getPalette } from '@nclslbrn/artistry-swatch'
 import infobox from '../../sketch-common/infobox'

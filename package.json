@@ -19,7 +19,7 @@
     "sketch:buildAll": "node tasks/build-all-sketches.mjs"
   },
   "dependencies": {
-    "@nclslbrn/artistry-swatch": "^0.0.6",
+    "@nclslbrn/artistry-swatch": "^0.0.7",
     "@nclslbrn/plot-writer": "^0.1.10",
     "@thi.ng/adapt-dpi": "^2.2.49",
     "@thi.ng/date": "^2.7.20",
