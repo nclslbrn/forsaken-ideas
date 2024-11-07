@@ -71,14 +71,7 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     ATTRACT_ENGINE.init(STATE.attractor, () => RND.float())
-    STATE.prtcls = [
-        ...repeatedly2d((x, y) => [
-          (RND.norm(5) + x) / 50 - 0.5, 
-          (RND.norm(5) + y) / 50 - 0.5
-        ], 50, 50)
-    ]
-    STATE.trails = STATE.prtcls.map((p) => [p])
-    STATE.colors = pickRandomUnique(
+     STATE.colors = pickRandomUnique(
         3,
         [
             'tomato',
@@ -93,6 +86,14 @@ const init = () => {
         1000,
         RND
     )
+   STATE.prtcls = [
+        ...repeatedly2d((x, y) => [
+          (RND.norm(5) + x) / 70 - 0.5, 
+          (RND.norm(5) + y) / 70 - 0.5
+        ], 70, 70)
+    ]
+    STATE.trails = STATE.prtcls.map((p) => [p])
+
     currFrame = 0
     update()
 }
@@ -106,7 +107,7 @@ const update = () => {
                 x: prtcls[j][0],
                 y: prtcls[j][1]
             })
-            const k = Math.abs(noise.fbm(pos.x * 300, pos.y * 300))
+            const k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900))
             const l = Math.atan2(pos.y, pos.x)
             const m = [
                 prtcls[j][0] + Math.cos(l) * k * 0.003,

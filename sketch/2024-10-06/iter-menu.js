@@ -8,10 +8,10 @@ const iterMenu = (ITER_LIST, STATE) => {
     const saved = getSavedSeed()
     $compile(
         div(
-            {},
+            { style: "align-self: flex-start; max-height: 100vh; overflow-y: auto;"},
             para(null, 'SEEDS'),
             ul(
-                { style: 'list-style: none;' },
+                { style: 'list-style: none; padding-left: 0;' },
                 ...saved.map((iter) =>
                     li(
                         {
