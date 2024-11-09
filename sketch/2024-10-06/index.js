@@ -9,9 +9,10 @@ import {
 import Notification from '../../sketch-common/Notification'
 import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { pickRandomUnique, pickRandom, Smush32 } from '@thi.ng/random'
+import { pickRandom, Smush32 } from '@thi.ng/random'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 import {
     downloadCanvas,
     downloadWithMime,
@@ -36,7 +37,7 @@ const DPI = quantity(96, dpi),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
     RND = new Smush32(),
-    NUM_ITER = 200,
+    NUM_ITER = 130,
     STATE = {
         attractor: '',
         noise: null,
@@ -71,26 +72,16 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     ATTRACT_ENGINE.init(STATE.attractor, () => RND.float())
-     STATE.colors = pickRandomUnique(
-        3,
-        [
-            'tomato',
-            'steelblue',
-            'limegreen',
-            'indigo',
-            'gold',
-            'white',
-            'black'
-        ],
-        [],
-        1000,
-        RND
-    )
-   STATE.prtcls = [
-        ...repeatedly2d((x, y) => [
-          (RND.norm(5) + x) / 70 - 0.5, 
-          (RND.norm(5) + y) / 70 - 0.5
-        ], 70, 70)
+
+    STATE.prtcls = [
+        ...repeatedly2d(
+            (x, y) => [
+                (RND.norm(5) + x) / 100 - 0.5,
+                (RND.norm(5) + y) / 100 - 0.5
+            ],
+            100,
+            100
+        )
     ]
     STATE.trails = STATE.prtcls.map((p) => [p])
 
@@ -101,7 +92,7 @@ const update = () => {
     const scale = 0.8
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
-        const { prtcls, trails, attractor, noise, colors } = STATE
+        const { prtcls, trails, attractor, noise } = STATE
         for (let j = 0; j < prtcls.length; j++) {
             const pos = ATTRACT_ENGINE.attractors[attractor]({
                 x: prtcls[j][0],
@@ -110,8 +101,8 @@ const update = () => {
             const k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900))
             const l = Math.atan2(pos.y, pos.x)
             const m = [
-                prtcls[j][0] + Math.cos(l) * k * 0.003,
-                prtcls[j][1] + Math.sin(l) * k * 0.003
+                prtcls[j][0] + Math.cos(l) * k * 0.0007,
+                prtcls[j][1] + Math.sin(l) * k * 0.0007
             ]
             trails[j].push(m)
             prtcls[j] = m
@@ -124,10 +115,24 @@ const update = () => {
             [MARGIN, SIZE[1] - MARGIN]
         ]
         drawElems = [
-            rect(SIZE, { fill: colors[0] }),
-            group({ weight: 2 }, [
+            rect(SIZE, { fill: '#f2fcfc' }),
+            group({ weight: 2, stroke: '#222' }, [
+                ...[...window.seed].reduce(
+                    (poly, letter, x) => [
+                        ...poly,
+                        ...getGlyphVector(
+                            letter,
+                            [SIZE[0] * 0.02, SIZE[0] * 0.03],
+                            [
+                                MARGIN * 3.5 + SIZE[0] * 0.02 * x,
+                                SIZE[1] - MARGIN * 2.5
+                            ]
+                        ).map((vecs) => polyline(vecs))
+                    ],
+                    []
+                ),
                 ...trails.reduce(
-                    (acc, line, i) => [
+                    (acc, line) => [
                         ...acc,
                         ...clipPolylinePoly(
                             line.map((pos) => [
@@ -135,11 +140,7 @@ const update = () => {
                                 SIZE[1] / 2 + pos[1] * inner[1] * scale
                             ]),
                             cropPoly
-                        ).map((pts) =>
-                            polyline(pts, {
-                                stroke: colors[1 + (i % 10 === 0 ? 1 : 0)]
-                            })
-                        )
+                        ).map((pts) => polyline(pts))
                     ],
                     []
                 )
@@ -148,8 +149,9 @@ const update = () => {
 
         draw(CTX, group({}, drawElems))
         currFrame++
-    } else if (isRecording) {
-        stopRecording()
+    } else {
+      if (isRecording) stopRecording()
+      new Notification('Edition drawn', ROOT, 'light')
     }
 }
 
