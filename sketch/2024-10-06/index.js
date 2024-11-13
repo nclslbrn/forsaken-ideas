@@ -30,14 +30,14 @@ const DPI = quantity(96, dpi),
     // TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([720, 720], mm),
     SIZE = mul(IG_SQ, DPI).deref(),
-    MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
+    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
     RND = new Smush32(),
-    NUM_ITER = 130,
+    NUM_ITER = 100,
     STATE = {
         attractor: '',
         noise: null,
@@ -76,11 +76,11 @@ const init = () => {
     STATE.prtcls = [
         ...repeatedly2d(
             (x, y) => [
-                (RND.norm(5) + x) / 100 - 0.5,
-                (RND.norm(5) + y) / 100 - 0.5
+                (RND.norm(5) + x) / 70 - 0.5,
+                (RND.norm(5) + y) / 70 - 0.5
             ],
-            100,
-            100
+            70,
+            70
         )
     ]
     STATE.trails = STATE.prtcls.map((p) => [p])
@@ -89,7 +89,7 @@ const init = () => {
     update()
 }
 const update = () => {
-    const scale = 0.8
+    const scale = 0.95
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
         const { prtcls, trails, attractor, noise } = STATE
@@ -99,10 +99,10 @@ const update = () => {
                 y: prtcls[j][1]
             })
             const k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900))
-            const l = Math.atan2(pos.y, pos.x)
+            const l = Math.atan2(pos.y, pos.x) % (j % 2 === 0 ? k : 0)
             const m = [
-                prtcls[j][0] + Math.cos(l) * k * 0.0007,
-                prtcls[j][1] + Math.sin(l) * k * 0.0007
+                prtcls[j][0] + Math.cos(l) * k * 0.003,
+                prtcls[j][1] + Math.sin(l) * k * 0.003
             ]
             trails[j].push(m)
             prtcls[j] = m
@@ -122,10 +122,10 @@ const update = () => {
                         ...poly,
                         ...getGlyphVector(
                             letter,
-                            [SIZE[0] * 0.02, SIZE[0] * 0.03],
+                            [SIZE[0] * 0.02, SIZE[0] * 0.04],
                             [
-                                MARGIN * 3.5 + SIZE[0] * 0.02 * x,
-                                SIZE[1] - MARGIN * 2.5
+                                MARGIN + SIZE[0] * 0.02 * x,
+                                SIZE[1] - MARGIN * 0.66
                             ]
                         ).map((vecs) => polyline(vecs))
                     ],
