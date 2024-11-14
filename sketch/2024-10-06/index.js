@@ -26,9 +26,9 @@ import strangeAttractor from '../../sketch-common/strange-attractors'
 import Fbm from './FBM'
 
 const DPI = quantity(96, dpi),
-    // TWOK_16_9 = quantity([1080, 607], mm),
+    TWOK_16_9 = quantity([1080, 607], mm),
     // TWOK_9_16 = quantity([607, 1080], mm),
-    IG_SQ = quantity([720, 720], mm),
+    IG_SQ = quantity([700, 700], mm),
     SIZE = mul(IG_SQ, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -37,13 +37,32 @@ const DPI = quantity(96, dpi),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
     RND = new Smush32(),
-    NUM_ITER = 100,
+    NUM_ITER = 60,
+    OPERATORS = [
+        //'A % B',
+        //'B % A',
+        'A + B ^ 0.2',
+        // 'B ^ A'
+    ],
     STATE = {
         attractor: '',
         noise: null,
         prtcls: [],
         trails: [],
-        colors: []
+        colors: [],
+        operator: 'add'
+    },
+    operate = (type, a, b) => {
+        switch (type) {
+            case 'A % B':
+                return a % b
+            case 'B % A':
+                return  a
+            case 'A + B ^ 0.2':
+                return (a+b) % 3 | Math.PI * 0.33 
+            case 'B ^ A':
+                return b | a
+        }
     }
 
 let drawElems = [],
@@ -68,6 +87,7 @@ const init = () => {
         prng: () => RND.float
     })
     STATE.attractor = pickRandom(Object.keys(ATTRACT_ENGINE.attractors), RND)
+    STATE.operator = pickRandom(OPERATORS, RND)
     inner = [SIZE[0] - MARGIN * 2, SIZE[1] - MARGIN * 2]
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
@@ -76,11 +96,11 @@ const init = () => {
     STATE.prtcls = [
         ...repeatedly2d(
             (x, y) => [
-                (RND.norm(5) + x) / 70 - 0.5,
-                (RND.norm(5) + y) / 70 - 0.5
+                (RND.norm(10) + x) / 100 - 0.5,
+                (RND.norm(10) + y) / 100 - 0.5
             ],
-            70,
-            70
+            100,
+            100
         )
     ]
     STATE.trails = STATE.prtcls.map((p) => [p])
@@ -88,24 +108,26 @@ const init = () => {
     currFrame = 0
     update()
 }
+
 const update = () => {
     const scale = 0.95
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
-        const { prtcls, trails, attractor, noise } = STATE
+        const { prtcls, trails, attractor, operator, noise } = STATE
         for (let j = 0; j < prtcls.length; j++) {
             const pos = ATTRACT_ENGINE.attractors[attractor]({
-                x: prtcls[j][0],
-                y: prtcls[j][1]
-            })
-            const k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900))
-            const l = Math.atan2(pos.y, pos.x) % (j % 2 === 0 ? k : 0)
-            const m = [
-                prtcls[j][0] + Math.cos(l) * k * 0.003,
-                prtcls[j][1] + Math.sin(l) * k * 0.003
-            ]
-            trails[j].push(m)
-            prtcls[j] = m
+                    x: prtcls[j][0],
+                    y: prtcls[j][1]
+                }),
+                k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900)),
+                l = Math.atan2(pos.y, pos.x),
+                m = operate(operator, l, k),
+                n = [
+                    prtcls[j][0] + Math.cos(m) * k * 0.003,
+                    prtcls[j][1] + Math.sin(m) * k * 0.003
+                ]
+            trails[j].push(n)
+            prtcls[j] = n
         }
 
         const cropPoly = [
@@ -115,17 +137,23 @@ const update = () => {
             [MARGIN, SIZE[1] - MARGIN]
         ]
         drawElems = [
-            rect(SIZE, { fill: '#f2fcfc' }),
-            group({ weight: 2, stroke: '#222' }, [
-                ...[...window.seed].reduce(
+            rect(SIZE, { fill: '#fefefe' }),
+            group({ weight: 1.5, stroke: '#333' }, [
+                ...[
+                    ...window.seed,
+                    ...' → ',
+                    ...attractor,
+                    ...' → ',
+                    ...operator
+                ].reduce(
                     (poly, letter, x) => [
                         ...poly,
                         ...getGlyphVector(
                             letter,
-                            [SIZE[0] * 0.02, SIZE[0] * 0.04],
+                            [SIZE[0] * 0.007, SIZE[0] * 0.01],
                             [
-                                MARGIN + SIZE[0] * 0.02 * x,
-                                SIZE[1] - MARGIN * 0.66
+                                MARGIN + SIZE[0] * 0.008 * x,
+                                SIZE[1] - MARGIN * 0.55
                             ]
                         ).map((vecs) => polyline(vecs))
                     ],
@@ -150,8 +178,8 @@ const update = () => {
         draw(CTX, group({}, drawElems))
         currFrame++
     } else {
-      if (isRecording) stopRecording()
-      new Notification('Edition drawn', ROOT, 'light')
+        if (isRecording) stopRecording()
+        new Notification('Edition drawn', ROOT, 'light')
     }
 }
 
