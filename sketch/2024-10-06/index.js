@@ -9,7 +9,7 @@ import {
 import Notification from '../../sketch-common/Notification'
 import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { pickRandom, Smush32 } from '@thi.ng/random'
+import { pickRandom, pickRandomKey, Smush32 } from '@thi.ng/random'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
@@ -29,7 +29,8 @@ const DPI = quantity(96, dpi),
     TWOK_16_9 = quantity([1080, 607], mm),
     // TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([700, 700], mm),
-    SIZE = mul(IG_SQ, DPI).deref(),
+    IG_4BY5 = quantity([600, 755], mm),
+    SIZE = mul(IG_4BY5, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -37,12 +38,13 @@ const DPI = quantity(96, dpi),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
     RND = new Smush32(),
+    BCKGRND = ['#eeede7', '#e2ded0', '#a7c0be', '#f1ebe9'],
     NUM_ITER = 60,
     OPERATORS = [
-        //'A % B',
+        // 'A % B',
         //'B % A',
-        'A + B ^ 0.2',
-        // 'B ^ A'
+        'A ^ B % 0.2',
+        //'B ^ A % 0.2'
     ],
     STATE = {
         attractor: '',
@@ -50,18 +52,19 @@ const DPI = quantity(96, dpi),
         prtcls: [],
         trails: [],
         colors: [],
-        operator: 'add'
+        operator: 'add',
+        color: '#fefefe'
     },
-    operate = (type, a, b) => {
+    operate = (type, a, b, c) => {
         switch (type) {
             case 'A % B':
                 return a % b
             case 'B % A':
-                return  a
-            case 'A + B ^ 0.2':
-                return (a+b) % 3 | Math.PI * 0.33 
-            case 'B ^ A':
-                return b | a
+                return c % 2 === 0 ? b % a : (a + b) / 2
+            case 'A ^ B % 0.2':
+                return  a % ((c%10) + b) * 0.05  
+            case 'B ^ A % 0.2':
+                return (b << a) - a
         }
     }
 
@@ -104,7 +107,7 @@ const init = () => {
         )
     ]
     STATE.trails = STATE.prtcls.map((p) => [p])
-
+    STATE.color = pickRandom(BCKGRND)
     currFrame = 0
     update()
 }
@@ -113,7 +116,7 @@ const update = () => {
     const scale = 0.95
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
-        const { prtcls, trails, attractor, operator, noise } = STATE
+        const { prtcls, trails, attractor, operator, noise, color } = STATE
         for (let j = 0; j < prtcls.length; j++) {
             const pos = ATTRACT_ENGINE.attractors[attractor]({
                     x: prtcls[j][0],
@@ -121,7 +124,7 @@ const update = () => {
                 }),
                 k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900)),
                 l = Math.atan2(pos.y, pos.x),
-                m = operate(operator, l, k),
+                m = operate(operator, l, k, j),
                 n = [
                     prtcls[j][0] + Math.cos(m) * k * 0.003,
                     prtcls[j][1] + Math.sin(m) * k * 0.003
@@ -137,14 +140,14 @@ const update = () => {
             [MARGIN, SIZE[1] - MARGIN]
         ]
         drawElems = [
-            rect(SIZE, { fill: '#fefefe' }),
+            rect(SIZE, { fill: color }),
             group({ weight: 1.5, stroke: '#333' }, [
                 ...[
                     ...window.seed,
                     ...' → ',
                     ...attractor,
-                    ...' → ',
-                    ...operator
+                    //...' → ',
+                    //...operator
                 ].reduce(
                     (poly, letter, x) => [
                         ...poly,
