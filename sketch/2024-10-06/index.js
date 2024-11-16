@@ -38,13 +38,18 @@ const DPI = quantity(96, dpi),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
     RND = new Smush32(),
-    BCKGRND = ['#eeede7', '#e2ded0', '#a7c0be', '#f1ebe9'],
+    BCKGRND = [
+        '#eeede7',
+        '#e2ded0',
+        '#a7c0be',
+        '#f1ebe9',
+        '#ebddda',
+        '#d6e2ed'
+    ],
     NUM_ITER = 60,
     OPERATORS = [
-        // 'A % B',
-        //'B % A',
-        'A ^ B % 0.2',
-        //'B ^ A % 0.2'
+      'E' 
+      //...'ABCD'
     ],
     STATE = {
         attractor: '',
@@ -56,15 +61,24 @@ const DPI = quantity(96, dpi),
         color: '#fefefe'
     },
     operate = (type, a, b, c) => {
+        let x, y, d 
+        if (['D', 'E'].includes(type)) {
+          y = c % 100
+          x = c - y
+          d = (Math.abs(x-50) % 50) * (Math.abs(y-50) % 50)
+        }
         switch (type) {
-            case 'A % B':
+            case 'A':
                 return a % b
-            case 'B % A':
+            case 'B':
                 return c % 2 === 0 ? b % a : (a + b) / 2
-            case 'A ^ B % 0.2':
-                return  a % ((c%10) + b) * 0.05  
-            case 'B ^ A % 0.2':
-                return (b << a) - a
+            case 'C':
+                return (a % ((c % 10) + b)) * 0.05
+            case 'D':
+                return a * Math.atan(d * 0.1 * b)
+            case 'E':
+                const dNorm = (71 - d) / 70
+                return Math.sin(a * dNorm)
         }
     }
 
@@ -91,7 +105,7 @@ const init = () => {
     })
     STATE.attractor = pickRandom(Object.keys(ATTRACT_ENGINE.attractors), RND)
     STATE.operator = pickRandom(OPERATORS, RND)
-    inner = [SIZE[0] - MARGIN * 2, SIZE[1] - MARGIN * 2]
+    inner = [SIZE[0] - MARGIN * 2, SIZE[1] - MARGIN * 4]
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     ATTRACT_ENGINE.init(STATE.attractor, () => RND.float())
@@ -139,6 +153,8 @@ const update = () => {
             [SIZE[0] - MARGIN, SIZE[1] - MARGIN],
             [MARGIN, SIZE[1] - MARGIN]
         ]
+        const fntSz = [SIZE[0] * 0.009, SIZE[1] * 0.012]
+
         drawElems = [
             rect(SIZE, { fill: color }),
             group({ weight: 1.5, stroke: '#333' }, [
@@ -146,19 +162,28 @@ const update = () => {
                     ...window.seed,
                     ...' → ',
                     ...attractor,
-                    //...' → ',
-                    //...operator
+                    ...' → ',
+                    ...operator
                 ].reduce(
                     (poly, letter, x) => [
                         ...poly,
-                        ...getGlyphVector(
-                            letter,
-                            [SIZE[0] * 0.007, SIZE[0] * 0.01],
-                            [
-                                MARGIN + SIZE[0] * 0.008 * x,
-                                SIZE[1] - MARGIN * 0.55
-                            ]
-                        ).map((vecs) => polyline(vecs))
+                        ...getGlyphVector(letter, fntSz, [
+                            MARGIN + fntSz[0] * x * 1.1,
+                            SIZE[1] - MARGIN * 0.55
+                        ]).map((vecs) => polyline(vecs))
+                    ],
+                    []
+                ),
+                ...[...new Date().toISOString()].reduce(
+                    (poly, letter, x) => [
+                        ...poly,
+                        ...getGlyphVector(letter, fntSz, [
+                            SIZE[0] -
+                                MARGIN -
+                                fntSz[0] * 26.4 +
+                                fntSz[0] * x * 1.1,
+                            SIZE[1] - MARGIN * 0.55
+                        ]).map((vecs) => polyline(vecs))
                     ],
                     []
                 ),
