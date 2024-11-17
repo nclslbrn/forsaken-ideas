@@ -6,24 +6,23 @@ import {
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
 
+import { resolveState } from './state'
 import Notification from '../../sketch-common/Notification'
-import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
-import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { pickRandom, pickRandomKey, Smush32 } from '@thi.ng/random'
+import strangeAttractor from '../../sketch-common/strange-attractors'
+import { group, svgDoc, asSvg } from '@thi.ng/geom'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { getGlyphVector } from '@nclslbrn/plot-writer'
 import {
     downloadCanvas,
     downloadWithMime,
     canvasRecorder
 } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { repeatedly2d } from '@thi.ng/transducers'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+
 import { iterMenu } from './iter-menu'
-import strangeAttractor from '../../sketch-common/strange-attractors'
-import Fbm from './FBM'
+import { operate } from './operator'
+import { trace, traceLoadScreen } from './trace'
 
 const DPI = quantity(96, dpi),
     TWOK_16_9 = quantity([1080, 607], mm),
@@ -37,54 +36,14 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    RND = new Smush32(),
-    BCKGRND = [
-        '#eeede7',
-        '#e2ded0',
-        '#a7c0be',
-        '#f1ebe9',
-        '#ebddda',
-        '#d6e2ed'
-    ],
-    NUM_ITER = 60,
-    OPERATORS = [
-      'E' 
-      //...'ABCD'
-    ],
-    STATE = {
-        attractor: '',
-        noise: null,
-        prtcls: [],
-        trails: [],
-        colors: [],
-        operator: 'add',
-        color: '#fefefe'
-    },
-    operate = (type, a, b, c) => {
-        let x, y, d 
-        if (['D', 'E'].includes(type)) {
-          y = c % 100
-          x = c - y
-          d = (Math.abs(x-50) % 50) * (Math.abs(y-50) % 50)
-        }
-        switch (type) {
-            case 'A':
-                return a % b
-            case 'B':
-                return c % 2 === 0 ? b % a : (a + b) / 2
-            case 'C':
-                return (a % ((c % 10) + b)) * 0.05
-            case 'D':
-                return a * Math.atan(d * 0.1 * b)
-            case 'E':
-                const dNorm = (71 - d) / 70
-                return Math.sin(a * dNorm)
-        }
-    }
+    NUM_ITER = 60
 
-let drawElems = [],
+ROOT.style.gridTemplateRows = '1fr 98% 1fr'
+CANVAS.style.padding = '0'
+
+let STATE,
+    drawElems = [],
     currFrame = 0,
-    inner = [],
     frameReq = null,
     isRecording = false,
     recorder = null
@@ -95,114 +54,54 @@ const init = () => {
     if (!window.seed) return
     if (frameReq) cancelAnimationFrame(frameReq)
     if (isRecording) startRecording()
-
-    RND.seed(window.seed)
-    STATE.noise = new Fbm({
-        amplitude: 0.4,
-        octave: 7,
-        frequencies: 0.7,
-        prng: () => RND.float
-    })
-    STATE.attractor = pickRandom(Object.keys(ATTRACT_ENGINE.attractors), RND)
-    STATE.operator = pickRandom(OPERATORS, RND)
-    inner = [SIZE[0] - MARGIN * 2, SIZE[1] - MARGIN * 4]
+    STATE = resolveState(
+        {
+            width: SIZE[0],
+            height: SIZE[1],
+            margin: MARGIN
+        },
+        window.seed
+    )
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    ATTRACT_ENGINE.init(STATE.attractor, () => RND.float())
-
-    STATE.prtcls = [
-        ...repeatedly2d(
-            (x, y) => [
-                (RND.norm(10) + x) / 100 - 0.5,
-                (RND.norm(10) + y) / 100 - 0.5
-            ],
-            100,
-            100
-        )
-    ]
-    STATE.trails = STATE.prtcls.map((p) => [p])
-    STATE.color = pickRandom(BCKGRND)
+    /* plot with animation 
     currFrame = 0
     update()
+    */
+    /* plot wihout */ 
+    draw(CTX, traceLoadScreen(STATE))
+    for (let i = 0; i < NUM_ITER; i++) {
+        iterate()
+    }
+    drawElems = trace(STATE)
+    draw(CTX, group({}, drawElems))
+    
+}
+
+const iterate = () => {
+    const { prtcls, trails, attractor, operator, noise } = STATE
+    for (let j = 0; j < prtcls.length; j++) {
+        const pos = ATTRACT_ENGINE.attractors[attractor]({
+                x: prtcls[j][0],
+                y: prtcls[j][1]
+            }),
+            k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900)),
+            l = Math.atan2(pos.y, pos.x),
+            m = operate(operator, l, k, j),
+            n = [
+                prtcls[j][0] + Math.cos(m) * k * 0.003,
+                prtcls[j][1] + Math.sin(m) * k * 0.003
+            ]
+        trails[j].push(n)
+        prtcls[j] = n
+    }
 }
 
 const update = () => {
-    const scale = 0.95
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
-        const { prtcls, trails, attractor, operator, noise, color } = STATE
-        for (let j = 0; j < prtcls.length; j++) {
-            const pos = ATTRACT_ENGINE.attractors[attractor]({
-                    x: prtcls[j][0],
-                    y: prtcls[j][1]
-                }),
-                k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900)),
-                l = Math.atan2(pos.y, pos.x),
-                m = operate(operator, l, k, j),
-                n = [
-                    prtcls[j][0] + Math.cos(m) * k * 0.003,
-                    prtcls[j][1] + Math.sin(m) * k * 0.003
-                ]
-            trails[j].push(n)
-            prtcls[j] = n
-        }
-
-        const cropPoly = [
-            [MARGIN, MARGIN],
-            [SIZE[0] - MARGIN, MARGIN],
-            [SIZE[0] - MARGIN, SIZE[1] - MARGIN],
-            [MARGIN, SIZE[1] - MARGIN]
-        ]
-        const fntSz = [SIZE[0] * 0.009, SIZE[1] * 0.012]
-
-        drawElems = [
-            rect(SIZE, { fill: color }),
-            group({ weight: 1.5, stroke: '#333' }, [
-                ...[
-                    ...window.seed,
-                    ...' → ',
-                    ...attractor,
-                    ...' → ',
-                    ...operator
-                ].reduce(
-                    (poly, letter, x) => [
-                        ...poly,
-                        ...getGlyphVector(letter, fntSz, [
-                            MARGIN + fntSz[0] * x * 1.1,
-                            SIZE[1] - MARGIN * 0.55
-                        ]).map((vecs) => polyline(vecs))
-                    ],
-                    []
-                ),
-                ...[...new Date().toISOString()].reduce(
-                    (poly, letter, x) => [
-                        ...poly,
-                        ...getGlyphVector(letter, fntSz, [
-                            SIZE[0] -
-                                MARGIN -
-                                fntSz[0] * 26.4 +
-                                fntSz[0] * x * 1.1,
-                            SIZE[1] - MARGIN * 0.55
-                        ]).map((vecs) => polyline(vecs))
-                    ],
-                    []
-                ),
-                ...trails.reduce(
-                    (acc, line) => [
-                        ...acc,
-                        ...clipPolylinePoly(
-                            line.map((pos) => [
-                                SIZE[0] / 2 + pos[0] * inner[0] * scale,
-                                SIZE[1] / 2 + pos[1] * inner[1] * scale
-                            ]),
-                            cropPoly
-                        ).map((pts) => polyline(pts))
-                    ],
-                    []
-                )
-            ])
-        ]
-
+        iterate()
+        drawElems = trace(STATE)
         draw(CTX, group({}, drawElems))
         currFrame++
     } else {

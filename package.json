@@ -33,7 +33,7 @@
     "@thi.ng/ramp": "^3.3.5",
     "@thi.ng/random": "^3.8.2",
     "@thi.ng/rdom": "^1.4.2",
-    "@thi.ng/resolve-map": "^7.1.76",
+    "@thi.ng/resolve-map": "^7.1.85",
     "@thi.ng/timestep": "^0.5.51",
     "@thi.ng/transducers": "^9.0.7",
     "@thi.ng/units": "^0.5.1",
