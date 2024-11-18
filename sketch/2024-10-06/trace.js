@@ -13,7 +13,7 @@ const trace = (STATE) => {
         [margin, height - margin * 1.33]
     ]
     const inner = [width - margin * 2, height - margin * 2]
-    const fntSz = [width * 0.009, height * 0.012]
+    const fntSz = [width * 0.009, height * 0.015]
 
     return [
         rect([width, height], { fill: color }),
@@ -29,7 +29,7 @@ const trace = (STATE) => {
                     ...poly,
                     ...getGlyphVector(letter, fntSz, [
                         margin + fntSz[0] * x * 1.1,
-                        height - margin * 0.55
+                        height - margin
                     ]).map((vecs) => polyline(vecs))
                 ],
                 []
@@ -39,7 +39,7 @@ const trace = (STATE) => {
                     ...poly,
                     ...getGlyphVector(letter, fntSz, [
                         width - margin - fntSz[0] * 26.4 + fntSz[0] * x * 1.1,
-                        height - margin * 0.55
+                        height - margin
                     ]).map((vecs) => polyline(vecs))
                 ],
                 []

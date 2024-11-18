@@ -7,11 +7,11 @@ import Fbm from './FBM'
 
 const ATTRACT_ENGINE = strangeAttractor(),
     RND = new Smush32(),
-    BCKGRND = ['#eeede7', '#e2ded0', '#a7c0be', '#f1ebe9', '#ebddda', '#d6e2ed']
+    BCKGRND = 'eeede7-e2ded0-b7ccca-f1ebe9-e2ceca-d6e2ed'.split('-').map(c => `#${c}`) 
 
 // Pick random value to build an edition ----------------------------------------
 const BASE = (seed) => {
-    console.log(seed)
+    console.log(seed, seed.length)
     RND.seed(seed)
     return resolve(
         {

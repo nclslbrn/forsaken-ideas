@@ -26,10 +26,10 @@ import { trace, traceLoadScreen } from './trace'
 
 const DPI = quantity(96, dpi),
     TWOK_16_9 = quantity([1080, 607], mm),
-    // TWOK_9_16 = quantity([607, 1080], mm),
+    TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([700, 700], mm),
     IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(IG_4BY5, DPI).deref(),
+    SIZE = mul(TWOK_9_16, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
