@@ -4,12 +4,15 @@ import { getSavedSeed, removeSeed } from '../../sketch-common/random-seed'
 
 const redirectPickedSeed = (seed) => {
     let url = new URL(window.location)
-    url.searchParams.has('seed')
-        ? url.searchParams.set('seed', seed)
-        : url.searchParams.append('seed', seed)
+    if (seed) {
+        url.searchParams.has('seed')
+            ? url.searchParams.set('seed', seed)
+            : url.searchParams.append('seed', seed)
+    } else if (url.searchParams.has('seed')) {
+        url.searchParams.delete('seed')
+    }
     url.search = url.searchParams
     url = url.toString()
-
     window.location = url
 }
 
@@ -25,6 +28,20 @@ const iterMenu = (ITER_LIST, STATE) => {
             para(null, 'SEEDS'),
             ul(
                 { style: 'list-style: none; padding-left: 0;' },
+                li(
+                    {},
+                    button(
+                        {
+                            onclick: () => redirectPickedSeed(false),
+                            style: `
+                                padding: 0.25em 0.5em;
+                                border: 1px solid #666;
+                                border-radius: 0.5em;
+                            `
+                        },
+                        `⟲ randomize`
+                    )
+                ),
                 ...saved.map((iter) =>
                     li(
                         {
@@ -37,7 +54,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                                     window.seed = iter[1]
                                     init()
                                     iterMenu(ITER_LIST, STATE)
-                                    */ 
+                                    */
                                     redirectPickedSeed(iter[1])
                                 },
                                 style: `

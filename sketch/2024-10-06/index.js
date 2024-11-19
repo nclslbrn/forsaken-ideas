@@ -116,6 +116,7 @@ const update = () => {
 }
 
 window['init'] = () => {
+    seed = getRandSeed()
     init()
 }
 window['exportJPG'] = () =>
