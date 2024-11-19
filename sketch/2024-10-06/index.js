@@ -25,11 +25,13 @@ import { operate } from './operator'
 import { trace, traceLoadScreen } from './trace'
 
 const DPI = quantity(96, dpi),
+    /*
     TWOK_16_9 = quantity([1080, 607], mm),
     TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([700, 700], mm),
     IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(TWOK_9_16, DPI).deref(),
+    */
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -42,33 +44,36 @@ ROOT.style.gridTemplateRows = '1fr 98% 1fr'
 CANVAS.style.padding = '0'
 
 let STATE,
+    seed = false,
     drawElems = [],
     currFrame = 0,
     frameReq = null,
     isRecording = false,
     recorder = null
 
-window.seed = false
 
 const init = () => {
-    if (!window.seed) return
+    if (!seed) return
     if (frameReq) cancelAnimationFrame(frameReq)
     if (isRecording) startRecording()
+   
     STATE = resolveState(
         {
             width: SIZE[0],
             height: SIZE[1],
-            margin: MARGIN
+            margin: MARGIN,
+            seed
         },
-        window.seed
     )
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    /* plot with animation 
+    /* 
+     * plot with animation 
     currFrame = 0
     update()
     */
-    /* plot wihout */ 
+    
+    /* plot without */ 
     draw(CTX, traceLoadScreen(STATE))
     for (let i = 0; i < NUM_ITER; i++) {
         iterate()
@@ -134,12 +139,12 @@ window['exportSVG'] = () =>
 window.onkeydown = (e) => {
     switch (e.key.toLowerCase()) {
         case 'n':
-            window.seed = getRandSeed()
+            seed = getRandSeed()
             init()
             break
         // save the seed
         case 's':
-            saveSeed(window.seed)
+            saveSeed(seed)
             iterMenu(ITER_LIST, STATE)
             break
 
@@ -170,7 +175,7 @@ const startRecording = () => {
     if (!isRecording) return
     recorder = canvasRecorder(
         CANVAS,
-        `${window.seed}-${new Date().toISOString()}`,
+        `${seed}-${new Date().toISOString()}`,
         {
             mimeType: 'video/webm;codecs=vp9',
             fps: 30
@@ -192,7 +197,13 @@ ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS)
 ROOT.appendChild(ITER_LIST)
 
-window.seed = getRandSeed()
+const queryString = window.location.search 
+const urlParams = new URLSearchParams(queryString)
+if (urlParams.has('seed')) {
+  seed = urlParams.get('seed')
+} else {
+  seed = getRandSeed()
+}
 init()
 iterMenu(ITER_LIST, STATE)
 

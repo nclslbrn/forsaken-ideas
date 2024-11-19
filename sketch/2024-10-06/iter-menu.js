@@ -2,13 +2,26 @@ import { $compile } from '@thi.ng/rdom'
 import { ul, li, para, div, button } from '@thi.ng/hiccup-html'
 import { getSavedSeed, removeSeed } from '../../sketch-common/random-seed'
 
+const redirectPickedSeed = (seed) => {
+    let url = new URL(window.location)
+    url.searchParams.has('seed')
+        ? url.searchParams.set('seed', seed)
+        : url.searchParams.append('seed', seed)
+    url.search = url.searchParams
+    url = url.toString()
+
+    window.location = url
+}
+
 const iterMenu = (ITER_LIST, STATE) => {
     if (ITER_LIST === undefined) return
     ITER_LIST.innerHTML = ''
     const saved = getSavedSeed()
     $compile(
         div(
-            { style: "align-self: flex-start; max-height: 100vh; overflow-y: auto;"},
+            {
+                style: 'align-self: flex-start; max-height: 100vh; overflow-y: auto;'
+            },
             para(null, 'SEEDS'),
             ul(
                 { style: 'list-style: none; padding-left: 0;' },
@@ -20,9 +33,12 @@ const iterMenu = (ITER_LIST, STATE) => {
                         button(
                             {
                                 onclick: () => {
+                                    /*
                                     window.seed = iter[1]
                                     init()
                                     iterMenu(ITER_LIST, STATE)
+                                    */ 
+                                    redirectPickedSeed(iter[1])
                                 },
                                 style: `
                                 padding: 0.25em 0.5em;
@@ -31,7 +47,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                                 border-right: none; 
                                 border-top-right-radius: 0;
                                 border-bottom-right-radius: 0;
-                                background: ${iter[1] === window.seed ? '#ffd128' : '#ccc'}; 
+                                background: ${iter[1] === STATE.seed ? '#ffd128' : '#ccc'}; 
                               `
                             },
                             iter[1]

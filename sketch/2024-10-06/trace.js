@@ -4,7 +4,7 @@ import { getGlyphVector } from '@nclslbrn/plot-writer'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
-    const { width, height, trails, color, attractor, operator, margin } = STATE
+    const {seed,  width, height, trails, color, attractor, operator, margin } = STATE
     const scale = 0.95
     const cropPoly = [
         [margin, margin],
@@ -17,9 +17,9 @@ const trace = (STATE) => {
 
     return [
         rect([width, height], { fill: color }),
-        group({ weight: 1.5, stroke: '#333' }, [
+        group({ weight: 0.5, stroke: '#333' }, [
             ...[
-                ...window.seed,
+                ...seed,
                 ...' → ',
                 ...attractor,
                 ...' → ',
@@ -63,7 +63,7 @@ const trace = (STATE) => {
 
 // Display message while flow field is processed ---------------------------------
 const traceLoadScreen = (STATE) => {
-    const { width, height, color, margin } = STATE
+    const { seed, width, height, color, margin } = STATE
     const fntSz = [width * 0.009, height * 0.012]
 
     return [
@@ -71,7 +71,7 @@ const traceLoadScreen = (STATE) => {
         group({ weight: 1.5, stroke: '#333' }, [
             ...[
                 ...'generating ',
-                ...window.seed,
+                ...seed,
             ].reduce(
                 (poly, letter, x) => [
                     ...poly,

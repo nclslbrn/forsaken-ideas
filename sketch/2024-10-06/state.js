@@ -33,27 +33,26 @@ const BASE = (seed) => {
             prtcls: [
                 ...repeatedly2d(
                     (x, y) => [
-                        (RND.norm(10) + x) / 100 - 0.5,
-                        (RND.norm(10) + y) / 100 - 0.5
+                        (RND.norm(5) + x) / 75 - 0.5,
+                        (RND.norm(5) + y) / 75 - 0.5
                     ],
-                    100,
-                    100
+                    75,
+                    75
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
-            color: pickRandom(BCKGRND)
+            color: pickRandom(BCKGRND, RND)
         },
         { onlyFnRefs: true }
     )
 }
 
 // Setup state for a new edition ------------------------------------------------
-const resolveState = (config, seed) =>
+const resolveState = (config) =>
     resolve(
         {
-            ...BASE(seed),
+            ...BASE(config.seed),
             ...config,
-            seed
         },
         { onlyFnRefs: true }
     )
