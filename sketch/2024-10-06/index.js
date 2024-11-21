@@ -67,8 +67,7 @@ const init = () => {
     )
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    /* 
-     * plot with animation 
+    /* plot with animation 
     currFrame = 0
     update()
     */
