@@ -1,8 +1,10 @@
-import { rect, group, polyline, convexHull, polygon } from '@thi.ng/geom'
+import { rect, group, polyline, bounds } from '@thi.ng/geom'
+import { range } from '@thi.ng/transducers'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
+import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
@@ -18,7 +20,7 @@ const trace = (STATE) => {
         labels,
         labelWidth
     } = STATE
-    const scale = 0.95
+    const domainScale = 0.95
     const cropPoly = [
         [margin, margin],
         [width - margin, margin],
@@ -29,46 +31,63 @@ const trace = (STATE) => {
     const fntSz = [width * 0.009, height * 0.015]
 
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
-    const randTexts = labels.reduce((labelPolys, txt) => {
-        const txtToPlot = getParagraphVector(txt[1], 16, 4, labelWidth)
-        const poly = txtToPlot.vectors.reduce(
-            (polys, glyph) => [
-                ...polys,
-                ...glyph.map((vecs) =>
-                    polyline(vecs.map((v) => add2([], v, txt[0])))
-                )
-            ],
-            []
-        )
-        const paraHeight = txtToPlot.height
-        const tickLength = labelWidth / 4
-        let tickVecs = [
-            [0, paraHeight],
-            [labelWidth, paraHeight]
-        ]
-        if (txt[0][0] < width / 2) {
-            tickVecs.push([labelWidth + tickLength, paraHeight + tickLength])
-        } else {
-            tickVecs = [[-tickLength, tickLength + paraHeight], ...tickVecs]
-        }
-        const tick = polyline(tickVecs.map((v) => add2([], v, txt[0])))
-        return [...labelPolys, group({}, poly)]
-    }, [])
-    
-    // https://docs.thi.ng/umbrella/geom/functions/convexHull.html
-    const randTextsBounds = randTexts.map((group) => convexHull(group))
+    const randTexts = labels.reduce(
+        (labelPolys, txt) => {
+            const txtToPlot = getParagraphVector(txt[1], 16, 8, labelWidth)
+            const txtPolys = txtToPlot.vectors.reduce(
+                (polys, glyph) => [
+                    ...polys,
+                    ...glyph.map((vecs) =>
+                        polyline(vecs.map((v) => add2([], v, txt[0])))
+                    )
+                ],
+                []
+            )
 
+            const paraHeight = txtToPlot.height / 1.8
+            const tickLength = labelWidth / 8
+            let tickVecs = [
+                [0, paraHeight],
+                [labelWidth, paraHeight]
+            ]
+            if (txt[0][0] < width / 2) {
+                tickVecs.push([
+                    labelWidth + tickLength,
+                    paraHeight + tickLength
+                ])
+            } else {
+                tickVecs = [[-tickLength, tickLength + paraHeight], ...tickVecs]
+            }
+            const tick = polyline(tickVecs.map((v) => add2([], v, txt[0])))
+
+            return [...labelPolys, group({}, [...txtPolys, tick])]
+              
+        },
+        []
+    )
+    // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
+    const RES = [128, 128]
+    const randTextsBounds = randTexts.map((txtGroup) => {
+        const txtBounds = bounds(txtGroup, 12),
+              sdf = asSDF(txtGroup),
+              image = sample2d(sdf, txtBounds, RES)
+        const contours = asPolygons(image, txtBounds, RES, range(0, 10, 5), 0.15)
+        console.log(contours)
+        return contours
+    })
+    //...ticks.map(())
+    // Enlarge the clipping poly
+
+    console.log(typeof randTextsBounds)
+    const inTxtBound = (vec, txtBounds) => txtBounds.reduce((isIn, poly) => isIn || pointInPolygon2(vec, poly.points), false) 
     // https://docs.thi.ng/umbrella/geom-isec/functions/pointInPolygon2.html
     const removeBoundsFromLine = (line) => {
         let out = [[]],
             lineIdx = 0,
             wasInside = false
-        // Seems vec is never inside 
-        // 1 - bounds are not well computed 
-        // 2 - points are not inside the just cross it (between two vecs) 
         line.forEach((vec) => {
             const isInside = randTextsBounds.reduce(
-                (isIn, poly) => isIn || pointInPolygon2(vec, poly),
+                (isIn, polys) => isIn || inTxtBound(vec, polys),
                 false
             )
             if (wasInside && !isInside) {
@@ -119,15 +138,16 @@ const trace = (STATE) => {
                 )
             ),
             // randomly placed random arbitrary labels (./LABELS.js)
-            ...randTextsBounds.map(bounds => polygon(bounds.points, { fill: '#FF333333'})),
+            // group({}, randTextsBounds),
+            ...randTexts,
             // the flow fields trails
             ...trails.reduce(
                 (acc, line) => [
                     ...acc,
                     ...clipPolylinePoly(
                         line.map((pos) => [
-                            width / 2 + pos[0] * inner[0] * scale,
-                            height / 2 + pos[1] * inner[1] * scale
+                            width / 2 + pos[0] * inner[0] * domainScale,
+                            height / 2 + pos[1] * inner[1] * domainScale
                         ]),
                         cropPoly
                     ).reduce(
@@ -136,6 +156,7 @@ const trace = (STATE) => {
                             ...removeBoundsFromLine(vecs).map((cleaned) =>
                                 polyline(cleaned)
                             )
+                            // polyline(vecs)
                         ],
                         []
                     )

@@ -46,7 +46,7 @@ const BASE = (config) => {
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
             numLabel: RND.minmaxInt(1, 4),
-            labelWidth: ({ width }) => width * 0.2,
+            labelWidth: ({ width }) => width * 0.25,
             labels: ({ numLabel, labelWidth, width, height, margin }) => {
                 if (numLabel === 0) {
                     return []
