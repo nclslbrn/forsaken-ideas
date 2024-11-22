@@ -31,55 +31,53 @@ const trace = (STATE) => {
     const fntSz = [width * 0.009, height * 0.015]
 
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
-    const randTexts = labels.reduce(
-        (labelPolys, txt) => {
-            const txtToPlot = getParagraphVector(txt[1], 16, 8, labelWidth)
-            const txtPolys = txtToPlot.vectors.reduce(
-                (polys, glyph) => [
-                    ...polys,
-                    ...glyph.map((vecs) =>
-                        polyline(vecs.map((v) => add2([], v, txt[0])))
-                    )
-                ],
-                []
-            )
+    const randTexts = labels.reduce((labelPolys, txt) => {
+        const txtToPlot = getParagraphVector(txt[1], 16, 8, labelWidth)
+        const txtPolys = txtToPlot.vectors.reduce(
+            (polys, glyph) => [
+                ...polys,
+                ...glyph.map((vecs) =>
+                    polyline(vecs.map((v) => add2([], v, txt[0])))
+                )
+            ],
+            []
+        )
 
-            const paraHeight = txtToPlot.height / 1.8
-            const tickLength = labelWidth / 8
-            let tickVecs = [
-                [0, paraHeight],
-                [labelWidth, paraHeight]
-            ]
-            if (txt[0][0] < width / 2) {
-                tickVecs.push([
-                    labelWidth + tickLength,
-                    paraHeight + tickLength
-                ])
-            } else {
-                tickVecs = [[-tickLength, tickLength + paraHeight], ...tickVecs]
-            }
-            const tick = polyline(tickVecs.map((v) => add2([], v, txt[0])))
+        const paraHeight = txtToPlot.height / 1.4
+        const tickLength = labelWidth / 8
+        let tickVecs = [
+            [0, paraHeight],
+            [labelWidth, paraHeight]
+        ]
+        if (txt[0][0] < width / 2) {
+            tickVecs.push([labelWidth + tickLength, paraHeight + tickLength])
+        } else {
+            tickVecs = [[-tickLength, tickLength + paraHeight], ...tickVecs]
+        }
+        const tick = polyline(tickVecs.map((v) => add2([], v, txt[0])))
 
-            return [...labelPolys, group({}, [...txtPolys, tick])]
-              
-        },
-        []
-    )
+        return [...labelPolys, group({}, [...txtPolys, tick])]
+    }, [])
     // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
     const RES = [128, 128]
     const randTextsBounds = randTexts.map((txtGroup) => {
         const txtBounds = bounds(txtGroup, 12),
-              sdf = asSDF(txtGroup),
-              image = sample2d(sdf, txtBounds, RES)
-        const contours = asPolygons(image, txtBounds, RES, range(0, 10, 5), 0.15)
-        console.log(contours)
+            sdf = asSDF(txtGroup),
+            image = sample2d(sdf, txtBounds, RES)
+        const contours = asPolygons(
+            image,
+            txtBounds,
+            RES,
+            range(0, 16, 4),
+            0.15
+        )
         return contours
     })
-    //...ticks.map(())
-    // Enlarge the clipping poly
-
-    console.log(typeof randTextsBounds)
-    const inTxtBound = (vec, txtBounds) => txtBounds.reduce((isIn, poly) => isIn || pointInPolygon2(vec, poly.points), false) 
+    const inTxtBound = (vec, txtBounds) =>
+        txtBounds.reduce(
+            (isIn, poly) => isIn || pointInPolygon2(vec, poly.points),
+            false
+        )
     // https://docs.thi.ng/umbrella/geom-isec/functions/pointInPolygon2.html
     const removeBoundsFromLine = (line) => {
         let out = [[]],
@@ -104,11 +102,11 @@ const trace = (STATE) => {
 
     // Random in flow field label
     return [
-        rect([width, height], { fill: color }),
-        group({ weight: 0.5, stroke: '#333' }, [
+        rect([width, height], { fill: '#222' }), //color }),
+        group({ weight: 1, stroke: '#0cc' }, [
             // bottom right label seed + attractor name + mixing formula
             group(
-                {},
+                { stroke: 'white' },
                 [...seed, ...' → ', ...attractor, ...' → ', ...operator].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -122,7 +120,7 @@ const trace = (STATE) => {
             ),
             // bottom left label timestamp
             group(
-                {},
+                { stroke: 'white' },
                 [...new Date().toISOString()].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -139,10 +137,10 @@ const trace = (STATE) => {
             ),
             // randomly placed random arbitrary labels (./LABELS.js)
             // group({}, randTextsBounds),
-            ...randTexts,
+            group({ stroke: 'white' }, randTexts),
             // the flow fields trails
             ...trails.reduce(
-                (acc, line) => [
+                (acc, line, idx) => [
                     ...acc,
                     ...clipPolylinePoly(
                         line.map((pos) => [
@@ -154,9 +152,12 @@ const trace = (STATE) => {
                         (splitted, vecs) => [
                             ...splitted,
                             ...removeBoundsFromLine(vecs).map((cleaned) =>
-                                polyline(cleaned)
+                                polyline(
+                                    cleaned,
+                                    idx % 17 === 0 ? { stroke: 'white' } : 
+                                  idx % 43 === 0 ? { stroke: 'tomato' } : {}
+                                )
                             )
-                            // polyline(vecs)
                         ],
                         []
                     )

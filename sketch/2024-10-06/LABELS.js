@@ -5,7 +5,7 @@ const LABELS = [
   'Unused code kept just in case',
   'Unknown source',
   'Not a safe place',
-  'Two dead body projects buried here',
+  'Two dead projects buried here',
   'Mt Attractor',
   'Decimal Valley',
   'Dry lake',

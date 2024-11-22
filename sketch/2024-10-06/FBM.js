@@ -1,5 +1,4 @@
 import { createNoise2D } from 'simplex-noise'
-
 // FBM  https://thebookofshaders.com/13/
 
 export default class Fbm {
@@ -16,7 +15,7 @@ export default class Fbm {
         this.simplex = createNoise2D(props.prng)
     }
 
-    fbm(x, y, z) {
+    fbm(x, y) {
         let frequency = this.frequency
         let amplitude = this.amplitude
 
@@ -43,8 +42,8 @@ export default class Fbm {
         }
         return value
     }
-    f(x, y, z) {
-        let tmp = this.fbm(x, y, z)
+    f(x, y) {
+        let tmp = this.fbm(x, y)
         tmp = this.fbm(x + 32 * tmp, y + 32 * tmp, z + 32 * tmp)
         tmp = this.fbm(x + 64 * tmp, y + 64 * tmp, z + 64 * tmp)
         return tmp

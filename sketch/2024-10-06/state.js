@@ -7,7 +7,6 @@ import Fbm from './FBM'
 import { LABELS } from './LABELS'
 
 const ATTRACT_ENGINE = strangeAttractor(),
-    RND = new Smush32(),
     BCKGRND = 'eeede7-e2ded0-b7ccca-f1ebe9-e2ceca-d6e2ed'
         .split('-')
         .map((c) => `#${c}`)
@@ -15,7 +14,8 @@ const ATTRACT_ENGINE = strangeAttractor(),
 // Pick random value to build an edition ----------------------------------------
 const BASE = (config) => {
     console.log(config.seed, config.seed.length)
-    RND.seed(config.seed)
+    const RND = new Smush32(config.seed)
+
     return resolve(
         {
             ...config,
@@ -45,8 +45,8 @@ const BASE = (config) => {
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
-            numLabel: RND.minmaxInt(1, 4),
-            labelWidth: ({ width }) => width * 0.25,
+            numLabel: RND.minmaxInt(1, 3),
+            labelWidth: 600,
             labels: ({ numLabel, labelWidth, width, height, margin }) => {
                 if (numLabel === 0) {
                     return []
@@ -58,10 +58,11 @@ const BASE = (config) => {
                         100,
                         RND
                     )
+                    console.log(texts)
                     return texts.map((str) => [
                         [
                             RND.minmax(margin, width - labelWidth - margin),
-                            RND.minmax(margin * 1.5, height - margin * 2)
+                            RND.minmax(margin * 1.5, height - margin * 4)
                         ],
                         str
                     ])
