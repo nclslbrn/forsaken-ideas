@@ -5,7 +5,7 @@ import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
-
+import { getMinMaxPolysPoints } from './utils'
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
     const {
@@ -32,47 +32,65 @@ const trace = (STATE) => {
 
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
     const randTexts = labels.reduce((labelPolys, txt) => {
-        const txtToPlot = getParagraphVector(txt[1], 16, 8, labelWidth)
+        const txtToPlot = getParagraphVector(txt[1], 14, 8, labelWidth)
         const txtPolys = txtToPlot.vectors.reduce(
             (polys, glyph) => [
                 ...polys,
                 ...glyph.map((vecs) =>
+                    // Move txt vector to txt random position (picked in state.js)
                     polyline(vecs.map((v) => add2([], v, txt[0])))
                 )
             ],
             []
         )
 
-        const paraHeight = txtToPlot.height / 1.4
-        const tickLength = labelWidth / 8
-        let tickVecs = [
-            [0, paraHeight],
-            [labelWidth, paraHeight]
-        ]
-        if (txt[0][0] < width / 2) {
-            tickVecs.push([labelWidth + tickLength, paraHeight + tickLength])
-        } else {
-            tickVecs = [[-tickLength, tickLength + paraHeight], ...tickVecs]
-        }
-        const tick = polyline(tickVecs.map((v) => add2([], v, txt[0])))
+        const tickMargin = 24,
+            tickLength = 32,
+            tickMinMaxX = [
+                getMinMaxPolysPoints(txtPolys, 'min', 'x'),
+                getMinMaxPolysPoints(txtPolys, 'max', 'x')
+            ],
+            tickMinMaxY = [
+                getMinMaxPolysPoints(txtPolys, 'min', 'y'),
+                getMinMaxPolysPoints(txtPolys, 'max', 'y')
+            ],
+            tickOnRight = txt[0][0] < width / 2 - labelWidth / 2,
+            tickOnTop = txt[0][1] > width / 2,
+            tickY = tickOnTop
+                ? tickMinMaxY[0] - tickMargin
+                : tickMinMaxY[1] + tickMargin
 
-        return [...labelPolys, group({}, [...txtPolys, tick])]
+        let tickVecs = [
+            [tickMinMaxX[0], tickY],
+            [tickMinMaxX[1], tickY]
+        ]
+        if (tickOnRight) {
+            tickVecs.push([
+                tickMinMaxX[1] + tickLength,
+                tickY + (tickOnTop ? -1 : 1) * tickLength
+            ])
+        } else {
+            tickVecs = [
+                [
+                    tickMinMaxX[0] - tickLength,
+                    tickY + (tickOnTop ? -1 : 1) * tickLength
+                ],
+                ...tickVecs
+            ]
+        }
+
+        return [...labelPolys, group({}, [...txtPolys, polyline(tickVecs)])]
     }, [])
     // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
-    const RES = [128, 128]
+    const RES = [256, 256]
     const randTextsBounds = randTexts.map((txtGroup) => {
-        const txtBounds = bounds(txtGroup, 12),
+        const txtBounds = bounds(txtGroup, 8),
             sdf = asSDF(txtGroup),
             image = sample2d(sdf, txtBounds, RES)
-        const contours = asPolygons(
-            image,
-            txtBounds,
-            RES,
-            range(0, 16, 4),
-            0.15
-        )
+        const contours = asPolygons(image, txtBounds, RES, range(0, 12, 4), 1)
         return contours
     })
+
     const inTxtBound = (vec, txtBounds) =>
         txtBounds.reduce(
             (isIn, poly) => isIn || pointInPolygon2(vec, poly.points),
@@ -100,13 +118,12 @@ const trace = (STATE) => {
         return out
     }
 
-    // Random in flow field label
     return [
         rect([width, height], { fill: '#222' }), //color }),
-        group({ weight: 1, stroke: '#0cc' }, [
+        group({ weight: 1, stroke: '#83c092' }, [
             // bottom right label seed + attractor name + mixing formula
             group(
-                { stroke: 'white' },
+                { stroke: 'white', weight: 1.5 },
                 [...seed, ...' → ', ...attractor, ...' → ', ...operator].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -120,7 +137,7 @@ const trace = (STATE) => {
             ),
             // bottom left label timestamp
             group(
-                { stroke: 'white' },
+                { stroke: 'white', weight: 1.5 },
                 [...new Date().toISOString()].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -136,8 +153,8 @@ const trace = (STATE) => {
                 )
             ),
             // randomly placed random arbitrary labels (./LABELS.js)
-            // group({}, randTextsBounds),
-            group({ stroke: 'white' }, randTexts),
+            //...randTextsBounds,
+            group({ stroke: 'white', weight: 3 }, randTexts),
             // the flow fields trails
             ...trails.reduce(
                 (acc, line, idx) => [
@@ -154,8 +171,11 @@ const trace = (STATE) => {
                             ...removeBoundsFromLine(vecs).map((cleaned) =>
                                 polyline(
                                     cleaned,
-                                    idx % 17 === 0 ? { stroke: 'white' } : 
-                                  idx % 43 === 0 ? { stroke: 'tomato' } : {}
+                                    idx % 17 === 0
+                                        ? { stroke: 'white' }
+                                        : idx % 43 === 0
+                                          ? { stroke: '#E04700' }
+                                          : {}
                                 )
                             )
                         ],
