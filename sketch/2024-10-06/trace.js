@@ -5,7 +5,7 @@ import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
-import { getMinMaxPolysPoints } from './utils'
+import { getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
     const {
@@ -13,7 +13,7 @@ const trace = (STATE) => {
         width,
         height,
         trails,
-        color,
+        colors,
         attractor,
         operator,
         margin,
@@ -117,13 +117,39 @@ const trace = (STATE) => {
         })
         return out
     }
+    const lines = trails.reduce(
+        (acc, line, idx) => [
+            ...acc,
+            ...clipPolylinePoly(
+                line.map((pos) => [
+                    width / 2 + pos[0] * inner[0] * domainScale,
+                    height / 2 + pos[1] * inner[1] * domainScale
+                ]),
+                cropPoly
+            ).reduce(
+                (splitted, vecs) => [
+                    ...splitted,
+                    ...removeBoundsFromLine(vecs).map((cleaned) =>
+                        polyline(cleaned, {
+                            stroke: colors[
+                                idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1
+                            ]
+                        })
+                    )
+                ],
+                []
+            )
+        ],
+        []
+    )
+    //const uniqueLines = removeOverlapingSegments(lines)
 
     return [
-        rect([width, height], { fill: '#222' }), //color }),
-        group({ weight: 1, stroke: '#83c092' }, [
+        rect([width, height], { fill: colors[0] }),
+        group({ weight: 1 }, [
             // bottom right label seed + attractor name + mixing formula
             group(
-                { stroke: 'white', weight: 1.5 },
+                { stroke: colors[2], weight: 1.5 },
                 [...seed, ...' → ', ...attractor, ...' → ', ...operator].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -137,7 +163,7 @@ const trace = (STATE) => {
             ),
             // bottom left label timestamp
             group(
-                { stroke: 'white', weight: 1.5 },
+                { stroke: colors[2], weight: 1.5 },
                 [...new Date().toISOString()].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -154,48 +180,21 @@ const trace = (STATE) => {
             ),
             // randomly placed random arbitrary labels (./LABELS.js)
             //...randTextsBounds,
-            group({ stroke: 'white', weight: 3 }, randTexts),
+            group({ stroke: colors[2], weight: 3 }, randTexts),
             // the flow fields trails
-            ...trails.reduce(
-                (acc, line, idx) => [
-                    ...acc,
-                    ...clipPolylinePoly(
-                        line.map((pos) => [
-                            width / 2 + pos[0] * inner[0] * domainScale,
-                            height / 2 + pos[1] * inner[1] * domainScale
-                        ]),
-                        cropPoly
-                    ).reduce(
-                        (splitted, vecs) => [
-                            ...splitted,
-                            ...removeBoundsFromLine(vecs).map((cleaned) =>
-                                polyline(
-                                    cleaned,
-                                    idx % 17 === 0
-                                        ? { stroke: 'white' }
-                                        : idx % 43 === 0
-                                          ? { stroke: '#E04700' }
-                                          : {}
-                                )
-                            )
-                        ],
-                        []
-                    )
-                ],
-                []
-            )
+            ...lines
         ])
     ]
 }
 
 // Display message while flow field is processed ---------------------------------
 const traceLoadScreen = (STATE) => {
-    const { seed, width, height, color, margin } = STATE
+    const { seed, width, height, colors, margin } = STATE
     const fntSz = [width * 0.009, height * 0.012]
 
     return [
-        rect([width, height], { fill: color }),
-        group({ weight: 1.5, stroke: '#333' }, [
+        rect([width, height], { fill: colors[0] }),
+        group({ weight: 1.5, stroke: colors[1] }, [
             ...[...'generating ', ...seed].reduce(
                 (poly, letter, x) => [
                     ...poly,

@@ -1,16 +1,18 @@
 import { resolve } from '@thi.ng/resolve-map'
-import { pickRandom, pickRandomUnique, Smush32 } from '@thi.ng/random'
+import { pickRandom, pickRandomKey, pickRandomUnique, Smush32 } from '@thi.ng/random'
+import { repeatedly2d } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
 import { OPERATORS } from './operator'
-import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import Fbm from './FBM'
 import { LABELS } from './LABELS'
+import { THEMES } from './THEMES'
 
-const ATTRACT_ENGINE = strangeAttractor(),
+const ATTRACT_ENGINE = strangeAttractor()
+/*
     BCKGRND = 'eeede7-e2ded0-b7ccca-f1ebe9-e2ceca-d6e2ed'
         .split('-')
         .map((c) => `#${c}`)
-
+*/
 // Pick random value to build an edition ----------------------------------------
 const BASE = (config) => {
     console.log(config.seed, config.seed.length)
@@ -68,7 +70,8 @@ const BASE = (config) => {
                     ])
                 }
             },
-            color: pickRandom(BCKGRND, RND)
+            theme: pickRandomKey(THEMES, RND),
+            colors: ({ theme }) => THEMES[theme]
         },
         { onlyFnRefs: true }
     )

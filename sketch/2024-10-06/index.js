@@ -31,7 +31,7 @@ const DPI = quantity(96, dpi),
     IG_SQ = quantity([700, 700], mm),
     IG_4BY5 = quantity([600, 755], mm),
     
-    SIZE = mul(IG_4BY5, DPI).deref(),
+    SIZE = mul(IG_SQ, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -67,6 +67,8 @@ const init = () => {
     )
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
+
+    console.log(STATE.theme)
     /* plot with animation 
     currFrame = 0
     update()

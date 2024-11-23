@@ -1,7 +1,7 @@
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 
 const getRandSeed = () =>
-    `0x${Math.floor(16e8 * Math.random()).toString(16)}`
+    `0x${Math.floor(16e16 * Math.random()).toString(16)}`
 
 const saveSeed = (seed) => {
     if (!seed && seed === null) return
