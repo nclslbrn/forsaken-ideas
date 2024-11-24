@@ -1,14 +1,26 @@
 const THEMES = {
+    // theme-name: [background, stroke1, text, stroke2]
+    Technics: ['#222222', '#ffffff', '#ff7777', '#cefff2'],
+    Cyanotype: ['#001166', '#ff9999', '#ffffee', '#ffcc00'],
+    Postit: ['#eecc55', '#223300', '#000000', '#3333ff'],
+    Artic: ['#091A20', '#70a9a1', '#E3EFF2', '#cfd7c7'],
     Everforest: ['#222222', '#83c092', '#ffffff', '#E04700'],
-    Noir: ['#111111', '#ccccff', '#ffff33', '#33ffff'],
+    Noir: ['#111111', '#ffeeff', '#ffff33', '#eeffff'],
+    /*
+    A: ['#eeede7', '#111111', '#770000', '#000066'],
+    B: ['#e2ded0', '#111111', '#000077', '#003333'],
+    C: ['#b7ccca', '#111111', '#003300', '#113322'],
+    D: ['#f1ebe9', '#111111', '#445500', '#cccc33'],
+    E: ['#e2ceca', '#111111', '#330022', '#cc3333'],
+    F: ['#d6e2ed', '#111111', '#004455', '#33cc33'],
+    */
+    /*    
     Test: ['#ffffff', '#ff6666', '#333333', '#333333'],
     Firebrick: ['#bb2222', '#ffffff', '#000000', '#cccccc'],
     'Bleu outremer': ['#3a4388', '#ccccff', '#ffffff', '#bbff33'],
     Chocolat: ['#5f4240', '#fcfcfc', '#fcfcfc', '#ccff33'],
-    Technics: ['#222222', '#ffffff', '#ff7777', '#cefff2'],
-    'Cyan & rust': ['#33ccff', '#cc3333', '#003311', '#ffcc00'],
-    Postit: ['#eed873', '#222222', '#454a8f', '#aaffee'],
     'Bleu france': ['#257cc4', '#2f297b', '#ffcc33', '#000']
+    */
 }
 
 export { THEMES }

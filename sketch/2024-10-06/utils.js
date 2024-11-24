@@ -23,63 +23,37 @@ const getMinMaxPolysPoints = (polys, query, axis) => {
     }
 }
 
-const isPointInPoly = (point, poly, polyIdx) => {
+const isPointInPoly = (point, poly) => {
     for (let i = 0; i < poly.points.length; i++) {
-        if (poly.points[i] === point && i !== polyIdx) return true
+        if (
+            Math.abs(poly.points[i][0] - point[0]) < 3 
+            && Math.abs(poly.points[i][1] - point[1]) < 3
+        )  { return true } 
+    }
+    return false
+}
+const pointAlreadyExist = (point, polys, polyIdx) => {
+    for (let i = polys.length-1; i <= 0; i--) {
+        if (i !== polyIdx && isPointInPoly(point, polys[i])) return true
     }
     return false
 }
 
 const removeOverlapingSegments = (polys) => {
-    const out = [...polys]
-    for (let i = out.length - 1; i >= 0; i--) {
-        let points = out[i].points
-        const unique = []
-        // check if line start overlap another line
-        if (
-            out.reduce(
-                (same, poly, idx) =>
-                    same || isPointInPoly(points[0], poly, idx),
-                false
-            )
-        ) {
-            let overlaping = true
-            // Follow the line until the two lines diverge
-            for (let j = 1; j < points.length; j++) {
-                overlaping =
-                    overlaping &&
-                    out.reduce(
-                        (same, poly, idx) =>
-                            same || isPointInPoly(points[j], poly, idx),
-                        false
-                    )
-                // Copy points when lines diverge
-                if (!overlaping) {
-                    unique.push(points[j])
-                }
-            }
+    const input = [...polys]
+    const out = []
+    for (let i = input.length - 1; i >= 0; i--) {
+        const pts = [...input[i].points]
+        let alreadyExist = true
+        let j = pts.length - 1
+        // while they overloap remove point
+        while (j >= 0 && alreadyExist) {
+            alreadyExist = pointAlreadyExist(pts[j], input, i)
+            alreadyExist && pts.splice(j, 1)
+            j--
         }
-        // check if line end overlap another line
-        if (
-            out.reduce(
-                (same, poly, idx) =>
-                    same || isPointInPoly(unique[unique.length - 1], poly, idx),
-                false
-            )
-        ) {
-            let overlaping = true
-            for (let k = unique.length - 1; k >= 0; k++) {
-                overlaping =
-                    overlaping &&
-                    out.reduce(
-                        (same, poly, idx) =>
-                            same || isPointInPoly(unique[k], poly, idx),
-                        false
-                    )
-                if (overlaping) unique.splice(k, 1)
-            }
-        }
-        out.splice(i, 1, polyline(unique))
+        pts.length > 2 && out.push(polyline(pts, input[i].attribs))
+        input.splice(i, 0)
     }
     return out
 }

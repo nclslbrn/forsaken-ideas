@@ -1,5 +1,10 @@
 const OPERATORS = [...'ABCDE']
-
+/**
+ * Custom function to mix noise and attractor value
+ * @param {number} a attractor angle
+ * @param {number} b noise angle
+ * @param {number} c particle index
+ */
 const operate = (type, a, b, c) => {
     let x, y, d
     if (['D', 'E'].includes(type)) {
@@ -11,14 +16,14 @@ const operate = (type, a, b, c) => {
         case 'A':
             return a % b
         case 'B':
-            return c % 2 === 0 ? b % a : (a + b) / 2
+            return (c % 75)/75 + (a * Math.sin(b)) ^ a 
         case 'C':
-            return (a % ((c % 10) + b)) * 0.05
+            return (a % ((c % b) + b)) * 0.1
         case 'D':
-            return a * Math.atan(d * 0.1 * b)
+            return a * Math.atan(d * 0.1) ^ b
         case 'E':
-            const dNorm = (71 - d) / 70
-            return Math.sin(a * dNorm)
+            const dNorm = (37.5 - d) / 75
+            return Math.sin(a * dNorm) + b
     }
 }
 

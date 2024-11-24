@@ -6,6 +6,7 @@ import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
 import { getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
+
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
     const {
@@ -142,7 +143,7 @@ const trace = (STATE) => {
         ],
         []
     )
-    //const uniqueLines = removeOverlapingSegments(lines)
+    const uniqueLines = removeOverlapingSegments(lines)
 
     return [
         rect([width, height], { fill: colors[0] }),
@@ -182,7 +183,7 @@ const trace = (STATE) => {
             //...randTextsBounds,
             group({ stroke: colors[2], weight: 3 }, randTexts),
             // the flow fields trails
-            ...lines
+            ...uniqueLines
         ])
     ]
 }

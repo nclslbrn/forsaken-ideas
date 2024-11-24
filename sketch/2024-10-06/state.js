@@ -8,14 +8,9 @@ import { LABELS } from './LABELS'
 import { THEMES } from './THEMES'
 
 const ATTRACT_ENGINE = strangeAttractor()
-/*
-    BCKGRND = 'eeede7-e2ded0-b7ccca-f1ebe9-e2ceca-d6e2ed'
-        .split('-')
-        .map((c) => `#${c}`)
-*/
+
 // Pick random value to build an edition ----------------------------------------
 const BASE = (config) => {
-    console.log(config.seed, config.seed.length)
     const RND = new Smush32(config.seed)
 
     return resolve(
@@ -60,7 +55,6 @@ const BASE = (config) => {
                         100,
                         RND
                     )
-                    console.log(texts)
                     return texts.map((str) => [
                         [
                             RND.minmax(margin, width - labelWidth - margin),
