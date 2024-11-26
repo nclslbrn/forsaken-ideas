@@ -1,17 +1,19 @@
 import { resolve } from '@thi.ng/resolve-map'
-import { pickRandom, pickRandomKey, pickRandomUnique, Smush32 } from '@thi.ng/random'
+import { pickRandom, pickRandomKey, pickRandomUnique, SFC32, Smush32 } from '@thi.ng/random'
 import { repeatedly2d } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
 import { LABELS } from './LABELS'
 import { THEMES } from './THEMES'
+import { seedFromHash } from './seed-from-hash'
 
 const ATTRACT_ENGINE = strangeAttractor()
 
 // Pick random value to build an edition ----------------------------------------
+
 const BASE = (config) => {
-    const RND = new Smush32(config.seed)
+    const RND = new SFC32(seedFromHash(config.seed))
 
     return resolve(
         {

@@ -151,7 +151,13 @@ const trace = (STATE) => {
             // bottom right label seed + attractor name + mixing formula
             group(
                 { stroke: colors[2], weight: 1.5 },
-                [...seed, ...' → ', ...attractor, ...' → ', ...operator].reduce(
+                [
+                    ...seed.substring(0, 24),
+                    ...' → ',
+                    ...attractor,
+                    ...' → ',
+                    ...operator
+                ].reduce(
                     (poly, letter, x) => [
                         ...poly,
                         ...getGlyphVector(letter, fntSz, [

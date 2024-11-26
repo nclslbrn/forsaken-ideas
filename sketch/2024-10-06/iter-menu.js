@@ -67,7 +67,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                                 background: ${iter[1] === STATE.seed ? '#ffd128' : '#ccc'}; 
                               `
                             },
-                            iter[1]
+                            iter[1].substring(0, 24)
                         ),
                         button(
                             {
