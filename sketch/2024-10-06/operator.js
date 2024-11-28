@@ -8,7 +8,7 @@ const OPERATORS = [...'ABCDE']
 const DOMAIN = 75
 const operate = (type, a, b, c) => {
     let x, y, d
-    if (['B', 'D', 'E'].includes(type)) {
+    if (['D', 'E'].includes(type)) {
         y = c % DOMAIN
         x = c - y
         d = Math.hypot(
@@ -20,7 +20,7 @@ const operate = (type, a, b, c) => {
         case 'A':
             return a % b
         case 'B':
-            return Math.sinh(a) % Math.sin(c % b)
+            return (1 + a) ** 2 % Math.sin(b)
         case 'C':
             return (a % ((c % b) + b)) * 0.1
         case 'D':

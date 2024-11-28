@@ -1,6 +1,12 @@
 import { resolve } from '@thi.ng/resolve-map'
-import { pickRandom, pickRandomKey, pickRandomUnique, SFC32, Smush32 } from '@thi.ng/random'
-import { repeatedly2d } from '@thi.ng/transducers'
+import {
+    pickRandom,
+    pickRandomKey,
+    pickRandomUnique,
+    SFC32,
+    Smush32
+} from '@thi.ng/random'
+import { length, repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
@@ -18,6 +24,10 @@ const BASE = (config) => {
     return resolve(
         {
             ...config,
+            inner: ({ width, height, margin }) => [
+                width - margin * 2,
+                height - margin * 2
+            ],
             attractor: () => {
                 const picked = pickRandom(
                     Object.keys(ATTRACT_ENGINE.attractors),
@@ -44,9 +54,9 @@ const BASE = (config) => {
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
-            numLabel: RND.minmaxInt(2, 4),
-            labelWidth: 420,
-            labels: ({ numLabel, labelWidth, width, height, margin }) => {
+            numLabel: RND.minmaxInt(6, 12),
+            labelWidth: 520,
+            labels: ({ numLabel, labelWidth, inner, margin }) => {
                 if (numLabel === 0) {
                     return []
                 } else {
@@ -57,13 +67,27 @@ const BASE = (config) => {
                         100,
                         RND
                     )
-                    return texts.map((str) => [
-                        [
-                            RND.minmax(margin, width - labelWidth - margin),
-                            RND.minmax(margin * 1.5, height - margin * 4)
-                        ],
-                        str
-                    ])
+                    const out = [], maxTries = 1000
+                    let t = 0
+                    while (out.length < texts.length && t < maxTries) {
+                        const randPos = [
+                            RND.minmax(margin, inner[0] - labelWidth),
+                            RND.minmax(margin, inner[1] - margin * 2)
+                        ]
+                        if (
+                            out.reduce(
+                                (away, txt) =>
+                                    away &&
+                                    (Math.abs(txt[0][0] - randPos[0]) >= labelWidth || Math.abs(txt[0][1] - randPos[1]) >= 200),
+                                true
+                            ) || out.length === 0
+                        ) {
+                            out.push([randPos, texts[out.length]])
+                            t = 0
+                        }
+                        t++
+                  }
+                  return out
                 }
             },
             theme: pickRandomKey(THEMES, RND),

@@ -13,6 +13,7 @@ const trace = (STATE) => {
         seed,
         width,
         height,
+        inner,
         trails,
         colors,
         attractor,
@@ -28,12 +29,11 @@ const trace = (STATE) => {
         [width - margin, height - margin * 1.33],
         [margin, height - margin * 1.33]
     ]
-    const inner = [width - margin * 2, height - margin * 2]
     const fntSz = [width * 0.009, height * 0.015]
 
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
     const randTexts = labels.reduce((labelPolys, txt) => {
-        const txtToPlot = getParagraphVector(txt[1], 14, 8, labelWidth)
+        const txtToPlot = getParagraphVector(txt[1], 22, 8, labelWidth)
         const txtPolys = txtToPlot.vectors.reduce(
             (polys, glyph) => [
                 ...polys,

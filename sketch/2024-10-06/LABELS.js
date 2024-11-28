@@ -1,5 +1,5 @@
 const LABELS = [
-  'Abandoned working track',
+  'Abandoned working trail',
   'Avant-garde of the 60s',
   'A pleasant moment by the fire',
   'Cave of regrets',

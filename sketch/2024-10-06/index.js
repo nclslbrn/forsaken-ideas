@@ -74,7 +74,8 @@ const init = () => {
       ['theme', STATE.theme],
       ['attractor', STATE.attractor],
       ['operate', STATE.operator],
-      ['labels', STATE.labels.map((txt) => txt[1]).join(', ')]
+      ['labels', `${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`]
+
     ])
     /* plot with animation 
     currFrame = 0
