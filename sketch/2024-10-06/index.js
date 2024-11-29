@@ -23,15 +23,12 @@ import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { iterMenu } from './iter-menu'
 import { operate } from './operator'
 import { trace, traceLoadScreen } from './trace'
-import { THEMES } from './THEMES'
 
 const DPI = quantity(96, dpi),
-    
     TWOK_16_9 = quantity([1080, 607], mm),
     TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([700, 700], mm),
     IG_4BY5 = quantity([600, 755], mm),
-    
     SIZE = mul(IG_4BY5, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -52,44 +49,39 @@ let STATE,
     isRecording = false,
     recorder = null
 
-
 const init = () => {
     if (!seed) return
     if (frameReq) cancelAnimationFrame(frameReq)
     if (isRecording) startRecording()
-   
-    STATE = resolveState(
-        {
-            width: SIZE[0],
-            height: SIZE[1],
-            margin: MARGIN,
-            seed
-        },
-    )
+
+    STATE = resolveState({
+        width: SIZE[0],
+        height: SIZE[1],
+        margin: MARGIN,
+        seed
+    })
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    console.table([
-      ['seed', STATE.seed],
-      ['theme', STATE.theme],
-      ['attractor', STATE.attractor],
-      ['operate', STATE.operator],
-      ['labels', `${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`]
-
-    ])
+    console.log(
+        `seed : ${STATE.seed}
+theme: ${STATE.theme}
+attractor: ${STATE.attractor}
+operate: ${STATE.operator}
+labels: ${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`
+    )
     /* plot with animation 
     currFrame = 0
     update()
     */
-    
-    /* plot without */ 
+
+    /* plot without */
     draw(CTX, traceLoadScreen(STATE))
     for (let i = 0; i < NUM_ITER; i++) {
         iterate()
     }
     drawElems = trace(STATE)
     draw(CTX, group({}, drawElems))
-    
 }
 
 const iterate = () => {
@@ -167,30 +159,15 @@ window.onkeydown = (e) => {
             isRecording = !isRecording
             init()
             break
-
-        default:
-            new Notification(
-                `No action assigned to key [${e.key}]. Press key: <br>` +
-                    `- [n] to generate a new seed (and a new iteration)<br>` +
-                    `- [s] to save the current seed <br>` +
-                    `- [c] to clean stored seeds <br>` +
-                    `- [r] to record a video capture`,
-                ROOT,
-                'light'
-            )
     }
 }
 
 const startRecording = () => {
     if (!isRecording) return
-    recorder = canvasRecorder(
-        CANVAS,
-        `${seed}-${new Date().toISOString()}`,
-        {
-            mimeType: 'video/webm;codecs=vp9',
-            fps: 30
-        }
-    )
+    recorder = canvasRecorder(CANVAS, `${seed}-${new Date().toISOString()}`, {
+        mimeType: 'video/webm;codecs=vp9',
+        fps: 30
+    })
     recorder.start()
     console.log('%c Record started ', 'background: tomato; color: white')
 }
@@ -207,12 +184,12 @@ ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS)
 ROOT.appendChild(ITER_LIST)
 
-const queryString = window.location.search 
+const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 if (urlParams.has('seed')) {
-  seed = urlParams.get('seed')
+    seed = urlParams.get('seed')
 } else {
-  seed = getRandSeed()
+    seed = getRandSeed()
 }
 init()
 iterMenu(ITER_LIST, STATE)

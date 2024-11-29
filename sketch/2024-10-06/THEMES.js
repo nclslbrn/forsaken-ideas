@@ -1,4 +1,5 @@
 const THEMES = {
+    
     // theme-name: [background, stroke1, text, stroke2]
     Technics: ['#222222', '#ffffff', '#ff7777', '#cefff2'],
     Cyanotype: ['#001166', '#ff9999', '#ffffee', '#ffcc00'],
@@ -7,9 +8,10 @@ const THEMES = {
     Everforest: ['#222222', '#83c092', '#ffffff', '#E04700'],
     Noir: ['#111111', '#ffeeff', '#ffff33', '#eeffff'],
     Test: ['#ffffff', '#111111', '#cc3333', '#333333'],
+    
     A: ['#eeede7', '#111111', '#770000', '#000066'],
-    'Bleu outremer': ['#3a4388', '#ccccff', '#ffffff', '#bbff33'],
     /*    
+    'Bleu outremer': ['#3a4388', '#ccccff', '#ffffff', '#bbff33'],
     B: ['#e2ded0', '#111111', '#000077', '#003333'],
     C: ['#b7ccca', '#111111', '#003300', '#113322'],
     D: ['#f1ebe9', '#111111', '#445500', '#cccc33'],

@@ -1,4 +1,4 @@
-const OPERATORS = [...'ABCDE']
+const OPERATORS = [...'ABCDEF']
 /**
  * Custom function to mix noise and attractor value
  * @param {number} a attractor angle
@@ -8,12 +8,12 @@ const OPERATORS = [...'ABCDE']
 const DOMAIN = 75
 const operate = (type, a, b, c) => {
     let x, y, d
-    if (['D', 'E'].includes(type)) {
+    if (['C', 'D', 'E'].includes(type)) {
         y = c % DOMAIN
         x = c - y
         d = Math.hypot(
-            (Math.abs(x - DOMAIN / 2) % DOMAIN) / 2,
-            (Math.abs(y - DOMAIN / 2) % DOMAIN) / 2
+            Math.abs(x - DOMAIN / 2) / DOMAIN,
+            Math.abs(y - DOMAIN / 2) / DOMAIN
         )
     }
     switch (type) {
@@ -22,12 +22,13 @@ const operate = (type, a, b, c) => {
         case 'B':
             return (1 + a) ** 2 % Math.sin(b)
         case 'C':
-            return (a % ((c % b) + b)) * 0.1
+            return (a % ((d / DOMAIN) * b)) * 1.25
         case 'D':
             return (a * Math.atan(d * 0.1)) ^ b
         case 'E':
-            const dNorm = (37.5 - d) / 75
-            return Math.sin(a * dNorm) + b
+            return a - Math.max(d / DOMAIN, b)
+        case 'F':
+            return a
     }
 }
 
