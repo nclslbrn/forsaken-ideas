@@ -8,7 +8,7 @@ import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
 import { getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
 
 // Trace flow trails ------------------------------------------------------------
-const trace = (STATE) => {
+const trace = (STATE, type = 'pixel') => {
     const {
         seed,
         width,
@@ -82,15 +82,25 @@ const trace = (STATE) => {
 
         return [...labelPolys, group({}, [...txtPolys, polyline(tickVecs)])]
     }, [])
+
     // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
     const RES = [256, 256]
-    const randTextsBounds = randTexts.map((txtGroup) => {
-        const txtBounds = bounds(txtGroup, 8),
-            sdf = asSDF(txtGroup),
-            image = sample2d(sdf, txtBounds, RES)
-        const contours = asPolygons(image, txtBounds, RES, range(0, 12, 4), 1)
-        return contours
-    })
+    const randTextsBounds =
+        type === 'vector'
+            ? randTexts.map((txtGroup) => {
+                  const txtBounds = bounds(txtGroup, 8),
+                      sdf = asSDF(txtGroup),
+                      image = sample2d(sdf, txtBounds, RES)
+                  const contours = asPolygons(
+                      image,
+                      txtBounds,
+                      RES,
+                      range(0, 12, 4),
+                      1
+                  )
+                  return contours
+              })
+            : false
 
     const inTxtBound = (vec, txtBounds) =>
         txtBounds.reduce(
@@ -118,32 +128,55 @@ const trace = (STATE) => {
         })
         return out
     }
-    const lines = trails.reduce(
-        (acc, line, idx) => [
-            ...acc,
-            ...clipPolylinePoly(
-                line.map((pos) => [
-                    width / 2 + pos[0] * inner[0] * domainScale,
-                    height / 2 + pos[1] * inner[1] * domainScale
-                ]),
-                cropPoly
-            ).reduce(
-                (splitted, vecs) => [
-                    ...splitted,
-                    ...removeBoundsFromLine(vecs).map((cleaned) =>
-                        polyline(cleaned, {
-                            stroke: colors[
-                                idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1
-                            ]
-                        })
-                    )
-                ],
-                []
-            )
-        ],
-        []
-    )
-    const uniqueLines = removeOverlapingSegments(lines)
+    const strokeById = (idx) =>
+        colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
+
+    const lines =
+        type === 'pixel'
+            ? trails.reduce((acc, line, idx) => {
+                  const cropped = clipPolylinePoly(
+                      line.map((pos) => [
+                          width / 2 + pos[0] * inner[0] * domainScale,
+                          height / 2 + pos[1] * inner[1] * domainScale
+                      ]),
+                      cropPoly
+                  )
+
+                  return [
+                      ...acc,
+                      ...cropped.map((line) =>
+                          polyline(line, {
+                              stroke: strokeById(idx),
+                              weight: 1
+                          })
+                      )
+                  ]
+              }, [])
+            : trails.reduce(
+                  (acc, line, idx) => [
+                      ...acc,
+                      ...clipPolylinePoly(
+                          line.map((pos) => [
+                              width / 2 + pos[0] * inner[0] * domainScale,
+                              height / 2 + pos[1] * inner[1] * domainScale
+                          ]),
+                          cropPoly
+                      ).reduce(
+                          (splitted, vecs) => [
+                              ...splitted,
+                              ...removeBoundsFromLine(vecs).map((cleaned) =>
+                                  polyline(cleaned, {
+                                      stroke: strokeById(idx)
+                                  })
+                              )
+                          ],
+                          []
+                      )
+                  ],
+                  []
+              )
+    const uniqueLines =
+        type === 'pixel' ? lines : removeOverlapingSegments(lines)
 
     return [
         rect([width, height], { fill: colors[0] }),
@@ -185,11 +218,13 @@ const trace = (STATE) => {
                     []
                 )
             ),
-            // randomly placed random arbitrary labels (./LABELS.js)
-            //...randTextsBounds,
-            group({ stroke: colors[2], weight: 3 }, randTexts),
             // the flow fields trails
-            ...uniqueLines
+            ...uniqueLines,
+            // randomly placed random arbitrary labels (./LABELS.js)
+            type === 'pixel' 
+                ? group({ stroke: colors[0], weight: 12 }, randTexts)
+                : group(),
+            group({ stroke: colors[2], weight: 3 }, randTexts)
         ])
     ]
 }

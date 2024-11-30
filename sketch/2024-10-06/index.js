@@ -47,6 +47,7 @@ let STATE,
     currFrame = 0,
     frameReq = null,
     isRecording = false,
+    isAnimated = false,
     recorder = null
 
 const init = () => {
@@ -63,25 +64,16 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    console.log(
-        `seed : ${STATE.seed}
-theme: ${STATE.theme}
-attractor: ${STATE.attractor}
-operate: ${STATE.operator}
-labels: ${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`
-    )
-    /* plot with animation 
-    currFrame = 0
-    update()
-    */
-
-    /* plot without */
-    draw(CTX, traceLoadScreen(STATE))
-    for (let i = 0; i < NUM_ITER; i++) {
-        iterate()
+    if (isAnimated) {
+        currFrame = 0
+        update()
+    } else {
+        draw(CTX, traceLoadScreen(STATE))
+        for (let i = 0; i < NUM_ITER; i++) {
+            iterate()
+        }
+        draw(CTX, group({}, trace(STATE, 'pixel')))
     }
-    drawElems = trace(STATE)
-    draw(CTX, group({}, drawElems))
 }
 
 const iterate = () => {
@@ -91,7 +83,7 @@ const iterate = () => {
                 x: prtcls[j][0],
                 y: prtcls[j][1]
             }),
-            k = Math.abs(noise.fbm(pos.x * 900, pos.y * 900)),
+            k = noise.fbm(pos.x * 900, pos.y * 900),
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             n = [
@@ -107,7 +99,7 @@ const update = () => {
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
         iterate()
-        drawElems = trace(STATE)
+        drawElems = trace(STATE, 'pixel')
         draw(CTX, group({}, drawElems))
         currFrame++
     } else {
@@ -133,7 +125,7 @@ window['exportSVG'] = () =>
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, drawElems)
+                group({}, trace(STATE, 'vector'))
             )
         )
     )
@@ -166,7 +158,7 @@ const startRecording = () => {
     if (!isRecording) return
     recorder = canvasRecorder(CANVAS, `${seed}-${new Date().toISOString()}`, {
         mimeType: 'video/webm;codecs=vp9',
-        fps: 30
+        fps: 60
     })
     recorder.start()
     console.log('%c Record started ', 'background: tomato; color: white')
@@ -192,6 +184,13 @@ if (urlParams.has('seed')) {
     seed = getRandSeed()
 }
 init()
-iterMenu(ITER_LIST, STATE)
 
+console.log(
+    `seed : ${STATE.seed}
+theme: ${STATE.theme}
+attractor: ${STATE.attractor}
+operate: ${STATE.operator}
+labels: ${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`
+)
+iterMenu(ITER_LIST, STATE)
 handleAction()
