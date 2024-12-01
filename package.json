@@ -22,6 +22,7 @@
     "@nclslbrn/artistry-swatch": "^0.0.7",
     "@nclslbrn/plot-writer": "^0.1.10",
     "@thi.ng/adapt-dpi": "^2.2.49",
+    "@thi.ng/base-n": "^2.7.25",
     "@thi.ng/date": "^2.7.20",
     "@thi.ng/dl-asset": "^2.3.83",
     "@thi.ng/expose": "^1.2.31",

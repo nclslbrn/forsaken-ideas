@@ -4,9 +4,8 @@ import {
     pickRandomKey,
     pickRandomUnique,
     SFC32,
-    Smush32
 } from '@thi.ng/random'
-import { length, repeatedly, repeatedly2d } from '@thi.ng/transducers'
+import { repeatedly2d } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
@@ -54,7 +53,7 @@ const BASE = (config) => {
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
-            numLabel: RND.minmaxInt(6, 12),
+            numLabel: RND.minmaxInt(2, 6),
             labelWidth: 520,
             labels: ({ numLabel, labelWidth, inner, margin }) => {
                 if (numLabel === 0) {

@@ -29,7 +29,7 @@ const trace = (STATE, type = 'pixel') => {
         [width - margin, height - margin * 1.33],
         [margin, height - margin * 1.33]
     ]
-    const fntSz = [width * 0.009, height * 0.015]
+    const fntSz = [width * 0.009, height * 0.017]
 
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
     const randTexts = labels.reduce((labelPolys, txt) => {
@@ -222,7 +222,7 @@ const trace = (STATE, type = 'pixel') => {
             ...uniqueLines,
             // randomly placed random arbitrary labels (./LABELS.js)
             type === 'pixel' 
-                ? group({ stroke: colors[0], weight: 12 }, randTexts)
+                ? group({ stroke: colors[0], weight: 16 }, randTexts)
                 : group(),
             group({ stroke: colors[2], weight: 3 }, randTexts)
         ])
