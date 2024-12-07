@@ -46,6 +46,7 @@ const LABELS = [
   'The first image of your favourite film',
   'The moment we are living through',
   'The remnants of Net Art',
+  'The well of wealth',
   'Two dead projects buried here',
   'Unknown source',
   'Your first souvenir',

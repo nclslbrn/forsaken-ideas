@@ -84,7 +84,7 @@ const trace = (STATE, type = 'pixel') => {
     }, [])
 
     // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
-    const RES = [256, 256]
+    const RES = [256, 256], weight = 3
     const randTextsBounds =
         type === 'vector'
             ? randTexts.map((txtGroup) => {
@@ -180,10 +180,10 @@ const trace = (STATE, type = 'pixel') => {
 
     return [
         rect([width, height], { fill: colors[0] }),
-        group({ weight: 1 }, [
+        group({ weight }, [
             // bottom right label seed + attractor name + mixing formula
             group(
-                { stroke: colors[2], weight: 1.5 },
+                { stroke: colors[2] },
                 [
                     ...seed.substring(0, 24),
                     ...' → ',
@@ -203,7 +203,7 @@ const trace = (STATE, type = 'pixel') => {
             ),
             // bottom left label timestamp
             group(
-                { stroke: colors[2], weight: 1.5 },
+                { stroke: colors[2] },
                 [...new Date().toISOString()].reduce(
                     (poly, letter, x) => [
                         ...poly,
@@ -222,9 +222,9 @@ const trace = (STATE, type = 'pixel') => {
             ...uniqueLines,
             // randomly placed random arbitrary labels (./LABELS.js)
             type === 'pixel' 
-                ? group({ stroke: colors[0], weight: 16 }, randTexts)
+                ? group({ stroke: colors[0], weight: weight*2 }, randTexts)
                 : group(),
-            group({ stroke: colors[2], weight: 3 }, randTexts)
+            group({ stroke: colors[2] }, randTexts)
         ])
     ]
 }
