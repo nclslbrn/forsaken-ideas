@@ -94,8 +94,8 @@ const iterate = () => {
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             n = [
-                prtcls[j][0] + Math.cos(m) * k * 0.007,
-                prtcls[j][1] + Math.sin(m) * k * 0.007
+                prtcls[j][0] + Math.cos(m) * k * 0.002,
+                prtcls[j][1] + Math.sin(m) * k * 0.002
             ]
         trails[j].push(n)
         prtcls[j] = n
