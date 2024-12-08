@@ -1,3 +1,5 @@
+import { DOMAIN } from './state'
+
 const OPERATORS = [...'ABCDEF']
 /**
  * Custom function to mix noise and attractor value
@@ -6,7 +8,6 @@ const OPERATORS = [...'ABCDEF']
  * @param {number} c particle index
  */
 const { abs, ceil, sin, cos, max, atan, PI, atan2, hypot } = Math
-const DOMAIN = 75
 const operate = (type, a, b, c) => {
     let x, y, d
     if (['C', 'D', 'E', 'F'].includes(type)) {

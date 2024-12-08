@@ -16,7 +16,7 @@ import { seedFromHash } from './seed-from-hash'
 const ATTRACT_ENGINE = strangeAttractor()
 
 // Pick random value to build an edition ----------------------------------------
-
+const DOMAIN = 70
 const BASE = (config) => {
     const RND = new SFC32(seedFromHash(config.seed))
 
@@ -45,11 +45,11 @@ const BASE = (config) => {
             prtcls: [
                 ...repeatedly2d(
                     (x, y) => [
-                        (RND.norm(5) + x) / 75 - 0.5,
-                        (RND.norm(5) + y) / 75 - 0.5
+                        (RND.norm(5) + x) / DOMAIN - 0.5,
+                        (RND.norm(5) + y) / DOMAIN - 0.5
                     ],
-                    75,
-                    75
+                    DOMAIN,
+                    DOMAIN
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
@@ -106,4 +106,4 @@ const resolveState = (config) =>
         { onlyFnRefs: true }
     )
 
-export { resolveState }
+export { resolveState, DOMAIN }

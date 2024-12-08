@@ -1,5 +1,5 @@
-import '../framed-canvas.css'
-import '../framed-two-columns.css'
+// import '../framed-canvas.css'
+// import '../framed-two-columns.css'
 import {
     getRandSeed,
     saveSeed,
@@ -36,10 +36,17 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 60
+    NUM_ITER = 40
 
 ROOT.style.gridTemplateRows = '1fr 98% 1fr'
+
 CANVAS.style.padding = '0'
+
+// full size 
+ROOT.style.display = 'flex'
+document.body.style.height = 'auto'
+document.body.style.overflowY = 'auto'
+ITER_LIST.style.paddingLeft = '2em'
 
 let STATE,
     seed = false,
@@ -87,8 +94,8 @@ const iterate = () => {
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             n = [
-                prtcls[j][0] + Math.cos(m) * k * 0.0015,
-                prtcls[j][1] + Math.sin(m) * k * 0.0015
+                prtcls[j][0] + Math.cos(m) * k * 0.007,
+                prtcls[j][1] + Math.sin(m) * k * 0.007
             ]
         trails[j].push(n)
         prtcls[j] = n

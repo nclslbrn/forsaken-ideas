@@ -1,7 +1,12 @@
 import { polyline } from '@thi.ng/geom'
 
-const { max, min, abs, round} = Math
-
+const { max, min, abs, round, hypot } = Math
+/**
+ * Compute polylines bound/rectangle value
+ * @param {array} polys a list of polyline
+ * @param {min|max} query define which limit query
+ * @param {x|y} axis define the axe to search
+ */
 const getMinMaxPolysPoints = (polys, query, axis) => {
     switch (query) {
         case 'min':
@@ -24,25 +29,41 @@ const getMinMaxPolysPoints = (polys, query, axis) => {
             )
     }
 }
-
+/**
+ * Test if point is near ones of a polygon
+ * @param {array|Vec} a 2D coordinate
+ * @param {Object|Polyline} a polyline
+ * @param {number} threshold minimal distance between to consider overlap occurs
+ */
 const isPointInPoly = (point, poly, threshold) => {
     for (let i = 0; i < poly.points.length; i++) {
         // test distance between two point on x & y (less precise but more fast than computing the effective distance)
-        /* if (
-            abs(round(poly.points[i][0]) - round(point[0])) < threshold &&
-            abs(round(poly.points[i][1]) - round(point[1])) < threshold
+        if (
+            abs(poly.points[i][0] - point[0]) < threshold &&
+            abs(poly.points[i][1] - point[1]) < threshold
+            // accurate version
+            //hypot(poly.points[i][0] - point[0], poly.points[1] - point[1]) < threshold
         ) {
-        */
-        if (Math.hypot(poly.points[i][0] - point[0], poly.points[1] - point[1]) < threshold) {
             return true
         }
     }
     return false
 }
+
+/**
+ * Test if point is near to another
+ * @param {Array|Vec} point 2d coordinate
+ * @param {Array} a list of polyline
+ * @param {number} the ID of the point polyline (index of polys)
+ */
 const pointAlreadyExist = (point, polys, polyIdx) => {
-    for (let i = polys.length - 1; i <= 0; i--) {
-        if (i !== polyIdx && isPointInPoly(point, polys[i], 1200)) return true
+    if (point === undefined) return true
+    for (let i = polys.length - 1; i >= 0; i--) {
+        if (i !== polyIdx && isPointInPoly(point, polys[i], 0.5)) {
+            return true
+        }
     }
+
     return false
 }
 
@@ -57,16 +78,16 @@ const cleanDouble = (polys) => {
         let wasDouble = pointAlreadyExist(pts[0], input, i), // is current point exist in another line
             line = [] // unique points line
 
-        // for each point on the line 
+        // for each point on the line
         for (let j = 1; j < pts.length; j++) {
             // is point unique
             let isDouble = pointAlreadyExist(pts[j], input, i)
-            // if previous unique but current double 
+            // if previous unique but current double
             if (!wasDouble && isDouble && line.length > 1) {
                 // end the line (with previous uniques points)
                 out.push(polyline(line, input[i].attribs))
             }
-            // if current unique and previous double 
+            // if current unique and previous double
             if (!isDouble && wasDouble) {
                 // create a new line
                 line = [pts[j]]
@@ -79,7 +100,7 @@ const cleanDouble = (polys) => {
         // if remainingf unique points save a new line
         if (line.length > 1) out.push(polyline(line, input[i].attribs))
         // remove the current line from the reference
-        // input.slice(i, 0)
+        input.slice(i, 0)
     }
     return out
 }

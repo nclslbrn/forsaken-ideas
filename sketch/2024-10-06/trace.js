@@ -5,7 +5,7 @@ import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
-import { cleanDouble, getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
+import { cleanDouble, getMinMaxPolysPoints } from './utils'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE, type = 'pixel') => {
@@ -112,6 +112,7 @@ const trace = (STATE, type = 'pixel') => {
         let out = [[]],
             lineIdx = 0,
             wasInside = false
+
         line.forEach((vec) => {
             const isInside = randTextsBounds.reduce(
                 (isIn, polys) => isIn || inTxtBound(vec, polys),
@@ -128,8 +129,9 @@ const trace = (STATE, type = 'pixel') => {
         })
         return out
     }
+
     const strokeById = (idx) =>
-        colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
+        colors[idx % 8 === 0 ? 3 : idx % 3 === 0 ? 4 : 1]
 
     const lines =
         type === 'pixel'
@@ -175,9 +177,7 @@ const trace = (STATE, type = 'pixel') => {
                   ],
                   []
               )
-    const uniqueLines =
-        //type === 'pixel' ? lines : 
-    cleanDouble(lines)
+    const uniqueLines = type === 'pixel' ? lines : cleanDouble(lines)
 
     return [
         rect([width, height], { fill: colors[0] }),
