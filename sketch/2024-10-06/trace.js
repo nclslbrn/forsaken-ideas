@@ -5,7 +5,7 @@ import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
 import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
-import { getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
+import { cleanDouble, getMinMaxPolysPoints, removeOverlapingSegments } from './utils'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE, type = 'pixel') => {
@@ -84,18 +84,18 @@ const trace = (STATE, type = 'pixel') => {
     }, [])
 
     // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
-    const RES = [256, 256], weight = 3
+    const RES = [256, 256], weight = 1
     const randTextsBounds =
         type === 'vector'
             ? randTexts.map((txtGroup) => {
-                  const txtBounds = bounds(txtGroup, 8),
+                  const txtBounds = bounds(txtGroup, 6),
                       sdf = asSDF(txtGroup),
                       image = sample2d(sdf, txtBounds, RES)
                   const contours = asPolygons(
                       image,
                       txtBounds,
                       RES,
-                      range(0, 12, 4),
+                      range(0, 8, 4),
                       1
                   )
                   return contours
@@ -176,7 +176,8 @@ const trace = (STATE, type = 'pixel') => {
                   []
               )
     const uniqueLines =
-        type === 'pixel' ? lines : removeOverlapingSegments(lines)
+        //type === 'pixel' ? lines : 
+    cleanDouble(lines)
 
     return [
         rect([width, height], { fill: colors[0] }),
@@ -222,7 +223,7 @@ const trace = (STATE, type = 'pixel') => {
             ...uniqueLines,
             // randomly placed random arbitrary labels (./LABELS.js)
             type === 'pixel' 
-                ? group({ stroke: colors[0], weight: weight*2 }, randTexts)
+                ? group({ stroke: colors[0], weight: weight*5 }, randTexts)
                 : group(),
             group({ stroke: colors[2] }, randTexts)
         ])

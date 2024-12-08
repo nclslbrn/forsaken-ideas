@@ -29,7 +29,7 @@ const DPI = quantity(96, dpi),
     TWOK_9_16 = quantity([607, 1080], mm),
     IG_SQ = quantity([700, 700], mm),
     IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(IG_4BY5, DPI).deref(),
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -87,8 +87,8 @@ const iterate = () => {
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             n = [
-                prtcls[j][0] + Math.cos(m) * k * 0.003,
-                prtcls[j][1] + Math.sin(m) * k * 0.003
+                prtcls[j][0] + Math.cos(m) * k * 0.0015,
+                prtcls[j][1] + Math.sin(m) * k * 0.0015
             ]
         trails[j].push(n)
         prtcls[j] = n
