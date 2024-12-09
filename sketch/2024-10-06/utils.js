@@ -59,7 +59,7 @@ const isPointInPoly = (point, poly, threshold) => {
 const pointAlreadyExist = (point, polys, polyIdx) => {
     if (point === undefined) return true
     for (let i = polys.length - 1; i >= 0; i--) {
-        if (i !== polyIdx && isPointInPoly(point, polys[i], 0.5)) {
+        if (i !== polyIdx && isPointInPoly(point, polys[i], 0.8)) {
             return true
         }
     }

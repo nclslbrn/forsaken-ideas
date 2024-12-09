@@ -16,7 +16,7 @@ import { seedFromHash } from './seed-from-hash'
 const ATTRACT_ENGINE = strangeAttractor()
 
 // Pick random value to build an edition ----------------------------------------
-const DOMAIN = 70
+const DOMAIN = 60
 const BASE = (config) => {
     const RND = new SFC32(seedFromHash(config.seed))
 

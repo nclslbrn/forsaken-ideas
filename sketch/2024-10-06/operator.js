@@ -27,8 +27,8 @@ const operate = (type, a, b, c) => {
         case 'E':
             return a - max(d / DOMAIN, b)
         case 'F':
-            const step1 = PI / 0.666, step2 = PI / 0.1667 
-            return (x ^ y) % 9 !== 0
+            const step1 = PI / 0.25, step2 = PI / 0.1667 
+            return (x ^ y) % 15 !== 0
                 ? (ceil(a / step1) * step1) - (ceil(b / step1) * step1)
                 : (ceil(a / step2) * step2) + (ceil(b / step2) * step2)
     }

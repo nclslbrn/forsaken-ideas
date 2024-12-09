@@ -36,7 +36,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 40
+    NUM_ITER = 60
 
 ROOT.style.gridTemplateRows = '1fr 98% 1fr'
 
