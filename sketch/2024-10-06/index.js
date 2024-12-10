@@ -122,7 +122,8 @@ window['init'] = () => {
 window['exportJPG'] = () =>
     downloadCanvas(CANVAS, `2024 10 60-${seed}`, 'jpeg', 1)
 
-window['exportSVG'] = () =>
+window['exportSVG'] = () => {
+    const before = window.performance.now()
     downloadWithMime(
         `2024 10 60-${seed}.svg`,
         asSvg(
@@ -136,7 +137,8 @@ window['exportSVG'] = () =>
             )
         )
     )
-
+    console.log(`SVG generation: ${window.performance.now() - before}ms`)
+}
 window.onkeydown = (e) => {
     switch (e.key.toLowerCase()) {
         case 'n':

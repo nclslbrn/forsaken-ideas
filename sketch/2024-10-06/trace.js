@@ -6,6 +6,7 @@ import { add2 } from '@thi.ng/vectors'
 import { pointInPolygon2 } from '@thi.ng/geom-isec'
 import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
 import { cleanDouble, getMinMaxPolysPoints } from './utils'
+const worker = new Worker(new URL('./workers/plot-optimization.js', import.meta.url))
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE, type = 'pixel') => {
@@ -30,7 +31,6 @@ const trace = (STATE, type = 'pixel') => {
         [margin, height - margin * 1.33]
     ]
     const fntSz = [width * 0.009, height * 0.017]
-
     // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
     const randTexts = labels.reduce((labelPolys, txt) => {
         const txtToPlot = getParagraphVector(txt[1], 22, 8, labelWidth)
@@ -133,53 +133,7 @@ const trace = (STATE, type = 'pixel') => {
     const strokeById = (idx) =>
         colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
 
-    const lines =
-        type === 'pixel'
-            ? trails.reduce((acc, line, idx) => {
-                  const cropped = clipPolylinePoly(
-                      line.map((pos) => [
-                          width / 2 + pos[0] * inner[0] * domainScale,
-                          height / 2 + pos[1] * inner[1] * domainScale
-                      ]),
-                      cropPoly
-                  )
-
-                  return [
-                      ...acc,
-                      ...cropped.map((line) =>
-                          polyline(line, {
-                              stroke: strokeById(idx),
-                              weight: 0.5
-                          })
-                      )
-                  ]
-              }, [])
-            : trails.reduce(
-                  (acc, line, idx) => [
-                      ...acc,
-                      ...clipPolylinePoly(
-                          line.map((pos) => [
-                              width / 2 + pos[0] * inner[0] * domainScale,
-                              height / 2 + pos[1] * inner[1] * domainScale
-                          ]),
-                          cropPoly
-                      ).reduce(
-                          (splitted, vecs) => [
-                              ...splitted,
-                              ...removeBoundsFromLine(vecs).map((cleaned) =>
-                                  polyline(cleaned, {
-                                      stroke: strokeById(idx)
-                                  })
-                              )
-                          ],
-                          []
-                      )
-                  ],
-                  []
-              )
-    const uniqueLines = type === 'pixel' ? lines : cleanDouble(lines)
-
-    return [
+    const comp = (uniqueLines) => [
         rect([width, height], { fill: colors[0] }),
         group({ weight: 0.75 }, [
             // bottom right label seed + attractor name + mixing formula
@@ -228,7 +182,63 @@ const trace = (STATE, type = 'pixel') => {
             group({ stroke: colors[2] }, randTexts)
         ])
     ]
+    const lines =
+        type === 'pixel'
+            ? trails.reduce((acc, line, idx) => {
+                  const cropped = clipPolylinePoly(
+                      line.map((pos) => [
+                          width / 2 + pos[0] * inner[0] * domainScale,
+                          height / 2 + pos[1] * inner[1] * domainScale
+                      ]),
+                      cropPoly
+                  )
+
+                  return [
+                      ...acc,
+                      ...cropped.map((line) =>
+                          polyline(line, {
+                              stroke: strokeById(idx),
+                              weight: 0.5
+                          })
+                      )
+                  ]
+              }, [])
+            : trails.reduce(
+                  (acc, line, idx) => [
+                      ...acc,
+                      ...clipPolylinePoly(
+                          line.map((pos) => [
+                              width / 2 + pos[0] * inner[0] * domainScale,
+                              height / 2 + pos[1] * inner[1] * domainScale
+                          ]),
+                          cropPoly
+                      ).reduce(
+                          (splitted, vecs) => [
+                              ...splitted,
+                              ...removeBoundsFromLine(vecs).map((cleaned) =>
+                                  polyline(cleaned, {
+                                      stroke: strokeById(idx)
+                                  })
+                              )
+                          ],
+                          []
+                      )
+                  ],
+                  []
+              )
+    if (type === 'pixel') {
+      return comp(lines)
+    } else {
+      worker.postMessage(lines).then((e) => {
+        console.log('THEN')
+        return comp(e.data.map((line) => polyline(...line)))
+      }) 
+      
+      //return comp(cleanDouble(lines))
+    }
 }
+
+
 
 // Display message while flow field is processed ---------------------------------
 const traceLoadScreen = (STATE) => {
