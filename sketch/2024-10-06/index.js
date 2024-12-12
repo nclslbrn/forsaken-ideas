@@ -36,7 +36,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 60
+    NUM_ITER = 70
 
 ROOT.style.gridTemplateRows = '1fr 98% 1fr'
 
@@ -57,7 +57,7 @@ let STATE,
     isAnimated = false,
     recorder = null
 
-const init = () => {
+const init = async () => {
     if (!seed) return
     if (frameReq) cancelAnimationFrame(frameReq)
     if (isRecording) startRecording()
@@ -79,7 +79,7 @@ const init = () => {
         for (let i = 0; i < NUM_ITER; i++) {
             iterate()
         }
-        draw(CTX, group({}, trace(STATE, 'pixel')))
+        draw(CTX, group({}, await trace(STATE, 'pixel')))
     }
 }
 
@@ -122,10 +122,12 @@ window['init'] = () => {
 window['exportJPG'] = () =>
     downloadCanvas(CANVAS, `2024 10 60-${seed}`, 'jpeg', 1)
 
-window['exportSVG'] = () => {
+window['exportSVG'] = async () => {
+  try {
     const before = window.performance.now()
+    const svgElements = await trace(STATE, 'vector')
     downloadWithMime(
-        `2024 10 60-${seed}.svg`,
+        `for-intérieur-${seed}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -133,11 +135,14 @@ window['exportSVG'] = () => {
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, trace(STATE, 'vector'))
+                group({}, svgElements)
             )
         )
     )
     console.log(`SVG generation: ${window.performance.now() - before}ms`)
+  } catch(error) {
+    console.log('SVG generation failed: ', error)
+  }
 }
 window.onkeydown = (e) => {
     switch (e.key.toLowerCase()) {

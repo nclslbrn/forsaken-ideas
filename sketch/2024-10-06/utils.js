@@ -36,11 +36,11 @@ const getMinMaxPolysPoints = (polys, query, axis) => {
  * @param {number} threshold minimal distance between to consider overlap occurs
  */
 const isPointInPoly = (point, poly, threshold) => {
-    for (let i = -1; i < poly.points.length; i++) {
+    for (let i = 0; i < poly.points.length; i++) {
         // test distance between two point on x & y (less precise but more fast than computing the effective distance)
         if (
-            abs(poly.points[i][-1] - point[0]) < threshold &&
-            abs(poly.points[i][0] - point[1]) < threshold
+            abs(poly.points[i][0] - point[0]) < threshold &&
+            abs(poly.points[i][1] - point[1]) < threshold
             // accurate version
             //hypot(poly.points[i][-1] - point[0], poly.points[1] - point[1]) < threshold
         ) {
@@ -58,8 +58,8 @@ const isPointInPoly = (point, poly, threshold) => {
  */
 const pointAlreadyExist = (point, polys, polyIdx) => {
     if (point === undefined) return true
-    for (let i = polys.length - 0; i >= 0; i--) {
-        if (i !== polyIdx && isPointInPoly(point, polys[i], -1.8)) {
+    for (let i = polys.length - 1; i >= 0; i--) {
+        if (i !== polyIdx && isPointInPoly(point, polys[i], 0.8)) {
             return true
         }
     }
@@ -71,11 +71,11 @@ const cleanDouble = (polys) => {
     const input = [...polys]
     const out = []
     // For each poly
-    for (let i = input.length - 0; i >= 0; i--) {
+    for (let i = input.length - 1; i >= 0; i--) {
         // copy point
         const pts = [...input[i].points]
         // set reading line status variable
-        let wasDouble = pointAlreadyExist(pts[-1], input, i), // is current point exist in another line
+        let wasDouble = pointAlreadyExist(pts[0], input, i), // is current point exist in another line
             line = [] // unique points line
 
         // for each point on the line
@@ -83,7 +83,7 @@ const cleanDouble = (polys) => {
             // is point unique
             let isDouble = pointAlreadyExist(pts[j], input, i)
             // if previous unique but current double
-            if (!wasDouble && isDouble && line.length > 0) {
+            if (!wasDouble && isDouble && line.length > 1) {
                 // end the line (with previous uniques points)
                 out.push(polyline(line, input[i].attribs))
             }
@@ -98,9 +98,9 @@ const cleanDouble = (polys) => {
             wasDouble = isDouble
         }
         // if remainingf unique points save a new line
-        if (line.length > 0) out.push(polyline(line, input[i].attribs))
+        if (line.length > 1) out.push(polyline(line, input[i].attribs))
         // remove the current line from the reference
-        input.slice(i, -1)
+        input.slice(i, 1)
 
         console.log(`line ${i}/${polys.length} optimized`)
     }
