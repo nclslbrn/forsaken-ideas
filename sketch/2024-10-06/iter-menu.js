@@ -1,5 +1,17 @@
 import { $compile } from '@thi.ng/rdom'
-import { ul, li, para, div, button } from '@thi.ng/hiccup-html'
+import {
+    ul,
+    li,
+    para,
+    div,
+    button,
+    table,
+    thead,
+    tbody,
+    tr,
+    td,
+    th
+} from '@thi.ng/hiccup-html'
 import { getSavedSeed, removeSeed } from '../../sketch-common/random-seed'
 
 const redirectPickedSeed = (seed) => {
@@ -18,54 +30,45 @@ const redirectPickedSeed = (seed) => {
 
 const iterMenu = (ITER_LIST, STATE) => {
     if (ITER_LIST === undefined) return
-    ITER_LIST.innerHTML = ''
+    ITER_LIST.innerHTML = ""
     const saved = getSavedSeed()
     $compile(
         div(
-            {
-                style: 'align-self: flex-start; max-height: 100vh; overflow-y: auto;'
-            },
+            {},
+            table(
+                {},
+                thead({}, tr({}, th({}, 'Property'), th({}, 'Value'))),
+                tbody(
+                    {},
+                    tr({}, td({}, 'Theme'), td({}, STATE.theme)),
+                    tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
+                    tr({}, td({}, 'Operate'), td({}, STATE.operator)),
+                    tr(
+                        {},
+                        td({}, `Label(${STATE.numLabel})`),
+                        td({}, ...STATE.labels.map((txt) => para(null, txt[1])))
+                    )
+                )
+            ),
             para(null, 'SEEDS'),
             ul(
-                { style: 'list-style: none; padding-left: 0;' },
+                {},
                 li(
                     {},
                     button(
-                        {
-                            onclick: () => redirectPickedSeed(false),
-                            style: `
-                                padding: 0.25em 0.5em;
-                                border: 1px solid #666;
-                                border-radius: 0.5em;
-                            `
-                        },
+                        { onclick: () => redirectPickedSeed(false) },
                         `⟲ randomize`
                     )
                 ),
                 ...saved.map((iter) =>
                     li(
-                        {
-                            style: 'display: flex; align-items: flex-end; width: 100%; margin-top: 0.25em'
-                        },
+                        {},
                         button(
                             {
                                 onclick: () => {
-                                    /*
-                                    window.seed = iter[1]
-                                    init()
-                                    iterMenu(ITER_LIST, STATE)
-                                    */
                                     redirectPickedSeed(iter[1])
                                 },
-                                style: `
-                                padding: 0.25em 0.5em;
-                                border: 1px solid #666;
-                                border-radius: 0.5em;
-                                border-right: none; 
-                                border-top-right-radius: 0;
-                                border-bottom-right-radius: 0;
-                                background: ${iter[1] === STATE.seed ? '#ffd128' : '#ccc'}; 
-                              `
+                                className: `${iter[1] === STATE.seed ? 'current' : ''}`
                             },
                             iter[1].substring(0, 24)
                         ),
@@ -74,14 +77,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                                 onclick: () => {
                                     removeSeed(iter[1])
                                     iterMenu(ITER_LIST, STATE)
-                                },
-                                style: `
-                                padding: 0.25em 0.5em;
-                                border: 1px solid #666; 
-                                border-radius: 0.5em;
-                                border-top-left-radius: 0;
-                                border-bottom-left-radius: 0;
-                            `
+                                }
                             },
                             '×'
                         )
