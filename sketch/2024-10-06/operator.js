@@ -1,19 +1,19 @@
 import { DOMAIN } from './state'
 
-const OPERATORS = [...'ABCDEF']
+const OPERATORS = [ ...'ABCDEF']
 /**
  * Custom function to mix noise and attractor value
  * @param {number} a attractor angle
  * @param {number} b noise angle
  * @param {number} c particle index
  */
-const { abs, ceil, sin, cos, max, atan, PI, atan2, hypot } = Math
+const { round, ceil, sin, cos, max, atan, PI, atan2, hypot } = Math
 const operate = (type, a, b, c) => {
     let x, y, d
     if (['C', 'D', 'E', 'F'].includes(type)) {
         y = c % DOMAIN
         x = c - y
-        d = hypot(abs(x - DOMAIN / 2) / DOMAIN, abs(y - DOMAIN / 2) / DOMAIN)
+        d = hypot(x - DOMAIN / 2, y - DOMAIN / 2)
     }
     switch (type) {
         case 'A':
@@ -23,14 +23,15 @@ const operate = (type, a, b, c) => {
         case 'C':
             return (a % ((d / DOMAIN) * b)) * 1.25
         case 'D':
-            return (a * atan(d * 0.1)) ^ b
+            return (sin(a||0.03) * cos(d * 0.05)) ^ (b || 0.03)
         case 'E':
-            return a - max(d / DOMAIN, b)
+            return (1+a) - max(d / DOMAIN ** 2, b) * 0.15
         case 'F':
-            const step1 = PI / 0.25, step2 = PI / 0.1667 
-            return (x ^ y) % 15 !== 0
-                ? (ceil(a / step1) * step1) - (ceil(b / step1) * step1)
-                : (ceil(a / step2) * step2) + (ceil(b / step2) * step2)
+            const step1 = PI / 4,
+                step2 = PI / 2
+            return (round(x) ^ round(y)) % 9 !== 0
+                ? ceil(a / step1) * step1 - ceil(b / step1) * step1
+                : ceil(a / step2) * step2 + ceil(b / step2) * step2
     }
 }
 

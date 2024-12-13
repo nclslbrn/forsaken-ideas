@@ -3,9 +3,15 @@ const LABELS = [
   'Archipelago of Solitude',
   'Avant-garde of the 60s',
   'A pleasant moment by the fire',
+  'Base camp',
+  'Body of an adventurer who disappeared in 1976',
+  'Brownian motion',
   'Cave of regrets',
   'Cascade of spatial coordinates',
   'Chasm of the ego',
+  'Chemical submission',
+  'Cosmic microwave background',
+  'Dark matter',
   'Decimal Valley',
   'Dream I had of you',
   'Dry lake',
@@ -14,6 +20,7 @@ const LABELS = [
   'Fails desert',
   'Few things here',
   'Forsaken construction',
+  'Forgotten pictorial expedition',
   'Ghost bug',
   'Hill of the Anons',
   'Homo sapiens (or almost)',
@@ -23,6 +30,7 @@ const LABELS = [
   'Landslide',
   'Lost ideas',
   'Mail received in 2009, still unread',
+  'Mind control',
   'Mt Attractor',
   'Non-reciprocity',
   'Not a safe place',
@@ -40,6 +48,7 @@ const LABELS = [
   'Red line (faded)',
   'Relative success',
   'Retro-futurism',
+  'Replicable experiment',
   'Ruin',
   'Shipwreck in real time',
   'Trickle down (not the economic theory, this one actually exists)',
@@ -53,7 +62,8 @@ const LABELS = [
   'Unknown source',
   'Your first souvenir',
   'Virtual, until there is evidence to the contrary',
-  'Well-documented scientific theory'
+  'Well-documented scientific theory',
+  'X doesn\'t want to talk to Y because he doesn\'t like him'
 ]
 
 export { LABELS }

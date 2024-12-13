@@ -37,6 +37,11 @@ body {
     border-radius: 0.5em;
 }
 
+#windowFrame div ul li:not(:first-child) button {
+    background: var(--color-border);
+    color: var(--color-bg);
+}
+
 #windowFrame div ul li:not(:first-child) button:first-child {
     border-right: none;
     border-top-right-radius: 0;
@@ -50,7 +55,7 @@ body {
 }
 
 #windowFrame div ul li:not(:first-child) button.current {
-    background: #ffd128;
+    background: var(--color-primary);
 }
 
 #windowFrame table {
