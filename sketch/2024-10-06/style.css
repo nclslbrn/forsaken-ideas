@@ -15,8 +15,10 @@ body {
 #windowFrame div {
     padding-left: 2em;
     align-self: flex-start;
+/*
     max-height: 100vh;
     overflow-y: auto;
+*/
 }
 
 #windowFrame div ul {
