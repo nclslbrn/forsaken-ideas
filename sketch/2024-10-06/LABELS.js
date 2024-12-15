@@ -4,7 +4,9 @@ const LABELS = [
   'Avant-garde of the 60s',
   'A pleasant moment by the fire',
   'Base camp',
+  'Black out',
   'Body of an adventurer who disappeared in 1976',
+  'Border not recognized by the international community',
   'Brownian motion',
   'Cave of regrets',
   'Cascade of spatial coordinates',
@@ -22,9 +24,11 @@ const LABELS = [
   'Forsaken construction',
   'Forgotten pictorial expedition',
   'Ghost bug',
+  'Godwin\'s law',
   'Hill of the Anons',
   'Homo sapiens (or almost)',
   'Identitarian closure',
+  'Ignorance',
   'Imposter syndrome pass',
   'Informational subversion',
   'Landslide',
@@ -35,6 +39,7 @@ const LABELS = [
   'Non-reciprocity',
   'Not a safe place',
   'Nothing',
+  'Nuclear briefcase',
   'One wall too many',
   'Others ideas',
   'Popular opinion has never been proven',
@@ -43,7 +48,9 @@ const LABELS = [
   'Simulacre',
   'Questionable circumstances',
   'People on Linkedin',
+  'Pre-Columbian civilization',
   'Primitive animal',
+  'Radio interference',
   'Random choice between two decisions',
   'Red line (faded)',
   'Relative success',
@@ -51,6 +58,8 @@ const LABELS = [
   'Replicable experiment',
   'Ruin',
   'Shipwreck in real time',
+  'Solar flares',
+  'Subduction zone',
   'Trickle down (not the economic theory, this one actually exists)',
   'Tectonic plate convergence',
   'Temple of Randomness',
@@ -63,7 +72,7 @@ const LABELS = [
   'Your first souvenir',
   'Virtual, until there is evidence to the contrary',
   'Well-documented scientific theory',
-  'X doesn\'t want to talk to Y because he doesn\'t like him'
+  'Wind shear'
 ]
 
 export { LABELS }

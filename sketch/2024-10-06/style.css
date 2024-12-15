@@ -15,10 +15,6 @@ body {
 #windowFrame div {
     padding-left: 2em;
     align-self: flex-start;
-/*
-    max-height: 100vh;
-    overflow-y: auto;
-*/
 }
 
 #windowFrame div ul {
@@ -40,8 +36,9 @@ body {
 }
 
 #windowFrame div ul li:not(:first-child) button {
-    background: var(--color-border);
+    background: var(--color-primary);
     color: var(--color-bg);
+    border-color: var(--color-secondary);
 }
 
 #windowFrame div ul li:not(:first-child) button:first-child {
@@ -57,7 +54,8 @@ body {
 }
 
 #windowFrame div ul li:not(:first-child) button.current {
-    background: var(--color-primary);
+    background: var(--color-bg);
+    color: var(--color-text);
 }
 
 #windowFrame table {
