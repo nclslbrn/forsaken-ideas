@@ -8,7 +8,7 @@ const THEMES = {
     Everforest: ['#222222', '#83c092', '#ffffff', '#E04700'],
     Noir: ['#111111', '#ffeeff', '#ffff33', '#eeffff'],
     Test: ['#ffffff', '#111111', '#cc3333', '#333333'],
-    
+    Nord: ['#2e3440', '#8fbcbb', '#5e81ac', '#81a1c1'],  
     A: ['#eeede7', '#111111', '#770000', '#000066'],
     /*    
     'Bleu outremer': ['#3a4388', '#ccccff', '#ffffff', '#bbff33'],
