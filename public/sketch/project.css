@@ -1,27 +1,92 @@
 @import './color.css';
 
+:root {
+    font-family: sans-serif;
+    --color-text-light: #1d2021;
+    --color-bg-light: #fff;
+    --color-solid-light: #f2f2f2;
+    --color-border-light: #333;
+    --box-shadow-light-default: 0 0.6em 0.9em 0 #0000005e;
+    --box-shadow-light-active: 0 0.2em 0.4em 0 #0000006b;
+
+    --color-text-dark: #cfdde2;
+    --color-bg-dark: #19191e;
+    --color-solid-dark: #100d0e;
+    --color-border-dark: #474340;
+    --box-shadow-dark-default: 0 0 0 0.5em var(--color-solid-dark);
+    --box-shadow-dark-active: 0 0 0 2px var(--color-border-dark);
+}
+
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --color-text: var(--color-text-light);
+        --color-bg: var(--color-bg-light);
+        --color-solid: var(--color-solid-light);
+        --color-border: var(--color-border-light);
+        --color-shadow: var(--color-shadow-light);
+        --color-primary: var(--dark-blue);
+        --color-secondary: var(--dark-purple);
+        --box-shadow-default: var(--box-shadow-light-default);
+        --box-shadow-active: var(--box-shadow-light-active);
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-text: var(--color-text-dark);
+        --color-bg: var(--color-bg-dark);
+        --color-solid: var(--color-solid-dark);
+        --color-border: var(--color-border-dark);
+        --color-shadow: var(--color-shadow-light);
+        --color-primary: var(--light-green);
+        --color-secondary: var(--light-blue);
+        --box-shadow-default: var(--box-shadow-dark-default);
+        --box-shadow-active: var(--box-shadow-dark-active);
+    }
+}
+
 html {
-    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: normal;
 }
 
 body {
-    box-sizing: border-box;
-    font-family:
-        SFMono-Regular,
-        Menlo,
-        Monaco,
-        Consolas,
-        "Liberation Mono",
-        "Courier New",
-        monospace;
-
-    font-size: 16px;
-    text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
+    box-sizing: border-box;
     background: var(--color-bg);
+    color: var(--color-text);
+    height: 100vh;
+    height: -webkit-fill-available;
+    transition:
+        color 0.5s,
+        background-color 0.5s;
+    line-height: 1.6;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif,
+        'Apple Color Emoji',
+        'Segoe UI Emoji',
+        'Segoe UI Symbol';
+    font-size: 16px;
+    font-weight: 500;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
 }
 
 ::selection {
@@ -153,46 +218,40 @@ nav#iconav ul {
     margin: 0;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-around;
+    justify-content: center;
+    border: 1px solid var(--color-border);
     list-style-type: none;
+}
+
+@media (max-width: 54rem) {
+    nav#iconav ul li:not(:last-child){
+        border-right: 1px solid var(--color-border);
+    }
 }
 
 @media (min-width: 54rem) {
     nav#iconav ul {
+        margin: 1em;
         flex-flow: column nowrap;
         justify-content: stretch;
         width: 4rem;
     }
 
+    nav#iconav ul li:not(:last-child){
+      border-bottom: 1px solid var(--color-border);
+    }
 }
 
 nav#iconav button {
     display: block;
     position: relative;
+    margin: 0.25rem; 
     margin: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.5rem; 
     line-height: 1rem;
     text-align: center;
-    border: none;
-    background-color: var(--color-text);
-}
-
-nav#iconav button,
-nav#iconav button::before {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-
-nav#iconav button::before {
-    content: "";
-    position: absolute;
-    display: block;
-    top: 0;
-    left: 0;
-    margin: 2px;
-    background: var(--color-bg);
-    width: 90%;
-    height: 90%;
-    z-index: -1;
+    background: none;
+    border: 2px solid var(--color-bg);
 }
 
 nav#iconav button svg {
@@ -203,20 +262,16 @@ nav#iconav button svg {
     opacity: 1;
 }
 
+nav#iconav button:hover {
+    border-color: var(--color-primary);
+}
+
 nav#iconav button:hover svg {
     fill: var(--color-primary);
 }
 
-nav#iconav button:hover {
-  background: var(--color-primary);
-}
-
 body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] {
-    background: var(--color-primary);
-}
-
-body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] svg {
-    fill: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 /**
@@ -238,7 +293,7 @@ body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] svg {
     overflow-y: auto;
     transform: translate(0, 100vh);
     background: var(--color-bg);
-    opacity: 0.8;
+    opacity: 0.9;
     z-index: 2;
     transition: transform 0.15s ease-in-out;
 }
@@ -254,7 +309,7 @@ body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] svg {
         width: 300px;
         max-width: 300px;
         transform: translate(-300px, 0);
-        background: var(--color-bg);
+        background: var(--color-solid);
     }
 
 }
@@ -274,7 +329,7 @@ body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] svg {
 #offFrame #projectTitle {
     min-height: 5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--color-text);
+    border-bottom: 1px solid var(--color-border);
 }
 
 body.openedOffWindow nav#iconav {
@@ -306,7 +361,7 @@ body.openedOffWindow #offFrame {
 #offFrame>div {
     padding: 1em;
     margin: 1em;
-    border: 1px solid var(--color-text);
+    border: 1px solid var(--color-border);
 }
 
 #offFrame .date svg,

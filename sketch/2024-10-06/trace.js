@@ -252,6 +252,7 @@ const comp = (
     { width, height, colors, seed, attractor, operator, margin } = STATE
 ) => [
     rect([width, height], { fill: colors[0] }),
+    
     group({ weight: 0.75 }, [
         // bottom right label seed + attractor name + mixing formula
         group(

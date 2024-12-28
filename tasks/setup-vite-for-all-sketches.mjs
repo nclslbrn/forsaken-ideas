@@ -6,7 +6,7 @@ import { writeIndexHTML, writeViteConfigJs } from './writeSetup.mjs';
 const projects = fileList(path.resolve('./sketch/'));
 
 for (let i = 0; i < projects.length; i++) {
-  const sketchDir = `sketch/${projects[i]}`
+  const sketchDir = `sketch/${projects[i].replaceAll('/', '')}`
   try {
     await writeIndexHTML(projects[i], sketchDir)
     writeViteConfigJs(projects[i], sketchDir)

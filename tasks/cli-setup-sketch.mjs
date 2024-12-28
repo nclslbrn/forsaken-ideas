@@ -41,9 +41,6 @@ if (!fs.existsSync(`./sketch/${src}`)) {
         .catch(console.error)
 } else {
     /*
-     * Found folder/sketch to re-setup/re-set (index.html & vite.config.js)
-     */
-    /*
      * Empty folder
      */
     if (!fs.existsSync(`./sketch/${src}/property.json`)) {

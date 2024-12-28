@@ -1,15 +1,22 @@
+/** fullsize (zoomed) configuration
+
 body {
   overflow-y: scroll;
 }
+*/ 
 
 #windowFrame {
     display: flex;
-    height: auto;
+    justify-content: center;
+    height: 100vh;
     overflow-y: auto;
+    padding-left: 2em;
 }
 
 #windowFrame canvas {
     padding: 0;
+    max-height: 100%;
+    width: auto;
 }
 
 #windowFrame div {

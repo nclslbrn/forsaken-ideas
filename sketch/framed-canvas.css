@@ -10,7 +10,7 @@
     margin: 0;
     max-height: 100vh;
     overflow: hidden;
-    background: linear-gradient(225deg, #f1f1f1, #f5f5f5);
+    background: linear-gradient(to bottom, var(--color-bg), var(--color-solid));
 }
 
 #windowFrame > div p,

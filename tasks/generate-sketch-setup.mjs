@@ -17,7 +17,7 @@ export default async function (sketchDir, src) {
             name: 'question',
             message:
                 'A previous configuration exists overwrite it ? ' +
-                `Only ${sketchDir}/index.html and ${sketchDir}vite.config.js`
+                `Only ${sketchDir}/index.html and ${sketchDir}/vite.config.js`
         })
         confirmOverwrite
             .run()
