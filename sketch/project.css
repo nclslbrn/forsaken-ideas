@@ -282,6 +282,7 @@ body.openedOffWindow nav#iconav ul li button[data-action='openOffFrame'] {
 #windowFrame {
     position: relative;
     width: 100vw;
+    height: 100vh;
     transition: transform 0.25s ease-in-out;
 }
 
