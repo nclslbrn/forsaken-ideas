@@ -2,7 +2,7 @@
     "topic": "Random distribution",
     "libs": [],
     "info": "A set of random points from two origins (grid with random Gaussian & completely random). Grouped by four, then drawn alternately with hatching or letters (with homography/trapezoid projection).",
-    "actions": [
+    "action": [
         { "name": "init", "icon": "sync" },
         { "name": "prevFrame", "icon": "chevron-left" },
         { "name": "nextFrame", "icon": "chevron-right" },

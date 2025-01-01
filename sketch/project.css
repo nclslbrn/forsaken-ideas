@@ -220,6 +220,7 @@ nav#iconav ul {
     flex-flow: row nowrap;
     justify-content: center;
     border: 1px solid var(--color-border);
+    background: var(--color-bg);
     list-style-type: none;
 }
 
@@ -234,11 +235,11 @@ nav#iconav ul {
         margin: 1em;
         flex-flow: column nowrap;
         justify-content: stretch;
-        width: 4rem;
+        width: 3.9rem;
     }
 
     nav#iconav ul li:not(:last-child){
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid rgba(0, 0, 0, 0);
     }
 }
 
@@ -252,6 +253,7 @@ nav#iconav button {
     text-align: center;
     background: none;
     border: 2px solid var(--color-bg);
+    border-radius: 1.2em;
 }
 
 nav#iconav button svg {
@@ -259,6 +261,7 @@ nav#iconav button svg {
     height: 1.5rem;
     pointer-events: none;
     fill: var(--color-text);
+    float: left;
     opacity: 1;
 }
 
@@ -392,8 +395,15 @@ body.openedOffWindow #offFrame {
 }
 
 #offFrame>div>a {
-    display: block;
-    margin: 0 0 1em 0;
+    display: inline-flex;
+    margin: 1em 0;
+    border: 1px solid var(--color-border);
+    padding: 0.5em 0.75em;
+    align-items: center;
+}
+
+#offFrame>div>a:hover {
+  border-color: var(--color-primary);  
 }
 
 button,

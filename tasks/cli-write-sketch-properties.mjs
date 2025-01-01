@@ -49,7 +49,7 @@ export default async function (path) {
             }))
         },
         {
-            name: 'actions',
+            name: 'action',
             type: 'input',
             message:
                 'Your sketch can interact with entry of a side menu (present by default). ' +

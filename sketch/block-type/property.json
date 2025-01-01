@@ -2,7 +2,7 @@
   "libs":[""],
   "info":"A grid where some cells are filled with text then sometime skewed",
   "topic":"OnlyType",
-  "actions":[
+  "action":[
     {"name":"init","icon":"sync"},
     {"name":"capture","icon":"file-media"},
     {"name":"export_svg","icon":"desktop-download"}

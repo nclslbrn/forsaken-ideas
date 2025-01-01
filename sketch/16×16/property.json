@@ -1,1 +1,10 @@
-{"libs":["p5","p5.createloop"],"info":" A grid with 16 columns and 16 rows. Each cell can be drawn in 16 different ways. Two types of diagonals, vertical lines, horizontal lines, 4 quarter circles, 4 right angles and 4 U. Coded during #genuary (day 23: 16×16) ","topic":"Random distribution","action":[{"name":"init","icon":"sync"},{"name":"capture","icon":"file-media"}],"date":"2024-01-23"}
+{
+    "libs": ["p5", "p5.createloop"],
+    "info": " A grid with 16 columns and 16 rows. Each cell can be drawn in 16 different ways. Two types of diagonals, vertical lines, horizontal lines, 4 quarter circles, 4 right angles and 4 U. Coded during #genuary (day 23: 16×16) ",
+    "topic": "Random distribution",
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "date": "2024-01-23"
+}

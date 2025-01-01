@@ -1,7 +1,7 @@
 {
     "topic": "Strange Attractor",
     "libs": [],
-    "actions": [
+    "action": [
         { "name": "init", "icon": "sync" },
         { "name": "exportJPG", "icon": "file-media" },
         { "name": "exportSVG", "icon": "desktop-download" }

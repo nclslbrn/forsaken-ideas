@@ -1,6 +1,6 @@
 #windowFrame {
-    height: 100vh;
     display: grid;
+    height: 100vh;
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows: 1fr 80% 1fr;
     align-items: center;

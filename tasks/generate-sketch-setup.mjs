@@ -21,11 +21,10 @@ export default async function (sketchDir, src) {
         })
         confirmOverwrite
             .run()
-            .then(async (_) => {
-                await writeIndexHTML(src, sketchDir).then(() => {
+            .then((_) => {
+                  writeIndexHTML(src, sketchDir)
                   writeViteConfigJs(src, sketchDir)
                   return true
-                })
             })
             .catch((err) => { 
                 console.error(err)
