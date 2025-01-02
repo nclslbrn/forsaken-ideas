@@ -1,0 +1,10 @@
+{
+    "topic": "Perlin noise",
+    "libs": ["p5"],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "Vertical or horizontal lines only (prompt by <a href='https://x.com/stranger_intheq'>Stanger in the Q</a>). From a noise texture, the script (GLSL shader) identifies areas of varying depth and traces hatchings with bands of varying thickness.",
+    "date": "2025-01-01"
+}
