@@ -1,0 +1,12 @@
+{
+    "topic": "Unsorted",
+    "libs": ["p5"],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "play", "icon": "play" }
+    ],
+    "info": "Genuary #2 (2025): Layers upon layers upon layers. Prompt by <a href='https://monokai.com/'>Monokai</a>. Several layers are superimposed, all using noise, some to warp space, others just to create shapes.",
+    "date": "2025-01-02"
+}
+
