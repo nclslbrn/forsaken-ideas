@@ -1,13 +1,11 @@
 #windowFrame {
     display: grid;
-    height: 100vh;
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows: 1fr 80% 1fr;
     align-items: center;
     justify-content: center;
     grid-gap: 0;
     margin: 0;
-    max-height: 100vh;
     overflow: hidden;
     background: linear-gradient(to bottom, var(--color-bg), var(--color-solid));
 }
@@ -35,27 +33,32 @@
     max-height: 96%;
     width: auto !important;
     height: auto !important;
+    background: linear-gradient(to bottom, #222, #000);
+box-shadow: var(--box-shadow-default);
 }
 
 @media (min-width: 20rem) {
+    #windowFrame {
+        height: calc(100vh - 60px);
+    }
+
     #windowFrame #frame,
     #windowFrame svg,
     #windowFrame canvas {
         padding: 4px;
         margin: 0 auto;
-        background: linear-gradient(to bottom, #222, #000);
-        box-shadow: 0 7px 21px #dadada;
     }
 }
 
 @media (min-width: 54rem) {
+    #windowFrame {
+        height: 100vh;
+    }
     #windowFrame #frame,
     #windowFrame svg,
     #windowFrame canvas {
         padding: 20px;
-        background: linear-gradient(to bottom, #222, #000);
-        box-shadow: -15px 15px 15px rgba(0, 0, 0, 0.15);
-    }
+}
 }
 
 svg {

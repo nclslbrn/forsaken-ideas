@@ -1,0 +1,12 @@
+{
+    "topic": "Unsorted",
+    "libs": ["p5"],
+    "actions": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "play", "icon": "play" }
+    ],
+    "info": "Sketch made during #genuary 25, prompt by <a href='https://ronikaufman.github.io/'>Roni Kaufman</a>: Exactly 42 lines of code. I've exceeded the limit of 42 lines of code. To respect the prompt I decided to display 3 columns of 14 lines with the text “line of code”, which allows me to reach the goal.",
+    "date": "2025-01-03"
+}
+
