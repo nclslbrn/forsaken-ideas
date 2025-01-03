@@ -1,7 +1,7 @@
 {
     "topic": "Unsorted",
     "libs": ["p5"],
-    "actions": [
+    "action": [
         { "name": "init", "icon": "sync" },
         { "name": "capture", "icon": "file-media" },
         { "name": "play", "icon": "play" }
