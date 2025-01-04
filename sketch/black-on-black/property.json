@@ -1,0 +1,10 @@
+{
+    "topic": "Strange Attractor",
+    "libs": ["p5"],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "Black on black #genuary fourth prompt by <a href='https://x.com/stranger_intheq'>Stranger in the Q</a>. This sketch uses a Clifford attractor with predefined constants, it uses several points that are not perfectly centered, and in addition to the attractor, random movements are added.",
+    "date": "2025-01-04"
+}
