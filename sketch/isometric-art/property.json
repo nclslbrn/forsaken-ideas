@@ -1,0 +1,11 @@
+{
+    "topic": "Perlin noise",
+    "libs": ["p5"],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "play", "icon": "play" }
+    ],
+    "info": "Genuary 5: Isometric art (prompt by <a href='https://linktr.ee/p1x3lboy'>P1x3lboy</a>). Based on a shader by <a href='https://www.shadertoy.com/view/3sXSW8'>FabriceNeyret2</a>, I created a noise based, one level isometric map.",
+    "date": "2025-01-05"
+}
