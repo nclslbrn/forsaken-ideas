@@ -55,8 +55,13 @@ export default {
 .project-caption--title {
   display: block;
   width: 100%;
+  max-width: 100%;
+  max-height: 3em;
   text-align: left;
   text-decoration: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
 }
@@ -73,7 +78,7 @@ export default {
 
 @media (orientation: portrait) {
   .project-caption--title {
-    font-size: 1.4em;
+    font-size: 1.2em;
     line-height: 1;
   }
   .project-caption--meta {

@@ -317,7 +317,7 @@ footer span p {
 button#toggleAbout {
   padding: 0.25em;
   color: var(--color-text);
-  font-size: 2em;
+  font-size: 1.5em;
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }

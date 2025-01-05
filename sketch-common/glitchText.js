@@ -1,5 +1,5 @@
-const chars = [...'0123456789', ...':/*|&#@$!<>', ...'{}[]+-_^~%?;()']
-const duration = 45
+const chars = [...'0123456789', ...':/*|!<>', ...'{}[]+-_^~;()']
+const duration = 25
 
 export default class GlitchText {
     constructor(property) {
