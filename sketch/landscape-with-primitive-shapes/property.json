@@ -1,0 +1,11 @@
+{
+    "topic": "Perlin noise",
+    "libs": ["p5"],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "play", "icon": "play" }
+    ],
+    "info": "Genuary 6: Make a landscape using only primitive shapes (prompt by <a href='https://jbarbeau.art/'>Jonathan Barbeau</a>). I chose to generate a terrain based on Perlin noise, and use a simple trapezoidal projection to create a sense of perspective. The landscape is drawn with dots, using terrain surface to make them more or less bright.",
+    "date": "2025-01-06"
+}
