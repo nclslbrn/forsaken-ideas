@@ -3152,7 +3152,7 @@ emoji-regex@^8.0.0:
 
 enquirer@^2.4.1:
   version "2.4.1"
-  resolved "https://registry.npmjs.org/enquirer/-/enquirer-2.4.1.tgz#93334b3fbd74fc7097b224ab4a8fb7e40bf4ae56"
+  resolved "https://registry.yarnpkg.com/enquirer/-/enquirer-2.4.1.tgz#93334b3fbd74fc7097b224ab4a8fb7e40bf4ae56"
   integrity sha512-rRqJg/6gd538VHvR3PSrdRBb/1Vy2YfzHqzvbhGIQpDRKIa4FgV/54b5Q1xYSxOOwKvjXweS26E0Q+nAMwp2pQ==
   dependencies:
     ansi-colors "^4.1.1"
@@ -5017,10 +5017,10 @@ vite-plugin-external@^4.3.1:
     "@types/node" "^14.18.63"
     fs-extra "^11.1.1"
 
-vite-plugin-glsl@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/vite-plugin-glsl/-/vite-plugin-glsl-1.3.0.tgz"
-  integrity sha512-SzEoLet9Bp5VSozjrhUiSc3xX1+u7rCTjXAsq4qWM3u8UjilI76A9ucX/T+CRGQCe25j50GSY+9mKSGUVPET1w==
+vite-plugin-glsl@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/vite-plugin-glsl/-/vite-plugin-glsl-1.3.1.tgz#f82167885c8cce06d83a651472985dae611928b3"
+  integrity sha512-iClII8Idb9X0m6nS0YI2cWWXbBuT5EKKw5kXSAuRu4RJsNe4oypxKXE7jx0XMoyqij2s8WL0ZLfou801mpkREg==
   dependencies:
     "@rollup/pluginutils" "^5.1.0"
 
