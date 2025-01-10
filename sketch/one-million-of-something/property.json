@@ -3,9 +3,9 @@
     "libs": [],
     "action": [
         { "name": "init", "icon": "sync" },
-        { "name": "download", "icon": "file-media" }
+        { "name": "capture", "icon": "file-media" }
     ],
-    "info": "todo",
-    "date": "2025-01-09"
+    "info": "#genuary8: Draw one million of something. A million spinning particles, driven by an attractor and Perlin noise",
+    "date": "2025-01-08"
 }
 

@@ -1,16 +1,19 @@
-//import '../framed-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/base.vert'
 import fragSrc from './glsl/base.frag'
+import CONSTANTS from './CONSTANTS'
 
-const containerElement = document.getElementById('windowFrame'),
-    loader = document.getElementById('loading'),
-    canvas = document.createElement('canvas'),
-    dpr = window.devicePixelRatio || 1,
-    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
 
-function createShader(gl, type, source) {
+const capture = (canvas) => {
+    const link = document.createElement('a')
+    link.download = `one-million-ofsomething.jpg`
+    link.href = canvas.toDataURL('image/jpg')
+    link.click()
+}
+
+const createShader = (gl, type, source) => {
     const shader = gl.createShader(type)
     gl.shaderSource(shader, source)
     gl.compileShader(shader)
@@ -22,7 +25,7 @@ function createShader(gl, type, source) {
     return shader
 }
 
-function createProgram(gl, vertexShader, fragmentShader) {
+const createProgram = (gl, vertexShader, fragmentShader) => {
     const program = gl.createProgram()
     gl.attachShader(program, vertexShader)
     gl.attachShader(program, fragmentShader)
@@ -33,24 +36,21 @@ function createProgram(gl, vertexShader, fragmentShader) {
     }
     return program
 }
-function updateViewport() {
-    canvas.width = 1280
-    canvas.height = 1280
-    //canvas.style.width = window.innerWidth + 'px'
-    //canvas.style.height = window.innerHeight + 'px'
-    gl.viewport(0, 0, canvas.width, canvas.height)
-}
 
-function init() {
+const init = () => {
     if (!gl) {
         console.error('WebGL not supported')
         return
     }
-
+ 
+    canvas.width = 1280
+    canvas.height = 1280
+    gl.viewport(0, 0, canvas.width, canvas.height)
     // Create shaders and program
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSrc)
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragSrc)
     const program = createProgram(gl, vertexShader, fragmentShader)
+    const constant = CONSTANTS[Math.floor(Math.random()*CONSTANTS.length)]
 
     const NUM_PARTICLES = 1000000
     const particleData = new Float32Array(NUM_PARTICLES * 5) // [x, y, vx, vy, life]
@@ -60,7 +60,7 @@ function init() {
         particleData[index + 1] = Math.random() - 0.5 // y
         particleData[index + 2] = Math.random() * 0.2 - 0.1 // vx
         particleData[index + 3] = Math.random() * 0.2 - 0.1 // vy
-        particleData[index + 4] = Math.random() * 2 + 1 // life
+        particleData[index + 4] = Math.random() * 3 + 1 // life
     }
 
     const particleBuffer = gl.createBuffer()
@@ -72,6 +72,9 @@ function init() {
     const aLifeLoc = gl.getAttribLocation(program, 'a_life')
     const uTimeLoc = gl.getUniformLocation(program, 'u_time')
     const uResolution = gl.getUniformLocation(program, 'u_resolution')
+    const uConstants = gl.getUniformLocation(program, 'u_constant')
+    
+    gl.useProgram(program)
 
     gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, false, 20, 0)
     gl.enableVertexAttribArray(aPositionLoc)
@@ -80,39 +83,32 @@ function init() {
     gl.vertexAttribPointer(aLifeLoc, 1, gl.FLOAT, false, 20, 16)
     gl.enableVertexAttribArray(aLifeLoc)
 
-    gl.useProgram(program)
+    let frame = 0
 
-    let startTime = performance.now()
-
-    function render() {
+    const render = () => {
         gl.clear(gl.COLOR_BUFFER_BIT)
-        const currentTime = (performance.now() - startTime) / 1000
-        gl.uniform1f(uTimeLoc, currentTime)
-        
-        const aspectRatio = canvas.width / canvas.height
-        // Pass the aspect ratio to correct the scaling
-        // if (aspectRatio > 1) {
-        //    gl.uniform2f(uResolution, 1/aspectRatio, 1)
-        // } else {
-            gl.uniform2f(uResolution, 1, 1)
-        // } 
-        
+        gl.uniform1f(uTimeLoc, frame * 0.005)
+        gl.uniform2f(uResolution, 1, 1)
+        gl.uniform4f(uConstants, ...constant)
         gl.drawArrays(gl.POINTS, 0, NUM_PARTICLES)
+        frame++;
         requestAnimationFrame(render)
     }
-    updateViewport()
     gl.clearColor(0, 0, 0, 1)
     render()
-    window.addEventListener('resize', updateViewport)
 }
+
+const containerElement = document.getElementById('windowFrame'),
+    loader = document.getElementById('loading'),
+    canvas = document.createElement('canvas'),
+    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
+
 
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
-//canvas.width = window.innerWidth
-//canvas.height = window.innerHeight
 init()
-document.getElementById('iconav').style.display = 'none'
+//document.getElementById('iconav').style.display = 'none'
 window.infobox = infobox
 window.init = init
-//window.capture = capture
+window.capture = () => capture(canvas)
 handleAction()
