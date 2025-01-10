@@ -43,11 +43,6 @@ const iterMenu = (ITER_LIST, STATE) => {
                     tr({}, td({}, 'Theme'), td({}, STATE.theme)),
                     tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
                     tr({}, td({}, 'Operate'), td({}, STATE.operator)),
-                    tr(
-                        {},
-                        td({}, `Label(${STATE.numLabel})`),
-                        td({}, ...STATE.labels.map((txt) => para(null, txt[1])))
-                    )
                 )
             ),
             para(null, 'SEEDS'),

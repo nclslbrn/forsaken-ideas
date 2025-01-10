@@ -1,258 +1,50 @@
-import { rect, group, polyline, bounds } from '@thi.ng/geom'
-import { range } from '@thi.ng/transducers'
+import { rect, group, polyline } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { getGlyphVector, getParagraphVector } from '@nclslbrn/plot-writer'
-import { add2 } from '@thi.ng/vectors'
-import { pointInPolygon2 } from '@thi.ng/geom-isec'
-import { asPolygons, asSDF, sample2d } from '@thi.ng/geom-sdf'
-import { getMinMaxPolysPoints } from './utils'
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 
 // Trace flow trails ------------------------------------------------------------
-const trace = (STATE, type = 'pixel') => {
-    return new Promise((resolve, reject) => {
-        const {
-            width,
-            height,
-            inner,
-            trails,
-            colors,
-            margin,
-            labels,
-            labelWidth
-        } = STATE
-        const domainScale = 0.95
-        const cropPoly = [
-            [margin, margin],
-            [width - margin, margin],
-            [width - margin, height - margin * 1.33],
-            [margin, height - margin * 1.33]
+const trace = (STATE) => {
+    const { width, height, inner, trails, colors, margin } = STATE
+    const domainScale = 0.95
+    const cropPoly = [
+        [margin, margin],
+        [width - margin, margin],
+        [width - margin, height - margin * 1.33],
+        [margin, height - margin * 1.33]
+    ]
+    const fntSz = [width * 0.009, height * 0.017]
+    const strokeById = (idx) =>
+        colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
+
+    const lines = trails.reduce((acc, line, idx) => {
+        const cropped = clipPolylinePoly(
+            line.map((pos) => [
+                width / 2 + pos[0] * inner[0] * domainScale,
+                height / 2 + pos[1] * inner[1] * domainScale
+            ]),
+            cropPoly
+        )
+
+        return [
+            ...acc,
+            ...cropped.map((line) =>
+                polyline(line, {
+                    stroke: strokeById(idx),
+                    weight: 0.5
+                })
+            )
         ]
-        const fntSz = [width * 0.009, height * 0.017]
-        // https://github.com/nclslbrn/plot-writer?tab=readme-ov-file#paragraph-multiple-lines-w-experimental-hyphenation
-        const randTexts = labels.reduce((labelPolys, txt) => {
-            const txtToPlot = getParagraphVector(txt[1], 22, 8, labelWidth)
-            const txtPolys = txtToPlot.vectors.reduce(
-                (polys, glyph) => [
-                    ...polys,
-                    ...glyph.map((vecs) =>
-                        // Move txt vector to txt random position (picked in state.js)
-                        polyline(vecs.map((v) => add2([], v, txt[0])))
-                    )
-                ],
-                []
-            )
-
-            const tickMargin = 24,
-                tickLength = 32,
-                tickMinMaxX = [
-                    getMinMaxPolysPoints(txtPolys, 'min', 'x'),
-                    getMinMaxPolysPoints(txtPolys, 'max', 'x')
-                ],
-                tickMinMaxY = [
-                    getMinMaxPolysPoints(txtPolys, 'min', 'y'),
-                    getMinMaxPolysPoints(txtPolys, 'max', 'y')
-                ],
-                tickOnRight = txt[0][0] < width / 2 - labelWidth / 2,
-                tickOnTop = txt[0][1] > width / 2,
-                tickY = tickOnTop
-                    ? tickMinMaxY[0] - tickMargin
-                    : tickMinMaxY[1] + tickMargin
-
-            let tickVecs = [
-                [tickMinMaxX[0], tickY],
-                [tickMinMaxX[1], tickY]
-            ]
-            if (tickOnRight) {
-                tickVecs.push([
-                    tickMinMaxX[1] + tickLength,
-                    tickY + (tickOnTop ? -1 : 1) * tickLength
-                ])
-            } else {
-                tickVecs = [
-                    [
-                        tickMinMaxX[0] - tickLength,
-                        tickY + (tickOnTop ? -1 : 1) * tickLength
-                    ],
-                    ...tickVecs
-                ]
-            }
-
-            return [...labelPolys, group({}, [...txtPolys, polyline(tickVecs)])]
-        }, [])
-
-        // https://github.com/thi-ng/umbrella/tree/develop/packages/geom-sdf#sdf-creation
-        const RES = [256, 256]
-        const randTextsBounds =
-            type === 'vector'
-                ? randTexts.map((txtGroup) => {
-                      const txtBounds = bounds(txtGroup, 6),
-                          sdf = asSDF(txtGroup),
-                          image = sample2d(sdf, txtBounds, RES)
-                      const contours = asPolygons(
-                          image,
-                          txtBounds,
-                          RES,
-                          range(0, 9, 3),
-                          1
-                      )
-                      return contours
-                  })
-                : false
-
-        const inTxtBound = (vec, txtBounds) =>
-            txtBounds.reduce(
-                (isIn, poly) => isIn || pointInPolygon2(vec, poly.points),
-                false
-            )
-        // https://docs.thi.ng/umbrella/geom-isec/functions/pointInPolygon2.html
-        const removeBoundsFromLine = (line) => {
-            let out = [[]],
-                lineIdx = 0,
-                wasInside = false
-
-            line.forEach((vec) => {
-                const isInside = randTextsBounds.reduce(
-                    (isIn, polys) => isIn || inTxtBound(vec, polys),
-                    false
-                )
-                if (wasInside && !isInside) {
-                    out.push([vec])
-                    lineIdx++
-                }
-                if (!isInside) {
-                    out[lineIdx].push(vec)
-                }
-                wasInside = isInside
-            })
-            return out
-        }
-
-        const strokeById = (idx) =>
-            colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
-
-        const lines =
-            type === 'pixel'
-                ? trails.reduce((acc, line, idx) => {
-                      const cropped = clipPolylinePoly(
-                          line.map((pos) => [
-                              width / 2 + pos[0] * inner[0] * domainScale,
-                              height / 2 + pos[1] * inner[1] * domainScale
-                          ]),
-                          cropPoly
-                      )
-
-                      return [
-                          ...acc,
-                          ...cropped.map((line) =>
-                              polyline(line, {
-                                  stroke: strokeById(idx),
-                                  weight: 0.5
-                              })
-                          )
-                      ]
-                  }, [])
-                : trails.reduce(
-                      (acc, line, idx) => [
-                          ...acc,
-                          ...clipPolylinePoly(
-                              line.map((pos) => [
-                                  width / 2 + pos[0] * inner[0] * domainScale,
-                                  height / 2 + pos[1] * inner[1] * domainScale
-                              ]),
-                              cropPoly
-                          ).reduce(
-                              (splitted, vecs) => [
-                                  ...splitted,
-                                  ...removeBoundsFromLine(vecs).map((cleaned) =>
-                                      polyline(cleaned, {
-                                          stroke: strokeById(idx)
-                                      })
-                                  )
-                              ],
-                              []
-                          )
-                      ],
-                      []
-                  )
-        if (type === 'pixel') {
-            resolve(comp(lines, type, randTexts, fntSz, STATE))
-        } else {
-            const worker = new Worker(
-                new URL('./workers/plot-optimization.js', import.meta.url)
-            )
-
-            // Track worker state
-            let isComputationComplete = false
-            let computationResult = null
-
-            // Set up worker message handler
-            worker.onmessage = function (e) {
-                switch (e.data.type) {
-                    case 'result':
-                        // Store the computation result
-                        computationResult = e.data.lines
-                        isComputationComplete = true
-                        break
-                    case 'error':
-                        // Reject the promise if there's an error
-                        worker.terminate()
-                        reject(new Error(e.data.error))
-                        break
-                }
-            }
-
-            // Set up worker error handler
-            worker.onerror = function (error) {
-                worker.terminate()
-                reject(error)
-            }
-
-            // Send input data to worker
-            worker.postMessage(lines)
-
-            function checkComputationAndGenerateSVG() {
-                if (isComputationComplete) {
-                    // Terminate the worker
-                    worker.terminate()
-
-                    // Generate SVG using the computation result
-                    try {
-                        resolve(
-                            comp(
-                                computationResult.map((line) => polyline(...line)),
-                                type,
-                                randTexts,
-                                fntSz,
-                                STATE
-                            )
-                        )
-                    } catch (svgError) {
-                        reject(svgError)
-                    }
-                } else {
-                    // If not complete, check again after a short delay
-                    setTimeout(checkComputationAndGenerateSVG, 100)
-                }
-            }
-
-            // Start checking for computation completion
-            checkComputationAndGenerateSVG()
-
-            // without worker
-            //return comp(cleanDouble(lines))
-        }
-    })
+    }, [])
+    return comp(lines, fntSz, STATE)
 }
 
 const comp = (
     uniqueLines,
-    type,
-    randTexts,
     fntSz,
     { width, height, colors, seed, attractor, operator, margin } = STATE
 ) => [
     rect([width, height], { fill: colors[0] }),
-    
+
     group({ weight: 0.75 }, [
         // bottom right label seed + attractor name + mixing formula
         group(
@@ -290,11 +82,6 @@ const comp = (
         ),
         // the flow fields trails
         ...uniqueLines,
-        // randomly placed random arbitrary labels (./LABELS.js)
-        type === 'pixel'
-            ? group({ stroke: colors[0], weight: 8 }, randTexts)
-            : group(),
-        group({ stroke: colors[2] }, randTexts)
     ])
 ]
 // Display message while flow field is processed ---------------------------------

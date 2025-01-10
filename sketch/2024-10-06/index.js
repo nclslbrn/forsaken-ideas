@@ -71,7 +71,7 @@ const init = async () => {
         for (let i = 0; i < NUM_ITER; i++) {
             iterate()
         }
-        draw(CTX, group({}, await trace(STATE, 'pixel')))
+        draw(CTX, group({}, trace(STATE, 'pixel')))
     }
 }
 
@@ -114,12 +114,9 @@ window['init'] = () => {
 window['exportJPG'] = () =>
     downloadCanvas(CANVAS, `2024 10 60-${seed}`, 'jpeg', 1)
 
-window['exportSVG'] = async () => {
-  try {
-    const before = window.performance.now()
-    const svgElements = await trace(STATE, 'vector')
+window['exportSVG'] = () => 
     downloadWithMime(
-        `for-intérieur-${seed}.svg`,
+        `2024-10-06-${seed}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -127,15 +124,11 @@ window['exportSVG'] = async () => {
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, svgElements)
+                group({}, trace(STATE, 'vector'))
             )
         )
     )
-    console.log(`SVG generation: ${window.performance.now() - before}ms`)
-  } catch(error) {
-    console.log('SVG generation failed: ', error)
-  }
-}
+
 window.onkeydown = (e) => {
     switch (e.key.toLowerCase()) {
         case 'n':
@@ -195,8 +188,7 @@ console.log(
     `seed : ${STATE.seed}
 theme: ${STATE.theme}
 attractor: ${STATE.attractor}
-operate: ${STATE.operator}
-labels: ${STATE.numLabel} ${STATE.labels.map((txt) => txt[1]).join(', ')}`
+operate: ${STATE.operator}`
 )
 iterMenu(ITER_LIST, STATE)
 handleAction()
