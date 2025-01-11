@@ -30,7 +30,7 @@ const redirectPickedSeed = (seed) => {
 
 const iterMenu = (ITER_LIST, STATE) => {
     if (ITER_LIST === undefined) return
-    ITER_LIST.innerHTML = ""
+    ITER_LIST.innerHTML = ''
     const saved = getSavedSeed()
     $compile(
         div(
@@ -43,6 +43,13 @@ const iterMenu = (ITER_LIST, STATE) => {
                     tr({}, td({}, 'Theme'), td({}, STATE.theme)),
                     tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
                     tr({}, td({}, 'Operate'), td({}, STATE.operator)),
+                    tr(
+                        {},
+                        td({}, 'Shapes'),
+                        td({}, 
+                          ...STATE.shapes.map((s) => para(null, JSON.stringify(s)))
+                        )
+                    )
                 )
             ),
             para(null, 'SEEDS'),

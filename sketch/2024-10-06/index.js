@@ -20,7 +20,7 @@ import {
 } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-
+import { sdBox } from './sdf'
 import { iterMenu } from './iter-menu'
 import { operate } from './operator'
 import { trace, traceLoadScreen } from './trace'
@@ -62,7 +62,6 @@ const init = async () => {
     })
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-
     if (isAnimated) {
         currFrame = 0
         update()
@@ -85,9 +84,11 @@ const iterate = () => {
             k = noise.fbm(pos.x * 900, pos.y * 900),
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
+            d = sdBox(prtcls[j], [0, 0], [0.4, 0.2]),
+            r = d > 0 ? m : Math.atan2(0-pos.x, 0-pos.y),
             n = [
-                prtcls[j][0] + Math.cos(m) * k * 0.002,
-                prtcls[j][1] + Math.sin(m) * k * 0.002
+                prtcls[j][0] + Math.cos(r) * 0.002 * k,
+                prtcls[j][1] + Math.sin(r) * 0.002 * k
             ]
         trails[j].push(n)
         prtcls[j] = n

@@ -1,6 +1,6 @@
 const THEMES = {
     
-    // theme-name: [background, stroke1, text, stroke2]
+    // theme-name: [background, stroke1, text, strok2]
     Technics: ['#222222', '#ffffff', '#ff7777', '#cefff2'],
     Cyanotype: ['#001166', '#ff9999', '#ffffee', '#ffcc00'],
     Postit: ['#eecc55', '#223300', '#000000', '#3333ff'],

@@ -1,10 +1,6 @@
 import { resolve } from '@thi.ng/resolve-map'
-import {
-    pickRandom,
-    pickRandomKey,
-    SFC32,
-} from '@thi.ng/random'
-import { repeatedly2d } from '@thi.ng/transducers'
+import { pickRandom, pickRandomKey, SFC32 } from '@thi.ng/random'
+import { repeatedly2d, repeatedly } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
@@ -14,7 +10,7 @@ import { seedFromHash } from './seed-from-hash'
 const ATTRACT_ENGINE = strangeAttractor()
 
 // Pick random value to build an edition ----------------------------------------
-const DOMAIN = 100
+const DOMAIN = 70
 const BASE = (config) => {
     const RND = new SFC32(seedFromHash(config.seed))
 
@@ -51,6 +47,23 @@ const BASE = (config) => {
                 )
             ],
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
+            shapesNum: RND.minmaxInt(1, 4),
+            shapes: ({ width, height, shapesNum }) => [
+                ...repeatedly(() => {
+                    return {
+                        rot: Math.PI / RND.minmaxInt(1, 3),
+                        center: [
+                            0.5 * width - RND.float() - 0.5 * width,
+                            0.5 * height - RND.float() - 0.5 * height
+                        ],
+                        size: [
+                            height * RND.float() * 0.15,
+                            height * RND.float() * 0.15
+                        ],
+                        height: height * RND.minmax(0.01, 0.16)
+                    }
+                }, shapesNum)
+            ],
             theme: pickRandomKey(THEMES, RND),
             colors: ({ theme }) => THEMES[theme]
         },

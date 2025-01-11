@@ -1,10 +1,11 @@
-import { rect, group, polyline } from '@thi.ng/geom'
+import { rect, group, polyline, polygon } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
+import { traceShape } from './traceShape'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
-    const { width, height, inner, trails, colors, margin } = STATE
+    const { width, height, inner, trails, colors, margin, shapes } = STATE
     const domainScale = 0.95
     const cropPoly = [
         [margin, margin],
@@ -35,7 +36,18 @@ const trace = (STATE) => {
             )
         ]
     }, [])
-    return comp(lines, fntSz, STATE)
+    /*const isoShapes = shapes.reduce((l, shape) => {
+        const s = traceShape(shape, [width*.5, height*.5])
+        return [
+            ...l,
+            polygon(s.top, { fill: `${colors[0]}aa`}),
+            polygon(s.bottom, { fill: `${colors[1]}33`}),
+            polygon(s.left, { fill: `${colors[2]}cc`}),
+            polygon(s.right, { fill: `${colors[3]}66`})
+        ]
+    }, [])
+    */
+   return comp(lines, fntSz, STATE)
 }
 
 const comp = (
@@ -82,6 +94,7 @@ const comp = (
         ),
         // the flow fields trails
         ...uniqueLines,
+        // group({ stroke: colors[1] }, isoShapes)
     ])
 ]
 // Display message while flow field is processed ---------------------------------
