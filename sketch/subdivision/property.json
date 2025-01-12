@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": ["p5"],
+    "action": [
+        { "name": "shuffle", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary 12: Subdivion (prompt by <a href='https://melissawiederrecht.com/'>Melissa Wiederrecht</a>. Recursive divisions created with JavaScript compose a modular grid that is passed on to the shader (GLSL) to draw progressive contours with a signed distance function.",
+    "date": "2025-01-12"
+}
+
