@@ -19,8 +19,8 @@ float sdfRep(in float x, in float r) {
 }
 void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    st.x *= u_resolution.x / u_resolution.y;
     st *= 1.05;
+    //st.x *= u_resolution.x / u_resolution.y;
 
     vec3 color = vec3(.85);
 

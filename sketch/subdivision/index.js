@@ -7,8 +7,8 @@ import p5 from 'p5'
 
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
-    dpr = Math.ceil(window.devicePixelRatio) || 1,
-    S = 2400
+    dpr = Math.round(window.devicePixelRatio) || 1,
+    S = 1200
 
 let canvas, numSplit, grid, shader
 
@@ -20,6 +20,15 @@ const sketch = (p5) => {
         p5.noLoop()
         sketch.shuffle()
     }
+    p5.draw = () => {
+        p5.blendMode()
+        p5.shader(shader)
+        shader.setUniform('u_resolution', [S * dpr, S * dpr])
+        shader.setUniform('u_numCell', grid.length)
+        shader.setUniform('u_cell', grid.flat())
+        p5.rect(S * -0.5, S * -0.5, S, S)
+    }
+    
     sketch.splitCell = (cellIdx, isHorizontal, grid) => {
         if (grid[cellIdx] === undefined) return grid
         const [x, y, w, h] = grid[cellIdx]
@@ -52,13 +61,7 @@ const sketch = (p5) => {
                 i % 2 === 0,
                 grid
             )
-
-        p5.blendMode()
-        p5.shader(shader)
-        shader.setUniform('u_resolution', [p5.width * dpr, p5.height * dpr])
-        shader.setUniform('u_numCell', grid.length)
-        shader.setUniform('u_cell', grid.flat())
-        p5.rect(0, 0, p5.width, p5.height)
+        p5.redraw()
     }
 }
 
