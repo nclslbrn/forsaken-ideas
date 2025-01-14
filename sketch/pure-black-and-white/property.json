@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": ["p5"],
+    "action": [
+        { "name": "shuffle", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary 14: Pure black and white. No gray.(prompt by <a href='https://melissawiederrecht.com/'>Melissa Wiederrecht)</a>). Using previous prompt (triangle) with adding noise warp and signed distance function.",
+    "date": "2025-01-14"
+}
+
