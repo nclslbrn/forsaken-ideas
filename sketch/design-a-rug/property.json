@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": ["p5"],
+    "action": [
+        { "name": "shuffle", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary 15: Design a rug (prompt by <a href='https://melissawiederrecht.com/'>Melissa Wiederrecht)</a>).",
+    "date": "2025-01-15"
+}
+
