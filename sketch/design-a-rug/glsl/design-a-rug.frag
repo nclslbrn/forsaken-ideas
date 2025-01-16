@@ -97,30 +97,36 @@ vec2 mirrorTile(vec2 _st) {
     return _st;
 }
 
+float frame(vec2 st, float s) {
+    float d = min(min(st.x -s, (1. -s) - st.x), min(st.y - s, (1. - s) - st.y));
+    return smoothstep(-s, s, d);
+}
+
 void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st = mirrorTile(fract(st));
-    st.x *= u_resolution.x / u_resolution.y;
+    vec2 _st = st;
+    _st.x *= u_resolution.x / u_resolution.y;
     // noise wrap 
-    st = wrapPosition(st);
+    _st = wrapPosition(_st);
     // margin
-    float n = noise2D(st*350., u_noiseSeed);
+    float n = noise2D(_st*350., u_noiseSeed);
     vec3 color = vec3(1.);
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
         if (i < u_numCell) {
             vec2 cellPos = vec2(u_cell[i].xy); 
             vec2 cellSiz = vec2(u_cell[i].zw);
-            vec2 stToCell = st - cellPos;
+            vec2 stToCell = _st - cellPos;
 
             float d = sdBox(abs(stToCell), cellSiz);
           
             if (abs(st.y - cellPos.y) <= cellSiz.y) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x) {
                     if (d < 0.) {
-                        vec2 _st = fract((st-cellPos)/cellSiz);
-                        _st = rotate2D(_st, PI*(float(i)));
-                        float tri = step(_st.x, _st.y);
+                        vec2 st_ = fract((_st-cellPos)/cellSiz);
+                        st_ = rotate2D(st_, PI*(float(i)));
+                        float tri = step(st_.x, st_.y);
                         // color = tri > 0.5 ? red : cream; 
                         
                         float rep = abs(sdfRep(d, n*.05) - n*.1) > .1 ? 0. : 1.;
@@ -133,8 +139,9 @@ void main() {
             }
         }
     }
-
     color = mix(color, green, abs(n-0.5));
+    color = mix(cream, color, frame(st, .02));
+    color = mix(gold, color, step(0.2, 1.-sdBox(vec2(0)-st, vec2(.6))));
     color = mix(color, vec3(0.), abs(n));
     gl_FragColor = vec4(color, 1.0);
 }

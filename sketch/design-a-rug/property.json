@@ -5,7 +5,7 @@
         { "name": "shuffle", "icon": "sync" },
         { "name": "capture", "icon": "file-media" }
     ],
-    "info": "#genuary 15: Design a rug (prompt by <a href='https://melissawiederrecht.com/'>Melissa Wiederrecht)</a>).",
+    "info": "#genuary 15: Design a rug (prompt by <a href='https://melissawiederrecht.com/'>Melissa Wiederrecht)</a>). I've tried to recreate pattern from a persian rug with mirror tiling, noise texture and signed distance function to mix five different colors.",
     "date": "2025-01-15"
 }
 
