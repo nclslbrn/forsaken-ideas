@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": ["p5"],
+    "action": [
+        { "name": "shuffle", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary 16: Generative palette (prompt by <a href='https://x.com/stranger_intheq'>Stranger in the Q</a>.",
+    "date": "2025-01-16"
+}
+
