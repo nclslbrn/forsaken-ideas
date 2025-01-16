@@ -61,7 +61,7 @@ vec2 wrapPosition(vec2 pos) {
     vec2 displacement = vec2(cos(angle), sin(angle)) * .15;
     displacement += vec2(n2, n1) * .15;
     float distanceFromCenter = distance(pos, vec2(.5));
-    float falloff = smoothstep(.5, 0., distanceFromCenter);
+    float falloff = smoothstep(.5, .25, distanceFromCenter);
     return pos + displacement * falloff;
 }
 
@@ -90,10 +90,10 @@ void main() {
     st = wrapPosition(st);
 
     vec3 primary = hsb2rgb(vec3(u_hue, .4, .7));
-    vec3 secondary = hsb2rgb(vec3(mod(u_hue + .25, 1.), .4, .6));
-    vec3 ternary = hsb2rgb(vec3(mod(u_hue + .75, 1.), .4, .25));
-    vec3 darksecary = hsb2rgb(vec3(mod(u_hue + .16, 1.), .3, .2));
-    vec3 darkternary = hsb2rgb(vec3(mod(u_hue + .82, 1.), .3, .2));
+    vec3 secondary = hsb2rgb(vec3(mod(u_hue + .33, 1.), .7, .9));
+    vec3 ternary = hsb2rgb(vec3(mod(u_hue + .66, 1.), .4, .25));
+    vec3 darksecary = hsb2rgb(vec3(mod(u_hue + .25, 1.), .3, .35));
+    vec3 darkternary = hsb2rgb(vec3(mod(u_hue + .75, 1.), .3, .25));
 
     vec3 color = ternary;
     float n = noise2D(st * 200., u_noiseSeed);
@@ -110,7 +110,7 @@ void main() {
             if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
                     if (d < 0.) {
-                        vec2 _st = fract((st - cellPos) / cellSiz*2.);
+                        vec2 _st = fract((st - cellPos) / cellSiz);
                         if (i == 1) {
                             _st = rotate2D(_st, PI * 0.5);
                         } else if (i == 2) {
@@ -119,16 +119,16 @@ void main() {
                             _st = rotate2D(_st, PI);
                         }
                         float tri = step(_st.x, _st.y);
-                        float rep = abs(sdfRep(d, n * .25) - n * .5) > .5 ? 0. : 1.;
+                        float rep = abs(sdfRep(d, .025) - .05) > .5 ? 0. : 1.;
 
-                        color = tri > 0.5
-                            ? vec3(rep + tri > .5 ? primary : secondary) 
+                        color = tri+n > 1.
+                            ? vec3(rep + tri > 1. ? primary : secondary) 
                             : vec3(rep < 0.5 ? primary : ternary);
                     }
                 }
             }
-            color = d > -.002 ? d < 0. ? darkternary : color : color;
-            color = d < .002 ? d > 0. ? darksecary : color : color;
+            color = d > -.01 ? d < 0. ? darkternary : color : color;
+            color = d < .01 ? d > 0. ? darksecary : color : color;
         }
     }
 

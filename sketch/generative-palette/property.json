@@ -5,7 +5,7 @@
         { "name": "shuffle", "icon": "sync" },
         { "name": "capture", "icon": "file-media" }
     ],
-    "info": "#genuary 16: Generative palette (prompt by <a href='https://x.com/stranger_intheq'>Stranger in the Q</a>.",
+    "info": "#genuary 16: Generative palette (prompt by <a href='https://x.com/stranger_intheq'>Stranger in the Q</a>). This sketch uses a random color and then creates four other colors by varying the tone, brightness and saturation.",
     "date": "2025-01-16"
 }
 

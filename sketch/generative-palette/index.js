@@ -1,4 +1,4 @@
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/generative-palette.vert'
@@ -67,10 +67,10 @@ const sketch = (p5) => {
         return grid
     }
     sketch.capture = () =>
-        p5.saveCanvas(canvas, 'pure-black-and-white.jpg')
+        p5.saveCanvas(canvas, 'generative-palette.jpg')
 
     sketch.shuffle = () => {
-        const numSplit = 8 + Math.ceil(Math.random() * 50)
+        const numSplit = 3 + Math.ceil(Math.random() * 15)
         traits.grid = [[0.5, 0.5, 1, 1]]
         for (let i = 0; i < numSplit; i++)
             traits.grid = sketch.splitCell(
