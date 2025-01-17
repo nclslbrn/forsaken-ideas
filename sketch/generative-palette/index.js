@@ -79,7 +79,7 @@ const sketch = (p5) => {
                 traits.grid
             )
         traits.noiseSeed = Math.random() * 999
-        traits.noiseSize = 2.5 + Math.random() * 5
+        traits.noiseSize = .05 + Math.random() * 7.5
         traits.hue = Math.random()
         p5.redraw()
     }

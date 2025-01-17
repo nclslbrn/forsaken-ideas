@@ -44,6 +44,8 @@ float noise2D(vec2 p, float seed) {
     return value;
 }
 
+//  Function from Iñigo Quiles
+//  https://www.shadertoy.com/view/MsS3Wc
 vec3 hsb2rgb(in vec3 c) {
     vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0),
                     6.0) - 3.0) - 1.0,
@@ -58,10 +60,10 @@ vec2 wrapPosition(vec2 pos) {
     float n1 = noise2D(noisePos, u_noiseSeed);
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * 3.14159;
-    vec2 displacement = vec2(cos(angle), sin(angle)) * .15;
-    displacement += vec2(n2, n1) * .15;
+    vec2 displacement = vec2(cos(angle), sin(angle)) * .225;
+    displacement += vec2(n2, n1) * .25;
     float distanceFromCenter = distance(pos, vec2(.5));
-    float falloff = smoothstep(.5, .25, distanceFromCenter);
+    float falloff = smoothstep(.5, .15, distanceFromCenter);
     return pos + displacement * falloff;
 }
 
@@ -89,13 +91,13 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st = wrapPosition(st);
 
-    vec3 primary = hsb2rgb(vec3(u_hue, .4, .7));
-    vec3 secondary = hsb2rgb(vec3(mod(u_hue + .33, 1.), .7, .9));
-    vec3 ternary = hsb2rgb(vec3(mod(u_hue + .66, 1.), .4, .25));
-    vec3 darksecary = hsb2rgb(vec3(mod(u_hue + .25, 1.), .3, .35));
-    vec3 darkternary = hsb2rgb(vec3(mod(u_hue + .75, 1.), .3, .25));
+    vec3 primary = hsb2rgb(vec3(PI * u_hue, .15, .4));
+    vec3 secondary = hsb2rgb(vec3(PI * mod(u_hue + .33, 1.), .7, .25));
+    vec3 ternary = hsb2rgb(vec3(PI * mod(u_hue + .66, 1.), .8, .2));
+    vec3 darksecary = hsb2rgb(vec3(PI * mod(u_hue + .16, 1.), .8, .6));
+    vec3 darkternary = hsb2rgb(vec3(PI * mod(u_hue + .82, 1.), .9, .5));
 
-    vec3 color = ternary;
+    vec3 color = vec3(1.);
     float n = noise2D(st * 200., u_noiseSeed);
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
@@ -105,8 +107,7 @@ void main() {
             vec2 stToCell = st - cellPos;
 
             float d = sdBox(abs(stToCell), cellSiz);
-            color = abs(d + n) < 0.1 ? abs(d - n) > -0.1 ? darksecary : color : color;
-
+            
             if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
                     if (d < 0.) {
@@ -119,16 +120,20 @@ void main() {
                             _st = rotate2D(_st, PI);
                         }
                         float tri = step(_st.x, _st.y);
-                        float rep = abs(sdfRep(d, .025) - .05) > .5 ? 0. : 1.;
-
-                        color = tri+n > 1.
-                            ? vec3(rep + tri > 1. ? primary : secondary) 
-                            : vec3(rep < 0.5 ? primary : ternary);
+                        float rep = abs(sdfRep(d, .025) - .5);
+                        // color = vec3(rep*1.5); 
+                        color = tri > .5
+                           ? rep + tri > 1.5 ? secondary : primary 
+                           : rep + tri < .5 ? ternary : primary;
+                        
+                        color = rep > .51 ? rep < .54 ? darksecary : color : color;
+                        color = rep < .51 ? rep > .50 ? darkternary : color : color;
                     }
                 }
             }
-            color = d > -.01 ? d < 0. ? darkternary : color : color;
-            color = d < .01 ? d > 0. ? darksecary : color : color;
+            color = d > -.005 ? d < 0.005 ? mix(primary, ternary, abs(d * 40.)) : color : color;
+            color = d < .005 ? d > -0.005 ? mix(primary, ternary, abs(d * 40.)) : color : color;
+            color = d < 0. ? n < 0.1 ? secondary : color : color;
         }
     }
 
