@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": ["p5"],
+    "action": [
+        { "name": "shuffle", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary 17: What happens if pi=4?.",
+    "date": "2025-01-14"
+}
+
