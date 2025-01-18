@@ -1,0 +1,11 @@
+{
+    "topic": "Strange Attractor",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary18: What does wind look like?",
+    "date": "2025-01-18"
+}
+
