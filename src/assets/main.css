@@ -146,13 +146,13 @@ header h1 span {
 .ui nav ul li button,
 .ui nav ul li label {
     display: block;
-    font-size: 1.6em;
+    font-size: 1.2em;
     text-align: center;
     line-height: 1.6;
 }
 
 .project-caption--title {
-    font-size: 2em;
+    font-size: 1.32em;
     font-weight: 800;
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { PropType } from 'vue' 
+import type { PropType } from 'vue'
 import type { Project } from '../project'
 // @ts-ignore
 import GlitchText from '../../sketch-common/glitchText'
@@ -19,26 +19,21 @@ export default {
 }
 </script>
 <template>
-  <div class="project-caption"> 
-    <button 
-      :ref="(element) => new GlitchText({ element, effect: 'replace'})" 
-      class="project-caption--title"
-      :data-text="project.title"
-      @click.prevent="$emit('openProject', project.src)">
+  <div class="project-caption">
+    <button :ref="(element) => new GlitchText({ element, effect: 'add' })" class="project-caption--title"
+      :data-text="project.title" @click.prevent="$emit('openProject', project.src)">
       {{ project.title }}
     </button>
     <div class="project-caption--meta">
       <div class="date">
-        <strong>Created:</strong> <span 
-          :data-text="project.date" 
-          :ref="(element) => new GlitchText({ element, effect: 'add'})">
+        <strong>Created:</strong> <span :data-text="project.date"
+          :ref="(element) => new GlitchText({ element, effect: 'add' })">
           {{ project.date }}
         </span>
       </div>
       <div class="topic">
-        <strong>Topic:</strong> <span 
-          :data-text="project.topic"
-          :ref="(element) => new GlitchText({ element, effect: 'add'})">
+        <strong>Topic:</strong> <span :data-text="project.topic"
+          :ref="(element) => new GlitchText({ element, effect: 'add' })">
           {{ project.topic }}
         </span>
       </div>
@@ -52,11 +47,16 @@ export default {
   border-right: 1px solid var(--color-border);
 }
 
+.project-caption--meta div {
+  height: 100%;
+}
+
 .project-caption--title {
   display: block;
   width: 100%;
   max-width: 100%;
   max-height: 3em;
+  min-height: 3em;
   text-align: left;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -71,23 +71,26 @@ export default {
   color: var(--color-primary);
 }
 
-.project-caption--meta .date,
-.project-caption--meta .topic {
-  line-height: 3;
-}
 
 @media (orientation: portrait) {
+
+  .project-caption--title,
+  .project-caption--meta {
+      max-width: calc(100vw - 2.6em);
+  }
+
   .project-caption--title {
     font-size: 1.2em;
     line-height: 1;
   }
+
   .project-caption--meta {
     padding: 0 1em;
   }
 
   .project-caption--meta .date,
   .project-caption--meta .topic {
-    line-height: 2;
+    height: 24px;
   }
 }
 
@@ -96,15 +99,21 @@ export default {
   .project-caption--meta {
     display: inline-flex;
     width: 100%;
+    height: 64px;
   }
+
   .project-caption--meta .date,
   .project-caption--meta .topic {
     width: 50%;
-    padding: 0 0 1em 1em;
+    padding: 0 0 0 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
   }
+
   .project-caption--meta .date {
     border-right: 1px solid var(--color-border);
-  } 
+  }
 }
-
 </style>

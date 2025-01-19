@@ -139,7 +139,6 @@ export default defineComponent({
       })
     },
     openProject(src: string) {
-      console.log(src)
       window.history.pushState(null, '', `#${src}`)
       window.location.href = `./sketch/${src}/`
     },
@@ -302,9 +301,15 @@ export default defineComponent({
 footer {
   display: flex;
   flex-flow: row nowrap;
-  align-items: stretch;
+  align-items: center;
+  flex-basis: 2.6em;
 }
 
+@media screen and (min-width: 900px) {
+  footer {
+    flex-basis: auto;
+  }
+}
 
 footer span {
   padding: 1em;

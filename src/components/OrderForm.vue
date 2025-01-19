@@ -42,7 +42,7 @@ form {
   form button {
     position: relative;
     padding: 0.5em;
-    font-size: 16px;
+    font-size: 14px;
     border: none;
   }
 
