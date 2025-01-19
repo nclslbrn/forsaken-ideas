@@ -86,8 +86,11 @@ void main() {
     vec2 tr = step(vec2(0.1),1.0-st);
     
     float t = step(sq.x,sq.y);
-
-    vec3 color = vec3(max(t, 1.-(bl.x*bl.y*tr.x*tr.y)));
+    vec3 bg = vec3(.82, .75, .78);
+    vec3 fg = vec3(.14, .16, .18);
+    
+    float fill = max(t, 1.-(bl.x*bl.y*tr.x*tr.y)); 
+    vec3 color = vec3(mix(fg, bg, fill));
     
     gl_FragColor = vec4(color, 1.0);
 }
