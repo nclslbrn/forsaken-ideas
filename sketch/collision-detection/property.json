@@ -1,0 +1,11 @@
+{
+    "topic": "random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuar21: Create a collision detection system (no libraries allowed).",
+    "date": "2025-01-21"
+}
+
