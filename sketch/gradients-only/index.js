@@ -7,7 +7,8 @@ import { canvasRecorder } from '@thi.ng/dl-asset'
 import { repeatedly } from '@thi.ng/transducers'
 
 let isRecording = false,
-    recorder = false
+    recorder = false,
+    traits = {}
 
 const capture = (canvas) => {
     const link = document.createElement('a')
@@ -59,13 +60,37 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 }
 
 const init = () => {
+    const numStack = Math.ceil(Math.random() * 2),
+        rhombus = [
+            ...repeatedly((c) => {
+                const rhombPerStack = Math.ceil(Math.random() * 5),
+                    width = 0.1 + Math.random() * 0.15,
+                    xPos = (1 / (numStack + 1)) * (c + 1),
+                    startY = Math.random() * 0.5,
+                    endY = 1 - Math.random() * 0.5,
+                    stepY = Math.abs(endY - startY) / rhombPerStack
+
+                return [
+                    ...repeatedly(
+                        (y) => [xPos, startY + stepY * y, width, stepY * 2], // x,y,w,h
+                        rhombPerStack
+                    )
+                ]
+            }, numStack)
+        ],
+        rhombNum = rhombus.reduce((s, stack) => s + stack.length, 0),
+        rhombFlat = rhombus.reduce((f, stack) => [...f, ...stack.flat()], [])
+    traits = { numStack, rhombus, rhombNum, rhombFlat }
+}
+
+const setup = () => {
     if (!gl) {
         console.error('WebGL not supported')
         return
     }
 
-    canvas.width = 1920
-    canvas.height = 1920
+    canvas.width = 2400
+    canvas.height = 2400
     gl.viewport(0, 0, canvas.width, canvas.height)
     // Create shaders and program
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSrc),
@@ -80,31 +105,8 @@ const init = () => {
         uTimeLoc = gl.getUniformLocation(program, 'u_time'),
         uResolution = gl.getUniformLocation(program, 'u_resolution'),
         uRhombus = gl.getUniformLocation(program, 'u_rhombus'),
-        uRhombNum = gl.getUniformLocation(program, 'u_rhombNum'),
-        uHue = gl.getUniformLocation(program, 'u_hue'),
-        numStack = Math.ceil(Math.random() * 2),
-        rhombus = [
-            ...repeatedly((c) => {
-                const rhombPerStack = Math.ceil(Math.random() * 5),
-                    width = 0.1 + Math.random() * 0.15,
-                    xPos = 1 / (numStack+1) * (c+1),  
-                    startY = Math.random() * 0.5,
-                    endY = 1. - Math.random() * 0.5,
-                    stepY = Math.abs(endY - startY) / rhombPerStack
+        uRhombNum = gl.getUniformLocation(program, 'u_rhombNum')
 
-                return [
-                    ...repeatedly(
-                        (y) => [xPos, startY + stepY * y, width, stepY*2.], // x,y,w,h
-                        rhombPerStack
-                    )
-                ]
-            }, numStack)
-        ],
-        rhombNum =  rhombus.reduce((s, stack) => s + stack.length, 0),
-        rhombFlat = rhombus.reduce((f, stack) => [...f, ...stack.flat()], []),
-        hue = Math.random()
-    
-    
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
     gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW)
     gl.enableVertexAttribArray(positionLoc)
@@ -113,13 +115,14 @@ const init = () => {
     gl.enable(gl.BLEND)
     let frame = 0
 
+    init()
+
     const render = () => {
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.uniform1f(uTimeLoc, frame * 0.001)
         gl.uniform2f(uResolution, canvas.width, canvas.height)
-        gl.uniform1i(uRhombNum, rhombNum)
-        gl.uniform4fv(uRhombus, rhombFlat)
-        gl.uniform1f(uHue, hue)
+        gl.uniform1i(uRhombNum, traits.rhombNum)
+        gl.uniform4fv(uRhombus, traits.rhombFlat)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
 
         frame++
@@ -136,7 +139,7 @@ const containerElement = document.getElementById('windowFrame'),
 
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
-init()
+setup()
 //document.getElementById('iconav').style.display = 'none'
 window.infobox = infobox
 window.init = init

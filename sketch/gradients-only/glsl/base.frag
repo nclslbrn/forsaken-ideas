@@ -43,29 +43,29 @@ void main() {
     vec2 bl = step(vec2(0.05), st);
     vec2 tr = step(vec2(0.05), 1.0 - st);
     st *= 1.5;
-  
+
     float d = 0.;
     for (int i = 0; i <= int(MAX_RHOMB); i++) {
         if (i < u_rhombNum) {
             vec2 rhombPos = vec2(.25) + vec2(u_rhombus[i].xy);
             vec2 rhombSiz = vec2(u_rhombus[i].zw);
-            float id = abs(sdfRep(sdRhombus(rhombPos - st, rhombSiz), .18) - .25);
+            float id = abs(sdfRep(sdRhombus(rhombPos - st, rhombSiz), .2) - .27);
             d = max(d, id);
         }
     }
     vec2 center = vec2(.75);
-    vec3 bg = vec3(.9, .89, .91);
+    vec3 bg = vec3(.98, .93, .95);
     float fill = bl.x * bl.y * tr.x * tr.y;
-    float wheight = .2 + mod(u_time, 1.)*.05;
+    float wheight = .32;
     float stroke = d < wheight && d > -wheight ? 0. : 1.;
-    float fade = length(center-st);
+    float fade = length(center - st);
     fill = min(fill, stroke);
     vec3 color = hsb2rgb(vec3(
-      mod(.1*fade + pow(abs(d),2.) + u_time, 1.), 
-      1.-pow(fade, 3.),
-      1.-pow(fade, 4.)
-      )
-    );
+                mod(.1 * fade + abs(d) + u_time, 1.),
+                .7 - pow(fade*.45, 3.),
+                smoothstep(.5, .4, fade * .45)
+            )
+        );
     color = mix(bg, color, fill);
 
     gl_FragColor = vec4(color, 1.0);

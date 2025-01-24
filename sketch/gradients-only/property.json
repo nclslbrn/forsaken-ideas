@@ -5,7 +5,7 @@
         { "name": "init", "icon": "sync" },
         { "name": "capture", "icon": "file-media" }
     ],
-    "info": "#genuary22: Gradients only.",
+    "info": "#genuary22: Gradients only. Several rhombuses are created at random (organized in columns). Their outlines are traced with a signed distance function, and a gradient is applied from the inside to the outside of each outline. Color evolves over time.",
     "date": "2025-01-22"
 }
 
