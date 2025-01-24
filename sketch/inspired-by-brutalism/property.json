@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary23: Inspired by brutalism. The program is built around a cube stack (chosen randomly in JavaScript). From this volume, using a raymarching algorithm, the program interprets the faces, repeatedly subtracts <a href='https://iquilezles.org/articles/menger/'>crosses</a> and finally calculates the shadows and adds noise to give the appearance of concrete. The entire program is built using tutorials by <a href='https://iquilezles.org/articles/'>Inigo Quilez</a>.",
+    "date": "2025-01-23"
+}
+
