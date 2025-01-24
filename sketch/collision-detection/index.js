@@ -1,4 +1,4 @@
-//import '../framed-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/collision-detection.vert'
@@ -111,16 +111,11 @@ const init = () => {
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
-    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
-    updateMousePos = (e) => {
-      mousePos = [e.pageX, e.pageY]
-    }
-
+    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
+   
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
-// canvas.addEventListener('mousemove', updateMousePos, false)
 init()
-// document.getElementById('iconav').style.display = 'none'
 window.infobox = infobox
 window.init = init
 window.capture = () => capture(canvas)
