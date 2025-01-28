@@ -24,6 +24,15 @@ float sdSphere(vec3 p, float s) {
     return length(p) - s;
 }
 
+float sdBoxFrame(vec3 p, vec3 b, float e) {
+    p = abs(p) - b;
+    vec3 q = abs(p + e) - e;
+    return min(min(
+            length(max(vec3(p.x, q.y, q.z), 0.0)) + min(max(p.x, max(q.y, q.z)), 0.0),
+            length(max(vec3(q.x, p.y, q.z), 0.0)) + min(max(q.x, max(p.y, q.z)), 0.0)),
+        length(max(vec3(q.x, q.y, p.z), 0.0)) + min(max(q.x, max(q.y, p.z)), 0.0));
+}
+
 float sdBox(vec2 p, vec2 b) {
     vec2 d = abs(p) - b;
     return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
@@ -75,23 +84,24 @@ vec4 map(vec3 p) {
     p *= rotateY(radians(u_mouse.x * 180.));
     //p = abs(p);
     d = min(
-            sdSphere(vec3(0, -1., 0) + p * rotateY(radians(90.)), 1.),
-            sdCube(vec3(0, 1., 0) + p * rotateY(radians(90.)), vec3(3))
+            sdBoxFrame(p, vec3(2.5), 0.5),
+            sdBoxFrame(p*rotateX(radians(45.)), vec3(2.5), 0.5)
         );
+    d = min(
+        d,
+        sdBoxFrame(p*rotateY(radians(45.)), vec3(2.5), 0.5)
+    );
     vec4 res = vec4(d, 1., 0., 0.);
 
-    float s = 1.;
+    float s = 2.;
     for (int m = 0; m < 3; m++) {
         vec3 a = mod(p * s, 2.) - 1.;
         s *= 3.;
-        vec3 r = abs(1. - 3. * abs(a));
-        float rot = (float(m)+1.) * 90.; 
-        vec3 sdpos = normalize(rotateX(radians(rot)) * r);
-        
-        float c = m == 0 || m == 2  
-          ? sdCross(sdpos, vec3(3))/s
-          : sdCube(sdpos, vec3(1.5, .5, 1.5))/s;
-        // sdCross(r)/s;
+        vec3 r = abs(1. - 2. * abs(a));
+        float rot = (float(m) + 1.) * 90. + 45.;
+        vec3 sdpos = rotateX(radians(rot)) * rotateY(rot*2.) * r;
+
+        float c = sdCross(sdpos, vec3(1.5)) / s;
         //(min(da, min(db, dc)) - 1.) / s;
         float da = max(r.x, r.y);
         float db = max(r.y, r.z);
@@ -102,7 +112,6 @@ vec4 map(vec3 p) {
             res = vec4(d, 0.2 * da * db * dc, (1. + float(m)) / 4., 0.);
         }
     }
-
     return res;
 }
 
@@ -153,20 +162,19 @@ void main() {
     vec2 st = (gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0;
     st.x *= u_resolution.x / u_resolution.y;
     vec3 evrfrst[6];
-    evrfrst[0] = vec3(.1);
-    evrfrst[1] = vec3(.2);
-    evrfrst[2] = vec3(.3);
-    evrfrst[3] = vec3(.4);
-    evrfrst[4] = vec3(.5);
-    evrfrst[5] = vec3(.6);
-
+    evrfrst[0] = vec3(.28, .32, .35);
+    evrfrst[1] = vec3(.14, .16, .18);
+    evrfrst[2] = vec3(.31, .35, .37);
+    evrfrst[3] = vec3(.65, .75, .5);
+    evrfrst[4] = vec3(.24, .28, .3);
+    evrfrst[5] = vec3(.14, .16, .18);
     vec3 rayOrigin = vec3(0., 0., -7.);
 
     // vec3 rayDir = normalize(vec3(st, 1.0));
     vec3 rayDir = normalize(
-            //rotateY(radians(u_mouse.x * 180.)) *
+            // rotateY(radians(45.)) *
             //rotateX(radians( u_mouse.y * 180.)) *
-            vec3(st, 1.0)
+            vec3(st, 2.0)
         );
     vec3 col = evrfrst[5];
     vec4 tmat = intersect(rayOrigin, rayDir);
