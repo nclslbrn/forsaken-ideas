@@ -1,0 +1,10 @@
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary24: Geometric art - pick either a circle, rectangle, or triangle and use only that geometric shape. I've chosen the circle, but I seem to be able to draw squares from the radii of circles in the four corners of the composition.",
+    "date": "2025-01-24"
+}
+
