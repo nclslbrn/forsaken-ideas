@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" }
+    ],
+    "info": "#genuary28: Infinite Scroll. Mixing 2D and 3D elements (both SDF) to create an infinite loop with a grid composition.",
+    "date": "2025-01-28"
+}
+
