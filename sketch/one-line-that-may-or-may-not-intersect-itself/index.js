@@ -61,7 +61,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 const init = () => {
     traits = {
         noiseSeed: Math.random() * 999,
-        noiseSize: 1. + Math.random()
+        noiseSize: 1. + Math.random() * (window.devicePixelRatio || 1)
     }
 }
 
