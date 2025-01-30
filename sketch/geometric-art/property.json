@@ -2,9 +2,10 @@
     "topic": "Random distribution",
     "libs": [],
     "action": [
+        { "name": "randomize", "icon": "sync" },
         { "name": "capture", "icon": "file-media" }
     ],
-    "info": "#genuary24: Geometric art - pick either a circle, rectangle, or triangle and use only that geometric shape. I've chosen the circle, but I seem to be able to draw squares from the radii of circles in the four corners of the composition.",
+    "info": "#genuary24: Geometric art - pick either a circle, rectangle, or triangle and use only that geometric shape. I used circles distributed on a grid, for each cell the circle is placed in one of the four corners of the cell.",
     "date": "2025-01-24"
 }
 
