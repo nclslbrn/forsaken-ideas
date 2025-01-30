@@ -121,10 +121,4 @@ containerElement.appendChild(canvas)
 setup()
 window.infobox = infobox
 window.capture = () => capture(canvas)
-window.onkeydown = (e) => {
-    if (e.key.toLowerCase() === 'r') startRecording(canvas)
-    if (e.key.toLowerCase() === 's') stopRecording()
-    if (e.key.toLowerCase() === 'g') init()
-}
-
 handleAction()

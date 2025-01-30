@@ -73,7 +73,6 @@ vec2 iBox(vec3 ro, vec3 rd, vec3 rad) {
 vec4 map(vec3 p) {
     float d = 100.;
     p *= rotateY(radians(u_mouse.x * 180.));
-    //p = abs(p);
     d = min(
             sdBoxFrame(p, vec3(2.5), 0.5),
             sdBoxFrame(p*rotateX(radians(45.)), vec3(2.5), 0.5)
@@ -85,14 +84,14 @@ vec4 map(vec3 p) {
     vec4 res = vec4(d, 1., 0., 0.);
 
     float s = 1.;
-    for (int m = 0; m < 4; m++) {
+    for (int m = 0; m < 3; m++) {
         vec3 a = mod(p * s, 2.) - 1.;
         s *= 3.;
         vec3 r = abs(2. - 3. * abs(a));
         float rot = (float(m) + 1.) * 90. + 45.;
         vec3 sdpos = rotateX(radians(rot)) * rotateY(rot*2.) * r;
 
-        float c = sdCross(sdpos, vec3(.75)) / s;
+        float c = sdCross(sdpos, vec3(.9)) / s;
         //(min(da, min(db, dc)) - 1.) / s;
         float da = max(r.x, r.y);
         float db = max(r.y, r.z);
