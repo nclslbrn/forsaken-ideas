@@ -3,38 +3,16 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/base.vert'
 import fragSrc from './glsl/base.frag'
-import { canvasRecorder } from '@thi.ng/dl-asset'
 
-let isRecording = false,
-    recorder = false,
-    mouseX = 0.5,
+let mouseX = 0.5,
     mouseY = 0.,
-    moved = false,
-    noiseSeed = 0
+    moved = false
 
 const capture = (canvas) => {
     const link = document.createElement('a')
     link.download = `abstract-map.jpg`
     link.href = canvas.toDataURL('image/jpg')
     link.click()
-}
-
-const startRecording = (canvas) => {
-    if (isRecording) return
-    recorder = canvasRecorder(canvas, 'abstract-map', {
-        mimeType: 'video/webm;codecs=vp8',
-        fps: 30
-    })
-    recorder.start()
-    console.log('%c Record started ', 'background: tomato; color: white')
-    isRecording = true
-}
-
-const stopRecording = () => {
-    if (!isRecording) return
-    recorder.stop()
-    console.log('%c Record stopped ', 'background: limegreen; color: black')
-    isRecording = false
 }
 
 const createShader = (gl, type, source) => {
@@ -80,7 +58,7 @@ const sketch = {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
     gl.viewport(0, 0, canvas.width, canvas.height)
-    // Create shaders and program
+
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSrc),
         fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragSrc),
         program = createProgram(gl, vertexShader, fragmentShader)
@@ -105,6 +83,7 @@ const sketch = {
     sketch.init()
     gl.clearColor(1, 1, 1, 1)
     canvas.addEventListener('mousedown', () => { moved = true })
+    canvas.addEventListener('touchstart', () => { moved = true })
     canvas.addEventListener('mousemove', (event) => {
       if (moved) {
         mouseX = (event.pageX / canvas.width) - .5
@@ -112,7 +91,15 @@ const sketch = {
         sketch.render()
       }
     })
-    canvas.addEventListener('click', () => { moved = false})
+    canvas.addEventListener('touchmove', (event) => {
+      if (moved) {
+        mouseX = (event.changedTouches[0].screenX / canvas.width) - .5 
+        mouseY = .5 - (event.changedTouches[0].screenY / canvas.height)
+        sketch.render()
+      }
+    })
+    canvas.addEventListener('click', () => { moved = false })
+    canvas.addEventListener('touchend', () => { moved = false })
   },
   render: () => {
         gl.clear(gl.COLOR_BUFFER_BIT)
