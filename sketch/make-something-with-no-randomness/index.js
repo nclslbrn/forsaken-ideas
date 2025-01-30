@@ -13,14 +13,14 @@ let isRecording = false,
 
 const capture = (canvas) => {
     const link = document.createElement('a')
-    link.download = `symmetry.jpg`
+    link.download = `make-something-with-no-randomness.jpg`
     link.href = canvas.toDataURL('image/jpg')
     link.click()
 }
 
 const startRecording = (canvas) => {
     if (isRecording) return
-    recorder = canvasRecorder(canvas, 'symmetry', {
+    recorder = canvasRecorder(canvas, 'make-something-with-no-randomness', {
         mimeType: 'video/webm;codecs=vp8',
         fps: 30
     })

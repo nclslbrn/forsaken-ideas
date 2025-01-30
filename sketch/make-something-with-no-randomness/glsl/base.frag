@@ -1,12 +1,3 @@
-// If you're looking at this code to find out how to use
-// a raytracer and perform recursive Boolean operations
-// with signed distance functions, I suggest you instead
-// read the article on which I based myself (heavily) by
-// Inigo Quilez https://iquilezles.org/articles/menger/
-
-// I didn't invent anything, just explored its program to
-// better understand what it's all about.
-
 #ifdef GL_ES
 precision lowp float;
 #endif
@@ -93,15 +84,15 @@ vec4 map(vec3 p) {
     );
     vec4 res = vec4(d, 1., 0., 0.);
 
-    float s = 2.;
-    for (int m = 0; m < 3; m++) {
+    float s = 1.;
+    for (int m = 0; m < 4; m++) {
         vec3 a = mod(p * s, 2.) - 1.;
         s *= 3.;
-        vec3 r = abs(1. - 2. * abs(a));
+        vec3 r = abs(2. - 3. * abs(a));
         float rot = (float(m) + 1.) * 90. + 45.;
         vec3 sdpos = rotateX(radians(rot)) * rotateY(rot*2.) * r;
 
-        float c = sdCross(sdpos, vec3(1.5)) / s;
+        float c = sdCross(sdpos, vec3(.75)) / s;
         //(min(da, min(db, dc)) - 1.) / s;
         float da = max(r.x, r.y);
         float db = max(r.y, r.z);
@@ -170,12 +161,12 @@ void main() {
     evrfrst[5] = vec3(.14, .16, .18);
     vec3 rayOrigin = vec3(0., 0., -7.);
 
-    // vec3 rayDir = normalize(vec3(st, 1.0));
-    vec3 rayDir = normalize(
+    vec3 rayDir = normalize(vec3(st, 1.0));
+    /*vec3 rayDir = normalize(
             // rotateY(radians(45.)) *
             //rotateX(radians( u_mouse.y * 180.)) *
             vec3(st, 2.0)
-        );
+        );*/
     vec3 col = evrfrst[5];
     vec4 tmat = intersect(rayOrigin, rayDir);
 
