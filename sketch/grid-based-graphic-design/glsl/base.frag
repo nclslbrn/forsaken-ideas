@@ -2,7 +2,8 @@
 precision highp float;
 
 #define MAX_CELL 64.0
-#define PI 4.
+
+#define PI 3.1415926535897932384626433832795
 
 uniform vec2 u_resolution;
 uniform int u_numCell;
@@ -44,13 +45,14 @@ float noise2D(vec2 p, float seed) {
     return value;
 }
 
-float sdBox(in vec2 p, in vec2 wh) {
-    vec2 d = abs(p) - wh;
-    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-}
 
-float sdCircle(vec2 p, float r) {
-    return length(p) - r;
+float sdEquilateralTriangle(in vec2 p, in float r) {
+    const float k = sqrt(3.0);
+    p.x = abs(p.x) - r;
+    p.y = p.y + r / k;
+    if (p.x + k * p.y > 0.0) p = vec2(p.x - k * p.y, -k * p.x - p.y) / 2.0;
+    p.x -= clamp(p.x, -2.0 * r, 0.0);
+    return -length(p) * sign(p.y);
 }
 
 float sdfRep(in float x, in float r) {
@@ -72,33 +74,37 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st *= 1.2;
 
-    vec3 color = vec3(.94, .90, .93) - noise2D(st*300., u_noiseSeed)*.1;
+    vec3 color = vec3(.94, .90, .93) - noise2D(st * 300., u_noiseSeed) * .05;
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
         if (i < u_numCell) {
             vec2 cellPos = vec2(0.1) + vec2(u_cells[i].xy);
             vec2 cellSiz = vec2(u_cells[i].zw);
-            vec2 stToCell = st - cellPos;
             int j = int(mod(float(i), 4.));
             if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
+                    if (j == 0) {
+                        st -= cellSiz*.5;
+                    }
                     if (j == 1) {
-                        stToCell.x += cellSiz.x;
+                        st = rotate2D(st, PI * .25);
+                        st.x += cellSiz.x * .5;
                     }
                     if (j == 2) {
-                        stToCell += cellSiz;
+                        st = rotate2D(st, PI * .75);
+                        st += cellSiz * .5;
                     }
                     if (j == 3) {
-                        stToCell.y += cellSiz.y;
+                        st = rotate2D(st, PI * 1.25);
+                        st.y += cellSiz.y * .5;
                     }
-                    float d = sdCircle(
+                    vec2 stToCell = st - cellPos;
+                    float d = sdEquilateralTriangle(
                             stToCell,
                             min(cellSiz.x, cellSiz.y)
-                            // (mod(float(i), 2.) > 0.
-                            // ? cellSiz.x : cellSiz.y) * .5
-                    );
-                    float rep = abs(sdfRep(d, .33) - .66);
-                    if (rep < .66) color *= 0.2;
+                        );
+                    float rep = abs(sdfRep(d, .015) - .03);
+                    if (rep > .03) color = vec3(1.) - color;
                 }
             }
         }

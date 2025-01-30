@@ -91,7 +91,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 const sketch = {
     frame: 0,
     init: () => {
-        const numCell = 16 + ceil(random() * 24)
+        const numCell = 4 + ceil(random() * 12)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
