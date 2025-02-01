@@ -72,8 +72,7 @@ export default {
 }
 
 
-@media (orientation: portrait) {
-
+@media screen and (max-width: 1080px) {
   .project-caption--title,
   .project-caption--meta {
       max-width: calc(100vw - 2.6em);
@@ -95,7 +94,7 @@ export default {
 }
 
 
-@media (orientation: landscape) {
+@media screen and (min-width: 1080px) {
   .project-caption--meta {
     display: inline-flex;
     width: 100%;

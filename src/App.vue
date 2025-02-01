@@ -244,7 +244,7 @@ export default defineComponent({
     width: auto;
 }
 
-@media (orientation: portrait) {
+@media screen and (max-width: 1080px) {
   .the-wall header {
     max-width: 60vw;
   }
