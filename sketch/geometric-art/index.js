@@ -115,8 +115,8 @@ const sketch = {
             return
         }
 
-        canvas.width = 2400
-        canvas.height = 2400
+        canvas.width = 1580
+        canvas.height = 2060
         gl.viewport(0, 0, canvas.width, canvas.height)
         // Create shaders and program
         const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSrc),
