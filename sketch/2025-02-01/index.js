@@ -1,7 +1,7 @@
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { rect, group, asSvg, svgDoc, circle } from '@thi.ng/geom'
+import { rect, group, asSvg, svgDoc, circle, polyline } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../full-canvas.css'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -13,7 +13,7 @@ const SIZE = [1200, 1200],
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    { abs, tan, min, max, random, PI } = Math
+    { abs, tan, min, max, random, PI, cos, sin, atan2 } = Math
 
 let width, height, drawElems
 let time = 0 // Add time for animation
@@ -26,7 +26,7 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const dots = []
+    const lines = []
 
     // Scene configuration
     const cubes = [
@@ -60,37 +60,53 @@ const init = () => {
     const fov = PI / 3
     const origin = [0, 0, 0]
 
-    for (let y = 0; y < height; y += 4) {
-        for (let x = 0; x < width; x += 4) {
-            const px =
-                ((2 * (x + 0.5)) / width - 1) * tan(fov / 2) * aspectRatio
-            const py = (1 - (2 * (y + 0.5)) / height) * tan(fov / 2)
-            const direction = normalize([px, py, -1])
+    for (let x = 0; x < width; x += 4) {
+        for (let y = 0; y < height; y += 4) {
+            const line = []
+            let pos = [x + MARGIN, y + MARGIN]
 
-            let closest = Infinity
-            let hit = null
-            let hitCube = null
+            for (let z = -2; z <= 0; z += 0.1) {
+                const px =
+                    ((2 * (x + 0.5)) / width - 1) * tan(fov / 2) * aspectRatio
+                const py = (1 - (2 * (y + 0.5)) / height) * tan(fov / 2)
+                const direction = normalize([px, py, z])
 
-            for (const cube of cubes) {
-                const intersection = intersectCube(origin, direction, cube)
-                if (intersection && intersection.t < closest) {
-                    closest = intersection.t
-                    hit = intersection
-                    hitCube = cube
+                let closest = Infinity
+                let hit = null
+
+                for (const cube of cubes) {
+                    const intersection = intersectCube(origin, direction, cube)
+                    if (intersection && intersection.t < closest) {
+                        closest = intersection.t
+                        hit = intersection
+                    }
+                }
+
+                if (hit) {
+                    pos = [
+                        pos[0] + cos(hit.normal[0] * PI * 2),
+                        pos[1] + sin(hit.normal[1] * PI * 2)
+                    ]
+                    line.push(pos)
+                    z += 0.5
+                } else {
+                    const toCenter = atan2(
+                        (SIZE[1] * 0.5) - pos[1],
+                        (SIZE[0] * 0.5) - pos[0]
+                    )
+                    pos = [ 
+                      pos[0] + cos(toCenter) * 2, 
+                      pos[1] + sin(toCenter) * 2
+                    ]
                 }
             }
-
-            if (hit) {
-                const diffuse = max(0, -dot(hit.normal, light.direction))
-                const lighting = 0.2 + 0.8 * diffuse
-                dots.push(circle([x + MARGIN, y + MARGIN], 0.5 + ((1 - lighting) * 1.5)))
-            }
+            line.length && lines.push(polyline(line))
         }
     }
 
     drawElems = [
         rect(SIZE, { fill: 'white' }),
-        group({ stroke: 'rgba(0, 0, 0, 0)', fill: 'black' }, dots)
+        group({ stroke: 'black', weight: 4, fill: 'rgba(0, 0, 0, 0)' }, lines)
     ]
 
     draw(CTX, group({}, drawElems))
