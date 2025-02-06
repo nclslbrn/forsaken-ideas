@@ -6,29 +6,19 @@ import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../full-canvas.css'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-//  import { normalize, add, sub, mul, dot } from '@thi.ng/vectors'
-import { invert33 } from '@thi.ng/matrices'
-
+import { intersectCube } from './intersectCube'
+import { normalize, dot } from './vectorOp'
 const SIZE = [1200, 1200],
     MARGIN = 50,
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    { abs, tan, min, max, cos, sin, random, PI, sign } = Math
+    { abs, tan, min, max, random, PI } = Math
 
 let width, height, drawElems
 let time = 0 // Add time for animation
 
 ROOT.appendChild(CANVAS)
-
-const dot = (v1, v2) => v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2],
-      add = (v1, v2) => [v1[0]+v2[0], v1[1]+v2[1], v1[2]+v2[2]],
-      sub = (v1, v2) => [v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]],
-      mul = (v, s) => [v[0] * s, v[1] * s, v[2] * s],
-      normalize = (v) => {
-        const len = Math.sqrt(dot(v, v))
-        return [v[0] / len, v[1] / len, v[2] / len]
-    }
 
 const init = () => {
     width = SIZE[0] - MARGIN * 2
@@ -63,103 +53,6 @@ const init = () => {
     const light = {
         direction: normalize([1, -1, -1]),
         intensity: 1.0
-    }
-
-    function matrixFromEuler(x, y, z) {
-        // Create individual rotation matrices
-        const rx = [1, 0, 0, 0, cos(x), -sin(x), 0, sin(x), cos(x)]
-
-        const ry = [cos(y), 0, sin(y), 0, 1, 0, -sin(y), 0, cos(y)]
-
-        const rz = [cos(z), -sin(z), 0, sin(z), cos(z), 0, 0, 0, 1]
-
-        // Combine rotations: Z * Y * X
-        const temp = new Array(9)
-        const result = new Array(9)
-
-        // Multiply rz * ry
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                temp[i * 3 + j] =
-                    rz[i * 3] * ry[j] +
-                    rz[i * 3 + 1] * ry[3 + j] +
-                    rz[i * 3 + 2] * ry[6 + j]
-            }
-        }
-
-        // Multiply (rz * ry) * rx
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                result[i * 3 + j] =
-                    temp[i * 3] * rx[j] +
-                    temp[i * 3 + 1] * rx[3 + j] +
-                    temp[i * 3 + 2] * rx[6 + j]
-            }
-        }
-
-        return result
-    }
-
-    function transformPoint(matrix, point) {
-        return [
-            point[0] * matrix[0] + point[1] * matrix[1] + point[2] * matrix[2],
-            point[0] * matrix[3] + point[1] * matrix[4] + point[2] * matrix[5],
-            point[0] * matrix[6] + point[1] * matrix[7] + point[2] * matrix[8]
-        ]
-    }
-
-    function intersectCube(origin, direction, cube) {
-        // Create rotation matrix and its inverse
-        const rotMatrix = matrixFromEuler(...cube.rot)
-        const invRotMatrix = invert33([], rotMatrix)
-
-        // Transform ray to object space
-        const rayOrigin = sub(origin, cube.center)
-        const localOrigin = transformPoint(invRotMatrix, rayOrigin)
-        const localDir = normalize(transformPoint(invRotMatrix, direction))
-
-        const halfSize = cube.size / 2
-
-        // Check intersection with axis-aligned box
-        const tx1 = (-halfSize - localOrigin[0]) / localDir[0]
-        const tx2 = (halfSize - localOrigin[0]) / localDir[0]
-        const ty1 = (-halfSize - localOrigin[1]) / localDir[1]
-        const ty2 = (halfSize - localOrigin[1]) / localDir[1]
-        const tz1 = (-halfSize - localOrigin[2]) / localDir[2]
-        const tz2 = (halfSize - localOrigin[2]) / localDir[2]
-
-        const tmin = max(min(tx1, tx2), min(ty1, ty2), min(tz1, tz2))
-        const tmax = min(max(tx1, tx2), max(ty1, ty2), max(tz1, tz2))
-
-        if (tmax < 0 || tmin > tmax) {
-            return null
-        }
-
-        const t = tmin < 0 ? tmax : tmin
-        if (t < 0) {
-            return null
-        }
-
-        // Calculate hit point and normal in object space
-        const localHit = add(localOrigin, mul(localDir, t))
-
-        // Determine which face was hit
-        let localNormal = [0, 0, 0]
-        const epsilon = 1e-4
-
-        if (abs(abs(localHit[0]) - halfSize) < epsilon) {
-            localNormal[0] = sign(localHit[0])
-        } else if (abs(abs(localHit[1]) - halfSize) < epsilon) {
-            localNormal[1] = sign(localHit[1])
-        } else if (abs(abs(localHit[2]) - halfSize) < epsilon) {
-            localNormal[2] = sign(localHit[2])
-        }
-
-        // Transform hit point and normal back to world space
-        const worldHit = add(cube.center, transformPoint(rotMatrix, localHit))
-        const worldNormal = normalize(transformPoint(rotMatrix, localNormal))
-
-        return { t, hitPoint: worldHit, normal: worldNormal }
     }
 
     // Render the scene
