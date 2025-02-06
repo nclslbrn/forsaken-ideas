@@ -8,13 +8,13 @@ import p5 from 'p5'
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     dpr = Math.round(window.devicePixelRatio) || 1,
-    S = 1200
+    S = [1500, 2060]
 
 let canvas, numSplit, grid, shader
 
 const sketch = (p5) => {
     p5.setup = () => {
-        canvas = p5.createCanvas(S, S, p5.WEBGL)
+        canvas = p5.createCanvas(S[0], S[1], p5.WEBGL)
         shader = p5.createShader(vertSrc, fragSrc)
         p5.noStroke()
         p5.noLoop()
@@ -23,7 +23,7 @@ const sketch = (p5) => {
     p5.draw = () => {
         p5.blendMode()
         p5.shader(shader)
-        shader.setUniform('u_resolution', [S * dpr, S * dpr])
+        shader.setUniform('u_resolution', [S[0] * dpr, S[1] * dpr])
         shader.setUniform('u_numCell', grid.length)
         shader.setUniform('u_cell', grid.flat())
         p5.rect(S * -0.5, S * -0.5, S, S)
@@ -53,7 +53,7 @@ const sketch = (p5) => {
     }
     sketch.capture = () => p5.saveCanvas(canvas, 'Triangles-and-nothing-else.jpg')
     sketch.shuffle = () => {
-        numSplit = 2 + Math.ceil(Math.random() * 15)
+        numSplit = 2 + Math.ceil(Math.random() * 8)
         grid = [[0.5, 0.5, 1, 1]]
         for (let i = 0; i < numSplit; i++)
             grid = sketch.splitCell(
