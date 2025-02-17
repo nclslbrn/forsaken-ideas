@@ -4,6 +4,8 @@ import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 import p5 from 'p5'
+import SvgTracer from '../../sketch-common/svg-tracer'
+import { rayHatcher } from '../../sketch-common/rayHatcher'
 
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
@@ -19,6 +21,9 @@ const sketch = (p5) => {
         p5.noStroke()
         p5.noLoop()
         sketch.shuffle()
+        canvas.elt.addEventListener('click', () => {
+            sketch.exportSvg(canvas.elt)
+        })
     }
     p5.draw = () => {
         p5.blendMode()
@@ -28,7 +33,7 @@ const sketch = (p5) => {
         shader.setUniform('u_cell', grid.flat())
         p5.rect(S * -0.5, S * -0.5, S, S)
     }
-    
+
     sketch.splitCell = (cellIdx, isHorizontal, grid) => {
         if (grid[cellIdx] === undefined) return grid
         const [x, y, w, h] = grid[cellIdx]
@@ -51,7 +56,9 @@ const sketch = (p5) => {
         grid.push(...splitted)
         return grid
     }
-    sketch.capture = () => p5.saveCanvas(canvas, 'Triangles-and-nothing-else.jpg')
+    sketch.capture = () =>
+        p5.saveCanvas(canvas, 'Triangles-and-nothing-else.jpg')
+
     sketch.shuffle = () => {
         numSplit = 2 + Math.ceil(Math.random() * 8)
         grid = [[0.5, 0.5, 1, 1]]
@@ -62,6 +69,27 @@ const sketch = (p5) => {
                 grid
             )
         p5.redraw()
+    }
+
+    sketch.exportSvg = (canvas) => {
+        const polygons = rayHatcher(canvas, 8, 'seed')
+        const dpi = 150
+        const svg = new SvgTracer({
+            parentElem: document.body,
+            size: { w: S[0]/100, h: S[1]/100 }, // centimeter
+            dpi
+        })
+        const scale = (v) => (v/100) * svg.dpiToPix[dpi]
+        svg.init()
+        polygons.forEach((poly) =>
+            svg.path({
+                points: poly.map((v) => [scale(v[0]), scale(v[1])]),
+                stroke: 'black',
+                strokeWidth: 1,
+                close: false
+            })
+        )
+        svg.export({ name: 'Triangles-and-nothing-else' })
     }
 }
 
