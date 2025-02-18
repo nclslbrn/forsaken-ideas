@@ -72,7 +72,7 @@ const sketch = (p5) => {
     }
 
     sketch.exportSvg = (canvas) => {
-        const polygons = rayHatcher(canvas, 8, 'seed')
+        const polygons = rayHatcher(canvas, (c) => c > 128, 8, 'seed')
         const dpi = 150
         const svg = new SvgTracer({
             parentElem: document.body,
