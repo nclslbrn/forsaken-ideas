@@ -73,16 +73,15 @@ vec2 iBox(vec3 ro, vec3 rd, vec3 rad) {
 vec4 map(vec3 p) {
     float d = 100.;
     p *= rotateY(radians(u_mouse.x * 180.));
-    //p = abs(p);
-    d = sdTriPrism(p*rotateY(radians(45.)), vec2(3.5));
+    d = sdCube(p*rotateY(radians(45.)), vec3(3.));
 
-    float s = 2.;
+    float s = .5;
     for (int m = 0; m < 2; m++) {
         vec3 a = mod(p * s, 2.) - 1.;
         s *= 3.;
         vec3 r = abs(2. - 3. * abs(a));
         float rot = (float(m) + 1.) * 90. + 45.;
-        vec3 sdpos = rotateX(radians(rot)) * rotateY(rot*2.) * r;
+        vec3 sdpos = rotateX(radians(rot)) * rotateY(rot) * r;
 
         float c = sdCross(r, vec3(1.)) / s;  
         d = max(d, c);
@@ -143,12 +142,7 @@ void main() {
     vec3 rayOrigin = vec3(0., 0., -7.);
 
     vec3 rayDir = normalize(vec3(st, 1.0));
-    /*vec3 rayDir = normalize(
-            // rotateY(radians(45.)) *
-            //rotateX(radians( u_mouse.y * 180.)) *
-            vec3(st, 2.0)
-        );*/
-    vec3 col = vec3(1.,1.,1.);
+    vec3 col = vec3(1.);
     vec4 tmat = intersect(rayOrigin, rayDir);
 
     if (tmat.x > 0.) {
@@ -158,26 +152,26 @@ void main() {
         int colIdx = int(floor(tmat.z * 5.));
         float occ = tmat.y * 1.;
 
-        const vec3 light = normalize(vec3(1., .9, .3));
+        const vec3 light = normalize(vec3(5., 2., -.5));
         float dif = dot(nor, light);
         float sha = 1.;
-        if (dif > 0.) sha = softshadow(pos, light, .1, 1.);
+        if (dif > 0.) sha = softshadow(pos, light, 0., 1.);
         dif = max(dif, 0.);
         vec3 hal = normalize(light - rayDir);
         float spe = dif * sha *
                 pow(clamp(dot(hal, nor), 0., 1.), 16.) *
-                pow(clamp(1. - dot(hal, light), 0., 1.), 1.);
+                pow(clamp(1. - dot(hal, light), 0., 1.), 4.);
 
-        float sky = 0.5 + 0.5 * nor.y;
+        float sky = 0.25 + 0.75 * nor.y;
         float bac = max(
                 0.1 + 0.9 * dot(nor, vec3(-light.x, light.y, -light.z)),
                 0.0);
 
         vec3 lin = vec3(0.0);
-        lin += 1. * dif * vec3(1.1, .85, .6) * sha;
-        lin += .5 * sky * vec3(.1, .2, .4) * occ;
-        lin += .1 * bac * vec3(1., 1., 1.) * (.5 + .5 * occ);
-        lin += .05 * occ * vec3(.15, .17, .2);
+        lin += dif * sha;
+        lin += .1 * sky * occ;
+        lin += .1 * bac *  (.75 + .25 * occ);
+        lin += .05 * occ;
         col = matcol * lin + spe * 128.0;
     }
     col = 1.5 * col / (1. + col);

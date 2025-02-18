@@ -124,8 +124,8 @@ const containerElement = document.getElementById('windowFrame'),
     canvas = document.createElement('canvas'),
     gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
     exportSvg = () => {
-        const polygons = rayHatcher(canvas, 8, 'seed')
-        const dpi = 150
+        const polygons = rayHatcher(canvas, (c) => c < 180,  8, 'seed')
+        const dpi = 300
         const svg = new SvgTracer({
             parentElem: document.body,
             size: { w: size[0]/100, h: size[1]/100 }, // centimeter

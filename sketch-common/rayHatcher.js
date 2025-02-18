@@ -1,7 +1,7 @@
 import { createNoise2D } from 'simplex-noise'
 import alea from 'alea'
 
-const rayHatcher = (canvas, res, seed) => {
+const rayHatcher = (canvas, cast, res, seed) => {
     const cnvs = document.createElement('canvas'),
         ctx = cnvs.getContext('2d', { willReadFrequently: true }),
         noise = createNoise2D(alea(seed))
@@ -17,7 +17,7 @@ const rayHatcher = (canvas, res, seed) => {
             return false
         }
         const pixel = ctx.getImageData(x, y, 1, 1).data
-        return pixel[0] > 128 && pixel[1] > 128 && pixel[2] > 128
+        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2])
     }
 
     for (let x = 0; x < canvas.width; x += res) {
