@@ -43,8 +43,8 @@ function rotateZ(p, angle) {
 
 // Apply all rotations
 function rotateAll(p) {
-    let rotated = rotateX(p, 0)
-    rotated = rotateY(rotated, PI/3)
+    let rotated = rotateX(p, PI/4)
+    rotated = rotateY(rotated, PI/2.5)
     rotated = rotateZ(rotated, PI/3)
     return rotated
 }
@@ -72,7 +72,7 @@ function mengerSponge(p, iterations) {
     let scale = 1
 
     for (let i = 0; i < iterations; i++) {
-        scale *= 4
+        scale *= 2.5
         const q = [
             abs((rotated[0] * scale) % 3) - 1,
             abs((rotated[1] * scale) % 3) - 1,
@@ -91,7 +91,7 @@ function mengerSponge(p, iterations) {
 
 // Calculate surface normal
 function getNormal(p) {
-    const eps = 0.01
+    const eps = 0.0001
     return vec3.normalize([
         mengerSponge([p[0] + eps, p[1], p[2]], ITERATIONS) - mengerSponge([p[0] - eps, p[1], p[2]], ITERATIONS),
         mengerSponge([p[0], p[1] + eps, p[2]], ITERATIONS) - mengerSponge([p[0], p[1] - eps, p[2]], ITERATIONS),
@@ -121,12 +121,14 @@ function raymarch(ro, rd) {
 }
 
 // Generate flow field based contour lines
-function generateContourLines(width, height) {
+function generateContourLines(size, margin) {
     const lines = []
-    const gridSize = 400 // Increased for better coverage
-    const camera = [0, 0, -5] // Moved camera back slightly
-    const lineStepSize = 0.0001
-    const maxLineSteps = 200
+    const gridSize = 300 // Increased for better coverage
+    const camera = [0, 0, .5] // Moved camera back slightly
+    const lineStepSize = 0.007
+    const maxLineSteps = 40
+    const width = size[0] - margin * 2 
+    const height = size[1] - margin * 2
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
@@ -134,7 +136,7 @@ function generateContourLines(width, height) {
             const startY = ((j / gridSize) * 2 - 1) * 3
 
             let path = []
-            let currentPoint = [startX, startY, -2.5]
+            let currentPoint = [startX, startY, -1]
 
             for (let step = 0; step < maxLineSteps; step++) {
                 const rd = vec3.normalize([
@@ -147,8 +149,8 @@ function generateContourLines(width, height) {
 
                 if (result.point) {
                     const normal = getNormal(result.point)
-                    const screenX = ((currentPoint[0] + 1) * width) / 2
-                    const screenY = ((currentPoint[1] + 1) * height) / 2
+                    const screenX = margin + ((currentPoint[0] + 1) * width) / 2
+                    const screenY = margin + ((currentPoint[1] + 1) * height) / 2
 
                     path.push([screenX, screenY])
 
@@ -171,10 +173,10 @@ function generateContourLines(width, height) {
     return lines
 }
 
-function generateSVG(width, height) {
-    const lines = generateContourLines(width, height)
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" style="background: white">
-        <g stroke="black" stroke-width="1" fill="none">`
+function generateSVG(size, margin) {
+    const lines = generateContourLines(size, margin)
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size[0]} ${size[1]}" style="background: white">
+        <g stroke="black" stroke-width="1.5" fill="none">`
 
     lines.forEach((path) => {
         if (path.length > 1) {
@@ -193,7 +195,7 @@ function generateSVG(width, height) {
 }
 
 containerElement.removeChild(loader)
-const svg = generateSVG(1920, 1920)
+const svg = generateSVG([2400, 2400], 120)
 containerElement.innerHTML = svg
 
 //window.init = sketch.init
