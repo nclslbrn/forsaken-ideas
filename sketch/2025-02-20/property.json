@@ -1,0 +1,11 @@
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "plot", "icon": "desktop-download" }
+    ],
+    "info": "raymarching and Menger Sponge",
+    "date": "2025-02-20"
+}
+
