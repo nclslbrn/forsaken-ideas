@@ -1,10 +1,11 @@
 //import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { rect, group, asSvg, svgDoc, circle, polyline } from '@thi.ng/geom'
+import { rect, group, asSvg, svgDoc, polyline } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../full-canvas.css'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
+import { repeatedly2d } from '@thi.ng/transducers'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { intersectCube } from './intersectCube'
 import { normalize, dot } from './vectorOp'
@@ -15,99 +16,114 @@ const SIZE = [1920, 1920],
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    { tan, random, PI, cos, sin, max, atan2 } = Math,
-    noise = createNoise2D()
+    { tan, random, PI, cos, sin, acos, min, max, atan2 } = Math,
+    noise = createNoise2D(),
+    W = SIZE[0] - MARGIN * 2,
+    H = SIZE[1] - MARGIN * 2,
+    RES = 32,
+    aspectRatio = W / H,
+    fov = PI / 3,
+    origin = [0, 0, 0],
+    maxLength = 5000
 
-let width, height, drawElems
-let time = 0 // Add time for animation
-
+CANVAS.width = SIZE[0]
+CANVAS.height = SIZE[1]
 ROOT.appendChild(CANVAS)
 
-// Scene configuration
-const cubes = [
-    {
-        center: [0, 0, -5],
-        size: 1,
-        color: [255, 0, 0],
-        rot: [random() * PI, random() * PI, random() * PI]
-    },
-    {
-        center: [2, 0, -6],
-        size: 1,
-        color: [0, 255, 0],
-        rot: [random() * PI, random() * PI, random() * PI]
-    },
-    {
-        center: [-2, 0, -4],
-        size: 2,
-        color: [0, 0, 255],
-        rot: [random() * PI, random() * PI, random() * PI]
-    }
-]
+let cubes, pts, idx, drawElems, lines
 
+// Scene configuration
 const light = {
     direction: normalize([1, -1, -1]),
     intensity: 1.0
 }
-const lines = []
+const distance = (x, y) => {
+    const px = ((2 * (x + 0.5)) / W - 1) * tan(fov / 2) * aspectRatio
+    const py = (1 - (2 * (y + 0.5)) / H) * tan(fov / 2)
+    const direction = normalize([px, py, -1])
 
-const init = () => {
-    width = SIZE[0] - MARGIN * 2
-    height = SIZE[1] - MARGIN * 2
-    CANVAS.width = SIZE[0]
-    CANVAS.height = SIZE[1]
+    let closest = Infinity
+    let hit = null
 
-    const distance = (x, y) => {
-        const px = ((2 * (x + 0.5)) / width - 1) * tan(fov / 2) * aspectRatio
-        const py = (1 - (2 * (y + 0.5)) / height) * tan(fov / 2)
-        const direction = normalize([px, py, -1])
-
-        let closest = Infinity
-        let hit = null
-
-        for (const cube of cubes) {
-            const intersection = intersectCube(origin, direction, cube)
-            if (intersection && intersection.t < closest) {
-                closest = intersection.t
-                hit = intersection
-            }
+    for (const cube of cubes) {
+        const intersection = intersectCube(origin, direction, cube)
+        if (intersection && intersection.t < closest) {
+            closest = intersection.t
+            hit = intersection
         }
-        return hit
     }
+    return hit
+}
 
-    const aspectRatio = width / height
-    const fov = PI / 3
-    const origin = [0, 0, 0]
-    const maxPoint = 10000
+const setup = () => {
+    drawElems = []
+    idx = 0
+    pts = [
+        ...repeatedly2d(
+            (x, y) => [
+                MARGIN + (x * RES) + ((random()-.5) * RES *.5),
+                MARGIN + (y * RES) + ((random()-.5) * RES *.5)
+            ],
+            W / RES,
+            H / RES
+        )
+    ]
+    cubes = [
+        {
+            center: [0, 0, -5],
+            size: 1,
+            color: [255, 0, 0],
+            rot: [random() * PI, random() * PI, random() * PI]
+        },
+        {
+            center: [2, 0, -6],
+            size: 1,
+            color: [0, 255, 0],
+            rot: [random() * PI, random() * PI, random() * PI]
+        },
+        {
+            center: [-2, 0, -4],
+            size: 2,
+            color: [0, 0, 255],
+            rot: [random() * PI, random() * PI, random() * PI]
+        }
+    ]
+    lines = []
+    update()
+}
 
-    for (let i = 0; i < 16; i++) {
+const update = () => {
+
+    for (let i = 0; i < min(4, pts.length - idx); i++) {
         const line = []
-        let pos = [
-          width*.5 + (random()-.5) * width, 
-          height*.5 + (random()-.5) * height
-        ]
+        let pos = pts[idx + i]
         let hit = distance(...pos)
 
         while (
-            //hit !== null &&
-            line.length < maxPoint &&
+            line.length < maxLength &&
             pos[0] > MARGIN &&
             pos[1] > MARGIN &&
-            pos[0] < width &&
-            pos[1] < height
+            pos[0] < W &&
+            pos[1] < H
         ) {
-            const n = hit
-                ? atan2(hit.normal[1], hit.normal[0])
-                : noise(pos[0] * 0.0003, pos[1] * 0.0003)
+            let n = []
+            if (hit) {
+              const theta = atan2(hit.normal[1], hit.normal[0]),
+                    phi = acos(hit.normal[2])
+              n = [cos(theta) * sin(phi), sin(theta) * sin(phi)]
+            } else {
+              const sf = noise(pos[0] * 0.0003, pos[1] * 0.0003)
+              n = [cos(sf), sin(sf)]
+            }
             const speed = hit
-                ? 1. - 0.8 * max(0, -dot(hit.normal, light.direction))
+                ? 1 - 0.8 * max(0, -dot(hit.normal, light.direction))
                 : 0.1
-            pos = [pos[0] + cos(n) * speed, pos[1] + sin(n) * speed]
+            pos = [pos[0] + n[0] * speed, pos[1] + n[1] * speed]
             hit = distance(...pos)
-            //console.log(`line #${i} ${line.length} points`)
             line.push(pos)
         }
         line.length && lines.push(polyline(line))
+        idx++
     }
     drawElems = [
         rect(SIZE, { fill: 'white' }),
@@ -116,18 +132,17 @@ const init = () => {
 
     draw(CTX, group({}, drawElems))
 
-    // Increment time for animation
-    if (time < 10000) {
-        requestAnimationFrame(init)
-        time++
+    // Increment idx for animation
+    if (idx < pts.length - 1) {
+        requestAnimationFrame(update)
     } else {
         console.log('DONE')
     }
 }
+setup()
 
-init()
 
-window['randomize'] = init
+window['randomize'] = setup
 
 window['capture'] = () => {
     downloadCanvas(CANVAS, `2025 02 01-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)

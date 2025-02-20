@@ -8,6 +8,7 @@ const transformPoint = (matrix, point) => [
     point[0] * matrix[3] + point[1] * matrix[4] + point[2] * matrix[5],
     point[0] * matrix[6] + point[1] * matrix[7] + point[2] * matrix[8]
 ]
+
 const intersectCube = (origin, direction, cube) => {
     // Create rotation matrix and its inverse
     const rotMatrix = matrixFromEuler(...cube.rot)
