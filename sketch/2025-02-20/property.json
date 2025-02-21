@@ -3,6 +3,7 @@
     "libs": [],
     "action": [
         { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
         { "name": "plot", "icon": "desktop-download" }
     ],
     "info": "raymarching and Menger Sponge",

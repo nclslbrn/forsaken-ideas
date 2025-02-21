@@ -2,62 +2,49 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import exportSVG from '../../sketch-common/exportSVG'
+import { vec3, rotateX, rotateY, rotateZ } from './vectorOp'
+import { rect, group, svgDoc, polyline, asSvg, transform } from '@thi.ng/geom'
+import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
+import { draw } from '@thi.ng/hiccup-canvas'
+import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 
-const MAX_STEPS = 100
-const MAX_DIST = 100
-const SURFACE_DIST = 0.00001
-const ITERATIONS = 3
-const containerElement = document.getElementById('windowFrame')
-const loader = document.getElementById('loading')
-const {cos, sin, PI, sqrt, max, min, abs} = Math
-// Vector operations
-const vec3 = {
-    add: (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
-    sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]],
-    mul: (v, s) => [v[0] * s, v[1] * s, v[2] * s],
-    length: (v) => sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]),
-    normalize: (v) => {
-        const len = vec3.length(v)
-        return [v[0] / len, v[1] / len, v[2] / len]
-    }
-}
+const MAX_STEPS = 200,
+    MAX_DIST = 200,
+    SURFACE_DIST = 0.01,
+    ITERATIONS = 2,
+    SIZE = [1920, 2400],
+    MARGIN = 120,
+    ROOT = document.getElementById('windowFrame'),
+    LOADER = document.getElementById('loading'),
+    CANVAS = document.createElement('canvas'),
+    CTX = CANVAS.getContext('2d'),
+    { PI, max, min, abs, round } = Math,
+    clamp = (v, edg1, edg2) => min(edg2, max(edg1, v))
 
-// Rotation functions
-function rotateX(p, angle) {
-    const c = cos(angle)
-    const s = sin(angle)
-    return [p[0], p[1] * c - p[2] * s, p[1] * s + p[2] * c]
-}
-
-function rotateY(p, angle) {
-    const c = cos(angle)
-    const s = sin(angle)
-    return [p[0] * c + p[2] * s, p[1], -p[0] * s + p[2] * c]
-}
-
-function rotateZ(p, angle) {
-    const c = cos(angle)
-    const s = sin(angle)
-    return [p[0] * c - p[1] * s, p[0] * s + p[1] * c, p[2]]
-}
-
-// Apply all rotations
-function rotateAll(p) {
-    let rotated = rotateX(p, PI/4)
-    rotated = rotateY(rotated, PI/2.5)
-    rotated = rotateZ(rotated, PI/3)
+const rotateAll = (p) => {
+    let rotated = rotateX(p, -0.1) //PI / 3)
+    rotated = rotateY(rotated, PI / 3)
+    rotated = rotateZ(rotated, PI / 1.5)
     return rotated
 }
 
-// Signed Distance Function for a box
-function sdBox(p, b) {
-    // Apply rotation before calculating SDF
-    const rotated = rotateAll(p)
-    const d = [
-        abs(rotated[0]) - b[0],
-        abs(rotated[1]) - b[1],
-        abs(rotated[2]) - b[2]
-    ]
+const sdLimitRep = (p, s, l, sdf) => {
+    const q = p.map(
+        (v, i) => v / s[i] - s[i] * clamp(round(v / s[i]), -l[i], l[i])
+    )
+    return sdf(
+        q,
+        s.map((v) => v * 0.1)
+    )
+}
+
+const sdRep = (p, s, sdf) => {
+    const q = p.map((v, i) => v - (s[i]*round(v / s[i])))
+    return sdf(q, s)
+}
+
+const sdBox = (p, b) => {
+    const d = rotateAll(p).map((r, i) => abs(r) - b[i])
     return (
         min(max(d[0], max(d[1], d[2])), 0) +
         vec3.length([max(d[0], 0), max(d[1], 0), max(d[2], 0)])
@@ -65,42 +52,38 @@ function sdBox(p, b) {
 }
 
 // Recursive Menger Sponge SDF
-function mengerSponge(p, iterations) {
+const mengerSponge = (p, iterations) => {
     // Apply rotation to the input point
     const rotated = rotateAll(p)
-    let d = sdBox(p, [1, 1, 1])
-    let scale = 1
-
+    let d = sdRep(p, [5, 5, 5], sdBox)
+    
+    let scale = 1 
     for (let i = 0; i < iterations; i++) {
-        scale *= 2.5
-        const q = [
-            abs((rotated[0] * scale) % 3) - 1,
-            abs((rotated[1] * scale) % 3) - 1,
-            abs((rotated[2] * scale) % 3) - 1
-        ]
-
-        const hole = min(
-            max(q[0], q[1]),
-            min(max(q[1], q[2]), max(q[0], q[2]))
-        )
+        scale *= 3
+        const q = rotated.map(r => abs((r * scale) % 3) -1)
+        const hole = min(max(q[0], q[1]), min(max(q[1], q[2]), max(q[0], q[2])))
         d = max(d, -hole / scale)
     }
-
+    //d = max(d, sdBox([p[0], p[1], p[2]], [.6, .6, .6]))
+    
     return d
 }
 
 // Calculate surface normal
-function getNormal(p) {
-    const eps = 0.0001
+const getNormal = (p) => {
+    const eps = 0.001
     return vec3.normalize([
-        mengerSponge([p[0] + eps, p[1], p[2]], ITERATIONS) - mengerSponge([p[0] - eps, p[1], p[2]], ITERATIONS),
-        mengerSponge([p[0], p[1] + eps, p[2]], ITERATIONS) - mengerSponge([p[0], p[1] - eps, p[2]], ITERATIONS),
-        mengerSponge([p[0], p[1], p[2] + eps], ITERATIONS) - mengerSponge([p[0], p[1], p[2] - eps], ITERATIONS)
+        mengerSponge([p[0] + eps, p[1], p[2]], ITERATIONS) -
+            mengerSponge([p[0] - eps, p[1], p[2]], ITERATIONS),
+        mengerSponge([p[0], p[1] + eps, p[2]], ITERATIONS) -
+            mengerSponge([p[0], p[1] - eps, p[2]], ITERATIONS),
+        mengerSponge([p[0], p[1], p[2] + eps], ITERATIONS) -
+            mengerSponge([p[0], p[1], p[2] - eps], ITERATIONS)
     ])
 }
 
 // Raymarch function
-function raymarch(ro, rd) {
+const raymarch = (ro, rd) => {
     let dO = 0
     let hitPoint = null
 
@@ -121,22 +104,22 @@ function raymarch(ro, rd) {
 }
 
 // Generate flow field based contour lines
-function generateContourLines(size, margin) {
+const generateContourLines = () => {
     const lines = []
-    const gridSize = 300 // Increased for better coverage
-    const camera = [0, 0, .5] // Moved camera back slightly
-    const lineStepSize = 0.007
+    const gridSize = 100 // Increased for better coverage
+    const camera = [0, 0, -120] // Moved camera back slightly
+    const lineStepSize = 0.004
     const maxLineSteps = 40
-    const width = size[0] - margin * 2 
-    const height = size[1] - margin * 2
+    const width = SIZE[0] - MARGIN * 2
+    const height = SIZE[1] - MARGIN * 2
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
-            const startX = ((i / gridSize) * 2 - 1) * 3
-            const startY = ((j / gridSize) * 2 - 1) * 3
+            const startX = (i / gridSize) * 2 - 1
+            const startY = (j / gridSize) * 2 - 1
 
             let path = []
-            let currentPoint = [startX, startY, -1]
+            let currentPoint = [startX, startY, -0.5]
 
             for (let step = 0; step < maxLineSteps; step++) {
                 const rd = vec3.normalize([
@@ -149,8 +132,9 @@ function generateContourLines(size, margin) {
 
                 if (result.point) {
                     const normal = getNormal(result.point)
-                    const screenX = margin + ((currentPoint[0] + 1) * width) / 2
-                    const screenY = margin + ((currentPoint[1] + 1) * height) / 2
+                    const screenX = MARGIN + ((currentPoint[0] + 1) * width) / 2
+                    const screenY =
+                        MARGIN + ((currentPoint[1] + 1) * height) / 2
 
                     path.push([screenX, screenY])
 
@@ -173,32 +157,52 @@ function generateContourLines(size, margin) {
     return lines
 }
 
-function generateSVG(size, margin) {
-    const lines = generateContourLines(size, margin)
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size[0]} ${size[1]}" style="background: white">
-        <g stroke="black" stroke-width="1.5" fill="none">`
-
-    lines.forEach((path) => {
-        if (path.length > 1) {
-            const pathData =
-                `M ${path[0][0]} ${path[0][1]} ` +
-                path
-                    .slice(1)
-                    .map((p) => `L ${p[0]} ${p[1]}`)
-                    .join(' ')
-            svg += `<path d="${pathData}" />` // Reduced stroke width
-        }
-    })
-
-    svg += '</g></svg>'
-    return svg
+let contours
+const init = () => {
+    contours = generateContourLines()
+    draw(
+        CTX,
+        group({}, [
+            rect(SIZE, { fill: '#111' }),
+            group(
+                { stroke: '#ffffff99', weight: 1.5, fill: 'rgba(0,0,0,0)' },
+                contours.map((line) => polyline(line))
+            )
+        ])
+    )
 }
 
-containerElement.removeChild(loader)
-const svg = generateSVG([2400, 2400], 120)
-containerElement.innerHTML = svg
+ROOT.removeChild(LOADER)
+ROOT.appendChild(CANVAS)
+CANVAS.width = SIZE[0]
+CANVAS.height = SIZE[1]
 
-//window.init = sketch.init
-window.plot = () => exportSVG(containerElement, 'sdf-to-plot')
+init()
+
+window.init = init
+window.plot = () =>
+    downloadWithMime(
+        `sdf-to-svg${FMT_yyyyMMdd_HHmmss()}.svg`,
+        asSvg(
+            svgDoc(
+                {
+                    width: SIZE[0],
+                    height: SIZE[1],
+                    viewBox: `O O ${SIZE[0]} ${SIZE[1]}`
+                },
+                group(
+                    {
+                        stroke: 'black',
+                        weight: 1,
+                        fill: 'rgba(0,0,0,0)',
+                        __inkscapeLayer: 'lines'
+                    },
+                    contours.map((line) => polyline(line))
+                )
+            )
+        )
+    )
+window.capture = () =>
+    downloadCanvas(CANVAS, `sdf-to-svg${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
 window.infobox = infobox
 handleAction()
