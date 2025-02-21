@@ -33,7 +33,7 @@ const rayHatcher = (canvas, cast, res, seed) => {
         let pos = v[i],
             ln = []
 
-        for (let j = 0; j < res*3; j++) {
+        for (let j = 0; j < res*4; j++) {
             const n = noise(pos[0] * 0.003, pos[1] * 0.003)
             pos = [pos[0] + Math.cos(n), pos[1] + Math.sin(n)]
             const penDown = getPixel(...pos)

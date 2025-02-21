@@ -139,7 +139,7 @@ const sketch = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   },
   exportSvg: () => {
-        const polygons = rayHatcher(canvas, (c) => c < 128, 8, 'seed')
+        const polygons = rayHatcher(canvas, (c) => c < 128, 6, 'seed')
         const dpi = 150
         const svg = new SvgTracer({
             parentElem: document.body,
