@@ -5,7 +5,7 @@ import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 import p5 from 'p5'
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { rayHatcher } from '../../sketch-common/rayHatcher'
+import { fillWithFlowField } from '../../sketch-common/fillShape'
 
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
@@ -72,7 +72,7 @@ const sketch = (p5) => {
     }
 
     sketch.exportSvg = (canvas) => {
-        const polygons = rayHatcher(canvas, (c) => c > 128, 8, 'seed')
+        const polygons = fillWithFlowField(canvas, (c) => c > 128, 8, 'seed')
         const dpi = 150
         const svg = new SvgTracer({
             parentElem: document.body,

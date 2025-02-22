@@ -6,14 +6,15 @@ import vertSrc from "./glsl/triangles.vert";
 import fragSrc from "./glsl/triangles.frag";
 
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { rayHatcher } from '../../sketch-common/rayHatcher'
-let traits = {};
+import { fillWithStraightLines } from '../../sketch-common/fillShape'
+
+let traits = {}, svg;
 
 const containerElement = document.getElementById('windowFrame'),
   loader = document.getElementById('loading'),
   canvas = document.createElement("canvas"),
   gl = canvas.getContext("webgl", { preserveDrawingBuffer: true }),
-  S = [1500, 2060],
+  S = [1122.520, 1587.402],
   { floor, ceil, random } = Math,
   shuffle = (array) => array.sort(() => 0.5 - random())
   
@@ -139,24 +140,25 @@ const sketch = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   },
   exportSvg: () => {
-        const polygons = rayHatcher(canvas, (c) => c < 128, 6, 'seed')
-        const dpi = 150
-        const svg = new SvgTracer({
-            parentElem: document.body,
-            size: { w: S[0]/100, h: S[1]/100 }, // centimeter
+        const polygons = fillWithStraightLines(canvas, (c) => c < 128, 5, true)
+        const dpi = 300
+        svg = new SvgTracer({
+            parentElem: containerElement,
+            size: 'A3_portrait',
             dpi
         })
-        const scale = (v) => (v/100) * svg.dpiToPix[dpi]
         svg.init()
         polygons.forEach((poly) =>
             svg.path({
-                points: poly.map((v) => [scale(v[0]), scale(v[1])]),
+                points: poly.map((v) => [
+                  v[0]/canvas.width * svg.width, 
+                  v[1]/canvas.height * svg.height 
+                ]),
                 stroke: 'black',
-                strokeWidth: 1,
+                strokeWidth: svg.cmToPixels(.05),
                 close: false
             })
         )
-        svg.export({ name: 'Triangles-and-nothing-else' })
     }
 
 };
@@ -164,8 +166,9 @@ const sketch = {
 containerElement.removeChild(loader) 
 containerElement.appendChild(canvas);
 sketch.setup();
+sketch.exportSvg();
 
 window.init = sketch.init
-window.download = sketch.exportSvg
+window.download = () => svg.export({ name: `Triangles-and-nothing-else-${new Date().toISOString()}` })
 window.infobox = infobox
 handleAction()

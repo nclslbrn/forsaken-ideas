@@ -53,7 +53,6 @@ vec2 rotateTilePattern(vec2 _st){
 }
 void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    //st *= 1.05;
     float d = sdCircle(st.xy - u_target, 1.6);
     vec2 sq = tile(st, 1.5);
     sq = rotateTilePattern(sq);
@@ -80,8 +79,8 @@ void main() {
             }
         }
     }
-    vec2 bl = step(vec2(0.025),st);
-    vec2 tr = step(vec2(0.025),1.0-st);
+    vec2 bl = step(vec2(0.1),st);
+    vec2 tr = step(vec2(0.1),1.0-st);
     float crop = 1.-(bl.x*bl.y*tr.x*tr.y);
     gl_FragColor = vec4(vec3(max(crop, color)), 1.0);
 }
