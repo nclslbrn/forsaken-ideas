@@ -140,7 +140,7 @@ const sketch = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   },
   exportSvg: () => {
-        const polygons = fillWithStraightLines(canvas, (c) => c < 128, 5, true)
+        const polygons = fillWithStraightLines(canvas, (c) => c < 128, 3, true)
         const dpi = 300
         svg = new SvgTracer({
             parentElem: containerElement,
