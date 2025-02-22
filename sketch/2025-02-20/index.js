@@ -1,9 +1,8 @@
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import exportSVG from '../../sketch-common/exportSVG'
 import { vec3, rotateX, rotateY, rotateZ } from './vectorOp'
-import { rect, group, svgDoc, polyline, asSvg, transform } from '@thi.ng/geom'
+import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
@@ -11,7 +10,7 @@ import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 const MAX_STEPS = 200,
     MAX_DIST = 200,
     SURFACE_DIST = 0.01,
-    ITERATIONS = 2,
+    ITERATIONS = 1,
     SIZE = [1920, 2400],
     MARGIN = 120,
     ROOT = document.getElementById('windowFrame'),
@@ -22,9 +21,9 @@ const MAX_STEPS = 200,
     clamp = (v, edg1, edg2) => min(edg2, max(edg1, v))
 
 const rotateAll = (p) => {
-    let rotated = rotateX(p, -0.1) //PI / 3)
-    rotated = rotateY(rotated, PI / 3)
-    rotated = rotateZ(rotated, PI / 1.5)
+    let rotated = rotateX(p, .1) //PI / 3)
+    rotated = rotateY(rotated, PI / 4)
+    rotated = rotateZ(rotated, PI/4)
     return rotated
 }
 
@@ -32,14 +31,11 @@ const sdLimitRep = (p, s, l, sdf) => {
     const q = p.map(
         (v, i) => v / s[i] - s[i] * clamp(round(v / s[i]), -l[i], l[i])
     )
-    return sdf(
-        q,
-        s.map((v) => v * 0.1)
-    )
+    return sdf(q, s)
 }
 
 const sdRep = (p, s, sdf) => {
-    const q = p.map((v, i) => v - (s[i]*round(v / s[i])))
+    const q = p.map((v, i) => v - s[i] * round(v / s[i]))
     return sdf(q, s)
 }
 
@@ -55,17 +51,19 @@ const sdBox = (p, b) => {
 const mengerSponge = (p, iterations) => {
     // Apply rotation to the input point
     const rotated = rotateAll(p)
-    let d = sdRep(p, [5, 5, 5], sdBox)
+    const pfwd = [rotated[0], rotated[1], rotated[2] + 5] 
+    let d = sdBox(pfwd, [3, 3, 3])
     
-    let scale = 1 
+    let scale = 1
     for (let i = 0; i < iterations; i++) {
         scale *= 3
-        const q = rotated.map(r => abs((r * scale) % 3) -1)
+        const q = rotated.map((r) => abs((r * scale) % 3) - 1)
         const hole = min(max(q[0], q[1]), min(max(q[1], q[2]), max(q[0], q[2])))
         d = max(d, -hole / scale)
     }
-    //d = max(d, sdBox([p[0], p[1], p[2]], [.6, .6, .6]))
-    
+
+    //d = max(d, sdBox(p, [7, 7, 7]))
+
     return d
 }
 
@@ -106,10 +104,10 @@ const raymarch = (ro, rd) => {
 // Generate flow field based contour lines
 const generateContourLines = () => {
     const lines = []
-    const gridSize = 100 // Increased for better coverage
-    const camera = [0, 0, -120] // Moved camera back slightly
+    const gridSize = 50 // Increased for better coverage
+    const camera = [0, 0, 0] // Moved camera back slightly
     const lineStepSize = 0.004
-    const maxLineSteps = 40
+    const maxLineSteps = 140
     const width = SIZE[0] - MARGIN * 2
     const height = SIZE[1] - MARGIN * 2
 
@@ -119,7 +117,7 @@ const generateContourLines = () => {
             const startY = (j / gridSize) * 2 - 1
 
             let path = []
-            let currentPoint = [startX, startY, -0.5]
+            let currentPoint = [startX, startY, -.5]
 
             for (let step = 0; step < maxLineSteps; step++) {
                 const rd = vec3.normalize([
@@ -163,9 +161,9 @@ const init = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#111' }),
+            rect(SIZE, { fill: '#fffefe' }),
             group(
-                { stroke: '#ffffff99', weight: 1.5, fill: 'rgba(0,0,0,0)' },
+                { stroke: '#000000cc', weight: 1.5, fill: 'rgba(0,0,0,0)' },
                 contours.map((line) => polyline(line))
             )
         ])
