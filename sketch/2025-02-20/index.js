@@ -6,6 +6,7 @@ import { rect, group, svgDoc, polyline, asSvg } from '@thi.ng/geom'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
+import { hash13 } from './hash13'
 
 const MAX_STEPS = 200,
     MAX_DIST = 200,
@@ -17,13 +18,13 @@ const MAX_STEPS = 200,
     LOADER = document.getElementById('loading'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    { PI, max, min, abs, floor, round, random, pow } = Math,
+    { PI, max, min, abs, floor, round, pow } = Math,
     clamp = (v, edg1, edg2) => min(edg2, max(edg1, v))
 
 const rotateAll = (p) => {
-    let rotated = rotateX(p, .1) //PI / 3)
-    rotated = rotateY(rotated, PI/3)// PI/4)
-    rotated = rotateZ(rotated, PI/4)
+    let rotated = rotateX(p, .1)
+    rotated = rotateY(rotated, PI/3)
+    rotated = rotateZ(rotated, PI/3)
     return rotated
 }
 
@@ -51,10 +52,11 @@ const map = (p, iterations) => {
   const rot = rotateAll(p)
   let d = 100;
   let q = rot;
-  let size = 1
-  let cell = [1,1,1]
+  let size = 1.
+  let currIter = 0, cell
   for (let i = 0; i < iterations; i++) {
-    cell = rot.map(v => floor(abs(v) * 2))
+    currIter++
+    cell = p.map(v => floor(v * currIter))
     if (i % 2 === 0) {
       cell = [cell[1], cell[0], cell[2]]
     } else if (i % 3 === 0) {
@@ -64,18 +66,17 @@ const map = (p, iterations) => {
     } else if (i % 5 === 0) {
       cell = [cell[2], cell[1], cell[0]]
     }
-    q = rot.map(v => (abs(v) * 2) - size)
-    let r = random()
-    //if (r < 0.02) return d 
-    if (r < 0.002) return sdBox(q, cell)
+    q = q.map(v => (abs(v) * 2) - size)
+    let r = hash13(cell)
+    if (r < 0.2) break
   }
-  //return min(sdBox(cell, q), d)
   
-  let gap = 0.001 * iterations
+  let gap = 0.0001 * pow(3, currIter)
   let box = sdBox(q, [size-gap, size-gap, size-gap])
-  box /= iterations //pow(2., iterations)
+  box /= pow(3, currIter)
   
-  let r = random()
+  let r = hash13(cell)
+
   if (r < 0.01) {
     box = 0.004
   }
