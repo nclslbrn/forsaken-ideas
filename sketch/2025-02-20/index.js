@@ -1,4 +1,4 @@
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { vec3, rotateX, rotateY, rotateZ } from './vectorOp'
@@ -8,11 +8,11 @@ import { draw } from '@thi.ng/hiccup-canvas'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { hash13 } from './hash13'
 
-const MAX_STEPS = 200,
-    MAX_DIST = 200,
-    SURFACE_DIST = 0.001,
-    ITERATIONS = 7,
-    SIZE = [1920, 1920],
+const MAX_STEPS = 1000,
+    MAX_DIST = 40,
+    SURFACE_DIST = 5.0e-15,
+    ITERATIONS = 5,
+    SIZE = [1920, 2400],
     MARGIN = 120,
     ROOT = document.getElementById('windowFrame'),
     LOADER = document.getElementById('loading'),
@@ -22,9 +22,9 @@ const MAX_STEPS = 200,
     clamp = (v, edg1, edg2) => min(edg2, max(edg1, v))
 
 const rotateAll = (p) => {
-    let rotated = rotateX(p, .1)
-    rotated = rotateY(rotated, PI/3)
-    rotated = rotateZ(rotated, PI/3)
+    let rotated = rotateX(p, PI/4)
+    rotated = rotateY(rotated, -PI/4)
+    rotated = rotateZ(rotated, PI/4)
     return rotated
 }
 
@@ -49,14 +49,13 @@ const sdBox = (p, b) => {
 }
 
 const map = (p, iterations) => {
-  const rot = rotateAll(p)
-  let d = 100;
-  let q = rot;
-  let size = 1.
+  const size = 1
+  let d = MAX_DIST;
+  let q = rotateAll([p[0], p[1], p[2] - 5]);
   let currIter = 0, cell
   for (let i = 0; i < iterations; i++) {
     currIter++
-    cell = p.map(v => floor(v * currIter))
+    cell = [...q.map(v => floor(v * currIter))]
     if (i % 2 === 0) {
       cell = [cell[1], cell[0], cell[2]]
     } else if (i % 3 === 0) {
@@ -66,14 +65,14 @@ const map = (p, iterations) => {
     } else if (i % 5 === 0) {
       cell = [cell[2], cell[1], cell[0]]
     }
-    q = q.map(v => (abs(v) * 2) - size)
+    q = [...q.map(v => (abs(v) * 2) - size)]
     let r = hash13(cell)
     if (r < 0.2) break
   }
   
-  let gap = 0.0001 * pow(3, currIter)
+  let gap = 0.0001 * pow(iterations, currIter)
   let box = sdBox(q, [size-gap, size-gap, size-gap])
-  box /= pow(3, currIter)
+  box /= pow(iterations, currIter)
   
   let r = hash13(cell)
 
@@ -86,7 +85,7 @@ const map = (p, iterations) => {
 
 
 // Recursive Menger Sponge SDF
-const mengerSponge = (p, iterations) => {
+const mg = (p, iterations) => {
     // Apply rotation to the input point
     const rot = rotateAll(p)
     // let d = sdBox(p, [1, 1, 1])
@@ -110,12 +109,12 @@ const getNormal = (p) => {
     const eps = 0.001
     /*
      return vec3.normalize([
-        mengerSponge([p[0] + eps, p[1], p[2]], ITERATIONS) -
-            mengerSponge([p[0] - eps, p[1], p[2]], ITERATIONS),
-        mengerSponge([p[0], p[1] + eps, p[2]], ITERATIONS) -
-            mengerSponge([p[0], p[1] - eps, p[2]], ITERATIONS),
-        mengerSponge([p[0], p[1], p[2] + eps], ITERATIONS) -
-            mengerSponge([p[0], p[1], p[2] - eps], ITERATIONS)
+        mg([p[0] + eps, p[1], p[2]], ITERATIONS) -
+            mg([p[0] - eps, p[1], p[2]], ITERATIONS),
+        mg([p[0], p[1] + eps, p[2]], ITERATIONS) -
+            mg([p[0], p[1] - eps, p[2]], ITERATIONS),
+        mg([p[0], p[1], p[2] + eps], ITERATIONS) -
+            mg([p[0], p[1], p[2] - eps], ITERATIONS)
     ])
     */ 
     return vec3.normalize([
@@ -133,7 +132,7 @@ const raymarch = (ro, rd) => {
     for (let i = 0; i < MAX_STEPS; i++) {
         const p = vec3.add(ro, vec3.mul(rd, dO))
         const dS = map(p, ITERATIONS)
-    //mengerSponge(p, ITERATIONS)
+    //mg(p, ITERATIONS)
 
         if (dS < SURFACE_DIST) {
             hitPoint = p
@@ -151,9 +150,9 @@ const raymarch = (ro, rd) => {
 const generateContourLines = () => {
     const lines = []
     const gridSize = 60 // Increased for better coverage
-    const camera = [0, 0, -8] // Moved camera back slightly
+    const camera = [0, 0, -10] // Moved camera back slightly
     const lineStepSize = 0.01
-    const maxLineSteps = 80
+    const maxLineSteps = 150
     const width = SIZE[0] - MARGIN * 2
     const height = SIZE[1] - MARGIN * 2
 
@@ -163,7 +162,7 @@ const generateContourLines = () => {
             const startY = (j / gridSize) * 2 - 1
 
             let path = []
-            let currentPoint = [startX, startY, -1.5]
+            let currentPoint = [startX, startY, -1]
 
             for (let step = 0; step < maxLineSteps; step++) {
                 const rd = vec3.normalize([
@@ -207,9 +206,9 @@ const init = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#fffefe' }),
+            rect(SIZE, { fill: '#111' }),
             group(
-                { stroke: '#000', weight: 1.5, fill: 'rgba(0,0,0,0)' },
+                { stroke: '#fefefe', weight: 1, fill: 'rgba(0,0,0,0)' },
                 contours.map((line) => polyline(line))
             )
         ])
