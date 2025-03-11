@@ -10,7 +10,7 @@ import { hash13 } from './hash13'
 
 const MAX_STEPS = 1000,
     MAX_DIST = 40,
-    SURFACE_DIST = 5.0e-15,
+    SURFACE_DIST = 5.0e-4,
     ITERATIONS = 5,
     SIZE = [1920, 2400],
     MARGIN = 120,
@@ -80,7 +80,6 @@ const map = (p, iterations) => {
     box = 0.004
   }
   return min(d, min(box, 1))
-
 }
 
 
@@ -106,7 +105,7 @@ const mg = (p, iterations) => {
 
 // Calculate surface normal
 const getNormal = (p) => {
-    const eps = 0.001
+    const eps = 0.01
     /*
      return vec3.normalize([
         mg([p[0] + eps, p[1], p[2]], ITERATIONS) -
