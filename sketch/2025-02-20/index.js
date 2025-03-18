@@ -11,7 +11,7 @@ import { hash13 } from './hash13'
 const MAX_STEPS = 1000,
     MAX_DIST = 40,
     SURFACE_DIST = 5.0e-4,
-    ITERATIONS = 5,
+    ITERATIONS = 4,
     SIZE = [1920, 2400],
     MARGIN = 120,
     ROOT = document.getElementById('windowFrame'),
@@ -22,8 +22,8 @@ const MAX_STEPS = 1000,
     clamp = (v, edg1, edg2) => min(edg2, max(edg1, v))
 
 const rotateAll = (p) => {
-    let rotated = rotateX(p, PI/4)
-    rotated = rotateY(rotated, -PI/4)
+    let rotated = rotateX(p, .2)
+    rotated = rotateY(rotated, -PI/3)
     rotated = rotateZ(rotated, PI/4)
     return rotated
 }
@@ -49,9 +49,9 @@ const sdBox = (p, b) => {
 }
 
 const map = (p, iterations) => {
-  const size = 1
+  const size = 1.5
   let d = MAX_DIST;
-  let q = rotateAll([p[0], p[1], p[2] - 5]);
+  let q = rotateAll([p[0], p[1], p[2] - 25]);
   let currIter = 0, cell
   for (let i = 0; i < iterations; i++) {
     currIter++
@@ -70,7 +70,7 @@ const map = (p, iterations) => {
     if (r < 0.2) break
   }
   
-  let gap = 0.0001 * pow(iterations, currIter)
+  let gap = 0.001 * pow(iterations, currIter)
   let box = sdBox(q, [size-gap, size-gap, size-gap])
   box /= pow(iterations, currIter)
   
@@ -148,10 +148,10 @@ const raymarch = (ro, rd) => {
 // Generate flow field based contour lines
 const generateContourLines = () => {
     const lines = []
-    const gridSize = 60 // Increased for better coverage
-    const camera = [0, 0, -10] // Moved camera back slightly
-    const lineStepSize = 0.01
-    const maxLineSteps = 150
+    const gridSize = 80 // Increased for better coverage
+    const camera = [0, 0, -15] // Moved camera back slightly
+    const lineStepSize = 0.03
+    const maxLineSteps = 60
     const width = SIZE[0] - MARGIN * 2
     const height = SIZE[1] - MARGIN * 2
 
@@ -205,9 +205,9 @@ const init = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#111' }),
+            rect(SIZE, { fill: '#fefefe' }),
             group(
-                { stroke: '#fefefe', weight: 1, fill: 'rgba(0,0,0,0)' },
+                { stroke: '#333', weight: 1, fill: 'rgba(0,0,0,0)' },
                 contours.map((line) => polyline(line))
             )
         ])
