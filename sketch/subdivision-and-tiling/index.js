@@ -17,7 +17,7 @@ const containerElement = document.getElementById('windowFrame'),
   S = [1122.520, 1587.402],
   { floor, ceil, random } = Math,
   shuffle = (array) => array.sort(() => 0.5 - random())
-  
+
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
   if (grid[cellIdx] === undefined) return grid;
@@ -140,30 +140,33 @@ const sketch = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   },
   exportSvg: () => {
-        const polygons = fillWithStraightLines(canvas, (c) => c < 128, 3, true)
-        const dpi = 300
-        svg = new SvgTracer({
-            parentElem: containerElement,
-            size: 'A3_portrait',
-            dpi
-        })
-        svg.init()
-        polygons.forEach((poly) =>
-            svg.path({
-                points: poly.map((v) => [
-                  v[0]/canvas.width * svg.width, 
-                  v[1]/canvas.height * svg.height 
-                ]),
-                stroke: 'black',
-                strokeWidth: svg.cmToPixels(.05),
-                close: false
-            })
-        )
-    }
+    const polygons = [
+      ...fillWithStraightLines(canvas, (c) => c < 128, 8, 1),
+      ...fillWithStraightLines(canvas, (c) => c < 128, 5, 3)
+    ]
+    const dpi = 300
+    svg = new SvgTracer({
+      parentElem: containerElement,
+      size: 'A3_portrait',
+      dpi
+    })
+    svg.init()
+    polygons.forEach((poly) =>
+      svg.path({
+        points: poly.map((v) => [
+          v[0] / canvas.width * svg.width,
+          v[1] / canvas.height * svg.height
+        ]),
+        stroke: 'black',
+        strokeWidth: svg.cmToPixels(.05),
+        close: false
+      })
+    )
+  }
 
 };
 
-containerElement.removeChild(loader) 
+containerElement.removeChild(loader)
 containerElement.appendChild(canvas);
 sketch.setup();
 sketch.exportSvg();

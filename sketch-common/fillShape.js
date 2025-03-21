@@ -1,6 +1,8 @@
 import { createNoise2D } from 'simplex-noise'
 import alea from 'alea'
 
+const { sin, cos, PI, hypot } = Math
+
 const fillWithFlowField = (canvas, cast, res, seed) => {
     const cnvs = document.createElement('canvas'),
         ctx = cnvs.getContext('2d', { willReadFrequently: true }),
@@ -48,7 +50,7 @@ const fillWithFlowField = (canvas, cast, res, seed) => {
     return ls
 }
 
-const fillWithStraightLines = (canvas, cast, res, isVertical) => {
+const fillWithStraightLines = (canvas, cast, res, dir) => {
     const cnvs = document.createElement('canvas'),
         ctx = cnvs.getContext('2d', { willReadFrequently: true })
 
@@ -65,33 +67,65 @@ const fillWithStraightLines = (canvas, cast, res, isVertical) => {
         return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2])
     }
 
-    if (isVertical) {
-        for (let x = 0; x < canvas.width; x += res) {
-            let ln = []
-            for (let y = 0; y < canvas.height; y += res) {
-                const penDown = getPixel(x, y)
-                if (ln.length && !penDown) {
-                    ls.push(ln)
-                    ln = []
-                }
-                if (penDown) ln.push([x, y])
-            }
-            ln.length && ls.push(ln)
-        }
-    } else {
-        for (let y = 0; y < canvas.height; y += res) {
-            let ln = []
+    if (dir < 2) {
+        // vertical lines
+        if (dir === 0) {
             for (let x = 0; x < canvas.width; x += res) {
-                const penDown = getPixel(x, y)
-                if (ln.length && !penDown) {
-                    ls.push(ln)
-                    ln = []
+                let ln = []
+                for (let y = 0; y < canvas.height; y++) {
+                    const penDown = getPixel(x, y)
+                    if (ln.length && !penDown) {
+                        ls.push(ln)
+                        ln = []
+                    }
+                    if (penDown) ln.push([x, y])
                 }
-                if (penDown) ln.push([x, y])
+                ln.length && ls.push(ln)
+            }
+        }
+        // horizontal lines
+        else {
+            for (let y = 0; y < canvas.height; y += res) {
+                let ln = []
+                for (let x = 0; x < canvas.width; x++) {
+                    const penDown = getPixel(x, y)
+                    if (ln.length && !penDown) {
+                        ls.push(ln)
+                        ln = []
+                    }
+                    if (penDown) ln.push([x, y])
+                }
+                ln.length && ls.push(ln)
+            }
+        }
+    }
+    // diagonal lines
+    else {
+        const step = hypot(res, res)
+        const diag = hypot(canvas.width, canvas.height)
+        const theta = dir === 2 ? -PI / 4 : PI / 4
+        const cntr = [canvas.width / 2, canvas.height / 2]
+
+        for (let x = -diag; x <= diag; x += step) {
+            let ln = []
+            for (let y = -diag; y <= diag; y++) {
+                const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
+                const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
+                if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
+
+                    const penDown = getPixel(xx, yy)
+                    if (ln.length && !penDown) {
+                        ls.push(ln)
+                        ln = []
+                    }
+                    if (penDown) ln.push([xx, yy])
+                }
             }
             ln.length && ls.push(ln)
         }
     }
+
+
     return ls
 }
 
