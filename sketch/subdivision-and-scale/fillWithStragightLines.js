@@ -16,34 +16,42 @@ export const fillWithStraightLines = (canvas, cast, res, dir) => {
         const pixel = ctx.getImageData(x, y, 1, 1).data
         return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2])
     }
-
+    let d = res 
     if (dir < 2) {
         // vertical lines
         if (dir === 0) {
-            for (let x = 0; x < canvas.width; x += res) {
+            for (let x = 0; x < canvas.width; x += d) {
                 let ln = []
                 for (let y = 0; y < canvas.height; y++) {
                     const penDown = getPixel(x, y)
                     if (ln.length && !penDown) {
                         ls.push(ln)
                         ln = []
+                        d *= 1.33
                     }
-                    if (penDown) ln.push([x, y])
+                    if (penDown) { 
+                        ln.push([x, y])
+                        d = res
+                    }
                 }
                 ln.length && ls.push(ln)
             }
         }
         // horizontal lines
         else {
-            for (let y = 0; y < canvas.height; y += res) {
+            for (let y = 0; y < canvas.height; y += d) {
                 let ln = []
                 for (let x = 0; x < canvas.width; x++) {
                     const penDown = getPixel(x, y)
                     if (ln.length && !penDown) {
                         ls.push(ln)
                         ln = []
+                        d *= 1.33
                     }
-                    if (penDown) ln.push([x, y])
+                    if (penDown) {
+                        ln.push([x, y])
+                        d = res 
+                    }
                 }
                 ln.length && ls.push(ln)
             }
@@ -67,7 +75,7 @@ export const fillWithStraightLines = (canvas, cast, res, dir) => {
                     if (ln.length && !penDown) {
                         ls.push(ln)
                         ln = []
-                        d *= 2
+                        d *= 1.33
                     }
                     if (penDown) {
                         ln.push([xx, yy])

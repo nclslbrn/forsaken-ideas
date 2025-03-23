@@ -1,1 +1,11 @@
-{"topic":"Random distribution","libs":[],"action":[{"name":"init","icon":"sync"},{"name":"download","icon":"file-media"}],"info":"todo","date":"2025-02-18"}
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "download", "icon": "desktop-download" }
+    ],
+    "info": "Composition based on triangles produced with GLSL shaders, reinterpreted (pixel by pixel) by a JavaScript program that fills solid shapes with lines.",
+    "date": "2025-02-18"
+}
