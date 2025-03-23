@@ -312,6 +312,7 @@ export default class SvgTracer {
      * @property {string} fill - background color name or color value (HEX, RGB, HSL)
      * @property {string} stroke - border color name or color value (HEX, RGB, HSL)
      * @property {number} strokeWidth - border width in pixels positive int only
+     * @property {string} strokeLinecap - shape to be used at the end of open subpaths when they are stroked (butt, round, square)
      * @property {boolean} close - determine if path is closed or open
      * @property {string} name - a name attribute
      * @property {string} group - group name if you want to add path to a specific group
@@ -334,10 +335,11 @@ export default class SvgTracer {
         pathProps.group =
             pathProps.group === undefined ? false : pathProps.group
 
+        pathProps.strokeLinecap = pathProps.strokeLinecap === undefined ? 'butt' : pathProps.strokeLinecap
+
         const path = document.createElementNS(this.namespace.svg, 'path')
 
-        const points = pathProps.points //.filter(pt => pt[0] !== undefined && pt[1] !== undefined)
-
+        const points = pathProps.points
         let d = ''
         if (points[0][0] !== undefined && points[0][1] !== undefined) {
 
@@ -357,6 +359,8 @@ export default class SvgTracer {
         if (pathProps.stroke) path.setAttribute('stroke', pathProps.stroke)
         if (pathProps.strokeWidth)
             path.setAttribute('stroke-width', pathProps.strokeWidth)
+        
+        path.setAttribute('stroke-linecap', pathProps.strokeLinecap)
         if (pathProps.name) path.setAttribute('name', pathProps.name)
         if (pathProps.group) {
             this.appendToGroup(pathProps.group, path)
@@ -431,6 +435,7 @@ export default class SvgTracer {
      * @property {string} name - an unique group name
      * @property {string} stroke - a stroke color attribute
      * @property {string} strokeWidth - a stroke-width color attribute
+     * @property {string} strokeLinecap - shape to be used at the end of open subpaths when they are stroked (butt, round, square)
      * @property {string} fill - a value of the fill attribute
      * @property {string} group - group name an other group to nest the new one
      * @property {string} id - testing inkscape layer
@@ -452,6 +457,7 @@ export default class SvgTracer {
             groupProps.strokeWidth === undefined
                 ? false
                 : groupProps.strokeWidth
+        groupProps.strokeLinecap = groupProps.strokeLinecap === undefined ? 'butt' : groupProps.strokeLinecap
         groupProps.id =
             groupProps.id === undefined ? false : 'layer' + groupProps.id
 
@@ -475,7 +481,7 @@ export default class SvgTracer {
             groupElem.setAttribute('stroke', groupProps.stroke)
         if (groupProps.strokeWidth)
             groupElem.setAttribute('stroke-width', groupProps.strokeWidth)
-
+        groupElem.setAttribute('stroke-linecap', groupProps.strokeLinecap)
         if (groupProps.group) {
             this.appendToGroup(groupProps.group, groupElem)
         } else {
@@ -529,5 +535,30 @@ export default class SvgTracer {
                 'The method cmToPixels() must be called with a number in centimeters.'
             )
         }
+    }
+
+    /**
+     * Export SVG composition as PNG Image 
+     * @param {object} export parameters 
+     * @property {string} name the name of the downloaded image 
+     * @property {number} quality between 0 and 1 the desired quality
+     */ 
+    exportPng ({ name, quality }) {
+        const uriData = `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(this.elem))}`
+        const img = new Image()
+        img.src = uriData
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            [canvas.width, canvas.height] = [this.width, this.height]
+            const ctx = canvas.getContext("2d")
+            ctx.drawImage(img, 0, 0, this.width, this.height)
+
+            const a = document.createElement("a")
+            a.href = canvas.toDataURL("image/png", quality)
+            a.download = `${name}.png`
+            a.append(canvas)
+            a.click()
+            a.remove()
+        } 
     }
 }
