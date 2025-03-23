@@ -17,7 +17,7 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_square',
+        size: 'A3_portrait',
         background: '#fff',
         dpi
     }),
@@ -148,21 +148,20 @@ const sketch = {
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
     exportSvg: () => {
-        console.log('render svg')
         svg.clearGroups() 
         Array(
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 4, random() > 0.5 ? 2 : 3).filter((_, i) => i % 10 !== 0),
+                fillWithStraightLines(canvas, (c) => c < 128, 4, floor(random()*4)).filter((_, i) => i % 10 !== 0),
                 360, 
                 12
             ),
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 4, 0).filter((_, i) => i % 5 !== 0),
+                fillWithStraightLines(canvas, (c) => c < 128, 4, floor(random() * 2)).filter((_, i) => i % 5 !== 0),
                 240, 
-                8
+                12
             ),
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c > 128, 12, 0)
+              fillWithStraightLines(canvas, (c) => c > 128, 36, random() > .5 ? 2 : 3)
                 .map((ln, i) => i % 7 ? ln : ln.reverse()),
               300, 10
             )
@@ -176,7 +175,7 @@ const sketch = {
           [[], []]
         ).reduce((g, line) => [ // split each line
                 ...g, 
-                [...chunkify(line, 120, 4)]
+                [...chunkify(line, 120, 12)]
             ], []
         ).forEach((lines, gIdx) => {
           lines.forEach((line) => 
@@ -186,7 +185,8 @@ const sketch = {
                     margin + (v[1] / canvas.height) * (svg.height - margin * 2)
               ]),
               group: groupName[gIdx],
-              close: false 
+              close: false,
+              strokeLinecap: 'round' 
             })
           ) 
        })
@@ -198,14 +198,11 @@ containerElement.appendChild(canvas)
 svg.init()
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
-svg.group({ name: groupName[0], stroke: '#333', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
-svg.group({ name: groupName[1], stroke: 'tomato', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
+svg.group({ name: groupName[1], stroke: 'gold', strokeWidth: svg.cmToPixels(.07) })
+svg.group({ name: groupName[0], stroke: '#333', strokeWidth: svg.cmToPixels(.07) })
 sketch.setup()
 sketch.init()
 
-svg.elem.addEventListener('click', () => {
-    svg.elem.style.opacity = svg.elem.style.opacity == '0' ? '1' : '0'
-})
 window.init = sketch.init
 window.capture = () => 
   svg.exportPng({
