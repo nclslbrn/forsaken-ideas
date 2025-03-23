@@ -17,8 +17,8 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_portrait',
-        background: '#162760',
+        size: 'A3_square',
+        background: '#fff',
         dpi
     }),
     margin = svg.cmToPixels(2),
@@ -91,7 +91,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 
 const sketch = {
     init: () => {
-        const numCell = 1 + ceil(random() * 32)
+        const numCell = 1 + ceil(random() * 18)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -152,28 +152,33 @@ const sketch = {
         svg.clearGroups() 
         Array(
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c < 128, 4, random() > 0.5 ? 2 : 3),
-              20, 1
+                fillWithStraightLines(canvas, (c) => c < 128, 4, random() > 0.5 ? 2 : 3).filter((_, i) => i % 10 !== 0),
+                360, 
+                12
             ),
-            ...fillWithStraightLines(canvas, (c) => c < 128, 8, random() > .5 ? 1 : 0),
-            ...fillWithStraightLines(canvas, (c) => c < 128, 13, random() > .5 ? 1 : 0), 
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c > 128, 32, 0)
-                .map((ln, i) => i % 16 ? ln : ln.reverse()),
+                fillWithStraightLines(canvas, (c) => c < 128, 4, 0).filter((_, i) => i % 5 !== 0),
+                240, 
+                8
+            ),
+            ...chunkify(
+              fillWithStraightLines(canvas, (c) => c > 128, 12, 0)
+                .map((ln, i) => i % 7 ? ln : ln.reverse()),
               300, 10
             )
         ).reduce((g, line, lIdx) => 
-          lIdx % 13 ? 
-            lIdx % 40
+          lIdx % 20 ? 
+            lIdx % 50
               // assign to g[color 1] or g[color 2] 
               ? [[...g[0], line], g[1]] : [g[0], [...g[1], line]]
               // remove the line
               : g, 
           [[], []]
         ).reduce((g, line) => [ // split each line
-          ...g, 
-          [...chunkify(line, 300, 4)]
-        ], []).forEach((lines, gIdx) => {
+                ...g, 
+                [...chunkify(line, 120, 4)]
+            ], []
+        ).forEach((lines, gIdx) => {
           lines.forEach((line) => 
             svg.path({
               points: line.map((v) => [
@@ -191,8 +196,10 @@ const sketch = {
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
-svg.group({ name: groupName[0], stroke: 'white', strokeWidth: svg.cmToPixels(.08), strokeLinecap: 'round' })
-svg.group({ name: groupName[1], stroke: 'gold', strokeWidth: svg.cmToPixels(.08), strokeLinecap: 'round' })
+svg.elem.style.maxWidth = '100%'
+svg.elem.style.maxHeight = '120%'
+svg.group({ name: groupName[0], stroke: '#333', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
+svg.group({ name: groupName[1], stroke: 'tomato', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
 sketch.init()
 sketch.setup()
 svg.elem.addEventListener('click', () => {
