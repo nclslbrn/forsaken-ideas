@@ -103,6 +103,7 @@ const sketch = {
 
         traits = { numCell, cells }
         sketch.render()
+        sketch.exportSvg()
     },
     setup: () => {
         if (!gl) {
@@ -134,7 +135,6 @@ const sketch = {
         gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0)
         gl.disable(gl.DEPTH_TEST)
         gl.enable(gl.BLEND)
-        sketch.init()
         gl.clearColor(1, 1, 1, 1)
     },
     render: () => {
@@ -146,9 +146,9 @@ const sketch = {
             traits.cells.reduce((s, c) => [...s, ...c], [])
         )
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-        sketch.exportSvg()
     },
     exportSvg: () => {
+        console.log('render svg')
         svg.clearGroups() 
         Array(
             ...chunkify(
@@ -200,8 +200,9 @@ svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
 svg.group({ name: groupName[0], stroke: '#333', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
 svg.group({ name: groupName[1], stroke: 'tomato', strokeWidth: svg.cmToPixels(.05), strokeLinecap: 'round' })
-sketch.init()
 sketch.setup()
+sketch.init()
+
 svg.elem.addEventListener('click', () => {
     svg.elem.style.opacity = svg.elem.style.opacity == '0' ? '1' : '0'
 })
