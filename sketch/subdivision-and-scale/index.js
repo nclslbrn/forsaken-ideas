@@ -21,7 +21,7 @@ const containerElement = document.getElementById('windowFrame'),
         background: '#fff',
         dpi
     }),
-    margin = svg.cmToPixels(2),
+    margin = svg.cmToPixels(2.5),
     groupName = ['primary', 'secondary'],
     S = [1122.52, 1587.402],
     { floor, ceil, random } = Math,
@@ -91,7 +91,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 
 const sketch = {
     init: () => {
-        const numCell = 1 + ceil(random() * 18)
+        const numCell = 4 + ceil(random() * 16)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -148,23 +148,27 @@ const sketch = {
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
     exportSvg: () => {
+        const innerDiag = random() > .5 ? 2 : 3
+        const outerDiag = innerDiag === 2 ? 3 : 2 
+        
         svg.clearGroups() 
         Array(
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 4, floor(random()*4)).filter((_, i) => i % 10 !== 0),
+                fillWithStraightLines(canvas, (c) => c < 128, 3, innerDiag).filter((_, i) => i % 10 !== 0),
                 360, 
                 12
             ),
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 4, floor(random() * 2)).filter((_, i) => i % 5 !== 0),
+                fillWithStraightLines(canvas, (c) => c < 128, 3, floor(random() * 2)).filter((_, i) => i % 5 !== 0),
                 240, 
                 12
             ),
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c > 128, 36, random() > .5 ? 2 : 3)
+              fillWithStraightLines(canvas, (c) => c > 128, 36, 0)
                 .map((ln, i) => i % 7 ? ln : ln.reverse()),
               300, 10
             )
+     
         ).reduce((g, line, lIdx) => 
           lIdx % 20 ? 
             lIdx % 50
@@ -198,8 +202,8 @@ containerElement.appendChild(canvas)
 svg.init()
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
-svg.group({ name: groupName[1], stroke: 'gold', strokeWidth: svg.cmToPixels(.07) })
-svg.group({ name: groupName[0], stroke: '#333', strokeWidth: svg.cmToPixels(.07) })
+svg.group({ name: groupName[1], stroke: 'tomato', strokeWidth: svg.cmToPixels(.03) })
+svg.group({ name: groupName[0], stroke: 'black', strokeWidth: svg.cmToPixels(.04) })
 sketch.setup()
 sketch.init()
 
