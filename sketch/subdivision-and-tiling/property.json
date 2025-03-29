@@ -1,1 +1,11 @@
-{"topic":"Random distribution","libs":[],"action":[{"name":"init","icon":"sync"},{"name":"download","icon":"file-media"}],"info":"todo","date":"2025-02-18"}
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "exportPNG", "icon": "file-media" },
+        { "name": "exportSVG", "icon": "desktop-download" }
+    ],
+    "info": "An experiment with GLSL shaders, triangle composition and vectorisation from the canvas pixels. This project is part of *Variationes circa triangula* series.",
+    "date": "2025-02-18"
+}
