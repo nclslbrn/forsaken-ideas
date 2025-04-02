@@ -25,40 +25,42 @@ const addFontFile = () => {
     SVG.elem.appendChild(defs)
 }
 const texts = [
-    ['frame', 'drame', 'name', 'same', 'game', 'roam', 'scam', 'spam', 'swam'],
-    ['iteration', 'alteration', 'recursion', 'collision', 'dilution', 'distortion', 'erosion', 'generation', 'inception'],
-    ['surface', 'depth', 'randomness', 'trace', 'interlace', 'space'],
-    ['none', 'false', 'null', 'xxx', '++++++', '-------', '/////']
+    'iteration', 'alteration', 'recursion', 'collision', 'constraint', 'composition', 'protocol', 'system', 'grids', 'point',
+    'organization', 'spacing', 'shearing', 'possible', 'squares', 'GRAV', 'transformation', 'balance', 'precision', 'radicalism',
+    'condition', 'rhythm', 'tangible', 'infra-thin', 'sequences', 'language', 'deconstruction', 'abstraction', 'strata', 'manipulation', 
+    'architectural', 'process', 'mechanism', 'accumulation'
 ]
 
 const sketch = {
     init: () => {
-        const inner = [SVG.width - MARGIN*2, SVG.height - MARGIN*2]
+        const inner = [SVG.width - MARGIN*2, SVG.height - MARGIN*2],
+            base = 32;
+
         let y = MARGIN, 
-            fontSize = 58, 
-            columns = 3,
-            colWidth = inner[0]/columns,
-            midY = (MARGIN + inner[1]) / 2
+            fontSize = base
         
         SVG.clear()
+        let w = 0, l = 0;
 
         while (y + fontSize < inner[1]) {
-            y += fontSize * 1.5
-            for (let c = 0; c < columns; c++) {
-                const x = MARGIN + c * colWidth
-                SVG.text({
-                    x, 
-                    y, 
-                    fontSize, 
-                    text: texts[c][Math.floor(Math.random() * texts[c].length)], 
-                    fontFamily: 'Inter'
-                })
+            y += fontSize * 1.25
+            let x  = MARGIN
+
+            while (x < inner[0]) { 
+                const text = texts[Math.floor(Math.random() * texts.length)] 
+                SVG.text({x, y, fontSize, text, fontFamily: 'Inter'})
+                x += text.length * fontSize * 0.64
+                //x += fontSize * 10
+                w++
             }
-            if (y < midY) {
-                fontSize += 8
+            if (w % 16 === 0) { 
+                fontSize = base
             } else {
-                fontSize -= 8
+                fontSize += base
             }
+            l++
+
+            fontSize *= l % 4 === 0 ? 1.66 :  0.66 // (l%4) / 2.5
         }
     }    
 }
