@@ -1,1 +1,11 @@
-{"topic":"Only type","libs":[],"action":[{"name":"init","icon":"sync"},{"name":"download","icon":"file-media"}],"info":"todo","date":"2025-03-31"}
+{
+    "topic": "Only type",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "capture", "icon": "file-media" },
+        { "name": "download", "icon": "desktop-download" }
+    ],
+    "info": "todo",
+    "date": "2025-03-31"
+}
