@@ -18,7 +18,7 @@ const containerElement = document.getElementById('windowFrame'),
     svg = new SvgTracer({
         parentElem: containerElement,
         size: 'A3_portrait',
-        background: '#fff',
+        background: '#e8ca55',
         dpi
     }),
     margin = svg.cmToPixels(2.5),
@@ -91,7 +91,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 
 const sketch = {
     init: () => {
-        const numCell = 4 + ceil(random() * 16)
+        const numCell = 4 + ceil(random() * 8)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -164,14 +164,14 @@ const sketch = {
                 12
             ),
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c > 128, 36, 0)
+              fillWithStraightLines(canvas, (c) => c > 128, 12, 0)
                 .map((ln, i) => i % 7 ? ln : ln.reverse()),
               300, 10
             )
      
         ).reduce((g, line, lIdx) => 
-          lIdx % 20 ? 
-            lIdx % 50
+          lIdx % floor(5 + random() * 20) ? 
+            lIdx % floor(10 + random() * 50) 
               // assign to g[color 1] or g[color 2] 
               ? [[...g[0], line], g[1]] : [g[0], [...g[1], line]]
               // remove the line
@@ -179,7 +179,7 @@ const sketch = {
           [[], []]
         ).reduce((g, line) => [ // split each line
                 ...g, 
-                [...chunkify(line, 120, 12)]
+                [...chunkify(line, 120, 32)]
             ], []
         ).forEach((lines, gIdx) => {
           lines.forEach((line) => 
@@ -202,8 +202,8 @@ containerElement.appendChild(canvas)
 svg.init()
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
-svg.group({ name: groupName[1], stroke: 'tomato', strokeWidth: svg.cmToPixels(.03) })
-svg.group({ name: groupName[0], stroke: 'black', strokeWidth: svg.cmToPixels(.04) })
+svg.group({ name: groupName[1], stroke: 'white', strokeWidth: svg.cmToPixels(.03) })
+svg.group({ name: groupName[0], stroke: '#000000f3', strokeWidth: svg.cmToPixels(.04) })
 sketch.setup()
 sketch.init()
 
