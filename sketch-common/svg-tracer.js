@@ -376,6 +376,7 @@ export default class SvgTracer {
      * @property {string} text - the text to draw
      * @property {string} fontFamily - font family name of the text
      * @property {number} fontSize - font size of the text
+     * @property {number} fontWeight - font weight of the text
      * @property {string} fill - color of text
      * @property {string} anchor - horizontal alignment (start, middle or end)
      * @property {string} name - a name attribute
@@ -399,6 +400,9 @@ export default class SvgTracer {
             textProps.fontFamily === undefined
                 ? 'sans-serif'
                 : textProps.fontFamily
+        textProps.fontWeight = textProps.fontWeight === undefined 
+                ? 'normal'
+                : textProps.fontWeight
         textProps.fontSize =
             textProps.fontSize === undefined ? 16 : textProps.fontSize
         textProps.fill = textProps.fill === undefined ? 'black' : textProps.fill
@@ -416,6 +420,7 @@ export default class SvgTracer {
         text.setAttribute('y', textProps.y)
         text.setAttribute('font-family', textProps.fontFamily)
         text.setAttribute('font-size', textProps.fontSize)
+        text.setAttribute('font-weight', textProps.fontWeight)
         text.setAttribute('fill', textProps.fill)
 
         if (textProps.name) text.setAttribute('name', textProps.name)
