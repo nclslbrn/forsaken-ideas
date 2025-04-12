@@ -1,4 +1,37 @@
-const fillWithWalkers = (canvas, cast, res, dir) => {
+import Walker from './Walker'
+
+const isLineLineIntersecting = (ln, lm) => {
+    let det, gamma, lambda
+
+    det =
+        (ln[1][0] - ln[0][0]) * (lm[1][1] - lm[0][1]) -
+        (lm[1][0] - lm[0][0]) * (ln[1][1] - ln[0][1])
+    if (det === 0) {
+        return false
+    } else {
+        lambda =
+            ((lm[1][1] - lm[0][1]) * (lm[1][0] - ln[0][0]) +
+                (lm[0][0] - lm[1][0]) * (lm[1][1] - ln[0][1])) /
+            det
+        gamma =
+            ((ln[0][1] - ln[1][1]) * (lm[1][0] - ln[0][0]) +
+                (ln[1][0] - ln[0][0]) * (lm[1][1] - ln[0][1])) /
+            det
+        return 0 < lambda && lambda < 1 && 0 < gamma && gamma < 1
+    }
+}
+
+const isLineMultilineIntersecting = (ln, lines) =>
+    lines.reduce((intersect, line) => {
+        for (let i = 0; i < line.length - 1; i++) {
+            if (isLineLineIntersecting(ln, [line[i], line[i + 1]])) {
+                return true
+            }
+        }
+        return intersect
+    }, false)
+
+const fillWithWalkers = (canvas, cast, numWalker) => {
     const cnvs = document.createElement('canvas'),
         ctx = cnvs.getContext('2d', { willReadFrequently: true })
 
@@ -15,65 +48,31 @@ const fillWithWalkers = (canvas, cast, res, dir) => {
         return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2])
     }
 
-    if (dir < 2) {
-        // vertical lines
-        if (dir === 0) {
-            for (let x = 0; x < canvas.width; x += res) {
-                let ln = []
-                for (let y = 0; y < canvas.height; y++) {
-                    const penDown = getPixel(x, y)
-                    if (ln.length && !penDown) {
-                        ls.push(ln)
-                        ln = []
-                    }
-                    if (penDown) ln.push([x, y])
-                }
-                ln.length && ls.push(ln)
+    for (let i = 0; i < numWalker; i++) {
+        let ln = []
+        const walker = new Walker(
+            Math.floor(Math.random() * canvas.width),
+            Math.floor(Math.random() * canvas.height),
+            50,
+            (x, y) =>
+                x > 0 &&
+                x < canvas.width &&
+                y > 0 &&
+                y < canvas.height &&
+                getPixel(x, y) &&
+                !isLineMultilineIntersecting([x, y], ls)
+        )
+        for (let j = 0; j < 10; j++) {
+            walker.walk()
+            const penDown = getPixel(...walker.pos)
+            if (ln.length && !penDown) {
+                ls.push(ln)
+                ln = []
             }
+            if (penDown) ln.push(walker.pos)
         }
-        // horizontal lines
-        else {
-            for (let y = 0; y < canvas.height; y += res) {
-                let ln = []
-                for (let x = 0; x < canvas.width; x++) {
-                    const penDown = getPixel(x, y)
-                    if (ln.length && !penDown) {
-                        ls.push(ln)
-                        ln = []
-                    }
-                    if (penDown) ln.push([x, y])
-                }
-                ln.length && ls.push(ln)
-            }
-        }
+        ln.length && ls.push(ln)
     }
-    // diagonal lines
-    else {
-        const step = hypot(res, res)
-        const diag = hypot(canvas.width, canvas.height)
-        const theta = dir === 2 ? -PI / 4 : PI / 4
-        const cntr = [canvas.width / 2, canvas.height / 2]
-
-        for (let x = -diag; x <= diag; x += step) {
-            let ln = []
-            for (let y = -diag; y <= diag; y++) {
-                const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
-                const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
-                if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
-
-                    const penDown = getPixel(xx, yy)
-                    if (ln.length && !penDown) {
-                        ls.push(ln)
-                        ln = []
-                    }
-                    if (penDown) ln.push([xx, yy])
-                }
-            }
-            ln.length && ls.push(ln)
-        }
-    }
-
-
     return ls
 }
 

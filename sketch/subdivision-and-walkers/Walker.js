@@ -1,36 +1,65 @@
+
+
 export default class Walker {
-    constructor(x, y, stop, colour, speed) {
-        this.x = x
-        this.y = y
-        this.stop = stop
-        this.colour = colour
+    constructor(x, y, speed, isIn) {
+        this.pos = [x, y]
+        this.isStuck = false
         this.speed = speed
+        this.hypotSpeed = Math.hypot(speed)
+        this.path = []
+        this.isIn = isIn
     }
 
-    walk() {
-        if (!this.stop) {
-            switch (Math.floor(Math.random() * 4)) {
+    nextMove() {
+        if (!this.isStuck) {
+            switch (Math.floor(Math.random() * 8)) {
                 case 0:
-                    this.x += this.speed
-                    break
+                    return [this.pos[0] + this.hypotSpeed, this.pos[1] - this.hypotSpeed]
                 case 1:
-                    this.y -= this.speed
-                    break
+                    return [this.pos[0] + this.speed, this.pos[1]]
                 case 2:
-                    this.y += this.speed
-                    break
+                    return [this.pos[0] + this.hypotSpeed, this.pos[1] + this.hypotSpeed]
                 case 3:
-                    this.x -= this.speed
-                    break
+                    return [this.pos[0],  this.pos[1] + this.speed]
+                case 4:
+                    return [this.pos[0] - this.hypotSpeed, this.pos[1] + this.hypotSpeed]
+                case 5:
+                    return [this.pos[0] - this.speed, this.pos[1]]
+                case 6:
+                    return [this.pos[0] - this.hypotSpeed, this.pos[1] - this.hypotSpeed]
+                case 7:
+                    return [this.pos[0], this.pos[1] - this.speed]
                 default:
-                    console.log("Unexpected value")
+                    return this.pos
             }
         }
     }
 
-    distance(point) {
-        const dx = point.x - this.x
-        const dy = point.y - this.y
-        return dx * dx + dy * dy
+    goToUntilOut(x, y) {
+        const dist = Math.hypot(x - this.pos[0], y - this.pos[1])
+        const angle = Math.atan2(y - this.pos[1], x - this.pos[0])
+        const ln = []
+
+        for (let i = 0; i < dist; i++) {
+            const nx = this.pos[0] + i * Math.cos(angle),
+                  ny = this.pos[1] + i * Math.sin(angle)
+
+            if (this.isIn(nx, ny)) {
+                ln.push([nx, ny])
+            } else {
+                return ln
+            }
+        }
+        return ln
+    }
+
+    walk(){
+        const newPos = this.nextMove()
+        if (!this.isStuck && (this.path.length < 2 || this.isIn(...newPos))) {
+            const untilOut = this.goToUntilOut(...newPos)
+            this.path.push(...untilOut)
+            if(untilOut.length) this.pos = untilOut[untilOut.length-1]
+        } 
+        // else { this.isStuck = true }
     }
 }

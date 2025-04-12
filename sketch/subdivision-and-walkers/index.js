@@ -7,6 +7,7 @@ import fragSrc from './glsl/triangles.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines, fillWithFlowField } from '../../sketch-common/fillShape'
+import { fillWithWalkers } from './fillWithWalker'
 
 let traits = {}
 
@@ -146,14 +147,16 @@ const sketch = {
     exportSvg: () => {
         svg.clear()
         const rowPath = [
-            ...fillWithFlowField(canvas, (c) => c < 128, 6, String(random() * 9999)).filter((ln) => ln.length > 4),
-            ...fillWithStraightLines(canvas, (c) => c < 128, 6, 12).filter((ln, i) => i % 12 !== 0 && ln.length > 4)
-            
-        ].reduce((acc, path) => {
+            ...fillWithStraightLines(canvas, (c) => c > 128, 120, 0),
+            //...fillWithStraightLines(canvas, (c) => c < 128, 15, 0),
+            ...fillWithWalkers(canvas, (c) => c < 128, 1500)
+        ]
+        /*
+        .reduce((acc, path) => {
           const splitAt = 2 + floor(random() * path.length - 4)
           return [...acc, path.slice(0, splitAt-2), path.slice(-splitAt+2)]        
         }, []).filter((len) => len.length > 0)
-
+        */
         rowPath.forEach((poly) =>
             svg.path({
                 points: poly.map((v) => [
@@ -161,6 +164,7 @@ const sketch = {
                     (v[1] / canvas.height) * svg.height
                 ]),
                 stroke: '#111',
+                fill: 'rgba(0,0,0,0)',
                 strokeWidth: svg.cmToPixels(0.03),
                 close: false
             })
@@ -177,11 +181,11 @@ sketch.setup()
 sketch.init()
 
 window['init'] = sketch.init
-window['exportSVG'] = () =>
+window['downloadSVG'] = () =>
     svg.export({
         name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}}`
     })
-window['exportPNG'] = () =>
+window['downloadPNG'] = () =>
     svg.exportPng({
         name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}`,
         quality: 1
