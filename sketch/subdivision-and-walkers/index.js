@@ -15,17 +15,18 @@ const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
     gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
-    S = [1122.52, 1587.402],
+    S = [3840, 2160],//[1122.52, 1587.402],
     { floor, ceil, random } = Math,
     shuffle = (array) => array.sort(() => 0.5 - random()),
     dpi = 300,
+    groupName = ['primary', 'secondary'],
     svg = new SvgTracer({
       parentElem: containerElement,
-      size: 'A3_square',
-      background: '#110510',
+      size: { w: 38.4, h: 21.6 }, //'A3_portrait',
+      background: '#151518',
       dpi
     }),
-    margin = svg.cmToPixels(3)
+    margin = svg.cmToPixels(1)
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -109,6 +110,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         sketch.render()
         sketch.exportSvg()
     },
+
     setup: () => {
         if (!gl) {
             console.error('WebGL not supported')
@@ -142,9 +144,9 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0)
         gl.disable(gl.DEPTH_TEST)
         gl.enable(gl.BLEND)
-        sketch.init()
         gl.clearColor(1, 1, 1, 1)
     },
+
     render: () => {
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.uniform2f(sketch.uResolution, canvas.width, canvas.height)
@@ -158,36 +160,46 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         gl.uniform2f(sketch.uTarget, ...traits.target)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
+
     exportSvg: () => {
-        svg.clear()
-        const rowPath = [
-            ...chunkify(fillWithStraightLines(canvas, (c) => c > 128, 120, 0), 100, 10).filter((_, i) => i % 5 !== 0),
-            ...fillWithWalkers(canvas, (c) => c < 128, 3000, 60)
-        ]
-        /* 
-        .reduce((acc, path) => {
-          const splitAt = 2 + floor(random() * path.length - 4)
-          return [...acc, path.slice(0, splitAt-2), path.slice(-splitAt+2)]        
-        }, []).filter((len) => len.length > 0)
-        */
-        rowPath.forEach((poly) =>
+        svg.clearGroups()
+        Array(
+            ...chunkify(fillWithStraightLines(canvas, (c) => c < 128, 120, 0), 100, 10).filter((_, i) => i % 5 !== 0),
+            ...fillWithWalkers(canvas, (c) => c > 128, 5000, 40)
+        )
+       .reduce((g, line, lIdx) => 
+          lIdx % floor(5 + random() * 20) ? 
+            lIdx % floor(10 + random() * 50) 
+              // assign to g[color 1] or g[color 2] 
+              ? [[...g[0], line], g[1]] : [g[0], [...g[1], line]]
+              // remove the line
+              : g, 
+          [[], []]
+        ).reduce((g, line) => [ // split each line
+                ...g, 
+                [...chunkify(line, 120, 32)]
+            ], []
+        ).forEach((lines, gIdx) => {
+          lines.forEach((line) => 
             svg.path({
-                points: poly.map((v) => [
+              points: line.map((v) => [
                     margin + (v[0] / canvas.width) * (svg.width - margin * 2),
                     margin + (v[1] / canvas.height) * (svg.height - margin * 2)
-                ]),
-                stroke: '#ffffff77',
-                fill: 'rgba(0,0,0,0)',
-                strokeWidth: svg.cmToPixels(0.05),
-                close: false
+              ]),
+              group: groupName[gIdx],
+              close: false,
+              strokeLinecap: 'round' 
             })
-        )
+          ) 
+       })
     }
 }
 
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
+svg.group({ name: groupName[1], stroke: 'gold', strokeWidth: svg.cmToPixels(.03) })
+svg.group({ name: groupName[0], stroke: 'white', strokeWidth: svg.cmToPixels(.04) })
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
 sketch.setup()

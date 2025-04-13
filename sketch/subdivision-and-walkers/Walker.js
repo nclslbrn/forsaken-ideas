@@ -12,27 +12,25 @@ export default class Walker {
     }
 
     nextMove() {
-        if (!this.isStuck) {
-            switch (Math.floor(Math.random() * 8)) {
-                case 0:
-                    return [this.pos[0] + this.hypotSpeed, this.pos[1] - this.hypotSpeed]
-                case 1:
-                    return [this.pos[0] + this.speed, this.pos[1]]
-                case 2:
-                    return [this.pos[0] + this.hypotSpeed, this.pos[1] + this.hypotSpeed]
-                case 3:
-                    return [this.pos[0],  this.pos[1] + this.speed]
-                case 4:
-                    return [this.pos[0] - this.hypotSpeed, this.pos[1] + this.hypotSpeed]
-                case 5:
-                    return [this.pos[0] - this.speed, this.pos[1]]
-                case 6:
-                    return [this.pos[0] - this.hypotSpeed, this.pos[1] - this.hypotSpeed]
-                case 7:
-                    return [this.pos[0], this.pos[1] - this.speed]
-                default:
-                    return this.pos
-            }
+        switch (Math.floor(Math.random() * 8)) {
+            case 0:
+                return [this.pos[0] + this.hypotSpeed, this.pos[1] - this.hypotSpeed]
+            case 1:
+                return [this.pos[0] + this.speed, this.pos[1]]
+            case 2:
+                return [this.pos[0] + this.hypotSpeed, this.pos[1] + this.hypotSpeed]
+            case 3:
+                return [this.pos[0],  this.pos[1] + this.speed]
+            case 4:
+                return [this.pos[0] - this.hypotSpeed, this.pos[1] + this.hypotSpeed]
+            case 5:
+                return [this.pos[0] - this.speed, this.pos[1]]
+            case 6:
+                return [this.pos[0] - this.hypotSpeed, this.pos[1] - this.hypotSpeed]
+            case 7:
+                return [this.pos[0], this.pos[1] - this.speed]
+            default:
+                return this.pos
         }
     }
 
@@ -41,7 +39,7 @@ export default class Walker {
         const angle = Math.atan2(y - this.pos[1], x - this.pos[0])
         const ln = []
 
-        for (let i = 0; i < dist; i++) {
+        for (let i = 0; i < dist; i += 0.5) {
             const nx = this.pos[0] + i * Math.cos(angle),
                   ny = this.pos[1] + i * Math.sin(angle)
 
@@ -62,7 +60,7 @@ export default class Walker {
             if(untilOut.length) this.pos = untilOut[untilOut.length-1]
         } 
         else { 
-            if (this.tries >= 6) this.isStuck = true 
+            if (this.tries >= 10) this.isStuck = true 
             this.tries++
         }
     }
