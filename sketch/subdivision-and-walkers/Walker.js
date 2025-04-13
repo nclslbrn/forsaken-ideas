@@ -8,6 +8,7 @@ export default class Walker {
         this.hypotSpeed = Math.hypot(speed)
         this.path = []
         this.isIn = isIn
+        this.tries = 0
     }
 
     nextMove() {
@@ -60,6 +61,9 @@ export default class Walker {
             this.path.push(...untilOut)
             if(untilOut.length) this.pos = untilOut[untilOut.length-1]
         } 
-        // else { this.isStuck = true }
+        else { 
+            if (this.tries >= 6) this.isStuck = true 
+            this.tries++
+        }
     }
 }

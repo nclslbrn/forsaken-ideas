@@ -21,8 +21,8 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
       parentElem: containerElement,
-      size: 'A3_portrait',
-      background: '#fff3f3',
+      size: 'A3_square',
+      background: '#0f0103',
       dpi
     })
 
@@ -73,9 +73,22 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
     return program
 }
 
-const sketch = {
+const chunkify = (arr, itemPerChunk, itemBetweenChunk) => 
+  arr.reduce((stack, line) => [
+    ...stack,
+    ...line.reduce((dash, pt, ptIdx) => {
+      const dashIdx = floor(ptIdx / (itemPerChunk + itemBetweenChunk))
+      const ptInDash = ptIdx % (itemPerChunk + itemBetweenChunk)
+      if (!dash[dashIdx]) dash[dashIdx] = []
+      if (ptInDash <= itemPerChunk) dash[dashIdx].push(pt)
+          
+      return dash
+    }, [])
+  ], [])
+
+  const sketch = {
     init: () => {
-        const numCell = 1 + ceil(random() * 12)
+        const numCell = 4 + ceil(random() * 8)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -147,11 +160,10 @@ const sketch = {
     exportSvg: () => {
         svg.clear()
         const rowPath = [
-            ...fillWithStraightLines(canvas, (c) => c > 128, 120, 0),
-            //...fillWithStraightLines(canvas, (c) => c < 128, 15, 0),
-            ...fillWithWalkers(canvas, (c) => c < 128, 1500)
+            ...chunkify(fillWithStraightLines(canvas, (c) => c > 128, 120, 0), 100, 10).filter((_, i) => i % 5 !== 0),
+            ...fillWithWalkers(canvas, (c) => c < 128, 3000, 100)
         ]
-        /*
+        /* 
         .reduce((acc, path) => {
           const splitAt = 2 + floor(random() * path.length - 4)
           return [...acc, path.slice(0, splitAt-2), path.slice(-splitAt+2)]        
@@ -163,7 +175,7 @@ const sketch = {
                     (v[0] / canvas.width) * svg.width,
                     (v[1] / canvas.height) * svg.height
                 ]),
-                stroke: '#111',
+                stroke: '#fffef3',
                 fill: 'rgba(0,0,0,0)',
                 strokeWidth: svg.cmToPixels(0.03),
                 close: false
