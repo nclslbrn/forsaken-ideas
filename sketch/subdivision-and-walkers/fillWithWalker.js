@@ -8,7 +8,7 @@ const fillWithWalkers = (canvas, cast, numWalker, step) => {
     cnvs.height = canvas.height
     ctx.drawImage(canvas, 0, 0)
     ctx.strokeStyle = 'white'
-    ctx.lineWidth = 1.5
+    ctx.lineWidth = 1
     
     const ls = []
     const getPixel = (x, y) => {

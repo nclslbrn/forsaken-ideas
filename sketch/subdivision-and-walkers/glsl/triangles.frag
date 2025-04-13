@@ -28,13 +28,12 @@ vec2 rotate2D (vec2 _st, float _angle) {
 
 void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    st *= 1.05;
 
     vec3 color = vec3(1.);
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
         if (i < u_numCell) {
-            vec2 cellPos = vec2(0.025) + vec2(u_cells[i].xy);
+            vec2 cellPos = vec2(u_cells[i].xy);
             vec2 cellSiz = vec2(u_cells[i].zw);
             vec2 stToCell = st - cellPos;
 
@@ -43,8 +42,11 @@ void main() {
             if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
                     if (d < 0.) {
-                        vec2 _st = fract(((st-cellPos)/cellSiz)*2.);
-                        _st = rotate2D(_st, PI*(float(i)*.5));
+                        float index = 0.0;
+                        index += step(1., mod(st.x-cellPos.x, 8.0));
+                        index += step(1., mod(st.y-cellPos.y, 8.0))*4.0;
+                        vec2 _st = fract(sin(exp(st-cellPos)/(cellSiz))*8.);
+                        _st = rotate2D(_st, PI*(float(index)*.5));
                         float tri = step(_st.x, _st.y);
                         color = vec3(mix(0.15, 1., tri));
                     }

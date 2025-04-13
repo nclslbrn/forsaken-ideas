@@ -6,7 +6,7 @@ import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { fillWithStraightLines, fillWithFlowField } from '../../sketch-common/fillShape'
+import { fillWithStraightLines } from '../../sketch-common/fillShape'
 import { fillWithWalkers } from './fillWithWalker'
 
 let traits = {}
@@ -22,9 +22,10 @@ const containerElement = document.getElementById('windowFrame'),
     svg = new SvgTracer({
       parentElem: containerElement,
       size: 'A3_square',
-      background: '#0f0103',
+      background: '#110510',
       dpi
-    })
+    }),
+    margin = svg.cmToPixels(3)
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -88,7 +89,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
 
   const sketch = {
     init: () => {
-        const numCell = 4 + ceil(random() * 8)
+        const numCell = 1 + ceil(random() * 12)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -161,7 +162,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         svg.clear()
         const rowPath = [
             ...chunkify(fillWithStraightLines(canvas, (c) => c > 128, 120, 0), 100, 10).filter((_, i) => i % 5 !== 0),
-            ...fillWithWalkers(canvas, (c) => c < 128, 3000, 100)
+            ...fillWithWalkers(canvas, (c) => c < 128, 3000, 60)
         ]
         /* 
         .reduce((acc, path) => {
@@ -172,12 +173,12 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         rowPath.forEach((poly) =>
             svg.path({
                 points: poly.map((v) => [
-                    (v[0] / canvas.width) * svg.width,
-                    (v[1] / canvas.height) * svg.height
+                    margin + (v[0] / canvas.width) * (svg.width - margin * 2),
+                    margin + (v[1] / canvas.height) * (svg.height - margin * 2)
                 ]),
-                stroke: '#fffef3',
+                stroke: '#ffffff77',
                 fill: 'rgba(0,0,0,0)',
-                strokeWidth: svg.cmToPixels(0.03),
+                strokeWidth: svg.cmToPixels(0.05),
                 close: false
             })
         )
