@@ -1,5 +1,13 @@
 import Walker from './Walker'
 
+/**
+ * Fill canvas with random walkers lines
+ * @constructor
+ * @param {Element} canvas - the source canvas with the initial composition
+ * @param {Function} cast - a function wich return true/false based on pixel color (grayscale)
+ * @param {number} numWalker - the number of active walkers
+ * @param {number} step - the length of walkers move
+ */ 
 const fillWithWalkers = (canvas, cast, numWalker, step) => {
     const cnvs = document.createElement('canvas'),
         ctx = cnvs.getContext('2d', { willReadFrequently: true })
@@ -8,7 +16,7 @@ const fillWithWalkers = (canvas, cast, numWalker, step) => {
     cnvs.height = canvas.height
     ctx.drawImage(canvas, 0, 0)
     ctx.strokeStyle = 'black'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 2
     
     const ls = []
     const getPixel = (x, y) => {

@@ -15,18 +15,18 @@ const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
     gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
-    S = [3840, 2160],//[1122.52, 1587.402],
     { floor, ceil, random } = Math,
     shuffle = (array) => array.sort(() => 0.5 - random()),
     dpi = 300,
     groupName = ['primary', 'secondary'],
     svg = new SvgTracer({
-      parentElem: containerElement,
-      size: { w: 38.4, h: 21.6 }, //'A3_portrait',
-      background: '#151518',
-      dpi
+        parentElem: containerElement,
+        size: 'A3_topSpiralNotebook',
+        background: '#151518',
+        dpi
     }),
-    margin = svg.cmToPixels(1)
+    S = [svg.width, svg.height],
+    margin = svg.cmToPixels(3)
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -75,22 +75,32 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
     return program
 }
 
-const chunkify = (arr, itemPerChunk, itemBetweenChunk) => 
-  arr.reduce((stack, line) => [
-    ...stack,
-    ...line.reduce((dash, pt, ptIdx) => {
-      const dashIdx = floor(ptIdx / (itemPerChunk + itemBetweenChunk))
-      const ptInDash = ptIdx % (itemPerChunk + itemBetweenChunk)
-      if (!dash[dashIdx]) dash[dashIdx] = []
-      if (ptInDash <= itemPerChunk) dash[dashIdx].push(pt)
-          
-      return dash
-    }, [])
-  ], [])
+/**
+ * Split a line in small parts (chunk)
+ * @constructor
+ * @param {array} arr - the line [[x0,y0], [x1,Y1]...]
+ * @param {number} itemPerChunk - how many split 
+ * @param {number} itemBetweenChunk - how many element (to remove between each pars)
+ */ 
+const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
+    arr.reduce(
+        (stack, line) => [
+            ...stack,
+            ...line.reduce((dash, pt, ptIdx) => {
+                const dashIdx = floor(ptIdx / (itemPerChunk + itemBetweenChunk))
+                const ptInDash = ptIdx % (itemPerChunk + itemBetweenChunk)
+                if (!dash[dashIdx]) dash[dashIdx] = []
+                if (ptInDash <= itemPerChunk) dash[dashIdx].push(pt)
 
-  const sketch = {
+                return dash
+            }, [])
+        ],
+        []
+    )
+
+const sketch = {
     init: () => {
-        const numCell = 1 + ceil(random() * 12)
+        const numCell = 1 + ceil(random() * 4)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -108,8 +118,8 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
             cells
         }
         sketch.render()
-        sketch.exportSvg()
-    },
+        sketch.renderSvg()
+    },  
 
     setup: () => {
         if (!gl) {
@@ -161,45 +171,70 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
 
-    exportSvg: () => {
+    renderSvg: () => {
         svg.clearGroups()
         Array(
-            ...chunkify(fillWithStraightLines(canvas, (c) => c < 128, 120, 0), 100, 10).filter((_, i) => i % 5 !== 0),
-            ...fillWithWalkers(canvas, (c) => c > 128, 5000, 40)
+            ...chunkify(
+                fillWithStraightLines(canvas, (c) => c < 128, margin, 0),
+                60,
+                15
+            ).filter((_, i) => i % 10 !== 0),
+            ...fillWithWalkers(canvas, (c) => c > 128, 4000, 200)
         )
-       .reduce((g, line, lIdx) => 
-          lIdx % floor(5 + random() * 20) ? 
-            lIdx % floor(10 + random() * 50) 
-              // assign to g[color 1] or g[color 2] 
-              ? [[...g[0], line], g[1]] : [g[0], [...g[1], line]]
-              // remove the line
-              : g, 
-          [[], []]
-        ).reduce((g, line) => [ // split each line
-                ...g, 
-                [...chunkify(line, 120, 32)]
-            ], []
-        ).forEach((lines, gIdx) => {
-          lines.forEach((line) => 
-            svg.path({
-              points: line.map((v) => [
-                    margin + (v[0] / canvas.width) * (svg.width - margin * 2),
-                    margin + (v[1] / canvas.height) * (svg.height - margin * 2)
-              ]),
-              group: groupName[gIdx],
-              close: false,
-              strokeLinecap: 'round' 
+            .reduce(
+                (g, line, lIdx) =>
+                    lIdx % floor(5 + random() * 20)
+                        ? lIdx % floor(10 + random() * 50)
+                            ? // assign to g[color 1] or g[color 2]
+                              [[...g[0], line], g[1]]
+                            : [g[0], [...g[1], line]]
+                        : // remove the line
+                          g,
+                [[], []]
+            )
+            .reduce(
+                (g, line) => [
+                    // split each line
+                    ...g,
+                    [...chunkify(line, 120, 32)]
+                ],
+                []
+            )
+            .forEach((lines, gIdx) => {
+                lines.forEach((line) =>
+                    svg.path({
+                        points: line.map((v) => [
+                            margin +
+                                (v[0] / canvas.width) *
+                                    (svg.width - margin * 2),
+                            margin +
+                                (v[1] / canvas.height) *
+                                    (svg.height - margin * 2)
+                        ]),
+                        group: groupName[gIdx],
+                        close: false,
+                        strokeLinecap: 'round'
+                    })
+                )
             })
-          ) 
-       })
     }
 }
 
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
-svg.group({ name: groupName[1], stroke: 'gold', strokeWidth: svg.cmToPixels(.03) })
-svg.group({ name: groupName[0], stroke: 'white', strokeWidth: svg.cmToPixels(.04) })
+svg.group({
+    name: groupName[1],
+    stroke: '#ff8f00',
+    strokeWidth: svg.cmToPixels(0.03),
+    fill: 'rgba(0,0,0,0)'
+})
+svg.group({
+    name: groupName[0],
+    stroke: 'white',
+    strokeWidth: svg.cmToPixels(0.04),
+    fill: 'rgba(0,0,0,0)'
+})
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
 sketch.setup()
