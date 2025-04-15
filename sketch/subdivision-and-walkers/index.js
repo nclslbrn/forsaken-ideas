@@ -21,11 +21,11 @@ const containerElement = document.getElementById('windowFrame'),
     groupName = ['primary', 'secondary'],
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_topSpiralNotebook',
+        size: 'A3_square', //'A3_topSpiralNotebook',
         background: '#151518',
         dpi
     }),
-    S = [svg.width, svg.height],
+    S = [2560, 2560], //[svg.width * 3, svg.height * 3],
     margin = svg.cmToPixels(3)
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
@@ -79,9 +79,9 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
  * Split a line in small parts (chunk)
  * @constructor
  * @param {array} arr - the line [[x0,y0], [x1,Y1]...]
- * @param {number} itemPerChunk - how many split 
+ * @param {number} itemPerChunk - how many split
  * @param {number} itemBetweenChunk - how many element (to remove between each pars)
- */ 
+ */
 const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
     arr.reduce(
         (stack, line) => [
@@ -119,7 +119,7 @@ const sketch = {
         }
         sketch.render()
         sketch.renderSvg()
-    },  
+    },
 
     setup: () => {
         if (!gl) {
@@ -175,30 +175,23 @@ const sketch = {
         svg.clearGroups()
         Array(
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, margin, 0),
-                60,
-                15
+                fillWithStraightLines(canvas, (c) => c < 128, 500, 0),
+                240,
+                70
             ).filter((_, i) => i % 10 !== 0),
-            ...fillWithWalkers(canvas, (c) => c > 128, 4000, 200)
+            ...chunkify(
+                fillWithWalkers(canvas, (c) => c > 128, 8000, 500),
+                240,
+                70
+            )
         )
             .reduce(
                 (g, line, lIdx) =>
-                    lIdx % floor(5 + random() * 20)
-                        ? lIdx % floor(10 + random() * 50)
-                            ? // assign to g[color 1] or g[color 2]
-                              [[...g[0], line], g[1]]
-                            : [g[0], [...g[1], line]]
-                        : // remove the line
-                          g,
+                    // assign to g[color 1] or g[color 2]
+                    lIdx % 10
+                        ? [[...g[0], line], g[1]]
+                        : [g[0], [...g[1], line]],
                 [[], []]
-            )
-            .reduce(
-                (g, line) => [
-                    // split each line
-                    ...g,
-                    [...chunkify(line, 120, 32)]
-                ],
-                []
             )
             .forEach((lines, gIdx) => {
                 lines.forEach((line) =>
@@ -213,7 +206,8 @@ const sketch = {
                         ]),
                         group: groupName[gIdx],
                         close: false,
-                        strokeLinecap: 'round'
+                        strokeLinecap: 'round',
+                        fill: 'none'
                     })
                 )
             })
@@ -225,15 +219,13 @@ containerElement.appendChild(canvas)
 svg.init()
 svg.group({
     name: groupName[1],
-    stroke: '#ff8f00',
-    strokeWidth: svg.cmToPixels(0.03),
-    fill: 'rgba(0,0,0,0)'
+    stroke: '#ff8f00AA',
+    strokeWidth: svg.cmToPixels(0.03)
 })
 svg.group({
     name: groupName[0],
-    stroke: 'white',
-    strokeWidth: svg.cmToPixels(0.04),
-    fill: 'rgba(0,0,0,0)'
+    stroke: '#ffffff66',
+    strokeWidth: svg.cmToPixels(0.04)
 })
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'

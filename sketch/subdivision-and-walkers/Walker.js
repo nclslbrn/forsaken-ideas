@@ -39,7 +39,7 @@ export default class Walker {
         const angle = Math.atan2(y - this.pos[1], x - this.pos[0])
         const ln = []
 
-        for (let i = 0; i < dist; i += 0.5) {
+        for (let i = 0; i < dist; i += 8) {
             const nx = this.pos[0] + i * Math.cos(angle),
                   ny = this.pos[1] + i * Math.sin(angle)
 
@@ -59,8 +59,14 @@ export default class Walker {
             this.path.push(...untilOut)
             if(untilOut.length) this.pos = untilOut[untilOut.length-1]
         } 
+        /*
+        if (!this.isStuck && this.isIn(...newPos)) {
+          this.path.push(newPos)
+          this.pos = newPos
+        }
+        */
         else { 
-            if (this.tries >= 10) this.isStuck = true 
+            if (this.tries >= 3) this.isStuck = true 
             this.tries++
         }
     }
