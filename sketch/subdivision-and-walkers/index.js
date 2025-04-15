@@ -21,8 +21,8 @@ const containerElement = document.getElementById('windowFrame'),
     groupName = ['primary', 'secondary'],
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_square', //'A3_topSpiralNotebook',
-        background: '#151518',
+        size: 'A3_portrait', //'A3_topSpiralNotebook',
+        background: '#fefefe',
         dpi
     }),
     S = [2560, 2560], //[svg.width * 3, svg.height * 3],
@@ -180,7 +180,7 @@ const sketch = {
                 70
             ).filter((_, i) => i % 10 !== 0),
             ...chunkify(
-                fillWithWalkers(canvas, (c) => c > 128, 8000, 500),
+                fillWithWalkers(canvas, (c) => c > 128, 9000, 300),
                 240,
                 70
             )
@@ -219,12 +219,12 @@ containerElement.appendChild(canvas)
 svg.init()
 svg.group({
     name: groupName[1],
-    stroke: '#ff8f00AA',
+    stroke: 'tomoto',
     strokeWidth: svg.cmToPixels(0.03)
 })
 svg.group({
     name: groupName[0],
-    stroke: '#ffffff66',
+    stroke: 'black',
     strokeWidth: svg.cmToPixels(0.04)
 })
 svg.elem.style.maxWidth = '100%'

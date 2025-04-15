@@ -54,6 +54,7 @@ export default class Walker {
 
     walk(){
         const newPos = this.nextMove()
+        
         if (!this.isStuck && (this.path.length < 2 || this.isIn(...newPos))) {
             const untilOut = this.goToUntilOut(...newPos)
             this.path.push(...untilOut)
