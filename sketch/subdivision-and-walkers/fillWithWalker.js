@@ -16,7 +16,7 @@ const fillWithWalkers = (canvas, cast, numWalker, step) => {
     cnvs.height = canvas.height
     ctx.drawImage(canvas, 0, 0)
     ctx.strokeStyle = 'black'
-    ctx.lineWidth = 1
+    ctx.lineWidth = 1.5
 
     const ls = []
     const getPixel = (x, y) => {
@@ -66,12 +66,12 @@ const fillWithWalkers = (canvas, cast, numWalker, step) => {
             }
             if (penDown) {
                 ln.push(walker.pos)
-                //ln.length && drawLine([ln[ln.length - 1], walker.pos])
+                ln.length && drawLine([ln[ln.length - 1], walker.pos])
             }
         }
         if (ln.length) {
             ls.push(ln)
-            // drawLine(ln)
+            drawLine(ln)
         }
     }
     return ls

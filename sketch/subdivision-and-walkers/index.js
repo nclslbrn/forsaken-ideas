@@ -100,7 +100,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
 
 const sketch = {
     init: () => {
-        const numCell = 1 + ceil(random() * 4)
+        const numCell = 2 + ceil(random() * 12)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -180,7 +180,7 @@ const sketch = {
                 70
             ).filter((_, i) => i % 10 !== 0),
             ...chunkify(
-                fillWithWalkers(canvas, (c) => c > 128, 9000, 300),
+                fillWithWalkers(canvas, (c) => c > 128, 15000, 300),
                 240,
                 70
             )
@@ -235,7 +235,7 @@ sketch.init()
 window['init'] = sketch.init
 window['downloadSVG'] = () =>
     svg.export({
-        name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}}`
+        name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}`
     })
 window['downloadPNG'] = () =>
     svg.exportPng({
