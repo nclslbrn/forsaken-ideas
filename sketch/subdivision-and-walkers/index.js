@@ -18,11 +18,18 @@ const containerElement = document.getElementById('windowFrame'),
     { floor, ceil, random } = Math,
     shuffle = (array) => array.sort(() => 0.5 - random()),
     dpi = 300,
-    groupName = ['primary', 'secondary'],
+    colorGroup = [
+        ['light gray', '#859289'],
+        ['green', '#A7C080'],
+        ['greenish gray', '#56635f'],
+        ['yellow', '#DBBC7F'],
+        ['red', '#E67E80'],
+        ['gray', '#4F585E'],
+    ],
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_portrait', //'A3_topSpiralNotebook',
-        background: '#fefefe',
+        size: { w: 38.4, h: 21.6 }, //'A3_square', //'A3_topSpiralNotebook',
+        background: '#232A2E',
         dpi
     }),
     S = [2560, 2560], //[svg.width * 3, svg.height * 3],
@@ -100,7 +107,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
 
 const sketch = {
     init: () => {
-        const numCell = 2 + ceil(random() * 12)
+        const numCell = ceil(random() * 6)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -188,10 +195,18 @@ const sketch = {
             .reduce(
                 (g, line, lIdx) =>
                     // assign to g[color 1] or g[color 2]
-                    lIdx % 10
-                        ? [[...g[0], line], g[1]]
-                        : [g[0], [...g[1], line]],
-                [[], []]
+                    lIdx % 40 < 30
+                        ? lIdx % 6
+                            ? [[...g[0], line], g[1], g[2], g[3], g[4], g[5]]
+                            : lIdx % 2
+                              ? [g[0], [...g[1], line], g[2], g[3], g[4], g[5]]
+                              : [g[0], g[1], g[2], g[3], g[4], [...g[5], line]]
+                        : lIdx % 3
+                          ? [g[0], g[1], [...g[2], line], g[3], g[4], g[5]]
+                          : lIdx % 2
+                            ? [g[0], g[1], g[2], [...g[3], line], g[4], g[5]]
+                            : [g[0], g[1], g[2], g[3], [...g[4], line], g[5]],
+                [[], [], [], [], [], []]
             )
             .forEach((lines, gIdx) => {
                 lines.forEach((line) =>
@@ -204,7 +219,7 @@ const sketch = {
                                 (v[1] / canvas.height) *
                                     (svg.height - margin * 2)
                         ]),
-                        group: groupName[gIdx],
+                        group: colorGroup[gIdx][0],
                         close: false,
                         strokeLinecap: 'round',
                         fill: 'none'
@@ -217,16 +232,15 @@ const sketch = {
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
-svg.group({
-    name: groupName[1],
-    stroke: 'tomoto',
-    strokeWidth: svg.cmToPixels(0.03)
-})
-svg.group({
-    name: groupName[0],
-    stroke: 'black',
-    strokeWidth: svg.cmToPixels(0.04)
-})
+
+colorGroup.forEach((c, i) =>
+    svg.group({
+        name: c[0],
+        stroke: c[1],
+        strokeWidth: svg.cmToPixels(0.03)
+    })
+)
+
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
 sketch.setup()
