@@ -21,19 +21,19 @@ const containerElement = document.getElementById('windowFrame'),
     colorGroup = [
         ['light gray', '#859289'],
         ['green', '#A7C080'],
-        ['greenish gray', '#56635f'],
+        ['white', '#e3e3e3'],
         ['yellow', '#DBBC7F'],
         ['red', '#E67E80'],
         ['gray', '#4F585E'],
     ],
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: { w: 38.4, h: 21.6 }, //'A3_square', //'A3_topSpiralNotebook',
+        size: { w: 45.5, h: 27 }, //'A3_square', //'A3_topSpiralNotebook',
         background: '#232A2E',
         dpi
     }),
     S = [2560, 2560], //[svg.width * 3, svg.height * 3],
-    margin = svg.cmToPixels(3)
+    margin = svg.cmToPixels(1)
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -107,7 +107,7 @@ const chunkify = (arr, itemPerChunk, itemBetweenChunk) =>
 
 const sketch = {
     init: () => {
-        const numCell = ceil(random() * 6)
+        const numCell = ceil(random() * 24)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -187,7 +187,7 @@ const sketch = {
                 70
             ).filter((_, i) => i % 10 !== 0),
             ...chunkify(
-                fillWithWalkers(canvas, (c) => c > 128, 15000, 300),
+                fillWithWalkers(canvas, (c) => c > 128, 100000, 300),
                 240,
                 70
             )
@@ -237,7 +237,7 @@ colorGroup.forEach((c, i) =>
     svg.group({
         name: c[0],
         stroke: c[1],
-        strokeWidth: svg.cmToPixels(0.03)
+        strokeWidth: svg.cmToPixels(0.015)
     })
 )
 
