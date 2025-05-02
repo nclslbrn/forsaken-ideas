@@ -3,7 +3,9 @@
     "libs": [],
     "action": [
         { "name": "randomize", "icon": "sync" },
-        { "name": "capture", "icon": "file-media" }
+        { "name": "capture", "icon": "file-media" },
+        { "name": "downloadSVG", "icon": "desktop-download" },
+        { "name": "downloadPNG", "icon": "file-media" }
     ],
     "info": "Circles in a modular grid (with a signed distance function that repeats the circle contour)",
     "date": "2025-01-24"
