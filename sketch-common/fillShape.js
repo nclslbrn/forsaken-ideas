@@ -58,13 +58,17 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
     cnvs.height = canvas.height
     ctx.drawImage(canvas, 0, 0)
 
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data
     const ls = []
     const getPixel = (x, y) => {
         if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
             return false
         }
-        const pixel = ctx.getImageData(x, y, 1, 1).data
-        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2])
+        const pixIdx = (x + y * canvas.width) * 4
+        const pixel = [
+          pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2],
+        ]
+        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2]) 
     }
 
     if (dir < 2) {
