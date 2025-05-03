@@ -153,15 +153,26 @@ const sketch = {
 
     renderSvg: () => {
         svg.clear()
+        console.log('rendering SVG')
         // Four gray values 51, 102, 153, 204,  
-        const scanLines = [
-            ...fillWithStraightLines(canvas, (c) => c <= 51, 8, 0),
+        const scanLines = []
+        for (let i = 1; i < 255; i++) {
+          scanLines.push(...fillWithStraightLines(
+            canvas, 
+            (c) => c > Math.max(0, i-50) && c <= (i+5),
+            4 * (i+1),
+            i % 2
+          ))
+        }
+        /*
+        [ ...fillWithStraightLines(canvas, (c) => c <= 51, 8, 0),
             ...fillWithStraightLines(canvas, (c) => c > 51 && c <= 102, 16, 1),
             ...fillWithStraightLines(canvas, (c) => c > 102 && c <= 153, 32, 2),
             ...fillWithStraightLines(canvas, (c) => c > 153 && c <= 204, 64, 3),
             ...fillWithStraightLines(canvas, (c) => c > 204, 128, 0)
         ]
-        
+        console.log(scanLines)
+        */
         scanLines.forEach((line) => {
             svg.path({
                 points: line.map((v) => [
@@ -177,12 +188,12 @@ const sketch = {
         })
     }
 }
-containerElement.style.gridTemplateRows = '1fr 48vh 48vh 1fr'
+containerElement.style.gridTemplateColumns = '1.5vw 48vw 1vw 48vw 1.5vw'
 
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
-svg.elem.style.gridRowStart = '3'
+svg.elem.style.gridColumnStart = '4'
 sketch.setup()
 sketch.init()
 

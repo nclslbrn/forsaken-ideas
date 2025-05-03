@@ -72,5 +72,5 @@ void main() {
             }
         }
     }
-    gl_FragColor = vec4(vec3(depth), 1.0);
+    gl_FragColor = vec4(vec3(fract(depth)), 1.0);
 }
