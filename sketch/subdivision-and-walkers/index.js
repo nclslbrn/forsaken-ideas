@@ -6,8 +6,10 @@ import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { fillWithStraightLines } from '../../sketch-common/fillShape'
-import { fillWithWalkers } from './fillWithWalker'
+import {
+    fillWithStraightLines,
+    fillWithWalkers
+} from '../../sketch-common/fillShape'
 
 let traits = {}
 
@@ -24,11 +26,11 @@ const containerElement = document.getElementById('windowFrame'),
         ['white', '#e3e3e3'],
         ['yellow', '#DBBC7F'],
         ['red', '#E67E80'],
-        ['gray', '#4F585E'],
+        ['gray', '#4F585E']
     ],
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: { w: 45.5, h: 27 }, //'A3_square', //'A3_topSpiralNotebook',
+        size: 'A3_square', //'A3_topSpiralNotebook',
         background: '#232A2E',
         dpi
     }),
@@ -187,12 +189,11 @@ const sketch = {
                 70
             ).filter((_, i) => i % 10 !== 0),
             ...chunkify(
-                fillWithWalkers(canvas, (c) => c > 128, 100000, 300),
+                fillWithWalkers(canvas, (c) => c > 128, 10000, 300),
                 240,
                 70
             )
-        )
-            .reduce(
+        ).reduce(
                 (g, line, lIdx) =>
                     // assign to g[color 1] or g[color 2]
                     lIdx % 40 < 30

@@ -6,7 +6,7 @@ import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { fillWithStraightLines } from './fillWithStragightLines'
+import { fillWithStraightLines } from '../../sketch-common/fillShape'
 
 let traits = {}
 
