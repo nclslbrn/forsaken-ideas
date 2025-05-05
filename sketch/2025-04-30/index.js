@@ -24,7 +24,34 @@ const containerElement = document.getElementById('windowFrame'),
         dpi
     }),
     S = [2560, 2560],
-    margin = svg.cmToPixels(1)
+    margin = svg.cmToPixels(1),
+    colorGroup = [
+        ['red', '#ff1122'],
+        ['black', '#333']
+    ]
+
+/**
+ * split a line in small parts (chunk)
+ * @constructor
+ * @param {array} arr - the line [[x0,y0], [x1,y1]...]
+ * @param {number} itemperchunk - how many split
+ * @param {number} itembetweenchunk - how many element (to remove between each pars)
+ */
+const chunkify = (arr, itemperchunk, itembetweenchunk) =>
+    arr.reduce(
+        (stack, line) => [
+            ...stack,
+            ...line.reduce((dash, pt, ptidx) => {
+                const dashidx = floor(ptidx / (itemperchunk + itembetweenchunk))
+                const ptindash = ptidx % (itemperchunk + itembetweenchunk)
+                if (!dash[dashidx]) dash[dashidx] = []
+                if (ptindash <= itemperchunk) dash[dashidx].push(pt)
+
+                return dash
+            }, [])
+        ],
+        []
+    )
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -81,7 +108,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 
 const sketch = {
     init: () => {
-        const numCell = 2 + ceil(random() * 6)
+        const numCell = 2 + ceil(random() * 12)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -152,47 +179,55 @@ const sketch = {
     },
 
     renderSvg: () => {
-        svg.clear()
-        console.log('rendering SVG')
-        // Four gray values 51, 102, 153, 204,  
+        // svg.clear()
+        svg.clearGroups()
+        // Four gray values 51, 102, 153, 204,
         const scanLines = []
-        for (let i = 1; i < 255; i++) {
-          scanLines.push(...fillWithStraightLines(
-            canvas, 
-            (c) => c > Math.max(0, i-50) && c <= (i+5),
-            4 * (i+1),
-            i % 2
-          ))
-        }
         /*
-        [ ...fillWithStraightLines(canvas, (c) => c <= 51, 8, 0),
-            ...fillWithStraightLines(canvas, (c) => c > 51 && c <= 102, 16, 1),
-            ...fillWithStraightLines(canvas, (c) => c > 102 && c <= 153, 32, 2),
-            ...fillWithStraightLines(canvas, (c) => c > 153 && c <= 204, 64, 3),
-            ...fillWithStraightLines(canvas, (c) => c > 204, 128, 0)
-        ]
-        console.log(scanLines)
+            ...fillWithStraightLines(canvas, (c) => c < 51, 12, 0),
+            ...fillWithStraightLines(canvas, (c) => c < 102, 24, 1),
+            ...fillWithStraightLines(canvas, (c) => c < 153, 48, 2),
+            ...fillWithStraightLines(canvas, (c) => c < 204, 96, 3),
+            ...fillWithStraightLines(canvas, (c) => c >= 204, 192, 0)
         */
-        scanLines.forEach((line) => {
-            svg.path({
-                points: line.map((v) => [
-                    margin + (v[0] / canvas.width) * (svg.width - margin * 2),
-                    margin + (v[1] / canvas.height) * (svg.height - margin * 2)
-                ]),
-                stroke: '#333',
-                strokeWidth: 4,
-                fill: 'none',
-                close: false,
-                strokeLinecap: 'round'
+        for (let i = 1; i < 25; i++) {
+            scanLines.push(...fillWithStraightLines(canvas, (c) => c < i*10, i * 4, i % 4))
+        }
+        
+        const filtered = scanLines.filter((_, i) => i % 12 !== 0)
+        const grouped = filtered.reduce((g, ln, lidx) =>
+                    lidx % 26 !== 0
+                        ? [g[0], [...g[1], chunkify(ln, 360, 140)]]
+                        : [[...g[0], chunkify(ln, 240, 70)], g[1]],
+                [[], []]
+            )
+        const inner = [svg.width, svg.height].map((d) => d - margin * 2)
+        grouped.map((group, id) => {
+            group.map((ln) => {
+                svg.path({
+                    points: ln.map((v) => [
+                        margin +
+                            (v[0] / canvas.width) * inner[0],
+                        margin +
+                            (v[1] / canvas.height) * inner[1]
+                    ]),
+                    fill: 'none',
+                    close: false,
+                    strokeLinecap: 'round',
+                    group: colorGroup[id][0]
+                })
             })
         })
     }
 }
 containerElement.style.gridTemplateColumns = '1.5vw 48vw 1vw 48vw 1.5vw'
-
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
+
+colorGroup.forEach((c, i) => {
+    svg.group({ name: c[0], stroke: c[1], strokeWidth: 8 })
+})
 svg.elem.style.gridColumnStart = '4'
 sketch.setup()
 sketch.init()
