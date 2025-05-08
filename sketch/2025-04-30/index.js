@@ -6,10 +6,11 @@ import fragSrc from './glsl/base.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines } from '../../sketch-common/fillShape'
+import { getPalette } from '@nclslbrn/artistry-swatch'
 
 let traits = {}
 
-const { floor, ceil, random } = Math
+const { floor, ceil, random, pow } = Math
 const shuffle = (array) => array.sort(() => 0.5 - random())
 
 const containerElement = document.getElementById('windowFrame'),
@@ -24,12 +25,7 @@ const containerElement = document.getElementById('windowFrame'),
         dpi
     }),
     S = [2560, 2560],
-    margin = svg.cmToPixels(1),
-    colorGroup = [
-        ['red', '#ff1122'],
-        ['black', '#333']
-    ]
-
+    margin = svg.cmToPixels(1)
 /**
  * split a line in small parts (chunk)
  * @constructor
@@ -121,9 +117,11 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 1 + random(),
+            palette: getPalette(),
             numCell,
             cells
         }
+        console.log(traits)
         sketch.render()
         sketch.renderSvg()
     },
@@ -179,42 +177,35 @@ const sketch = {
     },
 
     renderSvg: () => {
-        // svg.clear()
-        svg.clearGroups()
-        // Four gray values 51, 102, 153, 204,
+        svg.clear()
+        svg.rect({ x: 0, y: 0, w: svg.width, h: svg.height, fill: traits.palette.background })
+        traits.palette.colors.forEach((c, i) => {
+          svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
+        })
         const scanLines = []
-        /*
-            ...fillWithStraightLines(canvas, (c) => c < 51, 12, 0),
-            ...fillWithStraightLines(canvas, (c) => c < 102, 24, 1),
-            ...fillWithStraightLines(canvas, (c) => c < 153, 48, 2),
-            ...fillWithStraightLines(canvas, (c) => c < 204, 96, 3),
-            ...fillWithStraightLines(canvas, (c) => c >= 204, 192, 0)
-        */
         for (let i = 1; i < 25; i++) {
-            scanLines.push(...fillWithStraightLines(canvas, (c) => c < i*10, i * 4, i % 4))
+            scanLines.push(...fillWithStraightLines(canvas, (c) => c < i*10, 4 * i, i % 4))
         }
-        
-        const filtered = scanLines.filter((_, i) => i % 12 !== 0)
-        const grouped = filtered.reduce((g, ln, lidx) =>
-                    lidx % 26 !== 0
-                        ? [g[0], [...g[1], chunkify(ln, 360, 140)]]
-                        : [[...g[0], chunkify(ln, 240, 70)], g[1]],
-                [[], []]
+        const filtered = scanLines.filter((_, i) => i % 15 !== 0)
+        const sliced = filtered.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 120, 40): chunkify(ln, 360, 80)])
+        const grouped = sliced.reduce((g, ln, lidx) => {
+                  g[lidx % traits.palette.colors.length].push(ln)
+                  return g
+                },
+                traits.palette.colors.map(() => [])
             )
         const inner = [svg.width, svg.height].map((d) => d - margin * 2)
-        grouped.map((group, id) => {
+        grouped.map((group, i) => {
             group.map((ln) => {
                 svg.path({
                     points: ln.map((v) => [
-                        margin +
-                            (v[0] / canvas.width) * inner[0],
-                        margin +
-                            (v[1] / canvas.height) * inner[1]
+                        margin + (v[0] / canvas.width) * inner[0],
+                        margin + (v[1] / canvas.height) * inner[1]
                     ]),
                     fill: 'none',
                     close: false,
                     strokeLinecap: 'round',
-                    group: colorGroup[id][0]
+                    group: `color-${i}`
                 })
             })
         })
@@ -224,10 +215,7 @@ containerElement.style.gridTemplateColumns = '1.5vw 48vw 1vw 48vw 1.5vw'
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
-
-colorGroup.forEach((c, i) => {
-    svg.group({ name: c[0], stroke: c[1], strokeWidth: 8 })
-})
+console.log(traits)
 svg.elem.style.gridColumnStart = '4'
 sketch.setup()
 sketch.init()

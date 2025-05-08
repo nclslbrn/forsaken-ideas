@@ -94,7 +94,7 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
         if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
             return false
         }
-        const pixIdx = (x + y * canvas.width) * 4
+        const pixIdx = (floor(x) + floor(y) * canvas.width) * 4
         const pixel = [
           pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2],
         ]
@@ -138,23 +138,22 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
     else {
         const step = hypot(res, res)
         const diag = hypot(canvas.width, canvas.height)
-        const theta = dir === 2 ? -PI / 4 : PI / 4
+        const theta = (dir === 2 ? -PI : PI) / 4
         const cntr = [canvas.width / 2, canvas.height / 2]
-
         for (let x = -diag; x <= diag; x += step) {
             let ln = []
             for (let y = -diag; y <= diag; y++) {
                 const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
                 const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
-                if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
 
+                // if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
                     const penDown = getPixel(xx, yy)
                     if (ln.length && !penDown) {
                         ls.push(ln)
                         ln = []
                     }
                     if (penDown) ln.push([xx, yy])
-                }
+                // }
             }
             ln.length && ls.push(ln)
         }
