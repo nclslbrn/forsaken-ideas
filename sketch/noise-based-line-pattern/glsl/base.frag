@@ -83,17 +83,21 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st = wrapPosition(st);
     float depth = 0.;
+    vec3 color = vec3(0., 0., 0.);
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
         if (i < u_numCell) {
             vec2 cellPos = vec2(u_cells[i].xy);
             vec2 cellSiz = vec2(u_cells[i].zw);
             int j = int(mod(float(i), 4.));
+            int h = int(mod(float(i), 3.));
+            
             if (abs(st.y - cellPos.y) <= cellSiz.y) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x) {
+                    
+                    color = h > 1 ? vec3(1.,0.,0.) : h > 0 ? vec3(0.,1.,0.) : vec3(0.,0.,1.);
                     st = rotate2D(st, PI*(float(i)*.5));
                     vec2 stToCell = st - cellPos;
-
                     
                     if (j == 0) {
                       stToCell -= cellSiz;
@@ -113,10 +117,9 @@ void main() {
                     );
                     float rep = abs(sdfRep(d, .33) - .66);
                     depth += mod(rep, 0.49);
-
                 }
             }
         }
     }
-    gl_FragColor = vec4(vec3(fract(depth)), 1.0);
+    gl_FragColor = vec4(fract(vec3(depth) * color), 1.0);
 }
