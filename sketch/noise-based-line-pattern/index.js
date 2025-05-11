@@ -123,7 +123,7 @@ const sketch = {
         }
         console.log(traits)
         sketch.render()
-        sketch.renderSvg()
+        //sketch.renderSvg()
     },
     setup: () => {
         if (!gl) {
@@ -183,8 +183,8 @@ const sketch = {
           svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
         })
         const scanLines = []
-        for (let i = 1; i < 50; i++) {
-            scanLines.push(...fillWithStraightLines(canvas, (c) => c < i*5, 2 * i, i % 4))
+        for (let i = 1; i < 25; i++) {
+            scanLines.push(...fillWithStraightLines(canvas, ([r, g, b]) => r < i*10, 2 * i, i % 4))
         }
         const filtered = scanLines.filter((_, i) => i % 15 !== 0)
         const sliced = filtered.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 20, 10): chunkify(ln, 120, 40)])
@@ -211,12 +211,12 @@ const sketch = {
         })
     }
 }
-containerElement.style.gridTemplateRows = '1.5vh 48vh 1vh 48vh 1.5vh'
+containerElement.style.gridTemplateRows = '1.5vw 48vw 1vw 48vw 1.5vw'
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
 console.log(traits)
-svg.elem.style.gridRowStart = '4'
+svg.elem.style.gridColumnStart = '4'
 sketch.setup()
 sketch.init()
 

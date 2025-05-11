@@ -38,7 +38,7 @@ const fillWithFlowField = (canvas, cast, res, seed) => {
         const pixel = [
           pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2],
         ]
-        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2]) 
+        return cast(pixel) 
     }
 
     const v = [], ls = []    
@@ -98,7 +98,7 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
         const pixel = [
           pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2],
         ]
-        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2]) 
+        return cast(pixel) 
     }
     const ls = []
 
@@ -190,7 +190,7 @@ const fillWithWalkers = (canvas, cast, numWalker, step) => {
         }
         const pixIdx = (floor(x) + floor(y) * floor(cnvs.width)) * 4
         const pixel = [pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2]]
-        return cast(pixel[0]) && cast(pixel[1]) && cast(pixel[2]) 
+        return cast(pixel) 
     }
 
     const drawLine = (ln) => {

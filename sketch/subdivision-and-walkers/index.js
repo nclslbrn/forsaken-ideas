@@ -184,12 +184,12 @@ const sketch = {
         svg.clearGroups()
         Array(
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 500, 0),
+                fillWithStraightLines(canvas, (rgb) => rgb[0] < 128, 500, 0),
                 240,
                 70
             ).filter((_, i) => i % 10 !== 0),
             ...chunkify(
-                fillWithWalkers(canvas, (c) => c > 128, 10000, 300),
+                fillWithWalkers(canvas, (rgb) => rgb[0] > 128, 10000, 300),
                 240,
                 70
             )

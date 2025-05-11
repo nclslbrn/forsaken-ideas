@@ -152,8 +152,8 @@ const sketch = {
     exportSvg: () => {
         svg.clear()
         const rowPath = [
-            ...fillWithFlowField(canvas, (c) => c < 128, 6, String(random() * 9999)).filter((ln) => ln.length > 4),
-            ...fillWithStraightLines(canvas, (c) => c < 128, 6, 12).filter((ln, i) => i % 12 !== 0 && ln.length > 4)
+            ...fillWithFlowField(canvas, (rgb) => rgb[0] < 128, 6, String(random() * 9999)).filter((ln) => ln.length > 4),
+            ...fillWithStraightLines(canvas, (rgb) => rgb[0] < 128, 6, 12).filter((ln, i) => i % 12 !== 0 && ln.length > 4)
             
         ].reduce((acc, path) => {
           const splitAt = 2 + floor(random() * path.length - 4)

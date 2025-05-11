@@ -184,7 +184,7 @@ const sketch = {
         })
         const scanLines = []
         for (let i = 1; i < 25; i++) {
-            scanLines.push(...fillWithStraightLines(canvas, (c) => c < i*10, 4 * i, i % 4))
+            scanLines.push(...fillWithStraightLines(canvas, (rgb) => rgb[0] < i*10, 4 * i, i % 4))
         }
         const filtered = scanLines.filter((_, i) => i % 15 !== 0)
         const sliced = filtered.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 120, 40): chunkify(ln, 360, 80)])

@@ -154,17 +154,17 @@ const sketch = {
         svg.clearGroups() 
         Array(
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 3, innerDiag).filter((_, i) => i % 10 !== 0),
+                fillWithStraightLines(canvas, (rgb) => rgb[0] < 128, 3, innerDiag).filter((_, i) => i % 10 !== 0),
                 360, 
                 12
             ),
             ...chunkify(
-                fillWithStraightLines(canvas, (c) => c < 128, 3, floor(random() * 2)).filter((_, i) => i % 5 !== 0),
+                fillWithStraightLines(canvas, (rgb) => rgb[0] < 128, 3, floor(random() * 2)).filter((_, i) => i % 5 !== 0),
                 240, 
                 12
             ),
             ...chunkify(
-              fillWithStraightLines(canvas, (c) => c > 128, 12, 0)
+              fillWithStraightLines(canvas, (rgb) => rgb[0] > 128, 12, 0)
                 .map((ln, i) => i % 7 ? ln : ln.reverse()),
               300, 10
             )

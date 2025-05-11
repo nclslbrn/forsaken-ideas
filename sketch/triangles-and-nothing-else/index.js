@@ -72,7 +72,7 @@ const sketch = (p5) => {
     }
 
     sketch.exportSvg = (canvas) => {
-        const polygons = fillWithFlowField(canvas, (c) => c > 128, 8, 'seed')
+        const polygons = fillWithFlowField(canvas, (rgb) => rgb[0] > 128, 8, 'seed')
         const dpi = 150
         const svg = new SvgTracer({
             parentElem: document.body,
