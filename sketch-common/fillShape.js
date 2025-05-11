@@ -14,8 +14,7 @@ const { sin, cos, sqrt, PI, hypot, random, floor } = Math
  * decide which pixels ignore with the cast function
  * 
  * @param {Element} canvas the HTML canvas element 
- * @param {Function} cast a function returning a 
- * boolean to decide whether draw line from pixel color 
+ * @param {Function} cast - a function ([rgb] as parameter) returning true false to include or exclude pos 
  * @param {Number} res spacing between each particles
  * @param {Number} seed a seed for Perlin noise
  * @returns {Array} a multidimenional array of lines [[[x,y], [x,y]], ...]
@@ -75,8 +74,7 @@ const fillWithFlowField = (canvas, cast, res, seed) => {
  * decide which pixels ignore with the cast function
  * 
  * @param {Element} canvas - a HTML canvas element
- * @param {Function} cast - a function (the gray value as arg) 
- * returning true if we can draw or false if not
+ * @param {Function} cast - a function ([rgb] as parameter) returning true false to include or exclude pos 
  * @param {Number} res - spacing/margin between lines
  * @param {Number} - 0|1|2|3 axis/rotation of the lines
  * @returns {Array} - a multidimenional array of lines [[[x,y], [x,y]], ...]
@@ -95,10 +93,11 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
             return false
         }
         const pixIdx = (floor(x) + floor(y) * canvas.width) * 4
-        const pixel = [
-          pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2],
-        ]
-        return cast(pixel) 
+        return cast([
+            pixels[pixIdx], 
+            pixels[pixIdx + 1], 
+            pixels[pixIdx + 2]
+        ]) 
     }
     const ls = []
 
@@ -146,14 +145,14 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
                 const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
                 const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
 
-                // if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
+                if (xx >= 0 && xx < canvas.width && yy >= 0 && yy < canvas.height) {
                     const penDown = getPixel(xx, yy)
                     if (ln.length && !penDown) {
                         ls.push(ln)
                         ln = []
                     }
                     if (penDown) ln.push([xx, yy])
-                // }
+                }
             }
             ln.length && ls.push(ln)
         }
@@ -167,7 +166,7 @@ const fillWithStraightLines = (canvas, cast, res, dir) => {
  * Fill canvas with random walkers lines
  * 
  * @param {Element} canvas - the source canvas with the initial composition
- * @param {Function} cast - a function wich return true/false based on pixel color (grayscale)
+ * @param {Function} cast - a function wich return true/false based on pixel color ([rgb] as param)
  * @param {Number} numWalker - the number of active walkers
  * @param {Number} step - the length of walkers move
  * @returns {Array} - a multidimenional array of lines [[[x,y], [x,y]], ...] 
