@@ -50,7 +50,7 @@ vec2 wrapPosition(vec2 pos) {
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * PI;
     vec2 displacement = vec2(cos(angle), sin(angle)) * .15;
-    displacement += vec2(n2, n1) * .35;
+    displacement += vec2(n2, n1) * .05;
     float distanceFromCenter = distance(pos, vec2(.5));
     float falloff = smoothstep(1., .05, distanceFromCenter);
     return pos + displacement * falloff;
@@ -83,7 +83,7 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st = wrapPosition(st);
     float depth = 0.;
-    vec3 color = vec3(0., 0., 0.);
+    vec3 color = vec3(0.);
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
         if (i < u_numCell) {
@@ -95,7 +95,6 @@ void main() {
             if (abs(st.y - cellPos.y) <= cellSiz.y) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x) {
                     
-                    color = h > 1 ? vec3(1.,0.,0.) : h > 0 ? vec3(0.,1.,0.) : vec3(0.,0.,1.);
                     st = rotate2D(st, PI*(float(i)*.5));
                     vec2 stToCell = st - cellPos;
                     
@@ -113,10 +112,15 @@ void main() {
                     }
                     float d = sdCircle(
                             stToCell,
-                            (mod(float(i), 2.) > 0. ? cellSiz.x : cellSiz.y) * .5
+                            (mod(float(i), 2.) > 0. ? cellSiz.x : cellSiz.y)
                     );
                     float rep = abs(sdfRep(d, .33) - .66);
-                    depth += mod(rep, 0.49);
+                    depth += mod(rep, 0.66);
+                    color += h > 1 
+                        ? vec3(depth, depth, 0.) 
+                        : h > 0 
+                            ? vec3(0., depth, depth) 
+                            : vec3(depth, 0., depth);
                 }
             }
         }

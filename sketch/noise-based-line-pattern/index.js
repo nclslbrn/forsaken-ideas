@@ -5,7 +5,7 @@ import vertSrc from './glsl/base.vert'
 import fragSrc from './glsl/base.frag'
 
 import SvgTracer from '../../sketch-common/svg-tracer'
-import { fillWithFlowField, fillWithStraightLines } from '../../sketch-common/fillShape'
+import { fillWithStraightLines } from '../../sketch-common/fillShape'
 import { getPalette } from '@nclslbrn/artistry-swatch'
 
 let traits = {}
@@ -104,7 +104,7 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 
 const sketch = {
     init: () => {
-        const numCell = 2 + ceil(random() * 12)
+        const numCell = 4 + ceil(random() * 24)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -117,13 +117,13 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 1 + random(),
-            palette: getPalette(),
+            palette: getPalette(), //{ artist: "Alfons Mucha" }),
             numCell,
             cells
         }
         console.log(traits)
         sketch.render()
-        //sketch.renderSvg()
+        sketch.renderSvg()
     },
     setup: () => {
         if (!gl) {
@@ -178,24 +178,49 @@ const sketch = {
 
     renderSvg: () => {
         svg.clear()
-        svg.rect({ x: 0, y: 0, w: svg.width, h: svg.height, fill: traits.palette.background })
-        traits.palette.colors.forEach((c, i) => {
-          svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
+        svg.rect({
+            x: 0,
+            y: 0,
+            w: svg.width,
+            h: svg.height,
+            fill: traits.palette.background
         })
-        const scanLines = []
-        for (let i = 1; i < 25; i++) {
-            scanLines.push(...fillWithStraightLines(canvas, ([r, g, b]) => r < i*10, 2 * i, i % 4))
+        traits.palette.colors.forEach((c, i) => {
+            svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
+        })
+        const scanLines = traits.palette.colors.map(() => [])
+        for (let i = 1; i < 10; i++) {
+            const j = i % traits.palette.colors.length,
+                sc = 25.5
+            scanLines[j].push(
+                ...fillWithStraightLines(
+                    canvas,
+                    ([r, g, b]) =>
+                        j > 1 
+                        ? r < i * sc 
+                        : j < 1 
+                            ? g < i * sc
+                            : b < i * sc,
+                    pow(4, i*.5),
+                    i % 4
+                )
+            )
         }
-        const filtered = scanLines.filter((_, i) => i % 15 !== 0)
-        const sliced = filtered.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 20, 10): chunkify(ln, 120, 40)])
+        const filtered = scanLines.map((group, i) =>
+            group.filter((_, i) => i % 24 !== 0)
+        )
+        console.log(filtered.map((ln) => ln[0].length))
+        const sliced = filtered.map((g) => g.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 80, 20): chunkify(ln, 100, 10)]))
+        /* 
         const grouped = sliced.reduce((g, ln, lidx) => {
                   g[lidx % traits.palette.colors.length].push(ln)
                   return g
                 },
                 traits.palette.colors.map(() => [])
             )
+        */
         const inner = [svg.width, svg.height].map((d) => d - margin * 2)
-        grouped.map((group, i) => {
+        sliced.map((group, i) => {
             group.map((ln) => {
                 svg.path({
                     points: ln.map((v) => [
@@ -211,12 +236,13 @@ const sketch = {
         })
     }
 }
-containerElement.style.gridTemplateRows = '1.5vw 48vw 1vw 48vw 1.5vw'
 containerElement.removeChild(loader)
-containerElement.appendChild(canvas)
 svg.init()
-console.log(traits)
+/*
+containerElement.style.gridTemplateRows = '1.5vw 48vw 1vw 48vw 1.5vw'
+containerElement.appendChild(canvas)
 svg.elem.style.gridColumnStart = '4'
+*/
 sketch.setup()
 sketch.init()
 
@@ -225,11 +251,11 @@ window['randomize'] = sketch.init
 window['capture'] = () => capture(canvas)
 window['downloadSVG'] = () =>
     svg.export({
-        name: `2025-04-30_Nicolas_Lebrun__${new Date().toISOString()}`
+        name: `nblp_p${traits.palette.meta.artist}_${new Date().toISOString()}`
     })
 window['downloadPNG'] = () =>
     svg.exportPng({
-        name: `2025-04-30_Nicolas_Lebrun__${new Date().toISOString()}`,
+        name: `nblp_p${traits.palette.meta.artist}_${new Date().toISOString()}`,
         quality: 1
     })
 window.onkeydown = (e) => {
