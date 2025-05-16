@@ -211,7 +211,6 @@ export default defineComponent({
       
       <footer>
         <span>
-          <p>Forsaken ideas</p>
           <p>Nicolas Lebrun</p>
           <p>MIT License</p>
         </span>
