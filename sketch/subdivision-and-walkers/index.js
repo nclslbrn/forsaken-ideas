@@ -1,7 +1,7 @@
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-
+import { getPalette } from '@nclslbrn/artistry-swatch'
 import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 
@@ -20,14 +20,6 @@ const containerElement = document.getElementById('windowFrame'),
     { floor, ceil, random } = Math,
     shuffle = (array) => array.sort(() => 0.5 - random()),
     dpi = 300,
-    colorGroup = [
-        ['light gray', '#859289'],
-        ['green', '#A7C080'],
-        ['white', '#e3e3e3'],
-        ['yellow', '#DBBC7F'],
-        ['red', '#E67E80'],
-        ['gray', '#4F585E']
-    ],
     svg = new SvgTracer({
         parentElem: containerElement,
         size: 'A3_square', //'A3_topSpiralNotebook',
@@ -181,7 +173,22 @@ const sketch = {
     },
 
     renderSvg: () => {
-        svg.clearGroups()
+        const palette = getPalette()
+        svg.clear()
+        svg.rect({
+            x: 0,
+            y: 0,
+            w: svg.width,
+            h: svg.height,
+            fill: palette.background
+        })
+        palette.colors.forEach(c =>
+            svg.group({
+                name: `${c} - ${palette.meta.artist}`,
+                stroke: c,
+                strokeWidth: svg.cmToPixels(0.015)
+            })
+        )
         Array(
             ...chunkify(
                 fillWithStraightLines(canvas, (rgb) => rgb[0] < 128, 500, 0),
@@ -193,7 +200,8 @@ const sketch = {
                 240,
                 70
             )
-        ).reduce(
+        )
+            .reduce(
                 (g, line, lIdx) =>
                     // assign to g[color 1] or g[color 2]
                     lIdx % 40 < 30
@@ -220,7 +228,7 @@ const sketch = {
                                 (v[1] / canvas.height) *
                                     (svg.height - margin * 2)
                         ]),
-                        group: colorGroup[gIdx][0],
+                        group: `${palette.colors[gIdx % palette.colors.length]} - ${palette.meta.artist}`,
                         close: false,
                         strokeLinecap: 'round',
                         fill: 'none'
@@ -234,14 +242,6 @@ containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 svg.init()
 
-colorGroup.forEach((c, i) =>
-    svg.group({
-        name: c[0],
-        stroke: c[1],
-        strokeWidth: svg.cmToPixels(0.015)
-    })
-)
-
 svg.elem.style.maxWidth = '100%'
 svg.elem.style.maxHeight = '120%'
 sketch.setup()
@@ -250,11 +250,11 @@ sketch.init()
 window['init'] = sketch.init
 window['downloadSVG'] = () =>
     svg.export({
-        name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}`
+        name: `Subdivision-and-walkers_Nicolas_Lebrun__${new Date().toISOString()}`
     })
 window['downloadPNG'] = () =>
     svg.exportPng({
-        name: `Variationes-circa-triangula_std_VI_Nicolas_Lebrun__${new Date().toISOString()}`,
+        name: `Subdivision-and-walkers_Nicolas_Lebrun__${new Date().toISOString()}`,
         quality: 1
     })
 window['infobox'] = infobox
