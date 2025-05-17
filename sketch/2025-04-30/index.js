@@ -211,12 +211,8 @@ const sketch = {
         })
     }
 }
-containerElement.style.gridTemplateColumns = '1.5vw 48vw 1vw 48vw 1.5vw'
 containerElement.removeChild(loader)
-containerElement.appendChild(canvas)
 svg.init()
-console.log(traits)
-svg.elem.style.gridColumnStart = '4'
 sketch.setup()
 sketch.init()
 
