@@ -7,6 +7,6 @@
         { "name": "downloadSVG", "icon": "desktop-download" },
         { "name": "downloadPNG", "icon": "file-media" }
     ],
-    "info": "Circles in a modular grid (with a signed distance function that repeats the circle contour)",
-    "date": "2025-01-24"
+    "info": "Circles in a modular grid are drawn with a (GLSL shader program) then the canvas is sent to a JS program that draw line based on a grayscale value. Colors are powered by the <a href='https://nclslbrn.github.io/artistry-swatch/'>Artistry swatch library</a>.",
+    "date": "2025-04-30"
 }
