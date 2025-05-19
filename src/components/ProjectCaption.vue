@@ -26,13 +26,13 @@ export default {
     </button>
     <div class="project-caption--meta">
       <div class="date">
-        <strong>Created:</strong> <span :data-text="project.date"
+        <strong>Created:</strong>&nbsp;<span :data-text="project.date"
           :ref="(element) => new GlitchText({ element, effect: 'add' })">
           {{ project.date }}
         </span>
       </div>
       <div class="topic">
-        <strong>Topic:</strong> <span :data-text="project.topic"
+        <strong>Topic:</strong>&nbsp;<span :data-text="project.topic"
           :ref="(element) => new GlitchText({ element, effect: 'add' })">
           {{ project.topic }}
         </span>
