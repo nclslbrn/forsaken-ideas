@@ -5,6 +5,7 @@ import { getPalette } from '@nclslbrn/artistry-swatch'
 import vertSrc from './glsl/triangles.vert'
 import fragSrc from './glsl/triangles.frag'
 
+import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import SvgTracer from '../../sketch-common/svg-tracer'
 import {
     fillWithStraightLines,
@@ -50,30 +51,6 @@ const splitCell = (cellIdx, isHorizontal, grid) => {
     grid.splice(cellIdx, 1)
     grid.push(...splitted)
     return grid
-}
-
-const createShader = (gl, type, source) => {
-    const shader = gl.createShader(type)
-    gl.shaderSource(shader, source)
-    gl.compileShader(shader)
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile failed:', gl.getShaderInfoLog(shader))
-        gl.deleteShader(shader)
-        return null
-    }
-    return shader
-}
-
-const createProgram = (gl, vertexShader, fragmentShader) => {
-    const program = gl.createProgram()
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Program link failed:', gl.getProgramInfoLog(program))
-        return null
-    }
-    return program
 }
 
 /**

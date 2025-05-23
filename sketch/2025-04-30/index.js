@@ -4,13 +4,14 @@ import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/base.vert'
 import fragSrc from './glsl/base.frag'
 
+import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines } from '../../sketch-common/fillShape'
 import { getPalette } from '@nclslbrn/artistry-swatch'
 
 let traits = {}
 
-const { floor, ceil, random, pow } = Math
+const { floor, ceil, random } = Math
 const shuffle = (array) => array.sort(() => 0.5 - random())
 
 const containerElement = document.getElementById('windowFrame'),
@@ -78,30 +79,6 @@ const capture = (canvas) => {
     link.click()
 }
 
-const createShader = (gl, type, source) => {
-    const shader = gl.createShader(type)
-    gl.shaderSource(shader, source)
-    gl.compileShader(shader)
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile failed:', gl.getShaderInfoLog(shader))
-        gl.deleteShader(shader)
-        return null
-    }
-    return shader
-}
-
-const createProgram = (gl, vertexShader, fragmentShader) => {
-    const program = gl.createProgram()
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Program link failed:', gl.getProgramInfoLog(program))
-        return null
-    }
-    return program
-}
-
 const sketch = {
     init: () => {
         const numCell = 2 + ceil(random() * 12)
@@ -117,7 +94,7 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 1 + random(),
-            palette: getPalette(),
+            palette: getPalette({ artist: "Hilma af Klint"}),
             numCell,
             cells
         }

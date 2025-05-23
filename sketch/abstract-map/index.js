@@ -4,13 +4,13 @@ import handleAction from '../../sketch-common/handle-action'
 import vertSrc from './glsl/base.vert'
 import fragSrc from './glsl/base.frag'
 import { canvasRecorder } from '@thi.ng/dl-asset'
+import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 
 let isRecording = false,
     recorder = false,
     mouseX = 0.5,
     mouseY = 0.,
-    moved = false,
-    noiseSeed = 0
+    moved = false
 
 const capture = (canvas) => {
     const link = document.createElement('a')
@@ -35,30 +35,6 @@ const stopRecording = () => {
     recorder.stop()
     console.log('%c Record stopped ', 'background: limegreen; color: black')
     isRecording = false
-}
-
-const createShader = (gl, type, source) => {
-    const shader = gl.createShader(type)
-    gl.shaderSource(shader, source)
-    gl.compileShader(shader)
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile failed:', gl.getShaderInfoLog(shader))
-        gl.deleteShader(shader)
-        return null
-    }
-    return shader
-}
-
-const createProgram = (gl, vertexShader, fragmentShader) => {
-    const program = gl.createProgram()
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Program link failed:', gl.getProgramInfoLog(program))
-        return null
-    }
-    return program
 }
 
 const sketch = {
