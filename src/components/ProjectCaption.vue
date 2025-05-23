@@ -2,7 +2,6 @@
 import type { PropType } from 'vue'
 import type { Project } from '../project'
 // @ts-ignore
-import GlitchText from '../../sketch-common/glitchText'
 export default {
   props: {
     project: {
@@ -13,29 +12,20 @@ export default {
       type: Number
     }
   },
-  methods: {
-    GlitchText
-  }
 }
 </script>
 <template>
   <div class="project-caption">
-    <button :ref="(element) => new GlitchText({ element, effect: 'add' })" class="project-caption--title"
-      :data-text="project.title" @click.prevent="$emit('openProject', project.src)">
+    <button class="project-caption--title" :data-text="project.title"
+      @click.prevent="$emit('openProject', project.src)">
       {{ project.title }}
     </button>
     <div class="project-caption--meta">
       <div class="date">
-        <strong>Created:</strong>&nbsp;<span :data-text="project.date"
-          :ref="(element) => new GlitchText({ element, effect: 'add' })">
-          {{ project.date }}
-        </span>
+        <strong>Created:</strong>&nbsp;<span>{{ project.date }}</span>
       </div>
       <div class="topic">
-        <strong>Topic:</strong>&nbsp;<span :data-text="project.topic"
-          :ref="(element) => new GlitchText({ element, effect: 'add' })">
-          {{ project.topic }}
-        </span>
+        <strong>Topic:</strong>&nbsp;<span>{{ project.topic }}</span>
       </div>
     </div>
   </div>
@@ -44,7 +34,6 @@ export default {
 <style scoped>
 .project-caption {
   flex-grow: 1;
-  border-right: 1px solid var(--color-border);
 }
 
 .project-caption--meta div {
@@ -64,6 +53,11 @@ export default {
   white-space: nowrap;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.project-caption--meta {
+  border-right: 1px solid var(--color-border);
 }
 
 .project-caption--title:hover,
@@ -73,10 +67,6 @@ export default {
 
 
 @media screen and (max-width: 1080px) {
-  .project-caption--title,
-  .project-caption--meta {
-      max-width: calc(100vw - 2.6em);
-  }
 
   .project-caption--title {
     font-size: 1.2em;

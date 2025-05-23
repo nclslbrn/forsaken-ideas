@@ -43,7 +43,7 @@ export default defineComponent({
   },
   mounted() {
     /*
-     *Read URL params and modify state if need
+     * Read URL params and modify state if need
      * then query sketches
      */
     this.queryUrlParams()
@@ -180,14 +180,9 @@ export default defineComponent({
         <h1 lang="en">Forsa&shy;ken ideas <span>{{ projects.length }}&#8594;</span></h1>
       </header>
       <ProjectCapture v-for="(item, index) in projects" v-bind:key="index"
-        :class="index === currProjectIndex ? 'active' : ''" 
-        :autofocus="index === prevClicked" 
-        :project="item"
-        :index="index"
-        @mouseover="currProjectIndex = index"
-        @openProject="openProject" 
-        @focus="currProjectIndex = index"
-      />
+        :class="index === currProjectIndex ? 'active' : ''" :autofocus="index === prevClicked" :project="item"
+        :index="index" @mouseover="currProjectIndex = index" @openProject="openProject"
+        @focus="currProjectIndex = index" />
     </div>
     <Transition name="slideDown">
       <AboutThisSite v-if="whatsThis" :project-count="projects.length" />
@@ -196,26 +191,28 @@ export default defineComponent({
     <ScrollIndicator :count="projects.length" :current="currProjectIndex" />
 
     <div class="row">
-      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]" @openProject="openProject" />
-      
+      <ProjectCaption v-if="projects[currProjectIndex] !== undefined" :project="projects[currProjectIndex]"
+        @openProject="openProject" />
+
       <div class="ui">
         <nav>
           <ul>
             <li><button class="prevProj" @click="prevProj">&#60;</button></li>
-            <li><label class="projectIdx">{{ currProjectIndex + 1 }} / {{ projects.length }}</label><small>projects</small></li>
+            <li><label class="projectIdx">{{ currProjectIndex + 1 }} / {{ projects.length
+            }}</label><small>projects</small></li>
             <li><button class="prevProj" @click="nextProj">&#62;</button></li>
           </ul>
         </nav>
         <OrderForm :params="params" @sortInverse="sortInverse" @sortProjectBy="sortProjectBy" />
       </div>
-      
+
       <footer>
         <span>
           <p>Nicolas Lebrun</p>
           <p>MIT License</p>
         </span>
         <button id="toggleAbout" @click="whatsThis = !whatsThis">
-          {{ whatsThis ? '×' : 'INFO' }}
+          {{ whatsThis ? '×' : 'INFO' }}
         </button>
       </footer>
     </div>
@@ -228,6 +225,7 @@ export default defineComponent({
   height: 85vh;
   flex-grow: 1;
 }
+
 .the-wall::-webkit-scrollbar {
   display: none;
 }
@@ -238,10 +236,15 @@ export default defineComponent({
   max-width: 100%;
 }
 
-.the-wall button.project-preview > img {
-    max-height: 90%;
-    width: auto;
+.the-wall button.project-preview>img {
+  max-height: 90%;
+  width: auto;
 }
+
+.row {
+  background: var(--color-bg);
+}
+
 
 @media screen and (max-width: 1080px) {
   .the-wall header {
@@ -254,6 +257,7 @@ export default defineComponent({
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+
   .ui {
     display: none;
   }
@@ -267,13 +271,14 @@ export default defineComponent({
   .the-wall>* {
     flex: 0 0 auto;
     max-width: 35%;
-  } 
+  }
 }
 
 #about {
   overflow-y: auto;
 }
-.ui {
+
+.ui nav {
   border-right: 1px solid var(--color-border);
 }
 
@@ -293,6 +298,7 @@ export default defineComponent({
 .ui nav ul li {
   border-right: 1px solid var(--color-border);
 }
+
 .ui nav ul li:last-child {
   border-right: none;
 }
@@ -325,5 +331,4 @@ button#toggleAbout {
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
-
 </style>

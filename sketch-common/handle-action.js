@@ -1,15 +1,6 @@
-import GlitchText from './glitchText'
-
 const handleAction = () => {
     window['openOffFrame'] = () => {
-        document.body.classList.toggle('openedOffWindow')
-        if (document.body.classList.contains('openedOffWindow')) {
-            const titleElem = document.getElementById('projectTitle')
-            new GlitchText({
-                element: titleElem,
-                effect: 'add'
-            })
-        }
+        document.body.classList.toggle('openedOffWindow') 
     }
     window['back'] = () => {
         // Check if user comes from the index (browser history) then redirect him to index
