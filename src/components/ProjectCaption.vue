@@ -34,6 +34,7 @@ export default {
 <style scoped>
 .project-caption {
   flex-grow: 1;
+  max-width: calc(100% - 2.6em);
 }
 
 .project-caption--meta div {
