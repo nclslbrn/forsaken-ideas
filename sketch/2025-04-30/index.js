@@ -31,24 +31,28 @@ const containerElement = document.getElementById('windowFrame'),
  * split a line in small parts (chunk)
  * @constructor
  * @param {array} arr - the line [[x0,y0], [x1,y1]...]
- * @param {number} itemperchunk - how many split
+ * @param {number} itemperchunk - how many points in a chunk
  * @param {number} itembetweenchunk - how many element (to remove between each pars)
  */
 const chunkify = (arr, itemperchunk, itembetweenchunk) =>
-    arr.reduce(
-        (stack, line) => [
-            ...stack,
-            ...line.reduce((dash, pt, ptidx) => {
-                const dashidx = floor(ptidx / (itemperchunk + itembetweenchunk))
-                const ptindash = ptidx % (itemperchunk + itembetweenchunk)
-                if (!dash[dashidx]) dash[dashidx] = []
-                if (ptindash <= itemperchunk) dash[dashidx].push(pt)
+    arr.length > itembetweenchunk + itembetweenchunk 
+        ?  arr.reduce(
+            (stack, line) => [
+                ...stack,
+                ...line.reduce((dash, pt, ptidx) => {
+                    const dashidx = floor(
+                        ptidx / (itemperchunk + itembetweenchunk)
+                    )
+                    const ptindash = ptidx % (itemperchunk + itembetweenchunk)
+                    if (dash[dashidx] === undefined) dash[dashidx] = []
+                    if (ptindash <= itemperchunk) dash[dashidx].push(pt)
 
-                return dash
-            }, [])
-        ],
-        []
-    )
+                    return dash
+                }, [])
+            ],
+            []
+        )
+        : arr
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
     if (grid[cellIdx] === undefined) return grid
@@ -81,7 +85,7 @@ const capture = (canvas) => {
 
 const sketch = {
     init: () => {
-        const numCell = 2 + ceil(random() * 12)
+        const numCell = 4 + ceil(random() * 32)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -94,7 +98,7 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 1 + random(),
-            palette: getPalette({ artist: "Hilma af Klint"}),
+            palette: getPalette(), //{ artist: 'Hilma af Klint' }),
             numCell,
             cells
         }
@@ -157,20 +161,32 @@ const sketch = {
         svg.clear()
         svg.rect({ x: 0, y: 0, w: svg.width, h: svg.height, fill: traits.palette.background })
         traits.palette.colors.forEach((c, i) => {
-          svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
+            svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = []
         for (let i = 1; i < 25; i++) {
-            scanLines.push(...fillWithStraightLines(canvas, (rgb) => rgb[0] < i*10, 4 * i, i % 4))
+            scanLines.push(fillWithStraightLines(
+                    canvas,
+                    (rgb) => rgb[0] < i * 10 && (i % 10 === 0 || rgb[0] > (i - 1) * 10),
+                    (2 + (i % 8)) * 4,
+                    i % 4
+                ))
         }
-        const filtered = scanLines.filter((_, i) => i % 15 !== 0)
-        const sliced = filtered.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 120, 40): chunkify(ln, 360, 80)])
-        const grouped = sliced.reduce((g, ln, lidx) => {
-                  g[lidx % traits.palette.colors.length].push(ln)
-                  return g
-                },
-                traits.palette.colors.map(() => [])
-            )
+        // scanLines.map(lns => lns.map(ln => console.log(ln.length)))
+        const alternativelyReverted = scanLines.map(lns => lns.map((ln, i) => i % 10 === 0 ? ln.reverse() : ln))
+        const grouped = alternativelyReverted.reduce(
+            (g, lns, lidx) => {
+                g[lidx % traits.palette.colors.length].push(
+                    ...(lidx % 5 === 0 
+                        ? chunkify(lns, floor(40 + random() * 20), floor(10 + random() * 10)) 
+                        : lns    
+                    )
+                )
+                return g
+            },
+            traits.palette.colors.map(() => [])
+        )
+        
         const inner = [svg.width, svg.height].map((d) => d - margin * 2)
         grouped.map((group, i) => {
             group.map((ln) => {

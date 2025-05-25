@@ -61,12 +61,9 @@ void main() {
                     if (j == 3) {
                         stToCell.y += cellSiz.y * 2.;
                     }
-                    float d = sdCircle(
-                            stToCell,
-                            (mod(float(i), 2.) > 0. ? cellSiz.x : cellSiz.y) * .5
-                    );
+                    float d = sdCircle(stToCell, length(cellSiz));
                     float rep = abs(sdfRep(d, .33) - .66);
-                    depth += mod(rep, 0.49);
+                    depth += mod(rep, 0.66);
 
                 }
             }
