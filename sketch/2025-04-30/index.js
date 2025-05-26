@@ -139,7 +139,6 @@ const sketch = {
         gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0)
         gl.disable(gl.DEPTH_TEST)
         gl.enable(gl.BLEND)
-
         gl.clearColor(1, 1, 1, 1)
     },
 
@@ -167,7 +166,7 @@ const sketch = {
         for (let i = 1; i < 25; i++) {
             scanLines.push(fillWithStraightLines(
                     canvas,
-                    (rgb) => rgb[0] < i * 10 && (i % 10 === 0 || rgb[0] > (i - 1) * 10),
+                    (rgb) => rgb[0] < i * 7 && (i % 10 === 0 || rgb[0] > (i - 1) * 7),
                     (2 + (i % 8)) * 4,
                     i % 4
                 ))
@@ -205,6 +204,7 @@ const sketch = {
     }
 }
 containerElement.removeChild(loader)
+containerElement.appendChild(canvas)
 svg.init()
 sketch.setup()
 sketch.init()
