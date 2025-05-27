@@ -166,18 +166,18 @@ const sketch = {
         for (let i = 1; i < 25; i++) {
             scanLines.push(fillWithStraightLines(
                     canvas,
-                    (rgb) => rgb[0] < i * 7 && (i % 10 === 0 || rgb[0] > (i - 1) * 7),
+                    (rgb) => rgb[0] < i * 7 && (i % 24 === 0 || rgb[0] > (i - 1) * 7),
                     (2 + (i % 8)) * 4,
                     i % 4
                 ))
         }
-        // scanLines.map(lns => lns.map(ln => console.log(ln.length)))
+        //scanLines.map(lns => lns.map(ln => console.log(ln.length)))
         const alternativelyReverted = scanLines.map(lns => lns.map((ln, i) => i % 10 === 0 ? ln.reverse() : ln))
         const grouped = alternativelyReverted.reduce(
             (g, lns, lidx) => {
                 g[lidx % traits.palette.colors.length].push(
-                    ...(lidx % 5 === 0 
-                        ? chunkify(lns, floor(40 + random() * 20), floor(10 + random() * 10)) 
+                    ...(lidx % 12 === 0 
+                        ? chunkify(lns, floor(20 + random() * 20), floor(10 + random() * 5)) 
                         : lns    
                     )
                 )
