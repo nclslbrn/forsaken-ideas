@@ -7,7 +7,7 @@ import fragSrc from './glsl/base.frag'
 import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines } from '../../sketch-common/fillShape'
-import { getPalette } from '@nclslbrn/artistry-swatch'
+// import { getPalette } from '@nclslbrn/artistry-swatch'
 
 let traits = {}
 
@@ -21,12 +21,13 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_square',
+        size: 'A3_portrait',
         background: 'white',
         dpi
     }),
     S = [2560, 2560],
-    margin = svg.cmToPixels(1)
+    margin = svg.cmToPixels(3)
+
 /**
  * split a line in small parts (chunk)
  * @constructor
@@ -35,23 +36,23 @@ const containerElement = document.getElementById('windowFrame'),
  * @param {number} itembetweenchunk - how many element (to remove between each pars)
  */
 const chunkify = (arr, itemperchunk, itembetweenchunk) =>
-    arr.length > itembetweenchunk + itembetweenchunk 
-        ?  arr.reduce(
-            (stack, line) => [
-                ...stack,
-                ...line.reduce((dash, pt, ptidx) => {
-                    const dashidx = floor(
-                        ptidx / (itemperchunk + itembetweenchunk)
-                    )
-                    const ptindash = ptidx % (itemperchunk + itembetweenchunk)
-                    if (dash[dashidx] === undefined) dash[dashidx] = []
-                    if (ptindash <= itemperchunk) dash[dashidx].push(pt)
+    arr.length > itembetweenchunk + itembetweenchunk
+        ? arr.reduce(
+              (stack, line) => [
+                  ...stack,
+                  ...line.reduce((dash, pt, ptidx) => {
+                      const dashidx = floor(
+                          ptidx / (itemperchunk + itembetweenchunk)
+                      )
+                      const ptindash = ptidx % (itemperchunk + itembetweenchunk)
+                      if (dash[dashidx] === undefined) dash[dashidx] = []
+                      if (ptindash <= itemperchunk) dash[dashidx].push(pt)
 
-                    return dash
-                }, [])
-            ],
-            []
-        )
+                      return dash
+                  }, [])
+              ],
+              []
+          )
         : arr
 
 const splitCell = (cellIdx, isHorizontal, grid) => {
@@ -85,7 +86,7 @@ const capture = (canvas) => {
 
 const sketch = {
     init: () => {
-        const numCell = 4 + ceil(random() * 32)
+        const numCell = 12 + ceil(random() * 24)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -98,7 +99,7 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 1 + random(),
-            palette: getPalette(), //{ artist: 'Hilma af Klint' }),
+            palette: ['tomato', '#ccc', '#111'], // <- lack of randomness
             numCell,
             cells
         }
@@ -158,34 +159,41 @@ const sketch = {
 
     renderSvg: () => {
         svg.clear()
-        svg.rect({ x: 0, y: 0, w: svg.width, h: svg.height, fill: traits.palette.background })
-        traits.palette.colors.forEach((c, i) => {
+
+        traits.palette.forEach((c, i) => {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = []
         for (let i = 1; i < 25; i++) {
-            scanLines.push(fillWithStraightLines(
+            scanLines.push(
+                fillWithStraightLines(
                     canvas,
-                    (rgb) => rgb[0] < i * 7 && (i % 24 === 0 || rgb[0] > (i - 1) * 7),
-                    (2 + (i % 8)) * 4,
+                    (rgb) => rgb[0] < i * 3 && rgb[0] > (i - 1) * 3,
+                    (3 + (i % 6)) * 3,
                     i % 4
-                ))
+                )
+            )
         }
         //scanLines.map(lns => lns.map(ln => console.log(ln.length)))
-        const alternativelyReverted = scanLines.map(lns => lns.map((ln, i) => i % 10 === 0 ? ln.reverse() : ln))
+        const alternativelyReverted = scanLines.map((lns) =>
+            lns.map((ln, i) => (i % 10 === 0 ? ln.reverse() : ln))
+        )
         const grouped = alternativelyReverted.reduce(
             (g, lns, lidx) => {
-                g[lidx % traits.palette.colors.length].push(
-                    ...(lidx % 12 === 0 
-                        ? chunkify(lns, floor(20 + random() * 20), floor(10 + random() * 5)) 
-                        : lns    
-                    )
+                g[lidx % traits.palette.length].push(
+                    ...(lidx % 12 === 0
+                        ? chunkify(
+                              lns,
+                              floor(20 + random() * 20),
+                              floor(10 + random() * 5)
+                          )
+                        : lns)
                 )
                 return g
             },
-            traits.palette.colors.map(() => [])
+            traits.palette.map(() => [])
         )
-        
+
         const inner = [svg.width, svg.height].map((d) => d - margin * 2)
         grouped.map((group, i) => {
             group.map((ln) => {
@@ -208,6 +216,8 @@ containerElement.appendChild(canvas)
 svg.init()
 sketch.setup()
 sketch.init()
+
+svg.elem.addEventListener('click', () => (svg.elem.style.display = 'none'))
 
 window['infobox'] = infobox
 window['randomize'] = sketch.init
