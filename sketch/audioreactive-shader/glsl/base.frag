@@ -1,64 +1,85 @@
 precision highp float;
-        
+#define PI 3.14159265358979323846
+#define MAX_CELL 64.0
+
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_freqText;
+uniform int u_numCell;
+uniform vec4 u_cells[int(MAX_CELL)];
+
 
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
+float sdBox(in vec2 p, in vec2 wh) {
+    vec2 d = abs(p) - wh;
+    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+}
+float sdfRep(in float x, in float r) {
+    x /= r;
+    x -= floor(x) + .5;
+    x *= r;
+    return x;
+}
+vec2 rotate2D (vec2 _st, float _angle) {
+    _st -= 0.5;
+    _st =  mat2(cos(_angle),-sin(_angle),
+                sin(_angle),cos(_angle)) * _st;
+    _st += 0.5;
+    return _st;
+}
+ 
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    vec2 center = vec2(0.5, 0.5);
-    
-    // Calculate distance and angle from center
-    float dist = distance(uv, center);
-    float angle = atan(uv.y - center.y, uv.x - center.x);
-    
-    // Normalize angle to 0-1 range
-    float normalizedAngle = (angle + 3.14159) / (2.0 * 3.14159);
-    
-    // Sample frequency data based on angle
-    float freqIndex = normalizedAngle;
-    float amplitude = texture2D(u_freqText, vec2(freqIndex, 0.5)).r;
-    
-    // Create radial visualization
-    float radius = 0.1 + amplitude * 0.4;
-    float ring = smoothstep(radius - 0.02, radius, dist) - smoothstep(radius, radius + 0.02, dist);
-    
-    // Create multiple rings
-    float ring2 = smoothstep(radius * 0.5 - 0.01, radius * 0.5, dist) - smoothstep(radius * 0.5, radius * 0.5 + 0.01, dist);
-    float ring3 = smoothstep(radius * 1.5 - 0.03, radius * 1.5, dist) - smoothstep(radius * 1.5, radius * 1.5 + 0.03, dist);
-    
-    // Color based on frequency and time
-    float hue = normalizedAngle + u_time * 0.1 + amplitude * 0.5;
-    float saturation = 0.8 + amplitude * 0.2;
-    float brightness = (ring + ring2 * 0.6 + ring3 * 0.4) * (0.5 + amplitude * 0.5);
-    
-    // Add center glow
-    float centerGlow = 1.0 - smoothstep(0.0, 0.3, dist);
-    brightness += centerGlow * amplitude * 0.3;
-    
-    // Add frequency bars around the circle
-    float barAngle = floor(normalizedAngle * 64.0) / 64.0;
-    float barAmplitude = texture2D(u_freqText, vec2(barAngle, 0.5)).r;
-    float barRadius = 0.6 + barAmplitude * 0.3;
-    float bar = smoothstep(barRadius - 0.005, barRadius, dist) - smoothstep(barRadius, barRadius + 0.01, dist);
-    
-    if (bar > 0.0) {
-        hue = barAngle + u_time * 0.05;
-        brightness = bar * barAmplitude;
-    }
-    
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;    
+    float scx = (st.x * 1.4) - .2;
+    float freqBand = texture2D(u_freqText, vec2(floor(scx * 32.) / 43., .0)).r;
+    float bandHeight = 0.165;
+    float spectrometer = step((st.y / bandHeight), pow(freqBand, 2.));
     // Convert HSV to RGB
-    vec3 color = hsv2rgb(vec3(hue, saturation, brightness));
-    
-    // Add some sparkle effect
-    float sparkle = sin(u_time * 10.0 + dist * 50.0 + normalizedAngle * 20.0) * 0.1 * amplitude;
-    color += vec3(sparkle);
-    
+    vec3 color = vec3(1.); 
+    /*hsv2rgb(
+        vec3(
+            fract(.66 + st.x * .33), 
+            fract(step(freqBand, .9) * sin(2. - st.y)), 
+            texture2D(u_freqText, vec2(st.x, st.y)).r
+    ));
+    */
+
+    st *= 1.05;
+ 
+
+    for (int i = 0; i <= int(MAX_CELL); i++) {
+        if (i < u_numCell) {
+            vec2 cellPos = vec2(.025) + vec2(u_cells[i].xy);
+            vec2 cellSiz = vec2(u_cells[i].zw);
+            vec2 stToCell = st - cellPos;
+
+            float d = sdBox(abs(stToCell), cellSiz * (0.5 + freqBand *.5));
+          
+            if (abs(st.y-bandHeight*.5 - cellPos.y) <= cellSiz.y * .5) {
+                if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
+                    if (d < 0.) {
+                        float index = 0.0;
+                        index += step(1., mod(st.x-cellPos.x, 8.0));
+                        index += step(1., mod(st.y-cellPos.y, 8.0))*4.0;
+                        vec2 _st = fract(sin(exp(st-cellPos)/(cellSiz))*8.);
+                        _st = rotate2D(_st, PI*(float(index)*.5 + freqBand * st.y));
+                        float tri = step(_st.x, _st.y);
+                        color *= vec3(mix(0., 1., tri));
+                    }
+                }
+            }
+        }
+    }
+
+
+    if (spectrometer == 1. && st.x > .22 && st.x < .78) { 
+        color = vec3(.0);
+    } 
+        
     gl_FragColor = vec4(color, 1.0);
 }

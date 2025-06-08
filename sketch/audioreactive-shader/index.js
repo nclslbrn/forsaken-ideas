@@ -8,7 +8,30 @@ import fragSrc from './glsl/base.frag'
 const containerElement = document.getElementById('windowFrame'),
     loader = document.getElementById('loading'),
     canvas = document.createElement('canvas'),
-    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
+    gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
+    { floor, ceil, random } = Math
+
+const splitCell = (cellIdx, isHorizontal, grid) => {
+    if (grid[cellIdx] === undefined) return grid
+    const [x, y, w, h] = grid[cellIdx]
+    let splitted = []
+    if (isHorizontal) {
+        const ws = [w * 0.5, w * 0.5]
+        splitted = [
+            [x - w * 0.5 + ws[0] * 0.5, y, ws[0], h],
+            [x + w * 0.5 - ws[1] * 0.5, y, ws[1], h]
+        ]
+    } else {
+        const hs = [h * 0.5, h * 0.5]
+        splitted = [
+            [x, y - h * 0.5 + hs[0] * 0.5, w, hs[0]],
+            [x, y + h * 0.5 - hs[1] * 0.5, w, hs[1]]
+        ]
+    }
+    grid.splice(cellIdx, 1)
+    grid.push(...splitted)
+    return grid
+}
 
 let audioContext,
     analyser,
@@ -21,10 +44,24 @@ let audioContext,
     resUniform,
     freqTextUniform,
     startTime,
-    frameId
+    frameId,
+    numCell,
+    cells,
+    numCellUniform,
+    cellsUniform
 
 const sketch = {
-    init: function () {},
+    init: function () {
+        numCell = 6 + ceil(random() * 1)
+        cells = [[0.5, 0.5, 1, 1]]
+
+        for (let i = 0; i < numCell; i++)
+            cells = splitCell(
+                floor(random() * cells.length),
+                i % 2 === 0,
+                cells
+            )
+    },
     startAudio: async function () {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -91,6 +128,8 @@ const sketch = {
         timeUniform = gl.getUniformLocation(program, 'u_time')
         resUniform = gl.getUniformLocation(program, 'u_resolution')
         freqTextUniform = gl.getUniformLocation(program, 'u_freqTetxure')
+        numCellUniform = gl.getUniformLocation(program, 'u_numCell')
+        cellsUniform = gl.getUniformLocation(program, 'u_cells')
 
         positionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -123,6 +162,11 @@ const sketch = {
 
         gl.uniform1f(timeUniform, currentTime)
         gl.uniform2f(resUniform, canvas.width, canvas.height)
+        gl.uniform1i(numCellUniform, numCell)
+        gl.uniform4fv(
+            cellsUniform,
+            cells.reduce((s, c) => [...s, ...c], [])
+        )
 
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, freqText)
