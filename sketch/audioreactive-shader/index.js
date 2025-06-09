@@ -48,11 +48,12 @@ let audioContext,
     numCell,
     cells,
     numCellUniform,
-    cellsUniform
+    cellsUniform,
+    resizeTimeout
 
 const sketch = {
     init: function () {
-        numCell = 6 + ceil(random() * 1)
+        numCell = 4 + ceil(random() * 16)
         cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -180,11 +181,19 @@ const sketch = {
         // Draw fullscreen quad
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
         frameId = requestAnimationFrame(() => sketch.animate())
+    },
+    onResize: function () {
+        clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(() => {
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+        }, 50)
     }
 }
 containerElement.removeChild(loader)
 containerElement.appendChild(canvas)
 sketch.setup()
-await sketch.startAudio()
+window.addEventListener('resize', sketch.onResize)
+sketch.startAudio()
 window.infobox = infobox
 handleAction()
