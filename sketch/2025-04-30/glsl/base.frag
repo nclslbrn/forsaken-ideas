@@ -49,10 +49,10 @@ vec2 wrapPosition(vec2 pos) {
     float n1 = noise2D(noisePos, u_noiseSeed);
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * PI;
-    vec2 displacement = vec2(cos(angle), sin(angle)) * .5;
+    vec2 displacement = vec2(cos(angle), sin(angle)) * .15;
     displacement += vec2(n2, n1) * .05;
     float distanceFromCenter = distance(pos, vec2(.5));
-    float falloff = smoothstep(1., .05, distanceFromCenter);
+    float falloff = smoothstep(.5, .05, distanceFromCenter);
     return pos + displacement * falloff;
 }
 
@@ -109,8 +109,8 @@ void main() {
                         stToCell.y += cellSiz.y * 2.;
                     }
                     float d = sdBox(stToCell, cellSiz * 2.);
-                    float rep = abs(sdfRep(d, .12) - .25);
-                    depth += rep * .33;
+                    float rep = abs(sdfRep(d, .07) - .14);
+                    depth += rep * .5;
                 }
             }
         }

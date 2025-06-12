@@ -21,12 +21,12 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_portrait',
+        size: 'A3_square',
         background: 'white',
         dpi
     }),
     S = [2560, 2560],
-    margin = svg.cmToPixels(3)
+    margin = svg.cmToPixels(1)
 
 /**
  * split a line in small parts (chunk)
@@ -86,7 +86,7 @@ const capture = (canvas) => {
 
 const sketch = {
     init: () => {
-        const numCell = 12 + ceil(random() * 24)
+        const numCell = 4 + ceil(random() * 14)
         let cells = [[0.5, 0.5, 1, 1]]
 
         for (let i = 0; i < numCell; i++)
@@ -98,8 +98,8 @@ const sketch = {
 
         traits = {
             noiseSeed: random() * 999,
-            noiseSize: 1 + random(),
-            palette: ['tomato', '#ccc', '#111'], // <- lack of randomness
+            noiseSize: 0.5 + random() * 0.5,
+            palette: ['#FCB273', '#F63123', '#333', '#666'],
             numCell,
             cells
         }
@@ -168,7 +168,7 @@ const sketch = {
             scanLines.push(
                 fillWithStraightLines(
                     canvas,
-                    (rgb) => rgb[0] < i * 3 && rgb[0] > (i - 1) * 3,
+                    (rgb) => rgb[0] < i * 2 && rgb[0] > (i - 1) * 2,
                     (3 + (i % 6)) * 3,
                     i % 4
                 )
