@@ -2,7 +2,7 @@
 precision highp float;
 
 #define MAX_CELL 64.0
-#define PI 4.
+#define PI 3.14159265358979323846
 
 uniform vec2 u_resolution;
 uniform int u_numCell;
@@ -49,10 +49,10 @@ vec2 wrapPosition(vec2 pos) {
     float n1 = noise2D(noisePos, u_noiseSeed);
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * PI;
-    vec2 displacement = vec2(cos(angle), sin(angle)) * .15;
-    displacement += vec2(n2, n1) * .05;
+    vec2 displacement = vec2(cos(angle), sin(angle)) * .5;
+    displacement += vec2(n2, n1) * .5;
     float distanceFromCenter = distance(pos, vec2(.5));
-    float falloff = smoothstep(.5, .05, distanceFromCenter);
+    float falloff = smoothstep(.05, 1., distanceFromCenter);
     return pos + displacement * falloff;
 }
 
@@ -110,7 +110,7 @@ void main() {
                     }
                     float d = sdBox(stToCell, cellSiz * 2.);
                     float rep = abs(sdfRep(d, .07) - .14);
-                    depth += rep * .5;
+                    depth += rep;
                 }
             }
         }

@@ -22,7 +22,7 @@ const containerElement = document.getElementById('windowFrame'),
     svg = new SvgTracer({
         parentElem: containerElement,
         size: 'A3_square',
-        background: 'white',
+        background: '#201d1d',
         dpi
     }),
     S = [2560, 2560],
@@ -98,8 +98,8 @@ const sketch = {
 
         traits = {
             noiseSeed: random() * 999,
-            noiseSize: 0.5 + random() * 0.5,
-            palette: ['#FCB273', '#F63123', '#333', '#666'],
+            noiseSize: 2 + random() * 10,
+            palette: ['#fefefe', '#cecece', '#999', '#666'],
             numCell,
             cells
         }
@@ -164,12 +164,12 @@ const sketch = {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = []
-        for (let i = 1; i < 25; i++) {
+        for (let i = 1; i < 50; i++) {
             scanLines.push(
                 fillWithStraightLines(
                     canvas,
                     (rgb) => rgb[0] < i * 2 && rgb[0] > (i - 1) * 2,
-                    (3 + (i % 6)) * 3,
+                    (4 + (i % 4)) * 2,
                     i % 4
                 )
             )
