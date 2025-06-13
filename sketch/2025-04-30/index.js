@@ -21,12 +21,11 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_square',
-        background: '#201d1d',
+        size: 'A3_portrait',
+        background: '#f1f1f1',
         dpi
     }),
-    S = [2560, 2560],
-    margin = svg.cmToPixels(1)
+    margin = svg.cmToPixels(3)
 
 /**
  * split a line in small parts (chunk)
@@ -99,7 +98,7 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 2 + random() * 10,
-            palette: ['#fefefe', '#cecece', '#999', '#666'],
+            palette: ['#ccc', '#000', '#1e8454'], // '#000', '#111'],
             numCell,
             cells
         }
@@ -113,8 +112,8 @@ const sketch = {
             return
         }
 
-        canvas.width = S[0]
-        canvas.height = S[1]
+        canvas.width = svg.width / 2
+        canvas.height = svg.height / 2
         gl.viewport(0, 0, canvas.width, canvas.height)
         // Create shaders and program
         const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSrc),
@@ -163,12 +162,14 @@ const sketch = {
         traits.palette.forEach((c, i) => {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
-        const scanLines = []
+        const scanLines = [],
+            threshold = 7
         for (let i = 1; i < 50; i++) {
             scanLines.push(
                 fillWithStraightLines(
                     canvas,
-                    (rgb) => rgb[0] < i * 2 && rgb[0] > (i - 1) * 2,
+                    (rgb) =>
+                        rgb[0] < i * threshold && rgb[0] > (i - 1) * threshold,
                     (4 + (i % 4)) * 2,
                     i % 4
                 )
@@ -179,9 +180,13 @@ const sketch = {
             lns.map((ln, i) => (i % 10 === 0 ? ln.reverse() : ln))
         )
         const grouped = alternativelyReverted.reduce(
-            (g, lns, lidx) => {
-                g[lidx % traits.palette.length].push(
-                    ...(lidx % 12 === 0
+            (g, lns, lidx, arr) => {
+                const gidx = Math.floor(
+                    (lidx / arr.length) * traits.palette.length
+                )
+
+                g[gidx].push(
+                    ...(lidx % 8 === 0
                         ? chunkify(
                               lns,
                               floor(20 + random() * 20),
