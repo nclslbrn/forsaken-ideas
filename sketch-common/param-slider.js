@@ -7,7 +7,7 @@
  *      options : {
  *         min: minimum parameter value,
  *         max: maximum value,
- *         step: step to increment value  
+ *         step: step to increment value
  *         label: explicit name or false
  *      },
  *      callback: a function to call when slider value change (() => window.init())
@@ -35,10 +35,7 @@ const paramSlider = (param, paramName = false) => {
     slider.addEventListener('change', (event) => {
         param.value = Number(event.target.value)
         value.value = event.target.value
-    
-        console.log(param.callback)
-        
-        if ( param.callback !== 'undefined') {
+        if (param.callback !== 'undefined') {
             param.callback()
         }
     })

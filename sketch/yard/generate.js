@@ -1,4 +1,4 @@
-import Fbm from './Fbm'
+import Fbm from '../../sketch-common/Fbm'
 
 const generateHeight = (width, height, seed, buildNum) => {
     const size = width * height,
