@@ -174,6 +174,6 @@ new p5(sketch, containerElement)
 containerElement.removeChild(loader)
 
 window.init = sketch.init
-window.capture = sketch.capture
+window.capture = sketch.exportPNG
 window.infobox = infobox
 handleAction()
