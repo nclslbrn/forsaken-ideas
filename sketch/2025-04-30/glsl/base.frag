@@ -49,7 +49,7 @@ vec2 wrapPosition(vec2 pos) {
     float n1 = noise2D(noisePos, u_noiseSeed);
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * PI;
-    vec2 displacement = vec2(cos(angle), sin(angle)) * .5;
+    vec2 displacement = vec2(cos(angle), sin(angle)) * .75;
     displacement += vec2(n2, n1) * .5;
     float distanceFromCenter = distance(pos, vec2(.5));
     float falloff = smoothstep(.05, 1., distanceFromCenter);
@@ -82,7 +82,7 @@ vec2 rotate2D(vec2 _st, float _angle) {
 
 void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    st = wrapPosition(st);
+    vec2 bckSt = st;
     float depth = 0.;
 
     for (int i = 0; i <= int(MAX_CELL); i++) {
@@ -90,12 +90,19 @@ void main() {
             vec2 cellPos = vec2(u_cells[i].xy);
             vec2 cellSiz = vec2(u_cells[i].zw);
             int j = int(mod(float(i), 4.));
+            
+            if (mod(float(i), 2.) == 1.) {
+                st = wrapPosition(st);
+            } else {
+                st = bckSt;
+            }
+
             if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
                     st = rotate2D(st, PI*(float(i)*.5));
 
                     vec2 stToCell = st - cellPos;
-                    
+                 
                     if (j == 0) {
                       stToCell -= cellSiz;
                     } 
@@ -109,8 +116,8 @@ void main() {
                         stToCell.y += cellSiz.y * 2.;
                     }
                     float d = sdBox(stToCell, cellSiz * 2.);
-                    float rep = abs(sdfRep(d, .07) - .14);
-                    depth += rep * 4.;
+                    float rep = abs(sdfRep(d, .1) - .2);
+                    depth += rep * 5.;
                 }
             }
         }

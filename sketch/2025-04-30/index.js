@@ -54,9 +54,9 @@ const chunkify = (arr, itemperchunk, itembetweenchunk) =>
           )
         : arr
 
-const splitCell = (cellIdx, isHorizontal, grid) => {
-    if (grid[cellIdx] === undefined) return grid
-    const [x, y, w, h] = grid[cellIdx]
+const splitCell = (isHorizontal, grid) => {
+    const toSplit = grid.sort((a, b) => a[2] * a[3] < b[2] * b[3])[0]
+    const [x, y, w, h] = toSplit
     const c = 1 / ceil(1 + random() * 2)
     let splitted = []
     if (isHorizontal) {
@@ -72,7 +72,7 @@ const splitCell = (cellIdx, isHorizontal, grid) => {
             [x, y + h * 0.5 - hs[1] * 0.5, w, hs[1]]
         ]
     }
-    grid.splice(cellIdx, 1)
+    grid.splice(grid.indexOf(toSplit), 1)
     grid.push(...splitted)
     return grid
 }
@@ -85,20 +85,15 @@ const capture = (canvas) => {
 
 const sketch = {
     init: () => {
-        const numCell = 4 + ceil(random() * 14)
+        const numCell = 3 + ceil(random() * 12)
         let cells = [[0.5, 0.5, 1, 1]]
 
-        for (let i = 0; i < numCell; i++)
-            cells = splitCell(
-                floor(random() * cells.length),
-                i % 2 === 0,
-                cells
-            )
+        for (let i = 0; i < numCell; i++) cells = splitCell(i % 2 === 0, cells)
 
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 2 + random() * 10,
-            palette: getPalette(),
+            palette: getPalette('bright'),
             numCell,
             cells
         }
@@ -163,14 +158,14 @@ const sketch = {
             y: 0,
             w: svg.width,
             h: svg.height,
-            fill: traits.palette.background
+            fill: '#fefefe'
         })
         traits.palette.colors.forEach((c, i) => {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = [],
-            threshold = 4
-        for (let i = 1; i < 50; i++) {
+            threshold = 50
+        for (let i = 1; i < 10; i++) {
             scanLines.push(
                 fillWithStraightLines(
                     canvas,
@@ -199,8 +194,8 @@ const sketch = {
                     ...(lidx % 8 === 0
                         ? chunkify(
                               lns,
-                              floor(20 + random() * 20),
-                              floor(10 + random() * 5)
+                              floor(20 + random() * 50),
+                              floor(30 + random() * 25)
                           )
                         : lns)
                 )
