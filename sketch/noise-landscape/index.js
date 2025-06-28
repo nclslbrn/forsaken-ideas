@@ -1,4 +1,4 @@
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import p5 from 'p5'
@@ -10,30 +10,29 @@ const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 let canvas
 const sketch = (p5) => {
-    const scale = 5
-    const numPoints = 6000
-    let topoPoints, pTransform
+    const scale = 3
+    const numPoints = 3000
+    let topoPoints, pTransform, fbm
     let noiseScale = 0.5
-    let noiseSample = 2
+    let noiseSample = 5
     let opacity = 12.5
-    let fbm
     const squeeze_y = 0.45
     const perspective_x = 0.75
 
     sketch.init = () => {
-        ;(fbm = new Fbm({
+        fbm = new Fbm({
             frequency: 0.03,
             octaves: 7,
             amplitude: 0.15,
             seed: String(Math.floor(Math.random() * 9999))
-        })),
-            (topoPoints = [])
+        })
+        topoPoints = []
 
         for (let i = 0; i < numPoints; i++) {
             topoPoints.push({
                 pos: p5.createVector(
-                    p5.randomGaussian(p5.width / 2, p5.width / 8),
-                    p5.randomGaussian(p5.height / 2, p5.height / 8)
+                    p5.randomGaussian(p5.width / 2, p5.width / 4),
+                    p5.randomGaussian(p5.height / 2, p5.height / 4)
                 ),
                 angle: p5.random(p5.TWO_PI),
                 height: 0
@@ -63,7 +62,7 @@ const sketch = (p5) => {
                 value: noiseSample,
                 options: {
                     min: 0.1,
-                    max: 4.0,
+                    max: 10.0,
                     step: 0.1,
                     label: 'Noise sample'
                 },
@@ -142,8 +141,8 @@ const sketch = (p5) => {
     p5.draw = () => {
         if (typeof topoPoints[0] !== 'undefined') {
             for (let i = 0; i < topoPoints.length; i++) {
-                const nx = p5.map(topoPoints[i].pos.x, 0, p5.width, -1, 1)
-                const ny = p5.map(topoPoints[i].pos.y, 0, p5.height, -1, 1.2)
+                const nx = p5.map(topoPoints[i].pos.x, 0, p5.width, -0.8, 0.8)
+                const ny = p5.map(topoPoints[i].pos.y, 0, p5.height, -0.6, 1.2)
 
                 const np = pTransform.transform([
                     topoPoints[i].pos.x,
@@ -161,7 +160,7 @@ const sketch = (p5) => {
                 const n1 =
                     fbm.f(nx * noiseSample, ny * noiseSample) * noiseScale
 
-                topoPoints[i].height = 0.75 + n1
+                topoPoints[i].height = 0.5 + n1
                 topoPoints[i].pos.x += p5.cos(topoPoints[i].angle) * scale
                 topoPoints[i].pos.y += p5.sin(topoPoints[i].angle) * scale
                 topoPoints[i].angle += n1 * 0.1
@@ -174,6 +173,6 @@ new p5(sketch, containerElement)
 containerElement.removeChild(loader)
 
 window.init = sketch.init
-window.capture = sketch.exportPNG
+window.download = sketch.exportPNG
 window.infobox = infobox
 handleAction()
