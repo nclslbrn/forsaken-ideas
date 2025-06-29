@@ -91,14 +91,14 @@ void main() {
             vec2 cellSiz = vec2(u_cells[i].zw);
             int j = int(mod(float(i), 4.));
             
-            if (mod(float(i), 2.) == 1.) {
+            if (mod(float(i), 4.) == 0.) {
                 st = wrapPosition(st);
             } else {
                 st = bckSt;
             }
 
-            if (abs(st.y - cellPos.y) <= cellSiz.y * .5) {
-                if (abs(st.x - cellPos.x) <= cellSiz.x * .5) {
+            if (abs(st.y - cellPos.y) <= cellSiz.y * .66) {
+                if (abs(st.x - cellPos.x) <= cellSiz.x * .66) {
                     st = rotate2D(st, PI*(float(i)*.5));
 
                     vec2 stToCell = st - cellPos;
@@ -115,7 +115,7 @@ void main() {
                     if (j == 3) {
                         stToCell.y += cellSiz.y * 2.;
                     }
-                    float d = sdBox(stToCell, cellSiz * 2.);
+                    float d = sdBox(stToCell, cellSiz);
                     float rep = abs(sdfRep(d, .1) - .2);
                     depth += rep * 5.;
                 }

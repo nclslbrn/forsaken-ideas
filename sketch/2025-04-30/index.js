@@ -57,7 +57,10 @@ const chunkify = (arr, itemperchunk, itembetweenchunk) =>
 const splitCell = (isHorizontal, grid) => {
     const toSplit = grid.sort((a, b) => a[2] * a[3] < b[2] * b[3])[0]
     const [x, y, w, h] = toSplit
-    const c = 1 / ceil(1 + random() * 2)
+    const c =
+        random() > 0.5
+            ? 1 / ceil(1 + random() * 2)
+            : 1 - 1 / ceil(1 + random() * 2)
     let splitted = []
     if (isHorizontal) {
         const ws = shuffle([w * c, w * (1 - c)])
@@ -164,7 +167,7 @@ const sketch = {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = [],
-            threshold = 50
+            threshold = 30
         for (let i = 1; i < 10; i++) {
             scanLines.push(
                 fillWithStraightLines(
