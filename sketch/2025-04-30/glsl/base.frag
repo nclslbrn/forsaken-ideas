@@ -50,7 +50,7 @@ vec2 wrapPosition(vec2 pos) {
     float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
     float angle = n1 * 2.0 * PI;
     vec2 displacement = vec2(cos(angle), sin(angle)) * .75;
-    displacement += vec2(n2, n1) * .5;
+    displacement += vec2(n2, n1) * .75;
     float distanceFromCenter = distance(pos, vec2(.5));
     float falloff = smoothstep(.05, 1., distanceFromCenter);
     return pos + displacement * falloff;
@@ -91,10 +91,10 @@ void main() {
             vec2 cellSiz = vec2(u_cells[i].zw);
             int j = int(mod(float(i), 4.));
             
-            if (mod(float(i), 4.) == 0.) {
-                st = wrapPosition(st);
-            } else {
+            if (mod(float(i), 2.) == 0.) {
                 st = bckSt;
+            } else {
+                st = wrapPosition(st);
             }
 
             if (abs(st.y - cellPos.y) <= cellSiz.y * .66) {

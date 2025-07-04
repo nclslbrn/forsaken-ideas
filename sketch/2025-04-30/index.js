@@ -7,7 +7,7 @@ import fragSrc from './glsl/base.frag'
 import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines } from '../../sketch-common/fillShape'
-import { getPalette } from '@nclslbrn/artistry-swatch'
+//import { getPalette } from '@nclslbrn/artistry-swatch'
 
 let traits = {}
 
@@ -25,7 +25,7 @@ const containerElement = document.getElementById('windowFrame'),
         background: '#f1f1f1',
         dpi
     }),
-    margin = svg.cmToPixels(1.5)
+    margin = svg.cmToPixels(3.4)
 
 /**
  * split a line in small parts (chunk)
@@ -96,7 +96,9 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 2 + random() * 10,
-            palette: getPalette('bright'),
+            palette: ["#888888", "#38c7f2",  "#111111", "##44172a"],
+          // ["#db9f2c", "#888888", "#111111", "#163c0c"], 
+          //['#245133', '#888888', '#111111', '#8e3333'],
             numCell,
             cells
         }
@@ -155,19 +157,12 @@ const sketch = {
     },
 
     renderSvg: () => {
-        svg.clear()
-        svg.rect({
-            x: 0,
-            y: 0,
-            w: svg.width,
-            h: svg.height,
-            fill: '#fefefe'
-        })
-        traits.palette.colors.forEach((c, i) => {
+        svg.clear() 
+        traits.palette.forEach((c, i) => {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
         })
         const scanLines = [],
-            threshold = 30
+            threshold = 28
         for (let i = 1; i < 10; i++) {
             scanLines.push(
                 fillWithStraightLines(
@@ -186,25 +181,25 @@ const sketch = {
         const grouped = alternativelyReverted.reduce(
             (g, lns, lidx, arr) => {
                 const gidx = Math.floor(
-                    (lidx / arr.length) * traits.palette.colors.length
+                    (lidx / arr.length) * traits.palette.length
                 )
 
                 g[
                     lidx % 12 === 0
                         ? gidx
-                        : (gidx + 1) % traits.palette.colors.length
+                        : (gidx + 1) % traits.palette.length
                 ].push(
                     ...(lidx % 8 === 0
                         ? chunkify(
                               lns,
-                              floor(20 + random() * 50),
-                              floor(30 + random() * 25)
+                              100, //floor(20 + random() * 50),
+                              20 //floor(30 + random() * 25)
                           )
                         : lns)
                 )
                 return g
             },
-            traits.palette.colors.map(() => [])
+            traits.palette.map(() => [])
         )
 
         const inner = [svg.width, svg.height].map((d) => d - margin * 2)
