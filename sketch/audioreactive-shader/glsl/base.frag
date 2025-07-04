@@ -3,6 +3,7 @@ precision highp float;
 #define MAX_CELL 64.0
 
 uniform vec2 u_resolution;
+uniform int u_frequencyBinCount;
 uniform float u_time;
 uniform sampler2D u_freqText;
 uniform int u_numCell;
@@ -31,10 +32,12 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;    
     float scx = (st.x * 1.4) - .2;
     float freqBand = texture2D(u_freqText, vec2(floor(scx * 32.) / 43., .0)).r;
-    float powFreq = fract(pow(freqBand, 5.));
     float bandHeight = 0.165;
-    float spectrometer = step((st.y / bandHeight), pow(freqBand, 2.));
     vec3 color = vec3(.95); 
+    freqBand = step(st.x, 1./float(u_frequencyBinCount)) < 5. 
+      ? freqBand 
+      : 0.;
+    float spectrometer = step((st.y / bandHeight), pow(freqBand, 2.));
     st *= vec2(1.05, 1.2);
  
 
@@ -49,29 +52,20 @@ void main() {
             if (abs(st.y - cellPos.y) <= cellSiz.y * 0.5) {
                 if (abs(st.x - cellPos.x) <= cellSiz.x * 0.5) {
                     if (d < -0.001) {
-                        float index = .0;
-                        index += step(1., mod(st.x-cellPos.x, 8.));
-                        index += step(1., mod(st.y-cellPos.y, 8.)) * 8.;
-
-                        vec2 _st = rotate2D(st, PI*(index*.5)); 
-                        _st = fract(exp(abs(cellPos-st) * powFreq * 4.));
-                        vec2 subCell = cellSiz/8.;
-
-                        vec2 bl = step(subCell/8., mod(_st, powFreq));
-                        vec2 tr = step(subCell/8., 1.-mod(_st, powFreq));
-
-                        float incell = 1. - (bl.x * bl.y * tr.x * tr.y);
-                        
-                        float tri = step(_st.x, _st.y);
-
-                        float fill = incell * tri;
-                        color *= vec3(mix(.1, 1., fill));
+                        float index = 0.0;
+                        index += step(freqBand, mod(st.x-cellPos.x, 8.));
+                        index += step(freqBand, mod(st.y-cellPos.y, 8.)) * 4.;
+                        vec2 _st = fract(
+                            sin(exp(st-cellPos)/
+                            cellSiz*2.*j+8.+ freqBand * .5));
+                        _st = rotate2D(_st, PI*(index*.5) + u_time * 0.25 * PI);
+                        float tri = step(fract(_st.x * 2.), _st.y);
+                        color *= vec3(mix(.1, 1., tri));
                     }
                 }
             }
         }
     }
-
 
     if (spectrometer == 1. && st.x > .22 && st.x < .78) { 
         color = vec3(.0);

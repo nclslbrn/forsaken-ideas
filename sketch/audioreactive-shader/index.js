@@ -45,6 +45,7 @@ let audioContext,
     freqTextUniform,
     startTime,
     frameId,
+    frequencyBinCount,
     numCell,
     cells,
     numCellUniform,
@@ -76,12 +77,14 @@ const sketch = {
                 window.webkitAudioContext)()
             analyser = audioContext.createAnalyser()
             microphone = audioContext.createMediaStreamSource(stream)
-            analyser.fftSize = 512
+            analyser.fftSize = 256
             analyser.smoothingTimeConstant = 0.8
             microphone.connect(analyser)
             freqData = new Uint8Array(analyser.frequencyBinCount)
             freqText = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, freqText)
+
+            console.log(analyser.frequencyBinCount)
 
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
@@ -127,6 +130,7 @@ const sketch = {
         gl.useProgram(program)
 
         timeUniform = gl.getUniformLocation(program, 'u_time')
+        frequencyBinCount = gl.getUniformLocation(program, 'u_frequencyBinCount')
         resUniform = gl.getUniformLocation(program, 'u_resolution')
         freqTextUniform = gl.getUniformLocation(program, 'u_freqTetxure')
         numCellUniform = gl.getUniformLocation(program, 'u_numCell')
@@ -162,6 +166,7 @@ const sketch = {
         gl.useProgram(program)
 
         gl.uniform1f(timeUniform, currentTime)
+        gl.uniform1i(frequencyBinCount, analyser.frequencyBinCount)
         gl.uniform2f(resUniform, canvas.width, canvas.height)
         gl.uniform1i(numCellUniform, numCell)
         gl.uniform4fv(
