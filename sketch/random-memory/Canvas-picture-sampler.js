@@ -15,17 +15,23 @@ export default class CanvasPictureSampler {
     load(img, callback) {
         if (undefined !== this.canvas.getContext) {
             this.context = this.canvas.getContext('2d')
-            this.canvas.width = img.width
-            this.canvas.height = img.height
-            this.context.drawImage(img, 0, 0)
+            this.canvas.width = 56
+            this.canvas.height = 74
+            this.context.drawImage(
+                img,
+                0,
+                0,
+                this.canvas.width,
+                this.canvas.height
+            )
 
-            /* console.log(
+            console.log(
                 'Image loaded, it has ',
                 img.width,
                 ' pixels of width and ',
                 img.height,
                 ' pixels of height.'
-            ) */
+            )
             if (callback && 'function' === typeof callback) callback()
             // document.getElementById('windowFrame').appendChild(this.canvas)
         } else {
