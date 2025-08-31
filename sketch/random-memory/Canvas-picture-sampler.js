@@ -1,13 +1,13 @@
 export default class CanvasPictureSampler {
     constructor() {
         this.canvas = document.createElement('canvas')
-        this.canvas.style = 'background: white;'
-        this.canvas.setAttribute(
-            'onMouseOver',
-            "this.style.background='gainsboro'"
-        )
-        this.canvas.setAttribute('onMouseOut', "this.style.background='white'")
-
+        this.canvas.style = `
+          display: block;
+          width: 80% !important;
+          height: auto;
+          display: block;
+          float: left;
+          background: white;`
         document.body.appendChild(this.canvas)
         this.context = false
     }
@@ -25,15 +25,18 @@ export default class CanvasPictureSampler {
                 this.canvas.height
             )
 
-            console.log(
-                'Image loaded, it has ',
-                img.width,
-                ' pixels of width and ',
-                img.height,
-                ' pixels of height.'
+            const recontrast = this.boostContrast(
+                this.context.getImageData(
+                    0,
+                    0,
+                    this.canvas.width,
+                    this.canvas.height
+                ),
+                50
             )
+            this.context.putImageData(recontrast, 0, 0)
+
             if (callback && 'function' === typeof callback) callback()
-            // document.getElementById('windowFrame').appendChild(this.canvas)
         } else {
             console.error("Sorry, we can't setup canvas context.")
             this.context = false
@@ -59,5 +62,19 @@ export default class CanvasPictureSampler {
         if (this.context) {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
         }
+    }
+
+    boostContrast(imgData, contrast) {
+        //input range [-100..100]
+        var d = imgData.data
+        contrast = contrast / 100 + 1 //convert to decimal & shift range: [0..2]
+        var intercept = 128 * (1 - contrast)
+        for (var i = 0; i < d.length; i += 4) {
+            //r,g,b,a
+            d[i] = d[i] * contrast + intercept
+            d[i + 1] = d[i + 1] * contrast + intercept
+            d[i + 2] = d[i + 2] * contrast + intercept
+        }
+        return imgData
     }
 }

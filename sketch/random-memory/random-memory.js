@@ -2,8 +2,9 @@ import SvgTracer from '../../sketch-common/svg-tracer'
 import CanvasPictureSampler from './Canvas-picture-sampler'
 import { createNoise2D } from 'simplex-noise'
 import Notification from '../../sketch-common/Notification'
-//import './assets/harold.png'
-const frame = document.getElementById('windowFrame')
+
+const { cos, sin, PI, round } = Math,
+    frame = document.getElementById('windowFrame')
 
 const sketch = {
     input: document.createElement('input'),
@@ -18,22 +19,31 @@ const sketch = {
     sampler: new CanvasPictureSampler(),
     simplex: createNoise2D(),
     resetImage: () => {
+        sketch.tracer.clear()
         sketch.sampler.clear()
         sketch.image = new Image()
         sketch.lines = []
-        sketch.image.src = `./harold.png`
+        sketch.image.src = `./Aaron_Swartz_2_at_Boston_Wikipedia_Meetup.jpg`
+    },
+    onImageLoad: (event) => {
+        sketch.tracer.clear()
+        sketch.sampler.clear()
+        sketch.lines = []
+        sketch.sampler.load(sketch.image, sketch.draw)
+        sketch.draw()
     },
     init: () => {
         sketch.tracer.init()
         sketch.margin = sketch.tracer.cmToPixels(0.5)
         sketch.image = new Image()
-        sketch.image.src = `./harold.png`
+        sketch.image.src = `./Aaron_Swartz_2_at_Boston_Wikipedia_Meetup.jpg`
         sketch.image.id = 'sample'
         sketch.image.crossOrigin = 'anonymous'
         document.body.appendChild(sketch.image)
         sketch.input.type = 'file'
         sketch.input.accept = 'image/jpeg, image/png, image/gif'
-
+        sketch.rememberText.innerHTML =
+            'By <a href="https://commons.wikimedia.org/w/index.php?curid=15853007">Sage Ross</a> — Flickr, CC BY-SA 2.0'
         sketch.resetImage()
         sketch.rememberBox.appendChild(sketch.sampler.canvas)
         sketch.rememberBox.appendChild(sketch.input)
@@ -41,25 +51,26 @@ const sketch = {
         sketch.rememberBox.style.marginLeft = '1em'
         frame.appendChild(sketch.rememberBox)
 
-        sketch.image.onload = function () {
-            sketch.rememberText.innerHTML =
-                sketch.image.attributes.src.nodeValue
-            const printZone = [
-                sketch.tracer.width - sketch.margin * 2,
-                sketch.tracer.height - sketch.margin * 2
-            ]
-            sketch.scale = [
-                Math.round(printZone[0] / 56),
-                Math.round(printZone[1] / 74)
-            ]
-            sketch.sampler.load(sketch.image, sketch.draw)
-            sketch.draw()
-        }
+        const printZone = [
+            sketch.tracer.width - sketch.margin * 2,
+            sketch.tracer.height - sketch.margin * 2
+        ]
+        sketch.scale = [round(printZone[0] / 56), round(printZone[1] / 74)]
+        sketch.image.addEventListener('load', sketch.onImageLoad, false)
 
-        sketch.sampler.canvas.addEventListener('click', () => {
-            sketch.tracer.clear()
-            sketch.resetImage()
-        })
+        sketch.input.addEventListener(
+            'change',
+            (event) => {
+                const reader = new FileReader()
+                reader.onload = (e) => {
+                    sketch.image.src = e.target.result
+                }
+                reader.readAsDataURL(sketch.input.files[0])
+                sketch.image.addEventListener('load', sketch.onImageLoad, false)
+                sketch.rememberText.innerHTML = `<p>${event.target.value}</p>`
+            },
+            false
+        )
     },
     draw: () => {
         const pathLength = 0.5
@@ -84,12 +95,12 @@ const sketch = {
 
                 const v = [
                     [
-                        d.x + Math.cos(angle) * (sketch.scale[0] * pathLength),
-                        d.y + Math.sin(angle) * (sketch.scale[1] * pathLength)
+                        d.x + cos(angle) * (sketch.scale[0] * pathLength),
+                        d.y + sin(angle) * (sketch.scale[1] * pathLength)
                     ],
                     [
-                        d.x - Math.cos(angle) * (sketch.scale[0] * pathLength),
-                        d.y - Math.sin(angle) * (sketch.scale[1] * pathLength)
+                        d.x - cos(angle) * (sketch.scale[0] * pathLength),
+                        d.y - sin(angle) * (sketch.scale[1] * pathLength)
                     ]
                 ]
                 // Store line to export them
@@ -110,20 +121,20 @@ const sketch = {
             const [v, weight, angle] = line
             const points = [
                 [
-                    v[0][0] + Math.cos(Math.PI * 0.5 + angle) * weight,
-                    v[0][1] + Math.sin(Math.PI * 0.5 + angle) * weight
+                    v[0][0] + cos(PI * 0.5 + angle) * weight,
+                    v[0][1] + sin(PI * 0.5 + angle) * weight
                 ],
                 [
-                    v[0][0] + Math.cos(Math.PI * 1.5 + angle) * weight,
-                    v[0][1] + Math.sin(Math.PI * 1.5 + angle) * weight
+                    v[0][0] + cos(PI * 1.5 + angle) * weight,
+                    v[0][1] + sin(PI * 1.5 + angle) * weight
                 ],
                 [
-                    v[1][0] + Math.cos(Math.PI * 1.5 + angle) * weight,
-                    v[1][1] + Math.sin(Math.PI * 1.5 + angle) * weight
+                    v[1][0] + cos(PI * 1.5 + angle) * weight,
+                    v[1][1] + sin(PI * 1.5 + angle) * weight
                 ],
                 [
-                    v[1][0] + Math.cos(Math.PI * 0.5 + angle) * weight,
-                    v[1][1] + Math.sin(Math.PI * 0.5 + angle) * weight
+                    v[1][0] + cos(PI * 0.5 + angle) * weight,
+                    v[1][1] + sin(PI * 0.5 + angle) * weight
                 ]
             ]
             // draw as path (4 points)
