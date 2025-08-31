@@ -7,7 +7,7 @@ import fragSrc from './glsl/base.frag'
 import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import SvgTracer from '../../sketch-common/svg-tracer'
 import { fillWithStraightLines } from '../../sketch-common/fillShape'
-//import { getPalette } from '@nclslbrn/artistry-swatch'
+import PALETTE from './palette.js'
 
 let traits = {}
 
@@ -21,11 +21,11 @@ const containerElement = document.getElementById('windowFrame'),
     dpi = 300,
     svg = new SvgTracer({
         parentElem: containerElement,
-        size: 'A3_portrait',
+        size: { w: window.innerWidth * 0.05, h: window.innerHeight * 0.05 },
         background: '#f1f1f1',
         dpi
     }),
-    margin = svg.cmToPixels(3.4)
+    margin = svg.cmToPixels(1.4)
 
 /**
  * split a line in small parts (chunk)
@@ -96,9 +96,7 @@ const sketch = {
         traits = {
             noiseSeed: random() * 999,
             noiseSize: 2 + random() * 10,
-            palette: ["#888888", "#38c7f2",  "#111111", "##44172a"],
-          // ["#db9f2c", "#888888", "#111111", "#163c0c"], 
-          //['#245133', '#888888', '#111111', '#8e3333'],
+            palette: PALETTE[floor(random() * PALETTE.length)],
             numCell,
             cells
         }
@@ -157,9 +155,21 @@ const sketch = {
     },
 
     renderSvg: () => {
-        svg.clear() 
+        svg.clear()
+        svg.rect({
+            x: 0,
+            y: 0,
+            w: svg.width,
+            h: svg.height,
+            fill: `rgb(${traits.palette[0]})`
+        })
+        traits.palette.splice(0, 1)
         traits.palette.forEach((c, i) => {
-            svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 6 })
+            svg.group({
+                name: `color-${i}`,
+                stroke: `rgb(${c})`,
+                strokeWidth: 8
+            })
         })
         const scanLines = [],
             threshold = 28
@@ -169,7 +179,7 @@ const sketch = {
                     canvas,
                     (rgb) =>
                         rgb[0] < i * threshold && rgb[0] > (i - 1) * threshold,
-                    (4 + (i % 4)) * 2,
+                    (4 + (i % 4)) * 4,
                     i % 4
                 )
             )
@@ -185,9 +195,7 @@ const sketch = {
                 )
 
                 g[
-                    lidx % 12 === 0
-                        ? gidx
-                        : (gidx + 1) % traits.palette.length
+                    lidx % 12 === 0 ? gidx : (gidx + 1) % traits.palette.length
                 ].push(
                     ...(lidx % 8 === 0
                         ? chunkify(
