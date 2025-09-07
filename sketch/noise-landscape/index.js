@@ -10,12 +10,12 @@ const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 let canvas
 const sketch = (p5) => {
-    const scale = 3
+    const scale = 2.5
     const numPoints = 3000
     let topoPoints, pTransform, fbm
     let noiseScale = 0.5
     let noiseSample = 5
-    let opacity = 12.5
+    let opacity = 50
     const squeeze_y = 0.45
     const perspective_x = 0.75
 
@@ -31,15 +31,17 @@ const sketch = (p5) => {
         for (let i = 0; i < numPoints; i++) {
             topoPoints.push({
                 pos: p5.createVector(
-                    p5.randomGaussian(p5.width / 2, p5.width / 4),
-                    p5.randomGaussian(p5.height / 2, p5.height / 4)
+                    p5.randomGaussian(p5.width / 2, p5.width / 8),
+                    p5.randomGaussian(p5.height / 2, p5.height / 8)
                 ),
                 angle: p5.random(p5.TWO_PI),
                 height: 0
             })
         }
 
-        p5.background(255)
+        p5.background(50)
+        p5.strokeWeight(2)
+        p5.stroke(255, opacity)
     }
     const setupParamInteraction = () => {
         const paramBox = document.createElement('div')
@@ -74,8 +76,8 @@ const sketch = (p5) => {
             {
                 value: opacity,
                 options: {
-                    min: 0.1,
-                    max: 25,
+                    min: 25,
+                    max: 75,
                     step: 0.1,
                     label: 'Opacity'
                 },
@@ -100,25 +102,12 @@ const sketch = (p5) => {
     }
     sketch.exportPNG = () => {
         const date = new Date()
-        const filename =
-            'Noise-landscape.' +
-            date.getFullYear() +
-            '-' +
-            date.getMonth() +
-            '-' +
-            date.getDay() +
-            '_' +
-            date.getHours() +
-            '.' +
-            date.getMinutes() +
-            '.' +
-            date.getSeconds() +
-            '--copyright_Nicolas_Lebrun_CC-by-3.0'
-        p5.save(canvas, filename, 'png')
+        const filename = 'Noise-landscape.' + new Date.toISOString()
+        p5.save(canvas, filename, 'jpg')
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(window.innerWidth, window.innerHeight)
+        canvas = p5.createCanvas(window.innerWidth * 2, window.innerHeight * 2)
         const pad_x = (p5.width - p5.width * perspective_x) / 2
         const pad_y = (p5.height - p5.height * squeeze_y) / 2
         var srcCorners = [0, 0, p5.width, 0, p5.width, p5.height, 0, p5.height]
@@ -151,7 +140,6 @@ const sketch = (p5) => {
                         topoPoints[i].height * p5.height
                 ])
 
-                p5.stroke(0, 25)
                 p5.point(np[0], np[1])
 
                 /**
