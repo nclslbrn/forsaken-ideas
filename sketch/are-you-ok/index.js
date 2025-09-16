@@ -29,13 +29,13 @@ import hatch from './hatch'
 // default settings in inkscape DPI = 96
 const DPI = quantity(96, dpi),
     SIZE = mul(quantity([297, 420], mm), DPI).deref(),
-    MARGIN = convert(mul(quantity(50, mm), DPI), NONE),
+    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    N_SCALE = 0.0003,
+    N_SCALE = 0.07,
     NUM_FRAME = 250,
-    SENTENCES = 'DIOV_ERUTCURTS__' //'infrathin'
+    SENTENCES = 'froissé ' //'infrathin'
 
 let frameCount = 0,
     isAnimated = false,
@@ -65,7 +65,7 @@ const init = () => {
     }
     width = SIZE[0] - MARGIN * 2
     height = SIZE[1] - MARGIN * 2
-    step = 48 + Math.ceil(Math.random() * 48) 
+    step = 84 + Math.ceil(Math.random() * 84) 
     noise = createNoise4D()
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
@@ -93,8 +93,8 @@ const update = () => {
             const n1 = noise(
                 p[0] * N_SCALE * step,
                 p[1] * N_SCALE * step,
-                0.33 * Math.cos(t),
-                0.33 * Math.sin(t)
+                0.1 * Math.cos(t),
+                0.1 * Math.sin(t)
             )
             if (n1 >= 0) {
                 const a1 = Math.PI * n1
