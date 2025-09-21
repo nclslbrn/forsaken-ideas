@@ -6,14 +6,14 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, mm, dpi, DIN_A3, DIN_A3_LANDSCAPE } from '@thi.ng/units'
 
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
 
 const DPI = quantity(96, dpi),
-    SIZE = mul(DIN_A3, DPI).deref(),
+    SIZE = mul(DIN_A3_LANDSCAPE, DPI).deref(),
     MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -45,13 +45,13 @@ const init = () => {
     };
 
     const rule = pickRandom(RULES);
-    const grid_size = [4 + ceil(random() * 8), 4 + ceil(random() * 24)]
+    const grid_size = [2 + ceil(random() * 4), 2 + ceil(random() * 12)]
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
     const allCell = grid.reduce((rects, cell, i) => {
         const [x, y, w, h] = cell
         return [...rects, ...pattern.reduce((subgrid, pattern, j) => {
-            if (rule(i, j)) {
+            // if (!rule(i, j)) {
                 const [dx, dy, dw, dh] = pattern
                 return [
                     ...subgrid,
@@ -62,9 +62,9 @@ const init = () => {
                         dh * h * (SIZE[1] - MARGIN * 2)
                     ]
                 ]
-            } else {
-                return subgrid
-            }
+            // } else {
+            //    return subgrid
+            // }
         },
             [])
         ]
@@ -72,7 +72,11 @@ const init = () => {
     
     const lines = allCell.reduce((acc, cell) => [
             ...acc,
-            ...fillCell(cell, ceil(random()*3)).map(ln => polyline(ln))
+            ...fillCell(
+                cell, 
+                floor(random()*3), 
+                floor(random()*2)*4
+            ).map(ln => polyline(ln))
     ], [])
 
     drawElems = [

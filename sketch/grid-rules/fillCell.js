@@ -1,7 +1,9 @@
 const {sin, cos, hypot, PI} = Math
 
-const fillCell = (cell, dir) => {
-
+const fillCell = (cell, dir, decay) => {
+    
+    if (dir>2) console.error(`${dir}/2`)
+    
     const [cx, cy, cw, ch] = cell
     const isValidPos = (x, y) => x > cx && x < cx+cw && y > cy && y < cy+ch  
     const ls = []
@@ -12,7 +14,7 @@ const fillCell = (cell, dir) => {
         // vertical lines
         if (dir === 0) {
             res = 1
-            for (let x = cx; x < cx+cw; x += res) {
+            for (let x = cx-decay; x < cx+cw; x += res) {
                 let ln = []
                 for (let y = cy; y < cy+ch; y++) {
                     const penDown = isValidPos(x, y)
@@ -29,7 +31,7 @@ const fillCell = (cell, dir) => {
         // horizontal lines
         else {
             res = 1
-            for (let y = cy; y < cy+ch; y += res) {
+            for (let y = cy-decay; y < cy+ch; y += res) {
                 let ln = []
                 for (let x = cx; x < cx+cw; x++) {
                     const penDown = isValidPos(x, y)
@@ -46,28 +48,29 @@ const fillCell = (cell, dir) => {
     }
     // diagonal lines
     else {
-        const step = hypot(res, res)
         const diag = hypot(cw, ch)
         const theta = (dir === 2 ? -PI : PI) / 4
         const cntr = [cx + cw / 2, cy + ch / 2]
-        res=1
-        for (let x = -diag; x <= diag; x += step) {
+
+        res = 0.001
+        
+        for (let x = -diag; x <= diag; x += res) {
+            
+            
             let ln = []
-            for (let y = -diag; y <= diag; y += step) {
+            for (let y = -diag; y <= diag; y++) {
                 const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
                 const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
 
-                if (xx >= cx && xx < cx+cw && yy >= cy && yy < cy+ch) {
-                    const penDown = isValidPos(xx, yy)
-                    if (ln.length && !penDown) {
-                        ls.push(ln)
-                        ln = []
-                    }
-                    if (penDown) ln.push([xx, yy])
+                if (xx >= cx && xx <= cx+cw && yy >= cy && yy <= cy+ch) {
+                    ln.push([xx, yy])
+                } else {
+                    ln.length && ls.push(ln)
+                    ln = [] 
                 }
+                res += 0.001
             }
             ln.length && ls.push(ln)
-            res++
         }
     }
     return ls
