@@ -5,10 +5,10 @@ import SvgTracer from '../../sketch-common/svg-tracer'
 
 const ROOT = document.getElementById('windowFrame'),
     LOADER = document.getElementById('loading'),
-    MARGIN = 200,
+    MARGIN = 10,
     SVG = new SvgTracer({
         parentElem: ROOT,
-        size: 'A4_portrait', //{ w: 45.5, h: 27 },
+        size: 'A3_landscape', //{ w: 45.5, h: 27 },
         background: '#fff',
         dpi: 300
     })
@@ -23,11 +23,11 @@ const addFontFile = () => {
     defs.appendChild(style)
     style.type = 'text/css'
     style.sheet.insertRule(
-        `@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');`,
+        `@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');`,
         style.sheet.cssRules.length
     )
     style.sheet.insertRule(
-        `text { font-family: Inter; font-weight: 900; }`,
+        `text { font-family: Geist; font-weight: 700; }`,
         style.sheet.cssRules.length
     )
 }
@@ -37,58 +37,43 @@ const sketch = {
         const inner = [SVG.width - MARGIN * 2, SVG.height - MARGIN * 2],
             base = 10,
             svgDisplayWidth = SVG.elem.getBoundingClientRect().width,
-            text = 'SOL',
-            rcs = 0.33
+            texts = 'singular/alterity/similar/alteration/system/protocole/structure'.split('/')
 
         let y = MARGIN,
             fontSize = base
 
         SVG.clear()
         addFontFile()
-        SVG.rect({
-            x: 0,
-            y: 0,
-            w: SVG.width,
-            h: SVG.height,
-            fill: '#333'
-        })
-        let w = 0,
-            l = 0
 
-        while (y + fontSize < inner[1]) {
-            y += fontSize
-            let x = 0 //fontSize * text.length * 0.25
+        while (y < inner[1]) {
+            y += fontSize * 0.8
+            let x = 0,
+            txtIdx = 0
 
             while (x < SVG.width) {
+                const text = `${texts[txtIdx]}+`
+
                 SVG.text({
-                    x: SVG.width / 2 - (x + fontSize * text.length * rcs),
+                    x: x,
                     y,
                     fontSize,
                     text,
-                    fontFamily: 'Inter Variable',
-                    fontWeight: Math.round(400 + 300 * (1 - base / fontSize)),
-                    fill: '#ccc',
+                    fontFamily: 'Geist',
+                    fontWeight: Math.round(100 + 300 * (1 - base / fontSize)),
+                    fill: '#333',
                     anchor: 'middle'
                 })
-                SVG.text({
-                    x: SVG.width / 2 + (x - fontSize * text.length * rcs),
-                    y,
-                    fontSize,
-                    text,
-                    fontFamily: 'Inter Variable',
-                    fontWeight: Math.round(400 + 300 * (1 - base / fontSize)),
-                    fill: '#ccc',
-                    anchor: 'middle'
-                })
-                w++
+
                 const textWidth =
                     (SVG.elem.lastChild.getBoundingClientRect().width /
                         svgDisplayWidth) *
                     SVG.width
-                x += textWidth + fontSize * 0.5
+
+                x += textWidth * 0.96
+                txtIdx++
+                txtIdx = txtIdx % texts.length
             }
             fontSize *= 1.16
-            l++
         }
     }
 }
