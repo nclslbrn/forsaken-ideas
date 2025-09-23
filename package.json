@@ -15,8 +15,7 @@
     "sketch:publish": "cp -r ./public/sketch ./dist/",
     "sketch:setup": "node tasks/cli-setup-sketch.mjs",
     "sketch:setupAll": "node tasks/setup-vite-for-all-sketches.mjs",
-    "sketch:dev": "cd ./sketch/$@ && vite",
-    "sketch:build": "cd ./sketch/$@ && vite build",
+    "sketch:dev": "node tasks/sketch.js",
     "sketch:buildAll": "node tasks/build-all-sketches.mjs"
   },
   "dependencies": {
