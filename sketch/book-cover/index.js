@@ -11,7 +11,8 @@ const ROOT = document.getElementById('windowFrame'),
         size: 'A3_landscape', //{ w: 45.5, h: 27 },
         background: '#fff',
         dpi: 300
-    })
+    }),
+    { floor, random} = Math
 
 const addFontFile = () => {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
@@ -47,31 +48,39 @@ const sketch = {
 
         while (y < inner[1]) {
             y += fontSize * 0.8
-            let x = 0,
-            txtIdx = 0
+            
+            let x = 0
 
             while (x < SVG.width) {
-                const text = `${texts[txtIdx]}+`
+                const text = texts[floor(random()*texts.length)]
+                const textWidth = text.length * fontSize * 0.5
+                const inv = Math.hypot(x+textWidth/2 - SVG.width/2, y - SVG.height/2) < Math.min(SVG.width, SVG.height) * 0.3
 
+                if (inv) { 
+                    SVG.rect({
+                        x: x-fontSize*.25, 
+                        y: y-fontSize*.75, 
+                        w: textWidth+fontSize*.5, h: fontSize, fill: '#111' })
+                }
                 SVG.text({
-                    x: x,
+                    x,
                     y,
                     fontSize,
                     text,
                     fontFamily: 'Geist',
                     fontWeight: Math.round(100 + 300 * (1 - base / fontSize)),
-                    fill: '#333',
+                    fill: inv ? '#fefefe' : '#111',
                     anchor: 'middle'
                 })
-
+                /*
                 const textWidth =
-                    (SVG.elem.lastChild.getBoundingClientRect().width /
+                    (textElem.getBoundingClientRect().width /
                         svgDisplayWidth) *
                     SVG.width
+                */
+                
 
-                x += textWidth * 0.96
-                txtIdx++
-                txtIdx = txtIdx % texts.length
+                x += textWidth + fontSize
             }
             fontSize *= 1.16
         }
