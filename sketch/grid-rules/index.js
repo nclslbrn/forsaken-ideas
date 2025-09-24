@@ -6,14 +6,15 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3, DIN_A3_LANDSCAPE } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
 
 const DPI = quantity(96, dpi),
-    SIZE = mul(DIN_A3_LANDSCAPE, DPI).deref(),
+    CUSTOM_FORMAT = quantity([216, 270], "mm"),
+    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -51,7 +52,7 @@ const init = () => {
     const allCell = grid.reduce((rects, cell, i) => {
         const [x, y, w, h] = cell
         return [...rects, ...pattern.reduce((subgrid, pattern, j) => {
-            // if (!rule(i, j)) {
+            if (!rule(i, j)) {
                 const [dx, dy, dw, dh] = pattern
                 return [
                     ...subgrid,
@@ -62,9 +63,9 @@ const init = () => {
                         dh * h * (SIZE[1] - MARGIN * 2)
                     ]
                 ]
-            // } else {
-            //    return subgrid
-            // }
+            } else {
+                return subgrid
+            }
         },
             [])
         ]

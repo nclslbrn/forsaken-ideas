@@ -8,7 +8,7 @@ const fillCell = (cell, dir, decay) => {
     const isValidPos = (x, y) => x > cx && x < cx+cw && y > cy && y < cy+ch  
     const ls = []
     
-    let res = 1 
+    let res = 0.5 
 
     if (dir < 2) {
         // vertical lines
@@ -52,23 +52,21 @@ const fillCell = (cell, dir, decay) => {
         const theta = (dir === 2 ? -PI : PI) / 4
         const cntr = [cx + cw / 2, cy + ch / 2]
 
-        res = 0.001
+        res = 0.0001
         
-        for (let x = -diag; x <= diag; x += res) {
-            
-            
+        for (let x = cx-diag; x <= cx+diag; x += res) {
+                   
             let ln = []
-            for (let y = -diag; y <= diag; y++) {
+            for (let y = cy-diag; y <= cy+diag; y++) {
                 const xx = cos(theta) * (x - cntr[0]) - sin(theta) * (y - cntr[1]) + cntr[0]
                 const yy = sin(theta) * (x - cntr[0]) + cos(theta) * (y - cntr[1]) + cntr[1]
-
-                if (xx >= cx && xx <= cx+cw && yy >= cy && yy <= cy+ch) {
-                    ln.push([xx, yy])
-                } else {
-                    ln.length && ls.push(ln)
-                    ln = [] 
+                const penDown = isValidPos(xx, yy)
+                if (ln.length && !penDown) {
+                    ls.push(ln)
+                    ln = []
                 }
-                res += 0.001
+                if (penDown) ln.push([xx, yy])
+                res += 0.0005
             }
             ln.length && ls.push(ln)
         }
