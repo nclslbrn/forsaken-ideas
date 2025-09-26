@@ -12,7 +12,7 @@ const ROOT = document.getElementById('windowFrame'),
         background: '#fff',
         dpi: 300
     }),
-    { floor, random} = Math
+    { floor, random } = Math
 
 const addFontFile = () => {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
@@ -38,30 +38,32 @@ const sketch = {
         const inner = [SVG.width - MARGIN * 2, SVG.height - MARGIN * 2],
             base = 10,
             svgDisplayWidth = SVG.elem.getBoundingClientRect().width,
-            texts = 'singular/alterity/similar/alteration/system/protocole/structure'.split('/')
+            texts =
+                'singular/alterity/similar/alteration/system/protocole/structure'.split(
+                    '/'
+                )
 
         let y = MARGIN,
             fontSize = base
 
         SVG.clear()
         addFontFile()
-
+        SVG.rect({
+            x: 0,
+            y: 0,
+            w: SVG.width + 1,
+            h: SVG.height,
+            fill: '#111'
+        })
         while (y < inner[1]) {
             y += fontSize * 0.8
-            
+
             let x = 0
 
             while (x < SVG.width) {
-                const text = texts[floor(random()*texts.length)]
+                const text = texts[floor(random() * texts.length)]
                 const textWidth = text.length * fontSize * 0.5
-                const inv = Math.hypot(x+textWidth/2 - SVG.width/2, y - SVG.height/2) < Math.min(SVG.width, SVG.height) * 0.3
 
-                if (inv) { 
-                    SVG.rect({
-                        x: x-fontSize*.25, 
-                        y: y-fontSize*.75, 
-                        w: textWidth+fontSize*.5, h: fontSize, fill: '#111' })
-                }
                 SVG.text({
                     x,
                     y,
@@ -69,16 +71,9 @@ const sketch = {
                     text,
                     fontFamily: 'Geist',
                     fontWeight: Math.round(100 + 300 * (1 - base / fontSize)),
-                    fill: inv ? '#fefefe' : '#111',
+                    fill: '#333',
                     anchor: 'middle'
                 })
-                /*
-                const textWidth =
-                    (textElem.getBoundingClientRect().width /
-                        svgDisplayWidth) *
-                    SVG.width
-                */
-                
 
                 x += textWidth + fontSize
             }
