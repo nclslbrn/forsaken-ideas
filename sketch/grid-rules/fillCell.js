@@ -24,7 +24,7 @@ const fillCell = (cell, dir, decay) => {
                     if (penDown) ln.push([x, y])
                 }
                 ln.length && ls.push(ln)
-                res++
+                res *= 1.07
             }
         }
         // horizontal lines
@@ -41,7 +41,7 @@ const fillCell = (cell, dir, decay) => {
                     if (penDown) ln.push([x, y])
                 }
                 ln.length && ls.push(ln)
-                res++
+                res *= 1.07
             }
         }
     }
@@ -51,7 +51,7 @@ const fillCell = (cell, dir, decay) => {
         const theta = (dir === 2 ? -PI : PI) / 4
         const cntr = [cx + cw / 2, cy + ch / 2]
         // res /= 10000
-        res = 0.5
+        res = 1e-8
         for (let x = cx - diag; x <= cx + diag; x += res) {
             let ln = []
             for (let y = cy - diag; y <= cy + diag; y++) {
@@ -70,7 +70,7 @@ const fillCell = (cell, dir, decay) => {
                 }
                 if (penDown) ln.push([xx, yy])
             }
-            res *= 1.05
+            res *= 1.03
             ln.length && ls.push(ln)
         }
     }

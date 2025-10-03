@@ -1,4 +1,4 @@
-import { rect, polyline, group, svgDoc } from '@thi.ng/geom'
+import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
@@ -13,9 +13,9 @@ import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
 
 const DPI = quantity(96, dpi),
-    CUSTOM_FORMAT = quantity([216, 270], 'mm'),
-    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
-    MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
+    // CUSTOM_FORMAT = quantity([216, 270], 'mm'),
+    SIZE = mul(DIN_A3, DPI).deref(),
+    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d')
@@ -46,7 +46,7 @@ const init = () => {
     }
 
     const rule = pickRandom(RULES)
-    const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 12)]
+    const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 3)]
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
     const allCell = grid.reduce((rects, cell, i) => {
@@ -54,8 +54,8 @@ const init = () => {
         return [
             ...rects,
             ...pattern.reduce((subgrid, pattern, j) => {
+                const [dx, dy, dw, dh] = pattern
                 if (!rule(i, j)) {
-                    const [dx, dy, dw, dh] = pattern
                     return [
                         ...subgrid,
                         [
