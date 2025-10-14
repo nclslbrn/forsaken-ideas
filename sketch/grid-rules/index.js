@@ -8,17 +8,20 @@ import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
 
 const DPI = quantity(96, dpi),
-    // CUSTOM_FORMAT = quantity([216, 270], 'mm'),
-    SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
+    CUSTOM_FORMAT = quantity([216, 270], 'mm'),
+    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
+    MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d')
+    CTX = CANVAS.getContext('2d'),
+    CHARS = [...'WHO\'S THE PM TODAY ?']
+
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
@@ -51,38 +54,49 @@ const init = () => {
     const [_, grid] = cells(grid_size[1], random, [patternType])
     const allCell = grid.reduce((rects, cell, i) => {
         const [x, y, w, h] = cell
-        return [
-            ...rects,
-            ...pattern.reduce((subgrid, pattern, j) => {
-                const [dx, dy, dw, dh] = pattern
-                if (!rule(i, j)) {
-                    return [
-                        ...subgrid,
-                        [
-                            remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
-                            remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
-                            dw * w * (SIZE[0] - MARGIN * 2),
-                            dh * h * (SIZE[1] - MARGIN * 2)
-                        ]
-                    ]
-                } else {
-                    return subgrid
-                }
-            }, [])
-        ]
-    }, [])
+        const nested = pattern.reduce((subgrid, pattern, j) => {
+            const [dx, dy, dw, dh] = pattern
+            const patternCell = [
+                remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
+                remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
+                dw * w * (SIZE[0] - MARGIN * 2),
+                dh * h * (SIZE[1] - MARGIN * 2)
+            ]
+            if (!rule(i, j)) {
+                 return [[...subgrid[0], patternCell], subgrid[1]]
+            } else {
+                return [subgrid[0], [...subgrid[1], patternCell]]
+            }
+            }, [[], []]
+        )
+        return [[...rects[0], ...nested[0]], [...rects[1], ...nested[1]]]
+    }, [[], []])
 
-    const lines = allCell.reduce(
+    const lines = [
+        ...allCell[0].reduce(
         (acc, cell) => [
             ...acc,
             ...fillCell(cell, floor(random() * 3), floor(random() * 2) * 4).map(
                 (ln) => polyline(ln)
             )
         ],
-        []
-    )
+        []),
+        ...allCell[1].reduce(
+            (acc, cell, cellIdx) => [
+                ...acc,
+                ...getGlyphVector(
+                    // CHARS[floor(random() * CHARS.length)],
+                    CHARS[cellIdx % CHARS.length],
+                    [cell[2], cell[3]],
+                    [cell[0], cell[1]]
+                ).map(
+                    ln => polyline(ln)
+                )
+            ],
+        [])
+    ]
 
-    drawElems = [rect(SIZE, { fill: '#fff' }), group({ stroke: '#000' }, lines)]
+    drawElems = [rect(SIZE, { fill: '#111' }), group({ stroke: '#fefefe' }, lines)]
     draw(CTX, group({}, drawElems))
 }
 
