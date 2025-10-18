@@ -2,5 +2,10 @@
     "libs": ["p5"],
     "info": "Based on Straight Curve by Bridget Riley, 1963, acrylic on board 24 x 28 in. (61 x 71.1 cm).",
     "date": "2019-10-18",
-    "topic": "Unsorted"
+    "topic": "Unsorted",
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "exportJPG", "icon": "file-media" },
+        { "name": "exportSVG", "icon": "desktop-download" }
+    ]
 }
