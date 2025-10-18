@@ -8,7 +8,7 @@ The gallery is developed with VueJS, it's quite simple, it's a classic project t
 
 The part that generates the projects is more interesting. The usual `yarn run dev` command is sufixed with the project name, enabling you to generate a multitude of projects from a single configuration. So, to develop project x (contained in the sketch/x/ folder) you can run yarn run sketch:dev x, which will set sketch/x/index.js as the input to your application (used by Vite).
 
-This workflow is designed to be modular and space-saving, so the p5.js and three.js libraries are loaded from a cdn. To indicate how to load the library, simply specify it in a file named property.json (sort of tiny and internal package.json), which must be present in all projects. It is used to indicate information that will be reinjected into the HTML template (interaction button with the program, display of a short note on the project, date, topic...) and in the gallery. 
+This workflow is designed to be modular and space-saving, so the p5.js and three.js libraries are loaded from a cdn. To indicate how to load the library, simply specify it in a file named property.json (sort of tiny and internal package.json), which must be present in all projects. It is used to indicate information that will be reinjected into the HTML template (interaction button with the program, display of a short note on the project, date, topic...) and in the gallery.
 
 
 
@@ -16,7 +16,7 @@ This workflow is designed to be modular and space-saving, so the p5.js and three
 ├── dist/ 			Whole site exported (production ready)
 ├── public/ 			Where projects are exported (to be used on gallery Vue app)
 ├── sketch/
-│   ├──  a-title-of-a-projec/ 	
+│   ├──  a-title-of-a-projec/
 │   │				Where you code new sketch
 │   ├──  assets/ 		A folder to store some files (fonts, img), Vite will lookat this specific folder
 │   ├──  index.js 		Sketch entry point
@@ -73,17 +73,17 @@ action.icon | (String) An icon name (must be declared in sketch-template.html)
 
 ### Yarn tasks
 
-#### Sketch command 
+#### Sketch command
 
 | command | description |
 | :--- | :--- |
-|yarn run sketch:setup {sketch} | Setup a new project or a config of an old one (create a folder with index.html and vite.config.js |
-|yarn run sketch:dev {sketch} --host| Launch a sketch with Vite (dev server) |
-| yarn run sketch:build {sketch} | Build the sketch and store files in ./public/sketch/{sketch} |
+| yarn run sketch:setup {sketch} | Setup a new project or a config of an old one (create a folder with index.html and vite.config.js |
+| yarn run sketch {sketch} | Launch a sketch with Vite (dev server) |
+| yarn run sketch {sketch} build | Build the sketch and store files in ./public/sketch/{sketch} |
 | yarn run sketck:list | List all project in a JSON file ./public/sketch/index.json |
-| yarn run sketch:publish | Copy all built from public/sketch to dist/sketch | 
+| yarn run sketch:publish | Copy all built from public/sketch to dist/sketch |
 
-{sketch} the name of the folder where the sketch is 
+{sketch} the name of the folder where the sketch is
 
 
 #### Gallery command
