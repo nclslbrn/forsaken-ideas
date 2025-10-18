@@ -7,7 +7,7 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { rect, triangle, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
-import { pickRandom } from '@thi.ng/random'
+import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
@@ -26,50 +26,68 @@ const APP = document.getElementById('windowFrame'),
 APP.removeChild(LOADER)
 APP.appendChild(CANVAS)
 
+let drawElems
+
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const minMax = [0.01, 0.1],
-        incr = 0.01
+    const dimVariation = (minMax) => {
+            const dimSize = []
+            let x = 0,
+                step = randMinMax(minMax),
+                isStepGrowing = random() > 0.5
 
-    let variation = [
-            (random() > 0.5 ? -1 : 1) * 0.1,
-            (random() > 0.5 ? -1 : 1) * 0.1
-        ],
-        step = [randMinMax(minMax), randMinMax(minMax)]
+            while (x < 1) {
+                if (step >= minMax[1]) isStepGrowing = false
+                if (step <= minMax[0]) isStepGrowing = true
+                if (isStepGrowing) step *= 1.1
+                else step *= 0.9
 
-    console.log(step)
-    const updateVariation = (x) => {
-        if (x < minMax[0] || x > minMax[1]) {
-            return x * -1
+                dimSize.push(step)
+                x += step
+            }
+            const fixScale = dimSize.reduce((acc, val) => (acc += val), 0)
+            return dimSize.map((x) => (x /= fixScale))
+        },
+        cellWidth = dimVariation([0.02, 0.04]),
+        cellHeight = dimVariation([0.01, 0.05]),
+        tris = []
+
+    let x = 0
+    for (const w of cellWidth) {
+        let y = 0
+        for (const h of cellHeight) {
+            tris.push(
+                triangle(
+                    [x, y],
+                    [x + w * SIZE[0], y + h * SIZE[1]],
+                    [x, y + h * SIZE[1]]
+                )
+            )
+            y += h * SIZE[1]
         }
-        return x + x
-    }
-    const cellWidth = [],
-        cellHeight = []
-    let x = 0,
-        y = 0
-
-    while (x < 1) {
-        variation[0] = updateVariation(variation[0])
-        step += variation[0]
-        cellWidth.push(step)
-        x += step
+        x += w * SIZE[0]
     }
 
-    console.log(cellWidth)
+    drawElems = [rect(SIZE, { fill: '#111' }), group({ fill: '#fefefe' }, tris)]
+    draw(CTX, group({}, drawElems))
 }
 
 init()
 window.init = init
 
 window['exportJPG'] = () => {
-    downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(
+        CANVAS,
+        `Straight curve - ${FMT_yyyyMMdd_HHmmss()}`,
+        'jpeg',
+        1
+    )
 }
 window['exportSVG'] = () => {
     downloadWithMime(
-        `Grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `Straight curve - ${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
             svgDoc(
                 {
