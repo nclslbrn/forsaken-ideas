@@ -1,9 +1,4 @@
 import '../framed-canvas.css'
-// import sketch from './straight-curve'
-// import p5 from 'p5'
-// const containerElement = document.getElementById('windowFrame')
-// const loader = document.getElementById('loading')
-
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { rect, triangle, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
