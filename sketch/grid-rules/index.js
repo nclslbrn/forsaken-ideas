@@ -15,7 +15,7 @@ import { fillCell } from './fillCell'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
-        [window.innerWidth / 50, window.innerHeight / 50],
+        [window.innerWidth / 30, window.innerHeight / 30],
         'cm'
     ),
     SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
@@ -69,10 +69,7 @@ const init = () => {
                     if (!rule(i, j)) {
                         return [[...subgrid[0], patternCell], subgrid[1]]
                     } else {
-                        return [
-                            subgrid[0],
-                            [...subgrid[1], useText ? patternCell : []]
-                        ]
+                        return [subgrid[0], [...subgrid[1], patternCell]]
                     }
                 },
                 [[], []]
@@ -91,7 +88,7 @@ const init = () => {
                 ...acc,
                 ...fillCell(
                     cell,
-                    floor(random() * 8),
+                    floor(random() * (useText ? 4 : 8)),
                     floor(random() * 2) * 4
                 ).map((ln) => polyline(ln))
             ],
@@ -100,11 +97,18 @@ const init = () => {
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
-                ...getGlyphVector(
-                    // CHARS[floor(random() * CHARS.length)],
-                    CHARS[cellIdx % CHARS.length],
-                    [cell[2], cell[3]],
-                    [cell[0], cell[1]]
+                ...(useText
+                    ? getGlyphVector(
+                          // CHARS[floor(random() * CHARS.length)],
+                          CHARS[cellIdx % CHARS.length],
+                          [cell[2], cell[3]],
+                          [cell[0], cell[1]]
+                      )
+                    : fillCell(
+                          cell,
+                          floor(4 + random() * 4),
+                          floor(random() * 2) * 4
+                      )
                 ).map((ln) => polyline(ln))
             ],
             []

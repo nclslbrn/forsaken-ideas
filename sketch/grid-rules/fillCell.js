@@ -56,7 +56,7 @@ const diagonalLines = ([cx, cy], isValidPos, res, theta, cntr, diag) => {
             }
             if (penDown) ln.push([xx, yy])
         }
-        res *= 1.03
+        res *= 1.07
         ln.length && ls.push(ln)
     }
     return ls
@@ -80,7 +80,7 @@ const arcLines = (
             isValidPos(ax, ay) && ln.push([ax, ay])
         }
         ln.length && ls.push(ln)
-        res *= 1.03
+        res *= 1.07
     }
     return ls
 }
@@ -123,7 +123,7 @@ const fillCell = (cell, dir, decay) => {
                 cell,
                 decay,
                 isValidPos,
-                2,
+                1,
                 cntrs[dir % 4],
                 startEnds[dir % 4]
             )
