@@ -38,7 +38,8 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const char_size = [10, 16],
+    const baseCharSize = 8 + floor(random() * 8),
+        char_size = [baseCharSize, baseCharSize * floor(1 + random() * 0.5)],
         glyphGrid = ([cx, cy, cw, ch]) => repeatedly2d(
             (x, y) => [cx+x*char_size[0], cy+y*char_size[1], char_size[0], char_size[1]], 
             floor(cw/char_size[0]), floor(ch/char_size[1])
@@ -57,7 +58,6 @@ const init = () => {
         ]
     }
 
-    const useText = Math.random() > 0.5
     const rule = pickRandom(RULES)
     const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 3)]
     const [patternType, pattern] = cells(grid_size[0], random)
@@ -96,8 +96,8 @@ const init = () => {
                 ...acc,
                 ...fillCell(
                     cell,
-                    floor(random() * (useText ? 4 : 8)),
-                            floor(random() * 2) * 4
+                    floor(random() * 8),
+                    floor(random() * 2) * 4
                 ).map((ln) => polyline(ln))
             ],
             []
@@ -105,19 +105,14 @@ const init = () => {
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
-                ...(useText
-                    ? glyphGrid(cell).reduce((lines, subcell, sbIdx) => 
+                ...(glyphGrid(cell).reduce((lines, subcell, sbIdx) => 
                         [...lines, ...getGlyphVector(
                           CHARS[(cellIdx+sbIdx) % CHARS.length],
                           [subcell[2], subcell[3]],
                           [subcell[0], subcell[1]]
                       )], []
                     )
-                    : fillCell(
-                          cell,
-                          floor(4 + random() * 4),
-                          floor(random() * 2) * 4
-                      )
+                    
                 ).map((ln) => polyline(ln))
             ],
             []
