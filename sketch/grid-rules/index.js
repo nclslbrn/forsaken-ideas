@@ -12,6 +12,7 @@ import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
+import { repeatedly2d } from '@thi.ng/transducers'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
@@ -23,7 +24,7 @@ const DPI = quantity(96, dpi),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    CHARS = [..."WHO'S THE PM TODAY ?"]
+    CHARS = [...">____|-\\/^#~ ======+======][------------:::::::"]
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
@@ -36,6 +37,13 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
+
+    const char_size = [10, 16],
+        glyphGrid = ([cx, cy, cw, ch]) => repeatedly2d(
+            (x, y) => [cx+x*char_size[0], cy+y*char_size[1], char_size[0], char_size[1]], 
+            floor(cw/char_size[0]), floor(ch/char_size[1])
+        )
+
 
     const cells = (numCell, rand, not = []) => {
         const choices = Array.from(Array(GRIDS.length))
@@ -89,7 +97,7 @@ const init = () => {
                 ...fillCell(
                     cell,
                     floor(random() * (useText ? 4 : 8)),
-                    floor(random() * 2) * 4
+                            floor(random() * 2) * 4
                 ).map((ln) => polyline(ln))
             ],
             []
@@ -98,12 +106,13 @@ const init = () => {
             (acc, cell, cellIdx) => [
                 ...acc,
                 ...(useText
-                    ? getGlyphVector(
-                          // CHARS[floor(random() * CHARS.length)],
-                          CHARS[cellIdx % CHARS.length],
-                          [cell[2], cell[3]],
-                          [cell[0], cell[1]]
-                      )
+                    ? glyphGrid(cell).reduce((lines, subcell, sbIdx) => 
+                        [...lines, ...getGlyphVector(
+                          CHARS[(cellIdx+sbIdx) % CHARS.length],
+                          [subcell[2], subcell[3]],
+                          [subcell[0], subcell[1]]
+                      )], []
+                    )
                     : fillCell(
                           cell,
                           floor(4 + random() * 4),
