@@ -1,5 +1,5 @@
 import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
-import { pickRandom } from '@thi.ng/random'
+import { pickRandom, weightedRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
@@ -24,7 +24,14 @@ const DPI = quantity(96, dpi),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    CHARS = [...">____|-\\/^#~ ======+======][------------:::::::"]
+    CHARS = [
+        '>____|-\\/^#~ ======+',
+        '======][------|',
+        '/////#\\\\\\<<<<<<<<',
+        '0----+----1----+---0',
+        '................%:.:.:.:.:.:.:.:.:.',
+        '||_______-________-________-_______'
+    ]
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
@@ -38,13 +45,24 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const baseCharSize = 8 + floor(random() * 8),
+    const str = [...CHARS[floor(random() * CHARS.length)]],
+        baseCharSize = 12 + floor(random() * 16),
         char_size = [baseCharSize, baseCharSize * floor(1 + random() * 0.5)],
-        glyphGrid = ([cx, cy, cw, ch]) => repeatedly2d(
-            (x, y) => [cx+x*char_size[0], cy+y*char_size[1], char_size[0], char_size[1]], 
-            floor(cw/char_size[0]), floor(ch/char_size[1])
+        glyphGrid = ([cx, cy, cw, ch]) =>
+            repeatedly2d(
+                (x, y) => [
+                    cx + x * char_size[0],
+                    cy + y * char_size[1],
+                    char_size[0],
+                    char_size[1]
+                ],
+                floor(cw / char_size[0]),
+                floor(ch / char_size[1])
+            ),
+        fillType = weightedRandom(
+            [0, 1, 2, 3, 4, 5, 6, 7],
+            [3, 3, 3, 3, 1, 1, 1, 1]
         )
-
 
     const cells = (numCell, rand, not = []) => {
         const choices = Array.from(Array(GRIDS.length))
@@ -94,26 +112,28 @@ const init = () => {
         ...allCell[0].reduce(
             (acc, cell) => [
                 ...acc,
-                ...fillCell(
-                    cell,
-                    floor(random() * 8),
-                    floor(random() * 2) * 4
-                ).map((ln) => polyline(ln))
+                ...fillCell(cell, fillType(), floor(random() * 2) * 4).map(
+                    (ln) => polyline(ln)
+                )
             ],
             []
         ),
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
-                ...(glyphGrid(cell).reduce((lines, subcell, sbIdx) => 
-                        [...lines, ...getGlyphVector(
-                          CHARS[(cellIdx+sbIdx) % CHARS.length],
-                          [subcell[2], subcell[3]],
-                          [subcell[0], subcell[1]]
-                      )], []
+                ...glyphGrid(cell)
+                    .reduce(
+                        (lines, subcell, sbIdx) => [
+                            ...lines,
+                            ...getGlyphVector(
+                                str[(cellIdx + sbIdx) % str.length],
+                                [subcell[2], subcell[3]],
+                                [subcell[0], subcell[1]]
+                            )
+                        ],
+                        []
                     )
-                    
-                ).map((ln) => polyline(ln))
+                    .map((ln) => polyline(ln))
             ],
             []
         )
