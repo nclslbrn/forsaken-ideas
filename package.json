@@ -44,6 +44,7 @@
     "chromotome": "^1.21.4",
     "enquirer": "^2.4.1",
     "p5": "^1.9.4",
+    "prettier-eslint": "^16.4.2",
     "simplex-noise": "^4.0.1",
     "three": "^0.166.0",
     "vite-plugin-cdn2": "^1.1.0",
