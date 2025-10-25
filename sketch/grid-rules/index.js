@@ -12,6 +12,7 @@ import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
+import { scribleLine } from './scribleLine'
 import { repeatedly2d } from '@thi.ng/transducers'
 
 const DPI = quantity(96, dpi),
@@ -112,8 +113,8 @@ const init = () => {
         ...allCell[0].reduce(
             (acc, cell) => [
                 ...acc,
-                ...fillCell(cell, fillType(), floor(random() * 2) * 4).map(
-                    (ln) => polyline(ln)
+                ...fillCell(cell, fillType(), 0).map((ln) =>
+                    scribleLine(ln, 1, 1.2)
                 )
             ],
             []
@@ -121,23 +122,21 @@ const init = () => {
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
-                ...glyphGrid(cell)
-                    .reduce(
-                        (lines, subcell, sbIdx) => [
-                            ...lines,
-                            ...getGlyphVector(
-                                str[(cellIdx + sbIdx) % str.length],
-                                [subcell[2], subcell[3]],
-                                [subcell[0], subcell[1]]
-                            )
-                        ],
-                        []
-                    )
-                    .map((ln) => polyline(ln))
+                ...glyphGrid(cell).reduce(
+                    (lines, subcell, sbIdx) => [
+                        ...lines,
+                        ...getGlyphVector(
+                            str[(cellIdx + sbIdx) % str.length],
+                            [subcell[2], subcell[3]],
+                            [subcell[0], subcell[1]]
+                        )
+                    ],
+                    []
+                )
             ],
             []
         )
-    ]
+    ].map((ln) => polyline(ln))
 
     drawElems = [
         rect(SIZE, { fill: '#111' }),
