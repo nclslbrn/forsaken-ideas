@@ -1,7 +1,7 @@
 import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, weightedRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../full-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -20,7 +20,7 @@ const DPI = quantity(96, dpi),
         [window.innerWidth / 30, window.innerHeight / 30],
         'cm'
     ),
-    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -29,9 +29,11 @@ const DPI = quantity(96, dpi),
         '>____|-\\/^#~ ======+',
         '======][------|',
         '/////#\\\\\\<<<<<<<<',
-        '0----+----1----+---0',
-        '................%:.:.:.:.:.:.:.:.:.',
-        '||_______-________-________-_______'
+        '0/_]|__/[|__1-^!}\\--r~&_av/==h24]|[[',
+        '-_---_----_------%------_----_---_-',
+        '||_______-________-________-_______',
+        'RED_DRUM_________________________',
+        'Ingr in the Gr________Ingr walked the gr,___Steel lines bled._____She stumbl on wire,___Red spread.___________The gr began glow,____Crimson fed.__________Metal drank her,______Roots bred.___________She tried pull away,__Iron thread.__________Ingr is the gr,_______The gr is Ingr—dead.__'
     ]
 
 const remap = (n, start1, stop1, start2, stop2) =>
@@ -139,8 +141,8 @@ const init = () => {
     ].map((ln) => polyline(ln))
 
     drawElems = [
-        rect(SIZE, { fill: '#111' }),
-        group({ stroke: '#fefefe' }, lines)
+        rect(SIZE, { fill: '#f5f5f5' }),
+        group({ stroke: '#111' }, lines)
     ]
     draw(CTX, group({}, drawElems))
 }
