@@ -1,7 +1,7 @@
 import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, weightedRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -12,7 +12,7 @@ import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
-import { scribleLine } from './scribleLine'
+import { scribbleLine } from './scribbleLine'
 import { repeatedly2d } from '@thi.ng/transducers'
 
 const DPI = quantity(96, dpi),
@@ -20,7 +20,7 @@ const DPI = quantity(96, dpi),
         [window.innerWidth / 30, window.innerHeight / 30],
         'cm'
     ),
-    SIZE = mul(DIN_A3, DPI).deref(),
+    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -30,8 +30,11 @@ const DPI = quantity(96, dpi),
         '======][------|',
         '/////#\\\\\\<<<<<<<<',
         '0/_]|__/[|__1-^!}\\--r~&_av/==h24]|[[',
-        '-_---_----_------%------_----_---_-',
-        '||_______-________-________-_______',
+        'NOT_A_NUMBER________________',
+        '||_______-ALMOST-________-_______',
+        'EMPTY-SPACE--------------',
+        'OPEN\\SPACE\\\\\\\\\\\\\\\\\\',
+        'CELL SIZE - - - - - SAME PRICE - - - - - ',
         'RED_DRUM_________________________',
         'Ingr in the Gr________Ingr walked the gr,___Steel lines bled._____She stumbl on wire,___Red spread.___________The gr began glow,____Crimson fed.__________Metal drank her,______Roots bred.___________She tried pull away,__Iron thread.__________Ingr is the gr,_______The gr is Ingr—dead.__'
     ]
@@ -116,7 +119,7 @@ const init = () => {
             (acc, cell) => [
                 ...acc,
                 ...fillCell(cell, fillType(), 0).map((ln) =>
-                    scribleLine(ln, 1, 1.2)
+                    scribbleLine(ln, 1, 1.5)
                 )
             ],
             []
@@ -141,8 +144,8 @@ const init = () => {
     ].map((ln) => polyline(ln))
 
     drawElems = [
-        rect(SIZE, { fill: '#f5f5f5' }),
-        group({ stroke: '#111' }, lines)
+        rect(SIZE, { fill: '#fff6f6' }),
+        group({ stroke: '#222' }, lines)
     ]
     draw(CTX, group({}, drawElems))
 }

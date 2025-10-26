@@ -4,8 +4,8 @@ import { createNoise2D } from 'simplex-noise'
 
 const noise = createNoise2D()
 
-const scribleLine = (line, step = 1, intensity = 0.025) => {
-    const scrible = []
+const scribbleLine = (line, step = 1, intensity = 0.025) => {
+    const scribble = []
     if (line.length === 0) return []
     for (let i = 0; i < line.length - 1; i++) {
         const direction = atan2(
@@ -22,10 +22,10 @@ const scribleLine = (line, step = 1, intensity = 0.025) => {
                 line[i][1] + sin(direction) * j
             ]
             const n = noise(...lnPnt.map((d) => d * 0.03)) * intensity
-            scrible.push([lnPnt[0] + cos(n), lnPnt[1] + sin(n)])
+            scribble.push([lnPnt[0] + cos(n), lnPnt[1] + sin(n)])
         }
     }
-    return scrible
+    return scribble
 }
 
-export { scribleLine }
+export { scribbleLine }
