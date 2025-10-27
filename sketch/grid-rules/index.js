@@ -7,17 +7,18 @@ import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+import { repeatedly2d } from '@thi.ng/transducers'
 
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import { fillCell } from './fillCell'
 import { scribbleLine } from './scribbleLine'
-import { repeatedly2d } from '@thi.ng/transducers'
+import { schemes } from './schemes'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
-        [window.innerWidth / 30, window.innerHeight / 30],
+        [window.innerWidth / 20, window.innerHeight / 20],
         'cm'
     ),
     SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
@@ -68,7 +69,10 @@ const init = () => {
         fillType = weightedRandom(
             [0, 1, 2, 3, 4, 5, 6, 7],
             [3, 3, 3, 3, 1, 1, 1, 1]
-        )
+        ),
+        theme = pickRandom(schemes)
+
+    console.log(theme)
 
     const cells = (numCell, rand, not = []) => {
         const choices = Array.from(Array(GRIDS.length))
@@ -115,15 +119,17 @@ const init = () => {
     )
 
     const lines = [
-        ...allCell[0].reduce(
-            (acc, cell) => [
-                ...acc,
-                ...fillCell(cell, fillType(), 0).map((ln) =>
-                    scribbleLine(ln, 1, 1.5)
-                )
-            ],
-            []
-        ),
+        ...allCell[0]
+            .reduce(
+                (acc, cell) => [
+                    ...acc,
+                    ...fillCell(cell, fillType(), 0).map((ln) =>
+                        scribbleLine(ln, 1, 1.5)
+                    )
+                ],
+                []
+            )
+            .map((ln) => polyline(ln)),
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
@@ -134,6 +140,14 @@ const init = () => {
                             str[(cellIdx + sbIdx) % str.length],
                             [subcell[2], subcell[3]],
                             [subcell[0], subcell[1]]
+                        ).map((ln) =>
+                            polyline(ln, {
+                                stroke: theme[1][
+                                    1 +
+                                        ((sbIdx + cellIdx) %
+                                            (theme[1].length - 1))
+                                ]
+                            })
                         )
                     ],
                     []
@@ -141,11 +155,11 @@ const init = () => {
             ],
             []
         )
-    ].map((ln) => polyline(ln))
+    ]
 
     drawElems = [
-        rect(SIZE, { fill: '#fff6f6' }),
-        group({ stroke: '#222' }, lines)
+        rect(SIZE, { fill: theme[1][0] }),
+        group({ stroke: 'white', __inkscapeLayer: theme[0] }, lines)
     ]
     draw(CTX, group({}, drawElems))
 }
