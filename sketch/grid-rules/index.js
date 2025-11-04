@@ -27,6 +27,7 @@ const DPI = quantity(96, dpi),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     CHARS = [
+        '00xxx/|Lxx',
         '>____|-\\/^#~ ======+',
         '======][------|',
         '/////#\\\\\\<<<<<<<<',
@@ -68,9 +69,11 @@ const init = () => {
             ),
         fillType = weightedRandom(
             [0, 1, 2, 3, 4, 5, 6, 7],
-            [3, 3, 3, 3, 1, 1, 1, 1]
+            [4, 4, 4, 4, 1, 1, 1, 1]
         ),
-        theme = pickRandom(schemes)
+        theme = pickRandom(schemes),
+        textColorPerCell = random() > 0.5,
+        oneLetterPerCellChance = 0.66 + random() * 0.33
 
     console.log(theme)
 
@@ -119,39 +122,57 @@ const init = () => {
     )
 
     const lines = [
-        ...allCell[0]
-            .reduce(
-                (acc, cell) => [
-                    ...acc,
-                    ...fillCell(cell, fillType(), 0).map((ln) =>
-                        scribbleLine(ln, 1, 1.5)
+        ...allCell[0].reduce(
+            (acc, cell, cellIdx) => [
+                ...acc,
+                ...fillCell(cell, fillType(), 0)
+                    .map((ln) => scribbleLine(ln, 1, 1.5))
+                    .map((ln, idx) =>
+                        polyline(ln, {
+                            stroke: theme[1][
+                                1 + (cellIdx % (theme[1].length - 1))
+                            ]
+                        })
                     )
-                ],
-                []
-            )
-            .map((ln) => polyline(ln)),
+            ],
+            []
+        ),
         ...allCell[1].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
-                ...glyphGrid(cell).reduce(
-                    (lines, subcell, sbIdx) => [
-                        ...lines,
-                        ...getGlyphVector(
-                            str[(cellIdx + sbIdx) % str.length],
-                            [subcell[2], subcell[3]],
-                            [subcell[0], subcell[1]]
-                        ).map((ln) =>
-                            polyline(ln, {
-                                stroke: theme[1][
-                                    1 +
-                                        ((sbIdx + cellIdx) %
-                                            (theme[1].length - 1))
-                                ]
-                            })
-                        )
-                    ],
-                    []
-                )
+                ...(random() > oneLetterPerCellChance
+                    ? getGlyphVector(
+                          str[cellIdx % str.length],
+                          [cell[2], cell[3]],
+                          [cell[0], cell[1]]
+                      ).map((ln, lnIdx) =>
+                          polyline(ln, {
+                              stroke: theme[1][
+                                  1 + (cellIdx % (theme[1].length - 1))
+                              ]
+                          })
+                      )
+                    : glyphGrid(cell).reduce(
+                          (lines, subcell, sbIdx) => [
+                              ...lines,
+                              ...getGlyphVector(
+                                  str[(cellIdx + sbIdx) % str.length],
+                                  [subcell[2], subcell[3]],
+                                  [subcell[0], subcell[1]]
+                              ).map((ln, lnIdx) =>
+                                  polyline(ln, {
+                                      stroke: theme[1][
+                                          1 +
+                                              ((textColorPerCell
+                                                  ? cellIdx + lnIdx
+                                                  : sbIdx + cellIdx) %
+                                                  (theme[1].length - 1))
+                                      ]
+                                  })
+                              )
+                          ],
+                          []
+                      ))
             ],
             []
         )
