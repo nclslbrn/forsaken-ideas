@@ -43,9 +43,12 @@ const DPI = quantity(96, dpi),
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
-    { random, floor, ceil } = Math
+    { random, floor, ceil, min } = Math
 
-let drawElems
+let elemsDrawn = 200,
+    theme = [],
+    timer = 0,
+    elemsToDraw
 
 ROOT.appendChild(CANVAS)
 
@@ -54,28 +57,30 @@ const init = () => {
     CANVAS.height = SIZE[1]
 
     const str = [...CHARS[floor(random() * CHARS.length)]],
-        baseCharSize = 12 + floor(random() * 16),
-        char_size = [baseCharSize, baseCharSize * floor(1 + random() * 0.5)],
+        baseFontSize = 12 + floor(random() * 16),
+        fontSize = [baseFontSize, baseFontSize * floor(1 + random() * 0.5)],
         glyphGrid = ([cx, cy, cw, ch]) =>
             repeatedly2d(
                 (x, y) => [
-                    cx + x * char_size[0],
-                    cy + y * char_size[1],
-                    char_size[0],
-                    char_size[1]
+                    cx + x * fontSize[0],
+                    cy + y * fontSize[1],
+                    fontSize[0],
+                    fontSize[1]
                 ],
-                floor(cw / char_size[0]),
-                floor(ch / char_size[1])
+                floor(cw / fontSize[0]),
+                floor(ch / fontSize[1])
             ),
         fillType = weightedRandom(
             [0, 1, 2, 3, 4, 5, 6, 7],
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
-        theme = pickRandom(schemes),
+        twoTone = random() > 0.5,
         textColorPerCell = random() > 0.5,
         oneLetterPerCellChance = 0.66 + random() * 0.33
 
-    console.log(theme)
+    theme = pickRandom(schemes)
+    theme[1] = theme[1].sort((_a, _b) => random() > 0.5)
+    console.log(theme[0])
 
     const cells = (numCell, rand, not = []) => {
         const choices = Array.from(Array(GRIDS.length))
@@ -121,7 +126,7 @@ const init = () => {
         [[], []]
     )
 
-    const lines = [
+    elemsToDraw = [
         ...allCell[0].reduce(
             (acc, cell, cellIdx) => [
                 ...acc,
@@ -130,7 +135,9 @@ const init = () => {
                     .map((ln, idx) =>
                         polyline(ln, {
                             stroke: theme[1][
-                                1 + (cellIdx % (theme[1].length - 1))
+                                1 +
+                                    (cellIdx %
+                                        (twoTone ? 2 : theme[1].length - 1))
                             ]
                         })
                     )
@@ -148,7 +155,9 @@ const init = () => {
                       ).map((ln, lnIdx) =>
                           polyline(ln, {
                               stroke: theme[1][
-                                  1 + (cellIdx % (theme[1].length - 1))
+                                  1 +
+                                      (cellIdx %
+                                          (twoTone ? 2 : theme[1].length - 1))
                               ]
                           })
                       )
@@ -166,7 +175,9 @@ const init = () => {
                                               ((textColorPerCell
                                                   ? cellIdx + lnIdx
                                                   : sbIdx + cellIdx) %
-                                                  (theme[1].length - 1))
+                                                  (twoTone
+                                                      ? 2
+                                                      : theme[1].length - 1))
                                       ]
                                   })
                               )
@@ -177,15 +188,36 @@ const init = () => {
             []
         )
     ]
-
-    drawElems = [
+    /*
+    elemsToDraw = [
         rect(SIZE, { fill: theme[1][0] }),
         group({ stroke: 'white', __inkscapeLayer: theme[0] }, lines)
     ]
-    draw(CTX, group({}, drawElems))
+    draw(CTX, group({}, elemsToDraw))
+    */
+}
+
+const update = () => {
+    if (elemsDrawn < elemsToDraw.length - 2) {
+        elemsDrawn += min(200, elemsToDraw.length - (elemsDrawn - 1))
+        timer = requestAnimationFrame(update)
+    } else {
+        cancelAnimationFrame(timer)
+    }
+    draw(
+        CTX,
+        group({}, [
+            rect(SIZE, { fill: theme[1][0] }),
+            group(
+                { __inkscapeLayer: theme[0] },
+                elemsToDraw.filter((_, n) => n <= elemsDrawn)
+            )
+        ])
+    )
 }
 
 init()
+update()
 window.init = init
 
 window['exportJPG'] = () => {
@@ -201,7 +233,7 @@ window['exportSVG'] = () => {
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, drawElems)
+                group({}, elemToDraw)
             )
         )
     )
