@@ -12,6 +12,8 @@ import { repeatedly2d } from '@thi.ng/transducers'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
+import SENTENCES from './SENTENCES'
+import NOTES from './NOTES'
 import { fillCell } from './fillCell'
 import { scribbleLine } from './scribbleLine'
 import { schemes } from './schemes'
@@ -26,29 +28,24 @@ const DPI = quantity(96, dpi),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    CHARS = [
-        '00xxx/|Lxx',
-        '>____|-\\/^#~ ======+',
-        '======][------|',
-        '/////#\\\\\\<<<<<<<<',
-        '0/_]|__/[|__1-^!}\\--r~&_av/==h24]|[[',
-        'NOT_A_NUMBER________________',
-        '||_______-ALMOST-________-_______',
-        'EMPTY-SPACE--------------',
-        'OPEN\\SPACE\\\\\\\\\\\\\\\\\\',
-        'CELL SIZE - - - - - SAME PRICE - - - - - ',
-        'RED_DRUM_________________________',
-        'Ingr in the Gr________Ingr walked the gr,___Steel lines bled._____She stumbl on wire,___Red spread.___________The gr began glow,____Crimson fed.__________Metal drank her,______Roots bred.___________She tried pull away,__Iron thread.__________Ingr is the gr,_______The gr is Ingr—dead.__'
-    ]
+    AUDIO_CTX = new AudioContext(),
+    MASTER = AUDIO_CTX.createGain(),
+    TEMPO = 120
+
+MASTER.connect(AUDIO_CTX.destination)
+MASTER.gain.value = 0.5
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
-    { random, floor, ceil, min } = Math
+    { random, floor, ceil, min, round } = Math
 
 let elemsDrawn = 200,
     theme = [],
     timer = 0,
-    elemsToDraw
+    notes = [],
+    currNote = 0,
+    isPlaying = false,
+    elemsToDraw = []
 
 ROOT.appendChild(CANVAS)
 
@@ -56,7 +53,7 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const str = [...CHARS[floor(random() * CHARS.length)]],
+    const str = [...SENTENCES[floor(random() * SENTENCES.length)]],
         baseFontSize = 12 + floor(random() * 16),
         fontSize = [baseFontSize, baseFontSize * floor(1 + random() * 0.5)],
         glyphGrid = ([cx, cy, cw, ch]) =>
@@ -125,7 +122,6 @@ const init = () => {
         },
         [[], []]
     )
-
     elemsToDraw = [
         ...allCell[0].reduce(
             (acc, cell, cellIdx) => [
@@ -195,6 +191,41 @@ const init = () => {
     ]
     draw(CTX, group({}, elemsToDraw))
     */
+
+    notes = pattern.reduce(
+        (acc, [x, y, w, h], idx) => [
+            ...acc,
+            {
+                attack: round(100 * x) / 200,
+                sustain: round(100 * h) / 200,
+                release: 0.5 + round(100 * w) / 200,
+                len: 0.5 + round(100 * y) / 150,
+                freq: pickRandom(NOTES)
+            }
+        ],
+        []
+    )
+}
+
+const playCurrentNote = (note) => {
+    const osc = AUDIO_CTX.createOscillator()
+    const enveloppe = AUDIO_CTX.createGain()
+    enveloppe.gain.setValueAtTime(0, 0)
+    enveloppe.gain.linearRampToValueAtTime(
+        note.sustain,
+        AUDIO_CTX.currentTime + note.len * note.attack
+    )
+    enveloppe.gain.setValueAtTime(
+        note.sustain,
+        AUDIO_CTX.currentTime + note.len - note.len * note.release
+    ) // <- non finite value
+    enveloppe.gain.linearRampToValueAtTime(0, AUDIO_CTX.currentTime + note.len)
+    osc.type = 'sawtooth' // square  sawtooth triangle sine
+    osc.frequency.setValueAtTime(note.freq[1], 0)
+    osc.start()
+    osc.stop(AUDIO_CTX.currentTime + note.len)
+    osc.connect(enveloppe)
+    enveloppe.connect(MASTER)
 }
 
 const update = () => {
@@ -216,9 +247,30 @@ const update = () => {
     )
 }
 
+const soundLoop = () => {
+    if (!isPlaying) return
+    console.log('soundloop ', notes[currNote].freq[0])
+    const secondsPerBeat = 60.0 / TEMPO
+    playCurrentNote(notes[currNote])
+    currNote = (currNote + 1) % notes.length
+    window.setTimeout(function () {
+        soundLoop()
+    }, secondsPerBeat * 1000)
+}
+
 init()
-update()
+
 window.init = init
+CANVAS.onclick = function () {
+    isPlaying = !isPlaying
+    if (isPlaying) {
+        // AUDIO_CTX.resume()
+        soundLoop()
+        update()
+    } else {
+        AUDIO_CTX.suspend()
+    }
+}
 
 window['exportJPG'] = () => {
     downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
