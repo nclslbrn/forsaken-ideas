@@ -13,7 +13,7 @@ import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import SENTENCES from './SENTENCES'
-import NOTES from './NOTES'
+import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
 import { fillCell } from './fillCell'
 import { scribbleLine } from './scribbleLine'
 import { schemes } from './schemes'
@@ -191,6 +191,14 @@ const init = () => {
     ]
     draw(CTX, group({}, elemsToDraw))
     */
+    const seqType = pickRandom(FREQ_SEQ_TYPE)
+    console.log('Generate ' + seqType + ' tone sequence')
+    const frequencies = generateFreqSeq(
+        pattern.length,
+        48 + 32 * ceil(random() * 4),
+        seqType
+    )
+    //.sort((_a, _b) => Math.random() > 0.5)
 
     notes = pattern.reduce(
         (acc, [x, y, w, h], idx) => [
@@ -200,7 +208,7 @@ const init = () => {
                 sustain: round(100 * h) / 200,
                 release: 0.5 + round(100 * w) / 200,
                 len: 0.5 + round(100 * y) / 150,
-                freq: pickRandom(NOTES)
+                freq: pickRandom(frequencies) //[idx]
             }
         ],
         []
@@ -220,8 +228,8 @@ const playCurrentNote = (note) => {
         AUDIO_CTX.currentTime + note.len - note.len * note.release
     ) // <- non finite value
     enveloppe.gain.linearRampToValueAtTime(0, AUDIO_CTX.currentTime + note.len)
-    osc.type = 'sawtooth' // square  sawtooth triangle sine
-    osc.frequency.setValueAtTime(note.freq[1], 0)
+    osc.type = 'sine' // square  sawtooth triangle sine
+    osc.frequency.setValueAtTime(note.freq, 0)
     osc.start()
     osc.stop(AUDIO_CTX.currentTime + note.len)
     osc.connect(enveloppe)
@@ -249,7 +257,6 @@ const update = () => {
 
 const soundLoop = () => {
     if (!isPlaying) return
-    console.log('soundloop ', notes[currNote].freq[0])
     const secondsPerBeat = 60.0 / TEMPO
     playCurrentNote(notes[currNote])
     currNote = (currNote + 1) % notes.length
