@@ -7,7 +7,7 @@ import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-import { repeatedly2d } from '@thi.ng/transducers'
+import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
@@ -45,7 +45,8 @@ let elemsDrawn = 200,
     notes = [],
     currNote = 0,
     isPlaying = false,
-    elemsToDraw = []
+    elemsToDraw = [],
+    groupedElems = []
 
 ROOT.appendChild(CANVAS)
 
@@ -95,6 +96,8 @@ const init = () => {
     const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 3)]
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
+    groupedElems = Array.from(Array(pattern.length)).map((_) => [])
+
     const allCell = grid.reduce(
         (rects, cell, i) => {
             const [x, y, w, h] = cell
@@ -122,75 +125,88 @@ const init = () => {
         },
         [[], []]
     )
-    elemsToDraw = [
-        ...allCell[0].reduce(
-            (acc, cell, cellIdx) => [
-                ...acc,
-                ...fillCell(cell, fillType(), 0)
-                    .map((ln) => scribbleLine(ln, 1, 1.5))
-                    .map((ln, idx) =>
+
+    for (let i = 0; i < grid.length; i++) {
+        const [x, y, w, h] = grid[i]
+        for (let j = 0; j < pattern.length; j++) {
+            const [dx, dy, dw, dh] = pattern[j]
+            const patternCell = [
+                remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
+                remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
+                dw * w * (SIZE[0] - MARGIN * 2),
+                dh * h * (SIZE[1] - MARGIN * 2)
+            ]
+            if (!rule(i, j)) {
+                groupedElems[j].push(
+                    ...fillCell(patternCell, fillType(), 0).map((ln) =>
                         polyline(ln, {
                             stroke: theme[1][
-                                1 +
-                                    (cellIdx %
-                                        (twoTone ? 2 : theme[1].length - 1))
+                                1 + (j % (twoTone ? 2 : theme[1].length - 1))
                             ]
                         })
                     )
-            ],
-            []
-        ),
-        ...allCell[1].reduce(
-            (acc, cell, cellIdx) => [
-                ...acc,
-                ...(random() > oneLetterPerCellChance
-                    ? getGlyphVector(
-                          str[cellIdx % str.length],
-                          [cell[2], cell[3]],
-                          [cell[0], cell[1]]
-                      ).map((ln, lnIdx) =>
-                          polyline(ln, {
-                              stroke: theme[1][
-                                  1 +
-                                      (cellIdx %
-                                          (twoTone ? 2 : theme[1].length - 1))
-                              ]
-                          })
-                      )
-                    : glyphGrid(cell).reduce(
-                          (lines, subcell, sbIdx) => [
-                              ...lines,
-                              ...getGlyphVector(
-                                  str[(cellIdx + sbIdx) % str.length],
-                                  [subcell[2], subcell[3]],
-                                  [subcell[0], subcell[1]]
-                              ).map((ln, lnIdx) =>
-                                  polyline(ln, {
-                                      stroke: theme[1][
-                                          1 +
-                                              ((textColorPerCell
-                                                  ? cellIdx + lnIdx
-                                                  : sbIdx + cellIdx) %
-                                                  (twoTone
-                                                      ? 2
-                                                      : theme[1].length - 1))
-                                      ]
-                                  })
-                              )
-                          ],
-                          []
-                      ))
-            ],
-            []
+                )
+            } else {
+                if (random() > oneLetterPerCellChance) {
+                    const letter = getGlyphVector(
+                        str[(i + j) % str.length],
+                        [patternCell[2], patternCell[3]],
+                        [patternCell, patternCell[1]]
+                    ).reduce(
+                        (lns, ln) => [
+                            ...lns,
+                            polyline(ln, {
+                                stroke: theme[1][
+                                    1 +
+                                        ((i + j) %
+                                            (twoTone ? 2 : theme[1].length - 1))
+                                ]
+                            })
+                        ],
+                        []
+                    )
+                    letter.map((poly) => groupedElems[j].push(poly))
+                } else {
+                    const letters = glyphGrid(patternCell).map(
+                        (subcell, sbIdx) =>
+                            getGlyphVector(
+                                str[(i + j + sbIdx) % str.length],
+                                [subcell[2], subcell[3]],
+                                [subcell[0], subcell[1]]
+                            ).reduce(
+                                (lns, ln, lnIdx) => [
+                                    ...lns,
+                                    polyline(ln, {
+                                        stroke: theme[1][
+                                            1 +
+                                                ((textColorPerCell
+                                                    ? i + j + lnIdx
+                                                    : sbIdx + (i + j)) %
+                                                    (twoTone
+                                                        ? 2
+                                                        : theme[1].length - 1))
+                                        ]
+                                    })
+                                ],
+                                []
+                            )
+                    )
+                    letters.map((letter, lIdx) =>
+                        letter.map((poly) =>
+                            groupedElems[(j + lIdx) % groupedElems.length].push(
+                                poly
+                            )
+                        )
+                    )
+                }
+            }
+        }
+    }
+    console.log(
+        groupedElems.forEach((group) =>
+            group.filter((elem) => elem.length !== undefined)
         )
-    ]
-    /*
-    elemsToDraw = [
-        rect(SIZE, { fill: theme[1][0] }),
-        group({ stroke: 'white', __inkscapeLayer: theme[0] }, lines)
-    ]
-    draw(CTX, group({}, elemsToDraw))
-    */
+    )
     const seqType = pickRandom(FREQ_SEQ_TYPE)
     console.log('Generate ' + seqType + ' tone sequence')
     const frequencies = generateFreqSeq(
@@ -212,6 +228,13 @@ const init = () => {
             }
         ],
         []
+    )
+    draw(
+        CTX,
+        group({}, [
+            rect(SIZE, { fill: theme[1][0] }),
+            group({ __inkscapeLayer: theme[0] }, ...groupedElems)
+        ])
     )
 }
 
@@ -236,32 +259,23 @@ const playCurrentNote = (note) => {
     enveloppe.connect(MASTER)
 }
 
-const update = () => {
-    if (elemsDrawn < elemsToDraw.length - 2) {
-        elemsDrawn += min(200, elemsToDraw.length - (elemsDrawn - 1))
-        timer = requestAnimationFrame(update)
-    } else {
-        cancelAnimationFrame(timer)
-    }
+const animate = () => {
+    if (!isPlaying) return
+    const secondsPerBeat = 60.0 / TEMPO
+    playCurrentNote(notes[currNote])
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
             group(
                 { __inkscapeLayer: theme[0] },
-                elemsToDraw.filter((_, n) => n <= elemsDrawn)
+                ...groupedElems.filter((_, n) => n != currNote)
             )
         ])
     )
-}
-
-const soundLoop = () => {
-    if (!isPlaying) return
-    const secondsPerBeat = 60.0 / TEMPO
-    playCurrentNote(notes[currNote])
     currNote = (currNote + 1) % notes.length
     window.setTimeout(function () {
-        soundLoop()
+        animate()
     }, secondsPerBeat * 1000)
 }
 
@@ -271,9 +285,7 @@ window.init = init
 CANVAS.onclick = function () {
     isPlaying = !isPlaying
     if (isPlaying) {
-        // AUDIO_CTX.resume()
-        soundLoop()
-        update()
+        animate()
     } else {
         AUDIO_CTX.suspend()
     }
@@ -292,7 +304,7 @@ window['exportSVG'] = () => {
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, elemToDraw)
+                group({}, elemsToDraw)
             )
         )
     )
@@ -301,6 +313,7 @@ document.addEventListener('keypress', (e) => {
     switch (e.key) {
         case 'r':
             window.init()
+            animate()
             break
         case 'j':
             window.exportJPG()
