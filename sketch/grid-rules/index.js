@@ -57,8 +57,8 @@ const init = () => {
     const str = [...SENTENCES[floor(random() * SENTENCES.length)]],
         baseFontSize = 12 + floor(random() * 16),
         fontSize = [baseFontSize, baseFontSize * floor(1 + random() * 0.5)],
-        glyphGrid = ([cx, cy, cw, ch]) =>
-            repeatedly2d(
+        glyphGrid = ([cx, cy, cw, ch]) => [
+            ...repeatedly2d(
                 (x, y) => [
                     cx + x * fontSize[0],
                     cy + y * fontSize[1],
@@ -67,7 +67,8 @@ const init = () => {
                 ],
                 floor(cw / fontSize[0]),
                 floor(ch / fontSize[1])
-            ),
+            )
+        ],
         fillType = weightedRandom(
             [0, 1, 2, 3, 4, 5, 6, 7],
             [4, 4, 4, 4, 1, 1, 1, 1]
@@ -97,7 +98,7 @@ const init = () => {
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
     groupedElems = Array.from(Array(pattern.length)).map((_) => [])
-
+    /*
     const allCell = grid.reduce(
         (rects, cell, i) => {
             const [x, y, w, h] = cell
@@ -125,6 +126,7 @@ const init = () => {
         },
         [[], []]
     )
+    */
 
     for (let i = 0; i < grid.length; i++) {
         const [x, y, w, h] = grid[i]
@@ -137,8 +139,8 @@ const init = () => {
                 dh * h * (SIZE[1] - MARGIN * 2)
             ]
             if (!rule(i, j)) {
-                groupedElems[j].push(
-                    ...fillCell(patternCell, fillType(), 0).map((ln) =>
+                fillCell(patternCell, fillType(), 0).map((ln, lnIdx) =>
+                    groupedElems[j].push(
                         polyline(ln, {
                             stroke: theme[1][
                                 1 + (j % (twoTone ? 2 : theme[1].length - 1))
@@ -151,62 +153,45 @@ const init = () => {
                     const letter = getGlyphVector(
                         str[(i + j) % str.length],
                         [patternCell[2], patternCell[3]],
-                        [patternCell, patternCell[1]]
-                    ).reduce(
-                        (lns, ln) => [
-                            ...lns,
+                        [patternCell[0], patternCell[1]]
+                    )
+                    const col =
+                        1 + ((i + j) % (twoTone ? 2 : theme[1].length - 1))
+
+                    groupedElems[j].push(
+                        ...letter.map((ln) =>
                             polyline(ln, {
-                                stroke: theme[1][
-                                    1 +
-                                        ((i + j) %
-                                            (twoTone ? 2 : theme[1].length - 1))
-                                ]
+                                stroke: theme[1][col]
                             })
-                        ],
-                        []
-                    )
-                    letter.map((poly) => groupedElems[j].push(poly))
-                } else {
-                    const letters = glyphGrid(patternCell).map(
-                        (subcell, sbIdx) =>
-                            getGlyphVector(
-                                str[(i + j + sbIdx) % str.length],
-                                [subcell[2], subcell[3]],
-                                [subcell[0], subcell[1]]
-                            ).reduce(
-                                (lns, ln, lnIdx) => [
-                                    ...lns,
-                                    polyline(ln, {
-                                        stroke: theme[1][
-                                            1 +
-                                                ((textColorPerCell
-                                                    ? i + j + lnIdx
-                                                    : sbIdx + (i + j)) %
-                                                    (twoTone
-                                                        ? 2
-                                                        : theme[1].length - 1))
-                                        ]
-                                    })
-                                ],
-                                []
-                            )
-                    )
-                    letters.map((letter, lIdx) =>
-                        letter.map((poly) =>
-                            groupedElems[(j + lIdx) % groupedElems.length].push(
-                                poly
-                            )
                         )
+                    )
+                } else {
+                    const subSubGrid = glyphGrid(patternCell)
+                    subSubGrid.forEach((subcell, sbIdx) =>
+                        getGlyphVector(
+                            str[(i + j + sbIdx) % str.length],
+                            [subcell[2], subcell[3]],
+                            [subcell[0], subcell[1]]
+                        ).forEach((ln, lnIdx) => {
+                            const col =
+                                1 +
+                                ((textColorPerCell
+                                    ? i + j + lnIdx
+                                    : sbIdx + (i + j)) %
+                                    (twoTone ? 2 : theme[1].length - 1))
+
+                            groupedElems[j].push(
+                                polyline(ln, {
+                                    stroke: theme[1][col]
+                                })
+                            )
+                        })
                     )
                 }
             }
         }
     }
-    console.log(
-        groupedElems.forEach((group) =>
-            group.filter((elem) => elem.length !== undefined)
-        )
-    )
+    console.log(pattern.length, groupedElems.length)
     const seqType = pickRandom(FREQ_SEQ_TYPE)
     console.log('Generate ' + seqType + ' tone sequence')
     const frequencies = generateFreqSeq(
@@ -222,8 +207,8 @@ const init = () => {
             {
                 attack: round(100 * x) / 200,
                 sustain: round(100 * h) / 200,
-                release: 0.5 + round(100 * w) / 200,
-                len: 0.5 + round(100 * y) / 150,
+                release: 0.15 + round(100 * w) / 200,
+                len: 1 + round(100 * y) / 15,
                 freq: pickRandom(frequencies) //[idx]
             }
         ],
@@ -233,7 +218,10 @@ const init = () => {
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            group({ __inkscapeLayer: theme[0] }, ...groupedElems)
+            group(
+                { __inkscapeLayer: theme[0] },
+                ...groupedElems.map((elems) => group({}, elems))
+            )
         ])
     )
 }
@@ -269,7 +257,9 @@ const animate = () => {
             rect(SIZE, { fill: theme[1][0] }),
             group(
                 { __inkscapeLayer: theme[0] },
-                ...groupedElems.filter((_, n) => n != currNote)
+                ...groupedElems
+                    .filter((elems, n) => (n = !currNote))
+                    .map((elems) => group({}, elems))
             )
         ])
     )
