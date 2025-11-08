@@ -30,7 +30,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
     MASTER = AUDIO_CTX.createGain(),
-    TEMPO = 120
+    TEMPO = 100
 
 MASTER.connect(AUDIO_CTX.destination)
 MASTER.gain.value = 0.5
@@ -39,9 +39,7 @@ const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
     { random, floor, ceil, min, round } = Math
 
-let elemsDrawn = 200,
-    theme = [],
-    timer = 0,
+let theme = [],
     notes = [],
     currNote = 0,
     isPlaying = false,
@@ -73,7 +71,6 @@ const init = () => {
             [0, 1, 2, 3, 4, 5, 6, 7],
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
-        twoTone = random() > 0.5,
         textColorPerCell = random() > 0.5,
         oneLetterPerCellChance = 0.66 + random() * 0.33
 
@@ -97,36 +94,18 @@ const init = () => {
     const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 3)]
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
+
     groupedElems = Array.from(Array(pattern.length)).map((_) => [])
-    /*
-    const allCell = grid.reduce(
-        (rects, cell, i) => {
-            const [x, y, w, h] = cell
-            const nested = pattern.reduce(
-                (subgrid, pattern, j) => {
-                    const [dx, dy, dw, dh] = pattern
-                    const patternCell = [
-                        remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
-                        remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
-                        dw * w * (SIZE[0] - MARGIN * 2),
-                        dh * h * (SIZE[1] - MARGIN * 2)
-                    ]
-                    if (!rule(i, j)) {
-                        return [[...subgrid[0], patternCell], subgrid[1]]
-                    } else {
-                        return [subgrid[0], [...subgrid[1], patternCell]]
-                    }
-                },
-                [[], []]
-            )
-            return [
-                [...rects[0], ...nested[0]],
-                [...rects[1], ...nested[1]]
-            ]
-        },
-        [[], []]
-    )
+
+    /* AllCell three dmension Array
+      [0] cells that match rule
+      [1] cells that doesn't
+      [0|1][n] indexed by sub grid cell index
     */
+    const patternCells = [
+        Array.from(Array(pattern.length)).map((_) => []),
+        Array.from(Array(pattern.length)).map((_) => [])
+    ]
 
     for (let i = 0; i < grid.length; i++) {
         const [x, y, w, h] = grid[i]
@@ -139,64 +118,72 @@ const init = () => {
                 dh * h * (SIZE[1] - MARGIN * 2)
             ]
             if (!rule(i, j)) {
-                fillCell(patternCell, fillType(), 0).map((ln, lnIdx) =>
-                    groupedElems[j].push(
-                        polyline(ln, {
-                            stroke: theme[1][
-                                1 + (j % (twoTone ? 2 : theme[1].length - 1))
-                            ]
-                        })
-                    )
-                )
+                patternCells[0][j].push(patternCell)
             } else {
-                if (random() > oneLetterPerCellChance) {
-                    const letter = getGlyphVector(
-                        str[(i + j) % str.length],
-                        [patternCell[2], patternCell[3]],
-                        [patternCell[0], patternCell[1]]
-                    )
-                    const col =
-                        1 + ((i + j) % (twoTone ? 2 : theme[1].length - 1))
-
-                    groupedElems[j].push(
-                        ...letter.map((ln) =>
-                            polyline(ln, {
-                                stroke: theme[1][col]
-                            })
-                        )
-                    )
-                } else {
-                    const subSubGrid = glyphGrid(patternCell)
-                    subSubGrid.forEach((subcell, sbIdx) =>
-                        getGlyphVector(
-                            str[(i + j + sbIdx) % str.length],
-                            [subcell[2], subcell[3]],
-                            [subcell[0], subcell[1]]
-                        ).forEach((ln, lnIdx) => {
-                            const col =
-                                1 +
-                                ((textColorPerCell
-                                    ? i + j + lnIdx
-                                    : sbIdx + (i + j)) %
-                                    (twoTone ? 2 : theme[1].length - 1))
-
-                            groupedElems[j].push(
-                                polyline(ln, {
-                                    stroke: theme[1][col]
-                                })
-                            )
-                        })
-                    )
-                }
+                patternCells[1][j].push(patternCell)
             }
         }
     }
-    console.log(pattern.length, groupedElems.length)
+    patternCells[0].map((cells, j) => {
+        for (let k = 0; k < cells.length; k++) {
+            const stripeLines = fillCell(cells[k], fillType(), 0)
+            groupedElems[j].push(
+                ...stripeLines.map((ln) =>
+                    polyline(ln, {
+                        stroke: theme[1][1 + (k % (theme[1].length - 1))]
+                    })
+                )
+            )
+        }
+    })
+    patternCells[1].map((cells, j) => {
+        for (let k = 0; k < cells.length; k++) {
+            if (random() > oneLetterPerCellChance) {
+                const letter = getGlyphVector(
+                    str[k % str.length],
+                    [cells[k][2], cells[k][3]],
+                    [cells[k][0], cells[k][1]]
+                )
+                const col = 1 + (k % (theme[1].length - 1))
+                groupedElems[j].push(
+                    ...letter.map((ln) =>
+                        polyline(ln, { stroke: theme[1][col] })
+                    )
+                )
+            } else {
+                const textGrid = glyphGrid(cells[k])
+                groupedElems[j].push(
+                    ...textGrid.reduce(
+                        (polys, subcell, sbIdx) => [
+                            ...polys,
+                            ...getGlyphVector(
+                                str[(k + sbIdx) % str.length],
+                                [subcell[2], subcell[3]],
+                                [subcell[0], subcell[1]]
+                            ).map((ln) =>
+                                polyline(ln, {
+                                    stroke: theme[1][
+                                        1 +
+                                            ((textColorPerCell
+                                                ? k
+                                                : sbIdx + k) %
+                                                (theme[1].length - 1))
+                                    ]
+                                })
+                            )
+                        ],
+                        []
+                    )
+                )
+            }
+        }
+    })
+
     const seqType = pickRandom(FREQ_SEQ_TYPE)
     console.log('Generate ' + seqType + ' tone sequence')
     const frequencies = generateFreqSeq(
         pattern.length,
-        48 + 32 * ceil(random() * 4),
+        125, //+ 11 * ceil(random() * 4),
         seqType
     )
     //.sort((_a, _b) => Math.random() > 0.5)
@@ -206,10 +193,10 @@ const init = () => {
             ...acc,
             {
                 attack: round(100 * x) / 200,
-                sustain: round(100 * h) / 200,
-                release: 0.15 + round(100 * w) / 200,
-                len: 1 + round(100 * y) / 15,
-                freq: pickRandom(frequencies) //[idx]
+                sustain: round(100 * h) / 300,
+                release: round(100 * w) / 500,
+                len: ceil(random() * 5),
+                freq: pickRandom(frequencies)
             }
         ],
         []
@@ -218,16 +205,12 @@ const init = () => {
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            group(
-                { __inkscapeLayer: theme[0] },
-                ...groupedElems.map((elems) => group({}, elems))
-            )
+            ...groupedElems.map((elems) => group({}, elems))
         ])
     )
 }
 
 const playCurrentNote = (note) => {
-    const osc = AUDIO_CTX.createOscillator()
     const enveloppe = AUDIO_CTX.createGain()
     enveloppe.gain.setValueAtTime(0, 0)
     enveloppe.gain.linearRampToValueAtTime(
@@ -237,13 +220,24 @@ const playCurrentNote = (note) => {
     enveloppe.gain.setValueAtTime(
         note.sustain,
         AUDIO_CTX.currentTime + note.len - note.len * note.release
-    ) // <- non finite value
+    )
     enveloppe.gain.linearRampToValueAtTime(0, AUDIO_CTX.currentTime + note.len)
-    osc.type = 'sine' // square  sawtooth triangle sine
+    /*
+    const osc = AUDIO_CTX.createOscillator()
+    osc.type = 'sawtooth' // square  sawtooth triangle sine
     osc.frequency.setValueAtTime(note.freq, 0)
     osc.start()
     osc.stop(AUDIO_CTX.currentTime + note.len)
     osc.connect(enveloppe)
+    */
+    for (let i = 0; i < 3; i++) {
+        const osc = AUDIO_CTX.createOscillator()
+        osc.type = ['sine', 'sawtooth', 'triangle', 'square'][i]
+        osc.frequency.setValueAtTime(note.freq, 0)
+        osc.start()
+        osc.stop(AUDIO_CTX.currentTime + note.len)
+        osc.connect(enveloppe)
+    }
     enveloppe.connect(MASTER)
 }
 
@@ -255,12 +249,9 @@ const animate = () => {
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            group(
-                { __inkscapeLayer: theme[0] },
-                ...groupedElems
-                    .filter((elems, n) => (n = !currNote))
-                    .map((elems) => group({}, elems))
-            )
+            ...groupedElems
+                .filter((_, n) => n !== currNote)
+                .map((elems) => group({}, elems))
         ])
     )
     currNote = (currNote + 1) % notes.length
@@ -276,10 +267,12 @@ CANVAS.onclick = function () {
     isPlaying = !isPlaying
     if (isPlaying) {
         animate()
+        AUDIO_CTX.resume()
     } else {
         AUDIO_CTX.suspend()
     }
 }
+document.getElementById('iconav').style.display = 'none'
 
 window['exportJPG'] = () => {
     downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
