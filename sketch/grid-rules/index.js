@@ -16,7 +16,7 @@ import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
 import { fillCell } from './fillCell'
 // import { scribbleLine } from './scribbleLine'
 import { schemes } from './schemes'
-import { FMOscillator, PWMOscillator, PWMOscillatorAdvanced } from './Synths'
+import { SYNTH_OPTIONS, getSynth } from './Synths'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
@@ -29,11 +29,11 @@ const DPI = quantity(96, dpi),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
-    MASTER = AUDIO_CTX.createGain(),
+    AUDIO_OUT = AUDIO_CTX.createGain(),
     TEMPO = 100
 
-MASTER.connect(AUDIO_CTX.destination)
-MASTER.gain.value = 0.5
+AUDIO_OUT.connect(AUDIO_CTX.destination)
+AUDIO_OUT.gain.value = 10
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
@@ -44,8 +44,7 @@ let theme = [],
     currNote = 0,
     isPlaying = false,
     elemsToDraw = [],
-    groupedElems = [],
-    oscType = null
+    groupedElems = []
 
 ROOT.appendChild(CANVAS)
 
@@ -73,8 +72,7 @@ const init = () => {
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
         textColorPerCell = random() > 0.5,
-        oneLetterPerCellChance = 0.66 + random() * 0.33,
-        oscType = random() > 0.5 ? 'FM' : 'PWM'
+        oneLetterPerCellChance = 0.66 + random() * 0.33
 
     theme = pickRandom(schemes)
     theme[1] = theme[1].sort((_a, _b) => random() > 0.5)
@@ -99,7 +97,7 @@ const init = () => {
 
     groupedElems = Array.from(Array(pattern.length)).map((_) => [])
 
-    /* AllCell three dmension Array
+    /* AllCell three dimensions Array
       [0] cells that match rule
       [1] cells that doesn't
       [0|1][n] indexed by sub grid cell index
@@ -183,28 +181,18 @@ const init = () => {
     })
 
     const seqType = pickRandom(FREQ_SEQ_TYPE)
-    console.log(
-        'Generate ' +
-            seqType +
-            ' tone sequence to be played by an ' +
-            oscType +
-            ' oscillator'
-    )
-    const frequencies = generateFreqSeq(
-        loopStep,
-        48, //+ 11 * ceil(random() * 4),
-        seqType
-    )
-    //.sort((_a, _b) => Math.random() > 0.5)
+    console.log('Generate ' + seqType)
+    const frequencies = generateFreqSeq(loopStep, 48, seqType)
 
     notes = pattern
         .reduce(
             (acc, [x, y, w, h], idx) => [
                 ...acc,
                 {
-                    velocity: round(100 * w) / 100,
-                    duration: ceil(random() * 5) / 3,
-                    frequency: pickRandom(frequencies)
+                    velocity: round(100 * w) / 10,
+                    duration: ceil(random() * 10) / 3,
+                    frequency: pickRandom(frequencies),
+                    synth: pickRandom(SYNTH_OPTIONS)
                 }
             ],
             []
@@ -222,10 +210,8 @@ const init = () => {
 const animate = () => {
     if (!isPlaying) return
     const secondsPerBeat = 60.0 / TEMPO
-    const osc =
-        oscType === 'PWM'
-            ? new PWMOscillator(AUDIO_CTX)
-            : new FMOscillator(AUDIO_CTX)
+    const Synth = getSynth(notes[currNote].synth)
+    const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
     osc.playNote(notes[currNote])
     draw(
         CTX,

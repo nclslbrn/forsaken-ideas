@@ -7,12 +7,9 @@
 // ============================================
 
 class FMOscillator {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.3
-        this.masterGain.connect(this.ctx.destination)
-
+        this.output = output
         // Default parameters
         this.modulatorRatio = 2 // Modulator/carrier ratio
         this.modulationIndex = 3 // Modulation depth
@@ -61,7 +58,7 @@ class FMOscillator {
         modulator.connect(modulationGain)
         modulationGain.connect(carrier.frequency)
         carrier.connect(noteGain)
-        noteGain.connect(this.masterGain)
+        noteGain.connect(this.output)
 
         // Start
         carrier.start(now)
@@ -112,7 +109,7 @@ class FMOscillator {
      * Set master volume
      */
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
@@ -122,11 +119,9 @@ class FMOscillator {
 // ============================================
 
 class PWMOscillator {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.3
-        this.masterGain.connect(this.ctx.destination)
+        this.output = output
 
         // Default parameters
         this.pulseWidth = 0.5
@@ -201,7 +196,7 @@ class PWMOscillator {
         delay.connect(inverter)
         inverter.connect(mixer)
         mixer.connect(noteGain)
-        noteGain.connect(this.masterGain)
+        noteGain.connect(this.output)
 
         // Start
         saw1.start(now)
@@ -258,7 +253,7 @@ class PWMOscillator {
      * Set master volume
      */
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
@@ -268,10 +263,9 @@ class PWMOscillator {
 // ============================================
 
 class PWMOscillatorAdvanced {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.3
+        this.output = output
 
         // Lowpass filter
         this.filter = this.ctx.createBiquadFilter()
@@ -279,8 +273,8 @@ class PWMOscillatorAdvanced {
         this.filter.frequency.value = 2000
         this.filter.Q.value = 1
 
-        this.filter.connect(this.masterGain)
-        this.masterGain.connect(this.ctx.destination)
+        this.filter.connect(this.output)
+        this.output.connect(this.ctx.destination)
 
         this.pulseWidth = 0.5
         this.lfoEnabled = true
@@ -290,7 +284,7 @@ class PWMOscillatorAdvanced {
         this.activeNotes = new Map()
     }
 
-    playNote(frequency, duration = 1.0, velocity = 0.8) {
+    playNote({ frequency, duration = 1.0, velocity = 0.8 }) {
         const now = this.ctx.currentTime
 
         const saw1 = this.ctx.createOscillator()
@@ -411,7 +405,7 @@ class PWMOscillatorAdvanced {
     }
 
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
@@ -484,18 +478,15 @@ class NoiseGenerator {
 // ============================================
 
 class NoiseSynth {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.3
-        this.masterGain.connect(this.ctx.destination)
-
+        this.output = output
         // Filter
         this.filter = this.ctx.createBiquadFilter()
         this.filter.type = 'lowpass'
         this.filter.frequency.value = 2000
         this.filter.Q.value = 1
-        this.filter.connect(this.masterGain)
+        this.filter.connect(this.output)
 
         this.noiseType = 'white'
         this.filterEnvAmount = 2000
@@ -508,7 +499,7 @@ class NoiseSynth {
      * @param {number} duration - Duration in seconds
      * @param {number} velocity - Velocity (0.0 to 1.0)
      */
-    playNote(frequency, duration = 1.0, velocity = 0.8) {
+    playNote({ frequency, duration = 1.0, velocity = 0.8 }) {
         const now = this.ctx.currentTime
 
         // Create noise source
@@ -553,7 +544,7 @@ class NoiseSynth {
         // Connections
         noiseSource.connect(noteFilter)
         noteFilter.connect(noteGain)
-        noteGain.connect(this.masterGain)
+        noteGain.connect(this.output)
 
         noiseSource.start(now)
         noiseSource.stop(now + duration)
@@ -597,7 +588,7 @@ class NoiseSynth {
     }
 
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
@@ -607,11 +598,9 @@ class NoiseSynth {
 // ============================================
 
 class GranularNoiseSynth {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.2
-        this.masterGain.connect(this.ctx.destination)
+        this.output = output
 
         this.noiseType = 'white'
         this.grainSize = 0.05 // Grain duration in seconds
@@ -627,11 +616,11 @@ class GranularNoiseSynth {
      * @param {number} duration - Duration in seconds
      * @param {number} velocity - Velocity (0.0 to 1.0)
      */
-    playNote(frequency, duration = 1.0, velocity = 0.8) {
+    playNote({ frequency, duration = 1.0, velocity = 0.8 }) {
         const now = this.ctx.currentTime
         const grains = []
         const grainInterval = 1 / this.grainDensity
-        const numGrains = Math.floor(duration * this.grainDensity)
+        const numGrains = Math.floor(4 * duration * this.grainDensity)
 
         for (let i = 0; i < numGrains; i++) {
             const grainTime = now + i * grainInterval
@@ -666,7 +655,7 @@ class GranularNoiseSynth {
             // Connections
             grain.connect(filter)
             filter.connect(grainGain)
-            grainGain.connect(this.masterGain)
+            grainGain.connect(this.output)
 
             grain.start(grainTime)
             grain.stop(grainTime + this.grainSize)
@@ -681,7 +670,7 @@ class GranularNoiseSynth {
             () => {
                 this.activeNotes.delete(noteId)
             },
-            duration * 1000 + 100
+            duration * 4000 + 100
         )
 
         return noteId
@@ -708,7 +697,7 @@ class GranularNoiseSynth {
     }
 
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
@@ -718,11 +707,9 @@ class GranularNoiseSynth {
 // ============================================
 
 class PitchedNoiseSynth {
-    constructor(audioContext) {
+    constructor(audioContext, output) {
         this.ctx = audioContext
-        this.masterGain = this.ctx.createGain()
-        this.masterGain.gain.value = 0.3
-        this.masterGain.connect(this.ctx.destination)
+        this.output = output
 
         this.dampening = 0.995 // How quickly the sound decays
         this.activeNotes = new Map()
@@ -734,7 +721,7 @@ class PitchedNoiseSynth {
      * @param {number} duration - Duration in seconds
      * @param {number} velocity - Velocity (0.0 to 1.0)
      */
-    playNote(frequency, duration = 1.0, velocity = 0.8) {
+    playNote({ frequency, duration = 1.0, velocity = 0.8 }) {
         const now = this.ctx.currentTime
 
         // Create short burst of noise
@@ -748,6 +735,7 @@ class PitchedNoiseSynth {
         noiseSource.buffer = noiseBuffer
 
         // Comb filter creates pitch
+        console.log(frequency)
         const delayTime = 1 / frequency
         const delay = this.ctx.createDelay()
         delay.delayTime.value = delayTime
@@ -758,7 +746,7 @@ class PitchedNoiseSynth {
         // Lowpass for warmth
         const filter = this.ctx.createBiquadFilter()
         filter.type = 'lowpass'
-        filter.frequency.value = frequency * 8
+        filter.frequency.value = frequency * 12
         filter.Q.value = 1
 
         // Envelope
@@ -772,7 +760,7 @@ class PitchedNoiseSynth {
         filter.connect(feedback)
         feedback.connect(delay) // Feedback loop
         filter.connect(noteGain)
-        noteGain.connect(this.masterGain)
+        noteGain.connect(this.output)
 
         noiseSource.start(now)
         noiseSource.stop(now + burstLength)
@@ -802,11 +790,38 @@ class PitchedNoiseSynth {
     }
 
     setVolume(volume) {
-        this.masterGain.gain.value = volume
+        this.output.gain.value = volume
         return this
     }
 }
+
+const SYNTH_OPTIONS = [
+    'FMOscillator',
+    'PWMOscillator',
+    'PWMOscillatorAdvanced',
+    'NoiseSynth',
+    'GranularNoiseSynth'
+    // too buggy  'PitchedNoiseSynth'
+]
+
+const SYNTHS = [
+    FMOscillator,
+    PWMOscillator,
+    PWMOscillatorAdvanced,
+    NoiseSynth,
+    GranularNoiseSynth,
+    PitchedNoiseSynth
+]
+
+const getSynth = (synthName) => {
+    const synthIdx = SYNTH_OPTIONS.indexOf(synthName)
+    return SYNTHS[synthIdx]
+}
+
 export {
+    getSynth,
+    SYNTHS,
+    SYNTH_OPTIONS,
     FMOscillator,
     PWMOscillator,
     PWMOscillatorAdvanced,
