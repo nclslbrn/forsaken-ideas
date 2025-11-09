@@ -17,7 +17,7 @@ export default [
     ['C5', 523.25]
 ]
 */
-const FREQ_SEQ_TYPE = ['major', 'minor', 'chromatic', 'pentatonic']
+const FREQ_SEQ_TYPE = ['pentatonic'] // 'chromatic', 'major', 'minor' ]
 
 const generateFreqSeq = (numFreq, tone, type) => {
     const intervals = {

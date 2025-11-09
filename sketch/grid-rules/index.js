@@ -7,16 +7,16 @@ import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
-
+import { repeatedly2d } from '@thi.ng/transducers'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
 import SENTENCES from './SENTENCES'
 import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
 import { fillCell } from './fillCell'
-import { scribbleLine } from './scribbleLine'
+// import { scribbleLine } from './scribbleLine'
 import { schemes } from './schemes'
+import { FMOscillator, PWMOscillator, PWMOscillatorAdvanced } from './Synths'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
@@ -44,7 +44,8 @@ let theme = [],
     currNote = 0,
     isPlaying = false,
     elemsToDraw = [],
-    groupedElems = []
+    groupedElems = [],
+    oscType = null
 
 ROOT.appendChild(CANVAS)
 
@@ -72,7 +73,8 @@ const init = () => {
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
         textColorPerCell = random() > 0.5,
-        oneLetterPerCellChance = 0.66 + random() * 0.33
+        oneLetterPerCellChance = 0.66 + random() * 0.33,
+        oscType = random() > 0.5 ? 'FM' : 'PWM'
 
     theme = pickRandom(schemes)
     theme[1] = theme[1].sort((_a, _b) => random() > 0.5)
@@ -102,9 +104,10 @@ const init = () => {
       [1] cells that doesn't
       [0|1][n] indexed by sub grid cell index
     */
+    const loopStep = min(pattern.length, 7)
     const patternCells = [
-        Array.from(Array(pattern.length)).map((_) => []),
-        Array.from(Array(pattern.length)).map((_) => [])
+        Array.from(Array(loopStep)).map((_) => []),
+        Array.from(Array(loopStep)).map((_) => [])
     ]
 
     for (let i = 0; i < grid.length; i++) {
@@ -118,16 +121,16 @@ const init = () => {
                 dh * h * (SIZE[1] - MARGIN * 2)
             ]
             if (!rule(i, j)) {
-                patternCells[0][j].push(patternCell)
+                patternCells[0][j % loopStep].push(patternCell)
             } else {
-                patternCells[1][j].push(patternCell)
+                patternCells[1][j % loopStep].push(patternCell)
             }
         }
     }
     patternCells[0].map((cells, j) => {
         for (let k = 0; k < cells.length; k++) {
             const stripeLines = fillCell(cells[k], fillType(), 0)
-            groupedElems[j].push(
+            groupedElems[j % loopStep].push(
                 ...stripeLines.map((ln) =>
                     polyline(ln, {
                         stroke: theme[1][1 + (k % (theme[1].length - 1))]
@@ -145,14 +148,14 @@ const init = () => {
                     [cells[k][0], cells[k][1]]
                 )
                 const col = 1 + (k % (theme[1].length - 1))
-                groupedElems[j].push(
+                groupedElems[j % loopStep].push(
                     ...letter.map((ln) =>
                         polyline(ln, { stroke: theme[1][col] })
                     )
                 )
             } else {
                 const textGrid = glyphGrid(cells[k])
-                groupedElems[j].push(
+                groupedElems[j % loopStep].push(
                     ...textGrid.reduce(
                         (polys, subcell, sbIdx) => [
                             ...polys,
@@ -180,27 +183,33 @@ const init = () => {
     })
 
     const seqType = pickRandom(FREQ_SEQ_TYPE)
-    console.log('Generate ' + seqType + ' tone sequence')
+    console.log(
+        'Generate ' +
+            seqType +
+            ' tone sequence to be played by an ' +
+            oscType +
+            ' oscillator'
+    )
     const frequencies = generateFreqSeq(
-        pattern.length,
-        125, //+ 11 * ceil(random() * 4),
+        loopStep,
+        48, //+ 11 * ceil(random() * 4),
         seqType
     )
     //.sort((_a, _b) => Math.random() > 0.5)
 
-    notes = pattern.reduce(
-        (acc, [x, y, w, h], idx) => [
-            ...acc,
-            {
-                attack: round(100 * x) / 200,
-                sustain: round(100 * h) / 300,
-                release: round(100 * w) / 500,
-                len: ceil(random() * 5),
-                freq: pickRandom(frequencies)
-            }
-        ],
-        []
-    )
+    notes = pattern
+        .reduce(
+            (acc, [x, y, w, h], idx) => [
+                ...acc,
+                {
+                    velocity: round(100 * w) / 100,
+                    duration: ceil(random() * 5) / 3,
+                    frequency: pickRandom(frequencies)
+                }
+            ],
+            []
+        )
+        .filter((_, n) => n < loopStep)
     draw(
         CTX,
         group({}, [
@@ -210,41 +219,14 @@ const init = () => {
     )
 }
 
-const playCurrentNote = (note) => {
-    const enveloppe = AUDIO_CTX.createGain()
-    enveloppe.gain.setValueAtTime(0, 0)
-    enveloppe.gain.linearRampToValueAtTime(
-        note.sustain,
-        AUDIO_CTX.currentTime + note.len * note.attack
-    )
-    enveloppe.gain.setValueAtTime(
-        note.sustain,
-        AUDIO_CTX.currentTime + note.len - note.len * note.release
-    )
-    enveloppe.gain.linearRampToValueAtTime(0, AUDIO_CTX.currentTime + note.len)
-    /*
-    const osc = AUDIO_CTX.createOscillator()
-    osc.type = 'sawtooth' // square  sawtooth triangle sine
-    osc.frequency.setValueAtTime(note.freq, 0)
-    osc.start()
-    osc.stop(AUDIO_CTX.currentTime + note.len)
-    osc.connect(enveloppe)
-    */
-    for (let i = 0; i < 3; i++) {
-        const osc = AUDIO_CTX.createOscillator()
-        osc.type = ['sine', 'sawtooth', 'triangle', 'square'][i]
-        osc.frequency.setValueAtTime(note.freq, 0)
-        osc.start()
-        osc.stop(AUDIO_CTX.currentTime + note.len)
-        osc.connect(enveloppe)
-    }
-    enveloppe.connect(MASTER)
-}
-
 const animate = () => {
     if (!isPlaying) return
     const secondsPerBeat = 60.0 / TEMPO
-    playCurrentNote(notes[currNote])
+    const osc =
+        oscType === 'PWM'
+            ? new PWMOscillator(AUDIO_CTX)
+            : new FMOscillator(AUDIO_CTX)
+    osc.playNote(notes[currNote])
     draw(
         CTX,
         group({}, [
