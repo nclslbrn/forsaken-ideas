@@ -1,7 +1,8 @@
 import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, weightedRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../full-canvas.css'
+// import '../full-canvas.css'
+import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -23,8 +24,8 @@ const DPI = quantity(96, dpi),
         [window.innerWidth / 20, window.innerHeight / 20],
         'cm'
     ),
-    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
-    MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
+    SIZE = mul(DIN_A3, DPI).deref(),
+    MARGIN = convert(mul(quantity(42, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
@@ -71,7 +72,6 @@ const init = () => {
             [0, 1, 2, 3, 4, 5, 6, 7],
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
-        textColorPerCell = random() > 0.5,
         oneLetterPerCellChance = 0.66 + random() * 0.33
 
     theme = pickRandom(schemes)
@@ -91,7 +91,7 @@ const init = () => {
     }
 
     const rule = pickRandom(RULES)
-    const grid_size = [6 + ceil(random() * 4), 8 + ceil(random() * 3)]
+    const grid_size = [6 + ceil(random() * 8), 8 + ceil(random() * 6)]
     const [patternType, pattern] = cells(grid_size[0], random)
     const [_, grid] = cells(grid_size[1], random, [patternType])
 
@@ -129,10 +129,11 @@ const init = () => {
         for (let k = 0; k < cells.length; k++) {
             const stripeLines = fillCell(cells[k], fillType(), 0)
             groupedElems[j % loopStep].push(
-                ...stripeLines.map((ln) =>
-                    polyline(ln, {
-                        stroke: theme[1][1 + (k % (theme[1].length - 1))]
-                    })
+                ...stripeLines.map(
+                    (ln) =>
+                        polyline(ln, {
+                            stroke: 'black'
+                        }) // theme[1][1 + (k % (theme[1].length - 1))] })
                 )
             )
         }
@@ -147,8 +148,8 @@ const init = () => {
                 )
                 const col = 1 + (k % (theme[1].length - 1))
                 groupedElems[j % loopStep].push(
-                    ...letter.map((ln) =>
-                        polyline(ln, { stroke: theme[1][col] })
+                    ...letter.map(
+                        (ln) => polyline(ln, { stroke: 'black' }) // theme[1][col] })
                     )
                 )
             } else {
@@ -161,16 +162,8 @@ const init = () => {
                                 str[(k + sbIdx) % str.length],
                                 [subcell[2], subcell[3]],
                                 [subcell[0], subcell[1]]
-                            ).map((ln) =>
-                                polyline(ln, {
-                                    stroke: theme[1][
-                                        1 +
-                                            ((textColorPerCell
-                                                ? k
-                                                : sbIdx + k) %
-                                                (theme[1].length - 1))
-                                    ]
-                                })
+                            ).map(
+                                (ln) => polyline(ln, { stroke: 'black' }) // theme[1][1 + ((textColorPerCell ? k : sbIdx + k) % (theme[1].length - 1))]})
                             )
                         ],
                         []
@@ -201,7 +194,7 @@ const init = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: theme[1][0] }),
+            rect(SIZE, { fill: '#fff' }), // theme[1][0] }),
             ...groupedElems.map((elems) => group({}, elems))
         ])
     )
@@ -216,7 +209,7 @@ const animate = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: theme[1][0] }),
+            rect(SIZE, { fill: '#fff' }), //theme[1][0] }),
             ...groupedElems
                 .filter((_, n) => n !== currNote)
                 .map((elems) => group({}, elems))
@@ -255,7 +248,10 @@ window['exportSVG'] = () => {
                     height: SIZE[1],
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
-                group({}, elemsToDraw)
+                group({}, [
+                    rect(SIZE, { fill: '#fff' }), // theme[1][0] }),
+                    ...groupedElems.map((elems) => group({}, elems))
+                ])
             )
         )
     )
