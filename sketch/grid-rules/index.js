@@ -1,8 +1,8 @@
 import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, weightedRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-// import '../full-canvas.css'
-import '../framed-canvas.css'
+import '../full-canvas.css'
+//import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -24,17 +24,17 @@ const DPI = quantity(96, dpi),
         [window.innerWidth / 20, window.innerHeight / 20],
         'cm'
     ),
-    SIZE = mul(DIN_A3, DPI).deref(),
+    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(42, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
     AUDIO_OUT = AUDIO_CTX.createGain(),
-    TEMPO = 100
+    TEMPO = 120
 
 AUDIO_OUT.connect(AUDIO_CTX.destination)
-AUDIO_OUT.gain.value = 10
+AUDIO_OUT.gain.value = 5
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
@@ -44,8 +44,8 @@ let theme = [],
     notes = [],
     currNote = 0,
     isPlaying = false,
-    elemsToDraw = [],
-    groupedElems = []
+    groupedElems = [],
+    timeoutID = null
 
 ROOT.appendChild(CANVAS)
 
@@ -99,10 +99,10 @@ const init = () => {
 
     /* AllCell three dimensions Array
       [0] cells that match rule
-      [1] cells that doesn't
-      [0|1][n] indexed by sub grid cell index
+      [1] cells that don't
+      inside both [0|1][n] cell indexed by sub grid cell index
     */
-    const loopStep = min(pattern.length, 7)
+    const loopStep = min(pattern.length, 16)
     const patternCells = [
         Array.from(Array(loopStep)).map((_) => []),
         Array.from(Array(loopStep)).map((_) => [])
@@ -132,7 +132,7 @@ const init = () => {
                 ...stripeLines.map(
                     (ln) =>
                         polyline(ln, {
-                            stroke: 'black'
+                            stroke: '#fff'
                         }) // theme[1][1 + (k % (theme[1].length - 1))] })
                 )
             )
@@ -149,7 +149,7 @@ const init = () => {
                 const col = 1 + (k % (theme[1].length - 1))
                 groupedElems[j % loopStep].push(
                     ...letter.map(
-                        (ln) => polyline(ln, { stroke: 'black' }) // theme[1][col] })
+                        (ln) => polyline(ln, { stroke: '#fff' }) // theme[1][col] })
                     )
                 )
             } else {
@@ -163,7 +163,7 @@ const init = () => {
                                 [subcell[2], subcell[3]],
                                 [subcell[0], subcell[1]]
                             ).map(
-                                (ln) => polyline(ln, { stroke: 'black' }) // theme[1][1 + ((textColorPerCell ? k : sbIdx + k) % (theme[1].length - 1))]})
+                                (ln) => polyline(ln, { stroke: '#fff' }) // theme[1][1 + ((textColorPerCell ? k : sbIdx + k) % (theme[1].length - 1))]})
                             )
                         ],
                         []
@@ -176,49 +176,65 @@ const init = () => {
     const seqType = pickRandom(FREQ_SEQ_TYPE)
     console.log('Generate ' + seqType)
     const frequencies = generateFreqSeq(loopStep, 48, seqType)
+    const noNoteChance = 0.88
 
     notes = pattern
         .reduce(
             (acc, [x, y, w, h], idx) => [
                 ...acc,
                 {
-                    velocity: round(100 * w) / 10,
-                    duration: ceil(random() * 10) / 3,
+                    velocity: 0.1 + round(100 * w) / 100,
+                    duration: 50 + ceil(random() * 100),
                     frequency: pickRandom(frequencies),
-                    synth: pickRandom(SYNTH_OPTIONS)
+                    synth:
+                        random() > noNoteChance
+                            ? false
+                            : pickRandom(SYNTH_OPTIONS)
                 }
             ],
             []
         )
         .filter((_, n) => n < loopStep)
+
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#fff' }), // theme[1][0] }),
+            rect(SIZE, { fill: '#222' }), // theme[1][0] }),
             ...groupedElems.map((elems) => group({}, elems))
         ])
     )
 }
 
 const animate = () => {
-    if (!isPlaying) return
-    const secondsPerBeat = 60.0 / TEMPO
-    const Synth = getSynth(notes[currNote].synth)
-    const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
-    osc.playNote(notes[currNote])
+    if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
+    const secondsPerBeat = notes[currNote].duration / TEMPO
+    console.log(secondsPerBeat, notes[currNote].synth)
+    if (notes[currNote].synth) {
+        const Synth = getSynth(notes[currNote].synth)
+        const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
+        osc.playNote({
+            frequency: notes[currNote].frequency,
+            duration: secondsPerBeat,
+            velocity: notes[currNote].velocity
+        })
+    }
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#fff' }), //theme[1][0] }),
+            rect(SIZE, { fill: '#222' }), //theme[1][0] }),
             ...groupedElems
                 .filter((_, n) => n !== currNote)
                 .map((elems) => group({}, elems))
         ])
     )
     currNote = (currNote + 1) % notes.length
-    window.setTimeout(function () {
-        animate()
-    }, secondsPerBeat * 1000)
+    clearTimeout(timeoutID)
+    timeoutID = window.setTimeout(
+        function () {
+            animate()
+        },
+        round(secondsPerBeat * 1000)
+    )
 }
 
 init()
