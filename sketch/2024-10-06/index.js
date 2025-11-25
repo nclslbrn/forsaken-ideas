@@ -39,7 +39,6 @@ const DPI = quantity(96, dpi),
     ITER_LIST = document.createElement('div'),
     NUM_ITER = 70
 
-
 let STATE,
     seed = false,
     drawElems = [],
@@ -85,7 +84,7 @@ const iterate = () => {
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             d = sdBox(prtcls[j], [0, 0], [0.4, 0.2]),
-            r = d > 0 ? m : Math.atan2(0-pos.x, 0-pos.y),
+            r = d > 0 ? m : Math.atan2(0 - pos.x, 0 - pos.y),
             n = [
                 prtcls[j][0] + Math.cos(r) * 0.002 * k,
                 prtcls[j][1] + Math.sin(r) * 0.002 * k
@@ -115,7 +114,7 @@ window['init'] = () => {
 window['exportJPG'] = () =>
     downloadCanvas(CANVAS, `2024 10 60-${seed}`, 'jpeg', 1)
 
-window['exportSVG'] = () => 
+window['exportSVG'] = () =>
     downloadWithMime(
         `2024-10-06-${seed}.svg`,
         asSvg(
