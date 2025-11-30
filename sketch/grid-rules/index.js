@@ -18,6 +18,7 @@ import { fillCell } from './fillCell'
 // import { scribbleLine } from './scribbleLine'
 import { schemes } from './schemes'
 import { SYNTH_OPTIONS, getSynth } from './Synths'
+import { PATTERNS, arpeggio } from './arpeggio'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
@@ -31,7 +32,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
     AUDIO_OUT = AUDIO_CTX.createGain(),
-    TEMPO = 120
+    TEMPO = 90
 
 AUDIO_OUT.connect(AUDIO_CTX.destination)
 AUDIO_OUT.gain.value = 5
@@ -43,9 +44,12 @@ const remap = (n, start1, stop1, start2, stop2) =>
 let theme = [],
     notes = [],
     currNote = 0,
+    currArpeggNote = 0,
     isPlaying = false,
     groupedElems = [],
-    timeoutID = null
+    timeoutID = null,
+    arpTimeoutId = null,
+    arpeggioSequence = []
 
 ROOT.appendChild(CANVAS)
 
@@ -177,6 +181,8 @@ const init = () => {
     console.log('Generate ' + seqType)
     const frequencies = generateFreqSeq(loopStep, 48, seqType)
     const noNoteChance = 0.88
+    const arpPattern = pickRandom(PATTERNS)
+    const octaveSpan = 2
 
     notes = pattern
         .reduce(
@@ -184,7 +190,7 @@ const init = () => {
                 ...acc,
                 {
                     velocity: 0.1 + round(100 * w) / 100,
-                    duration: 50 + ceil(random() * 100),
+                    duration: 100 + ceil(random() * 100),
                     frequency: pickRandom(frequencies),
                     synth:
                         random() > noNoteChance
@@ -196,6 +202,9 @@ const init = () => {
         )
         .filter((_, n) => n < loopStep)
 
+    arpeggioSequence = arpeggio(notes, octaveSpan, arpPattern)
+    console.log(arpeggioSequence)
+
     draw(
         CTX,
         group({}, [
@@ -205,8 +214,30 @@ const init = () => {
     )
 }
 
+const playArpeggio = () => {
+    if (!isPlaying || !arpeggioSequence[currArpeggNote].synth) return
+
+    const Synth = getSynth(arpeggioSequence[currArpeggNote].synth)
+    const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
+    const duration = (arpeggioSequence[currArpeggNote].duration / TEMPO) * 1000
+    console.log(duration, 'Arpeggio')
+    osc.playNote({
+        frequency: arpeggioSequence[currArpeggNote].frequency,
+        duration: duration * 0.8,
+        velocity: arpeggioSequence[currArpeggNote].velocity
+    })
+    clearTimeout(arpTimeoutId)
+    // Move to next note
+    arpTimeoutId = setTimeout(() => {
+        currArpeggNote = (currArpeggNote + 1) % arpeggioSequence.length
+        playArpeggio()
+    }, round(duration))
+}
+
 const animate = () => {
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
+    if (currNote === 0) playArpeggio()
+
     const secondsPerBeat = notes[currNote].duration / TEMPO
     console.log(secondsPerBeat, notes[currNote].synth)
     if (notes[currNote].synth) {
@@ -229,7 +260,7 @@ const animate = () => {
     )
     currNote = (currNote + 1) % notes.length
     clearTimeout(timeoutID)
-    timeoutID = window.setTimeout(
+    timeoutID = setTimeout(
         function () {
             animate()
         },

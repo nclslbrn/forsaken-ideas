@@ -799,8 +799,8 @@ const SYNTH_OPTIONS = [
     'FMOscillator',
     'PWMOscillator',
     'PWMOscillatorAdvanced',
-    'NoiseSynth',
-    'GranularNoiseSynth'
+    'NoiseSynth'
+    //§ 'GranularNoiseSynth'
     // too buggy  'PitchedNoiseSynth'
 ]
 
