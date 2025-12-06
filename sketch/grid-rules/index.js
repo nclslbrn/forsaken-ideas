@@ -39,7 +39,7 @@ AUDIO_OUT.gain.value = 5
 
 const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
-    { random, floor, ceil, min, round } = Math
+    { random, floor, ceil, min, max, round, abs } = Math
 
 let theme = [],
     notes = [],
@@ -76,7 +76,8 @@ const init = () => {
             [0, 1, 2, 3, 4, 5, 6, 7],
             [4, 4, 4, 4, 1, 1, 1, 1]
         ),
-        oneLetterPerCellChance = 0.66 + random() * 0.33
+        oneLetterPerCellChance = 0.66 + random() * 0.33,
+        textColorPerCell = random() > 0.5
 
     theme = pickRandom(schemes)
     theme[1] = theme[1].sort((_a, _b) => random() > 0.5)
@@ -133,11 +134,10 @@ const init = () => {
         for (let k = 0; k < cells.length; k++) {
             const stripeLines = fillCell(cells[k], fillType(), 0)
             groupedElems[j % loopStep].push(
-                ...stripeLines.map(
-                    (ln) =>
-                        polyline(ln, {
-                            stroke: '#fff'
-                        }) // theme[1][1 + (k % (theme[1].length - 1))] })
+                ...stripeLines.map((ln) =>
+                    polyline(ln, {
+                        stroke: theme[1][1 + (k % (theme[1].length - 1))]
+                    })
                 )
             )
         }
@@ -152,8 +152,8 @@ const init = () => {
                 )
                 const col = 1 + (k % (theme[1].length - 1))
                 groupedElems[j % loopStep].push(
-                    ...letter.map(
-                        (ln) => polyline(ln, { stroke: '#fff' }) // theme[1][col] })
+                    ...letter.map((ln) =>
+                        polyline(ln, { stroke: theme[1][col] })
                     )
                 )
             } else {
@@ -166,8 +166,16 @@ const init = () => {
                                 str[(k + sbIdx) % str.length],
                                 [subcell[2], subcell[3]],
                                 [subcell[0], subcell[1]]
-                            ).map(
-                                (ln) => polyline(ln, { stroke: '#fff' }) // theme[1][1 + ((textColorPerCell ? k : sbIdx + k) % (theme[1].length - 1))]})
+                            ).map((ln) =>
+                                polyline(ln, {
+                                    stroke: theme[1][
+                                        1 +
+                                            ((textColorPerCell
+                                                ? k
+                                                : sbIdx + k) %
+                                                (theme[1].length - 1))
+                                    ]
+                                })
                             )
                         ],
                         []
@@ -180,17 +188,17 @@ const init = () => {
     const seqType = pickRandom(FREQ_SEQ_TYPE)
     console.log('Generate ' + seqType)
     const frequencies = generateFreqSeq(loopStep, 48, seqType)
-    const noNoteChance = 0.88
+    const noNoteChance = 0.8
     const arpPattern = pickRandom(PATTERNS)
-    const octaveSpan = 2
+    const octaveSpan = 1
 
     notes = pattern
         .reduce(
             (acc, [x, y, w, h], idx) => [
                 ...acc,
                 {
-                    velocity: 0.1 + round(100 * w) / 100,
-                    duration: 100 + ceil(random() * 100),
+                    velocity: 0.1 + round(100 * abs(w)) / 100,
+                    duration: abs((60 + ceil(random() * 300)) * h),
                     frequency: pickRandom(frequencies),
                     synth:
                         random() > noNoteChance
@@ -201,14 +209,24 @@ const init = () => {
             []
         )
         .filter((_, n) => n < loopStep)
-
-    arpeggioSequence = arpeggio(notes, octaveSpan, arpPattern)
+    const maxDuration = max(...notes.map((n) => n.duration))
+    const arpSynth = pickRandom(SYNTH_OPTIONS)
+    const arpStep = 4 * ceil(random() * 8)
+    arpeggioSequence = arpeggio(
+        notes.map((n) => ({
+            ...n,
+            duration: maxDuration / arpStep,
+            synth: arpSynth
+        })),
+        octaveSpan,
+        arpPattern
+    )
     console.log(arpeggioSequence)
 
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#222' }), // theme[1][0] }),
+            rect(SIZE, { fill: theme[1][0] }),
             ...groupedElems.map((elems) => group({}, elems))
         ])
     )
@@ -223,7 +241,7 @@ const playArpeggio = () => {
     console.log(duration, 'Arpeggio')
     osc.playNote({
         frequency: arpeggioSequence[currArpeggNote].frequency,
-        duration: duration * 0.8,
+        duration: duration * 0.5,
         velocity: arpeggioSequence[currArpeggNote].velocity
     })
     clearTimeout(arpTimeoutId)
@@ -236,7 +254,9 @@ const playArpeggio = () => {
 
 const animate = () => {
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
-    if (currNote === 0) playArpeggio()
+
+    // if (currNote === 0)
+    playArpeggio()
 
     const secondsPerBeat = notes[currNote].duration / TEMPO
     console.log(secondsPerBeat, notes[currNote].synth)
@@ -252,7 +272,7 @@ const animate = () => {
     draw(
         CTX,
         group({}, [
-            rect(SIZE, { fill: '#222' }), //theme[1][0] }),
+            rect(SIZE, { fill: theme[1][0] }),
             ...groupedElems
                 .filter((_, n) => n !== currNote)
                 .map((elems) => group({}, elems))
@@ -296,7 +316,7 @@ window['exportSVG'] = () => {
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
                 group({}, [
-                    rect(SIZE, { fill: '#fff' }), // theme[1][0] }),
+                    rect(SIZE, { fill: theme[1][0] }),
                     ...groupedElems.map((elems) => group({}, elems))
                 ])
             )
