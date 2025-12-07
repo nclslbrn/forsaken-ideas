@@ -13,8 +13,7 @@ import {
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
-import { getGlyphVector } from '@nclslbrn/plot-writer'
-import { fillCell } from './fillCell'
+
 // import { scribbleLine } from './scribbleLine'
 import { getSynth } from './Synths'
 import { iterMenu } from './iter-menu'
@@ -62,110 +61,11 @@ const init = async () => {
         margin: MARGIN,
         seed
     })
-    console.log(STATE)
+
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const {
-        str,
-        pattern,
-        grid,
-        glyphGrid,
-        rule,
-        fillType,
-        theme,
-        oneLetterPerCellChance,
-        loopStep,
-        RND
-    } = STATE
-    groupedElems = Array.from(Array(pattern.elem.length)).map((_) => [])
-
-    /* AllCell three dimensions Array
-      [0] cells that match rule
-      [1] cells that don't
-      inside both [0|1][n] cell indexed by sub grid cell index
-    */
-
-    const patternCells = [
-        Array.from(Array(loopStep)).map((_) => []),
-        Array.from(Array(loopStep)).map((_) => [])
-    ]
-
-    for (let i = 0; i < grid.length; i++) {
-        const [x, y, w, h] = grid[i]
-        for (let j = 0; j < pattern.elem.length; j++) {
-            const [dx, dy, dw, dh] = pattern.elem[j]
-
-            const patternCell = [
-                remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
-                remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
-                dw * w * (SIZE[0] - MARGIN * 2),
-                dh * h * (SIZE[1] - MARGIN * 2)
-            ]
-
-            // console.log(pattern.elem[j], loopStep, patternCell)
-
-            if (!rule(i, j)) {
-                patternCells[0][j % loopStep].push(patternCell)
-            } else {
-                patternCells[1][j % loopStep].push(patternCell)
-            }
-        }
-    }
-    patternCells[0].map((cells, j) => {
-        for (let k = 0; k < cells.length; k++) {
-            const stripeLines = fillCell(cells[k], fillType, 0)
-            groupedElems[j % loopStep].push(
-                ...stripeLines.map((ln) =>
-                    polyline(ln, {
-                        stroke: theme[1][1 + (k % (theme[1].length - 1))]
-                    })
-                )
-            )
-        }
-    })
-    patternCells[1].map((cells, j) => {
-        for (let k = 0; k < cells.length; k++) {
-            if (RND.float() > oneLetterPerCellChance) {
-                const letter = getGlyphVector(
-                    str[k % str.length],
-                    [cells[k][2], cells[k][3]],
-                    [cells[k][0], cells[k][1]]
-                )
-                const col = 1 + (k % (theme[1].length - 1))
-                groupedElems[j % loopStep].push(
-                    ...letter.map((ln) =>
-                        polyline(ln, { stroke: theme[1][col] })
-                    )
-                )
-            } else {
-                const textGrid = glyphGrid(cells[k])
-                groupedElems[j % loopStep].push(
-                    ...textGrid.reduce(
-                        (polys, subcell, sbIdx) => [
-                            ...polys,
-                            ...getGlyphVector(
-                                str[(k + sbIdx) % str.length],
-                                [subcell[2], subcell[3]],
-                                [subcell[0], subcell[1]]
-                            ).map((ln) =>
-                                polyline(ln, {
-                                    stroke: theme[1][
-                                        1 +
-                                            ((textColorPerCell
-                                                ? k
-                                                : sbIdx + k) %
-                                                (theme[1].length - 1))
-                                    ]
-                                })
-                            )
-                        ],
-                        []
-                    )
-                )
-            }
-        }
-    })
+    const { theme, groupedElems } = STATE
 
     draw(
         CTX,
@@ -198,7 +98,7 @@ const playArpeggio = () => {
 }
 
 const animate = () => {
-    const { notes, theme } = STATE
+    const { notes, groupedElems, theme } = STATE
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
 
     // if (currNote === 0)
@@ -309,6 +209,6 @@ if (urlParams.has('seed')) {
     seed = getRandSeed()
 }
 init()
-// iterMenu(ITER_LIST, STATE)
+iterMenu(ITER_LIST, STATE)
 window.infobox = infobox
 handleAction()
