@@ -12,5 +12,6 @@ export default [
     'RED_DRUM_________________________',
     'AAAAAAAvvvvvveeeeeee++++++++',
     '%vvvuuuu',
-    '°)_____|\\-'
+    '°)_____|\\-',
+    'Maximum call stack size exceeded '
 ]

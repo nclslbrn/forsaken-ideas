@@ -1,22 +1,3 @@
-import { frequencies } from '@thi.ng/transducers'
-
-/*
-export default [
-    ['C4', 261.63],
-    ['Db4', 277.18],
-    ['D4', 293.66],
-    ['Eb4', 311.13],
-    ['E4', 329.63],
-    ['F4', 349.23],
-    ['Gb4', 369.99],
-    ['G4', 392.0],
-    ['Ab4', 415.3],
-    ['A4', 440],
-    ['Bb4', 466.16],
-    ['B4', 493.88],
-    ['C5', 523.25]
-]
-*/
 const FREQ_SEQ_TYPE = ['pentatonic'] // 'chromatic', 'major', 'minor' ]
 
 const generateFreqSeq = (numFreq, tone, type) => {

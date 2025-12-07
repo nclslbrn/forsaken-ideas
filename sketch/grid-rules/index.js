@@ -8,17 +8,17 @@ import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-import { repeatedly2d } from '@thi.ng/transducers'
+import {
+    getRandSeed,
+    saveSeed,
+    cleanSavedSeed
+} from '../../sketch-common/random-seed'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
-import RULES from './RULES'
-import GRIDS from './GRIDS'
-import SENTENCES from './SENTENCES'
-import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
 import { fillCell } from './fillCell'
 // import { scribbleLine } from './scribbleLine'
-import { schemes } from './schemes'
-import { SYNTH_OPTIONS, getSynth } from './Synths'
-import { PATTERNS, arpeggio } from './arpeggio'
+import { getSynth } from './Synths'
+import { iterMenu } from './iter-menu'
+import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
     CUSTOM_FORMAT = quantity(
@@ -32,6 +32,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
     AUDIO_OUT = AUDIO_CTX.createGain(),
+    ITER_LIST = document.createElement('div'),
     TEMPO = 90
 
 AUDIO_OUT.connect(AUDIO_CTX.destination)
@@ -41,73 +42,50 @@ const remap = (n, start1, stop1, start2, stop2) =>
         ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
     { random, floor, ceil, min, max, round, abs } = Math
 
-let theme = [],
-    notes = [],
+let seed,
+    STATE,
     currNote = 0,
     currArpeggNote = 0,
     isPlaying = false,
     groupedElems = [],
     timeoutID = null,
-    arpTimeoutId = null,
-    arpeggioSequence = []
+    arpTimeoutId = null
 
 ROOT.appendChild(CANVAS)
 
-const init = () => {
+const init = async () => {
+    if (!seed) return
+
+    STATE = resolveState({
+        width: SIZE[0],
+        height: SIZE[1],
+        margin: MARGIN,
+        seed
+    })
+    console.log(STATE)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const str = [...SENTENCES[floor(random() * SENTENCES.length)]],
-        baseFontSize = 12 + floor(random() * 16),
-        fontSize = [baseFontSize, baseFontSize * floor(1 + random() * 0.5)],
-        glyphGrid = ([cx, cy, cw, ch]) => [
-            ...repeatedly2d(
-                (x, y) => [
-                    cx + x * fontSize[0],
-                    cy + y * fontSize[1],
-                    fontSize[0],
-                    fontSize[1]
-                ],
-                floor(cw / fontSize[0]),
-                floor(ch / fontSize[1])
-            )
-        ],
-        fillType = weightedRandom(
-            [0, 1, 2, 3, 4, 5, 6, 7],
-            [4, 4, 4, 4, 1, 1, 1, 1]
-        ),
-        oneLetterPerCellChance = 0.66 + random() * 0.33,
-        textColorPerCell = random() > 0.5
-
-    theme = pickRandom(schemes)
-    theme[1] = theme[1].sort((_a, _b) => random() > 0.5)
-    console.log(theme[0])
-
-    const cells = (numCell, rand, not = []) => {
-        const choices = Array.from(Array(GRIDS.length))
-            .map((_, i) => i)
-            .filter((idx) => !not.includes(idx))
-
-        const gridTypeIdx = floor(random() * choices.length)
-        return [
-            choices[gridTypeIdx],
-            GRIDS[choices[gridTypeIdx]](numCell, rand)
-        ]
-    }
-
-    const rule = pickRandom(RULES)
-    const grid_size = [6 + ceil(random() * 8), 8 + ceil(random() * 6)]
-    const [patternType, pattern] = cells(grid_size[0], random)
-    const [_, grid] = cells(grid_size[1], random, [patternType])
-
-    groupedElems = Array.from(Array(pattern.length)).map((_) => [])
+    const {
+        str,
+        pattern,
+        grid,
+        glyphGrid,
+        rule,
+        fillType,
+        theme,
+        oneLetterPerCellChance,
+        loopStep,
+        RND
+    } = STATE
+    groupedElems = Array.from(Array(pattern.elem.length)).map((_) => [])
 
     /* AllCell three dimensions Array
       [0] cells that match rule
       [1] cells that don't
       inside both [0|1][n] cell indexed by sub grid cell index
     */
-    const loopStep = min(pattern.length, 16)
+
     const patternCells = [
         Array.from(Array(loopStep)).map((_) => []),
         Array.from(Array(loopStep)).map((_) => [])
@@ -115,14 +93,18 @@ const init = () => {
 
     for (let i = 0; i < grid.length; i++) {
         const [x, y, w, h] = grid[i]
-        for (let j = 0; j < pattern.length; j++) {
-            const [dx, dy, dw, dh] = pattern[j]
+        for (let j = 0; j < pattern.elem.length; j++) {
+            const [dx, dy, dw, dh] = pattern.elem[j]
+
             const patternCell = [
                 remap(x + dx * w, 0, 1, MARGIN, SIZE[0] - MARGIN),
                 remap(y + dy * h, 0, 1, MARGIN, SIZE[1] - MARGIN),
                 dw * w * (SIZE[0] - MARGIN * 2),
                 dh * h * (SIZE[1] - MARGIN * 2)
             ]
+
+            // console.log(pattern.elem[j], loopStep, patternCell)
+
             if (!rule(i, j)) {
                 patternCells[0][j % loopStep].push(patternCell)
             } else {
@@ -132,7 +114,7 @@ const init = () => {
     }
     patternCells[0].map((cells, j) => {
         for (let k = 0; k < cells.length; k++) {
-            const stripeLines = fillCell(cells[k], fillType(), 0)
+            const stripeLines = fillCell(cells[k], fillType, 0)
             groupedElems[j % loopStep].push(
                 ...stripeLines.map((ln) =>
                     polyline(ln, {
@@ -144,7 +126,7 @@ const init = () => {
     })
     patternCells[1].map((cells, j) => {
         for (let k = 0; k < cells.length; k++) {
-            if (random() > oneLetterPerCellChance) {
+            if (RND.float() > oneLetterPerCellChance) {
                 const letter = getGlyphVector(
                     str[k % str.length],
                     [cells[k][2], cells[k][3]],
@@ -185,44 +167,6 @@ const init = () => {
         }
     })
 
-    const seqType = pickRandom(FREQ_SEQ_TYPE)
-    console.log('Generate ' + seqType)
-    const frequencies = generateFreqSeq(loopStep, 48, seqType)
-    const noNoteChance = 0.8
-    const arpPattern = pickRandom(PATTERNS)
-    const octaveSpan = 1
-
-    notes = pattern
-        .reduce(
-            (acc, [x, y, w, h], idx) => [
-                ...acc,
-                {
-                    velocity: 0.1 + round(100 * abs(w)) / 100,
-                    duration: abs((60 + ceil(random() * 300)) * h),
-                    frequency: pickRandom(frequencies),
-                    synth:
-                        random() > noNoteChance
-                            ? false
-                            : pickRandom(SYNTH_OPTIONS)
-                }
-            ],
-            []
-        )
-        .filter((_, n) => n < loopStep)
-    const maxDuration = max(...notes.map((n) => n.duration))
-    const arpSynth = pickRandom(SYNTH_OPTIONS)
-    const arpStep = 4 * ceil(random() * 8)
-    arpeggioSequence = arpeggio(
-        notes.map((n) => ({
-            ...n,
-            duration: maxDuration / arpStep,
-            synth: arpSynth
-        })),
-        octaveSpan,
-        arpPattern
-    )
-    console.log(arpeggioSequence)
-
     draw(
         CTX,
         group({}, [
@@ -233,6 +177,7 @@ const init = () => {
 }
 
 const playArpeggio = () => {
+    const { arpeggioSequence } = STATE
     if (!isPlaying || !arpeggioSequence[currArpeggNote].synth) return
 
     const Synth = getSynth(arpeggioSequence[currArpeggNote].synth)
@@ -253,10 +198,11 @@ const playArpeggio = () => {
 }
 
 const animate = () => {
+    const { notes, theme } = STATE
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
 
     // if (currNote === 0)
-    playArpeggio()
+    //  playArpeggio()
 
     const secondsPerBeat = notes[currNote].duration / TEMPO
     console.log(secondsPerBeat, notes[currNote].synth)
@@ -288,9 +234,6 @@ const animate = () => {
     )
 }
 
-init()
-
-window.init = init
 CANVAS.onclick = function () {
     isPlaying = !isPlaying
     if (isPlaying) {
@@ -301,6 +244,11 @@ CANVAS.onclick = function () {
     }
 }
 document.getElementById('iconav').style.display = 'none'
+
+window['init'] = () => {
+    seed = getRandSeed()
+    init()
+}
 
 window['exportJPG'] = () => {
     downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
@@ -316,7 +264,7 @@ window['exportSVG'] = () => {
                     viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                 },
                 group({}, [
-                    rect(SIZE, { fill: theme[1][0] }),
+                    rect(SIZE, { fill: STATE.theme[1][0] }),
                     ...groupedElems.map((elems) => group({}, elems))
                 ])
             )
@@ -326,16 +274,41 @@ window['exportSVG'] = () => {
 document.addEventListener('keypress', (e) => {
     switch (e.key) {
         case 'r':
-            window.init()
-            animate()
+            seed = getRandSeed()
+            init()
             break
-        case 'j':
+
+        case 'd':
             window.exportJPG()
             break
-        case 's':
+
+        case 'v':
             window.exportSVG()
+            break
+
+        case 's':
+            saveSeed(seed)
+            iterMenu(ITER_LIST, STATE)
+            break
+
+        case 'c':
+            cleanSavedSeed()
+            iterMenu(ITER_LIST, STATE)
+            break
+
+        case ' ':
+            animate()
             break
     }
 })
+const queryString = window.location.search
+const urlParams = new URLSearchParams(queryString)
+if (urlParams.has('seed')) {
+    seed = urlParams.get('seed')
+} else {
+    seed = getRandSeed()
+}
+init()
+// iterMenu(ITER_LIST, STATE)
 window.infobox = infobox
 handleAction()
