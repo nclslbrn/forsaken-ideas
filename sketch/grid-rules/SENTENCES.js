@@ -13,5 +13,5 @@ export default [
     'AAAAAAAvvvvvveeeeeee++++++++',
     '%vvvuuuu',
     '°)_____|\\-',
-    'Maximum call stack size exceeded '
+    'Maximum call stack size exceeded ||||||||||||||||||||||||||||||||||||||||'
 ]

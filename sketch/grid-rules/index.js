@@ -1,8 +1,10 @@
-import { rect, polyline, group, svgDoc, asSvg } from '@thi.ng/geom'
-import { pickRandom, weightedRandom } from '@thi.ng/random'
+// import '../full-canvas.css'
+// import '../framed-canvas.css'
+
+import './style.css'
+import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../full-canvas.css'
-//import '../framed-canvas.css'
+
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -20,10 +22,7 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
-    CUSTOM_FORMAT = quantity(
-        [window.innerWidth / 20, window.innerHeight / 20],
-        'cm'
-    ),
+    CUSTOM_FORMAT = quantity([50, 50], 'cm'),
     SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(42, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -37,10 +36,6 @@ const DPI = quantity(96, dpi),
 AUDIO_OUT.connect(AUDIO_CTX.destination)
 AUDIO_OUT.gain.value = 5
 
-const remap = (n, start1, stop1, start2, stop2) =>
-        ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2,
-    { random, floor, ceil, min, max, round, abs } = Math
-
 let seed,
     STATE,
     currNote = 0,
@@ -48,9 +43,9 @@ let seed,
     isPlaying = false,
     groupedElems = [],
     timeoutID = null,
-    arpTimeoutId = null
-
-ROOT.appendChild(CANVAS)
+    arpTimeoutId = null,
+    arpSynth = null,
+    mainSynths = []
 
 const init = async () => {
     if (!seed) return
@@ -61,11 +56,11 @@ const init = async () => {
         margin: MARGIN,
         seed
     })
-
+    console.log(STATE)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const { theme, groupedElems } = STATE
+    const { theme, groupedElems, arpeggioSequence, notes } = STATE
 
     draw(
         CTX,
@@ -74,19 +69,25 @@ const init = async () => {
             ...groupedElems.map((elems) => group({}, elems))
         ])
     )
+
+    const arpSynthClass = getSynth(arpeggioSequence[currArpeggNote].synth)
+    arpSynth = new arpSynthClass(AUDIO_CTX, AUDIO_OUT)
+    mainSynths = notes.map((n) => {
+        if (!n.synth) return
+        const Synth = getSynth(n.synth)
+        return new Synth(AUDIO_CTX, AUDIO_OUT)
+    })
 }
 
 const playArpeggio = () => {
     const { arpeggioSequence } = STATE
     if (!isPlaying || !arpeggioSequence[currArpeggNote].synth) return
 
-    const Synth = getSynth(arpeggioSequence[currArpeggNote].synth)
-    const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
     const duration = (arpeggioSequence[currArpeggNote].duration / TEMPO) * 1000
-    console.log(duration, 'Arpeggio')
-    osc.playNote({
+
+    arpSynth.playNote({
         frequency: arpeggioSequence[currArpeggNote].frequency,
-        duration: duration * 0.5,
+        duration: duration,
         velocity: arpeggioSequence[currArpeggNote].velocity
     })
     clearTimeout(arpTimeoutId)
@@ -94,7 +95,7 @@ const playArpeggio = () => {
     arpTimeoutId = setTimeout(() => {
         currArpeggNote = (currArpeggNote + 1) % arpeggioSequence.length
         playArpeggio()
-    }, round(duration))
+    }, duration)
 }
 
 const animate = () => {
@@ -102,14 +103,12 @@ const animate = () => {
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
 
     // if (currNote === 0)
-    //  playArpeggio()
+    playArpeggio()
 
-    const secondsPerBeat = notes[currNote].duration / TEMPO
-    console.log(secondsPerBeat, notes[currNote].synth)
+    const secondsPerBeat = (notes[currNote].duration / TEMPO) * 1000
+
     if (notes[currNote].synth) {
-        const Synth = getSynth(notes[currNote].synth)
-        const osc = new Synth(AUDIO_CTX, AUDIO_OUT)
-        osc.playNote({
+        mainSynths[currNote].playNote({
             frequency: notes[currNote].frequency,
             duration: secondsPerBeat,
             velocity: notes[currNote].velocity
@@ -125,13 +124,12 @@ const animate = () => {
         ])
     )
     currNote = (currNote + 1) % notes.length
+
     clearTimeout(timeoutID)
-    timeoutID = setTimeout(
-        function () {
-            animate()
-        },
-        round(secondsPerBeat * 1000)
-    )
+
+    timeoutID = setTimeout(function () {
+        animate()
+    }, secondsPerBeat)
 }
 
 CANVAS.onclick = function () {
@@ -143,7 +141,7 @@ CANVAS.onclick = function () {
         AUDIO_CTX.suspend()
     }
 }
-document.getElementById('iconav').style.display = 'none'
+// document.getElementById('iconav').style.display = 'none'
 
 window['init'] = () => {
     seed = getRandSeed()
@@ -153,6 +151,7 @@ window['init'] = () => {
 window['exportJPG'] = () => {
     downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
 }
+
 window['exportSVG'] = () => {
     downloadWithMime(
         `Grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
@@ -208,7 +207,11 @@ if (urlParams.has('seed')) {
 } else {
     seed = getRandSeed()
 }
+window.infobox = infobox
+
+ROOT.removeChild(document.getElementById('loading'))
+ROOT.appendChild(CANVAS)
+ROOT.appendChild(ITER_LIST)
 init()
 iterMenu(ITER_LIST, STATE)
-window.infobox = infobox
 handleAction()

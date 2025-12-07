@@ -40,16 +40,9 @@ const iterMenu = (ITER_LIST, STATE) => {
                 thead({}, tr({}, th({}, 'Property'), th({}, 'Value'))),
                 tbody(
                     {},
-                    tr({}, td({}, 'Theme'), td({}, STATE.theme)),
-                    tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
-                    tr({}, td({}, 'Operate'), td({}, STATE.operator)),
-                    tr(
-                        {},
-                        td({}, 'Shapes'),
-                        td({}, 
-                          ...STATE.shapes.map((s) => para(null, JSON.stringify(s)))
-                        )
-                    )
+                    tr({}, td({}, 'Theme'), td({}, STATE.theme[0])),
+                    tr({}, td({}, 'Frequencies'), td({}, STATE.frequencies)),
+                    tr({}, td({}, 'Arp pattern'), td({}, STATE.arpPattern))
                 )
             ),
             para(null, 'SEEDS'),

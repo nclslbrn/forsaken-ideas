@@ -47,7 +47,7 @@ class FMOscillator {
         const attack = 0.01
         const decay = 0.1
         const sustain = velocity * 0.7
-        const release = 0.3
+        const release = 0 // 0.3
 
         noteGain.gain.linearRampToValueAtTime(velocity, now + attack)
         noteGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
@@ -71,12 +71,11 @@ class FMOscillator {
         this.activeNotes.set(noteId, { carrier, modulator, noteGain })
 
         // Cleanup
-        setTimeout(
-            () => {
-                this.activeNotes.delete(noteId)
-            },
-            duration * 1000 + 100
-        )
+        setTimeout(() => {
+            this.activeNotes.delete(noteId)
+            carrier.stop()
+            modulator.stop()
+        }, duration)
 
         return noteId
     }
@@ -165,7 +164,7 @@ class PWMOscillator {
         const attack = 0.02
         const decay = 0.15
         const sustain = velocity * 0.7
-        const release = 0.2
+        const release = 0 //0.2
 
         noteGain.gain.linearRampToValueAtTime(velocity, now + attack)
         noteGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
@@ -207,12 +206,11 @@ class PWMOscillator {
         const noteId = Date.now() + Math.random()
         this.activeNotes.set(noteId, { saw1, saw2, lfo, noteGain })
 
-        setTimeout(
-            () => {
-                this.activeNotes.delete(noteId)
-            },
-            duration * 1000 + 100
-        )
+        setTimeout(() => {
+            this.activeNotes.delete(noteId)
+            saw1.stop()
+            saw2.stop()
+        }, duration)
 
         return noteId
     }
@@ -309,7 +307,7 @@ class PWMOscillatorAdvanced {
         const attack = 0.02
         const decay = 0.15
         const sustain = velocity * 0.7
-        const release = 0.25
+        const release = 0 //0.25
 
         noteGain.gain.linearRampToValueAtTime(velocity, now + attack)
         noteGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
@@ -359,12 +357,11 @@ class PWMOscillatorAdvanced {
         const noteId = Date.now() + Math.random()
         this.activeNotes.set(noteId, { saw1, saw2, noteGain })
 
-        setTimeout(
-            () => {
-                this.activeNotes.delete(noteId)
-            },
-            duration * 1000 + 100
-        )
+        setTimeout(() => {
+            this.activeNotes.delete(noteId)
+            saw1.stop()
+            saw2.stop()
+        }, duration)
 
         return noteId
     }
@@ -522,7 +519,7 @@ class NoiseSynth {
         const attack = 0.01
         const decay = 0.1
         const sustain = velocity * 0.6
-        const release = 0.2
+        const release = 0 // 0.2
 
         noteGain.gain.linearRampToValueAtTime(velocity, now + attack)
         noteGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
@@ -552,12 +549,9 @@ class NoiseSynth {
         const noteId = Date.now() + Math.random()
         this.activeNotes.set(noteId, { noiseSource, noteFilter, noteGain })
 
-        setTimeout(
-            () => {
-                this.activeNotes.delete(noteId)
-            },
-            duration * 1000 + 100
-        )
+        setTimeout(() => {
+            this.activeNotes.delete(noteId)
+        }, duration * 1000)
 
         return noteId
     }
@@ -666,12 +660,9 @@ class GranularNoiseSynth {
         const noteId = Date.now() + Math.random()
         this.activeNotes.set(noteId, grains)
 
-        setTimeout(
-            () => {
-                this.activeNotes.delete(noteId)
-            },
-            duration * 4000 + 100
-        )
+        setTimeout(() => {
+            this.activeNotes.delete(noteId)
+        }, duration * 1000)
 
         return noteId
     }

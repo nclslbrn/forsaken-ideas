@@ -1,4 +1,4 @@
-const FREQ_SEQ_TYPE = ['pentatonic'] // 'chromatic', 'major', 'minor' ]
+const FREQ_SEQ_TYPE = ['pentatonic', 'chromatic', 'major', 'minor']
 
 const generateFreqSeq = (numFreq, tone, type) => {
     const intervals = {

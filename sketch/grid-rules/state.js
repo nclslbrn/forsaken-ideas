@@ -4,13 +4,12 @@ import { repeatedly2d } from '@thi.ng/transducers'
 import { polyline } from '@thi.ng/geom'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
-import { schemes } from './schemes'
-
-import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
-import { SYNTH_OPTIONS } from './Synths'
-import { seedFromHash } from './seed-from-hash'
 import SENTENCES from './SENTENCES'
+import SCHEMES from './SCHEMES'
 import { PATTERNS, arpeggio } from './arpeggio'
+import { SYNTH_OPTIONS } from './Synths'
+import { generateFreqSeq, FREQ_SEQ_TYPE } from './NOTES'
+import { seedFromHash } from './seed-from-hash'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import { fillCell } from './fillCell'
 
@@ -42,7 +41,7 @@ const BASE = (config) => {
             textColorPerCell: () => RND.float() > 0.5,
 
             theme: () => {
-                const origin = pickRandom(schemes, RND)
+                const origin = pickRandom(SCHEMES, RND)
                 return [
                     origin[0],
                     origin[1].sort((_a, _b) => RND.float() > 0.5)
@@ -56,7 +55,7 @@ const BASE = (config) => {
 
             ruleIdx: () => floor(RULES.length * RND.float()),
 
-            fillType: () =>
+            fillType: () => () =>
                 weightedRandom(
                     [0, 1, 2, 3, 4, 5, 6, 7],
                     [4, 4, 4, 4, 1, 1, 1, 1],
@@ -94,9 +93,9 @@ const BASE = (config) => {
 
             seqType: () => pickRandom(FREQ_SEQ_TYPE, RND),
 
-            noNoteChance: 0.8,
+            noNoteChance: 0.9,
 
-            octaveSpan: 2,
+            octaveSpan: 1,
 
             frequencies: ({ loopStep, seqType }) =>
                 generateFreqSeq(loopStep, 48, seqType),
@@ -109,10 +108,8 @@ const BASE = (config) => {
                         (acc, [x, y, w, h], idx) => [
                             ...acc,
                             {
-                                velocity: 0.1 + round(100 * abs(w)) / 100,
-                                duration: abs(
-                                    (60 + ceil(RND.float() * 300)) * h
-                                ),
+                                velocity: 0.1 + round(100 * abs(w)) / 160,
+                                duration: pickRandom([30, 60, 90], RND),
                                 frequency: pickRandom(frequencies, RND),
                                 synth:
                                     RND.float() > noNoteChance
@@ -124,10 +121,10 @@ const BASE = (config) => {
                     )
                     .filter((_, n) => n < loopStep),
 
-            arpeggioSequence: ({ notes, arpPattern, octaveSpan }) => {
+            arpeggioSequence: ({ notes, arpPattern, octaveSpan, RND }) => {
                 const maxDuration = max(...notes.map((n) => n.duration))
-                const arpSynth = pickRandom(SYNTH_OPTIONS)
-                const arpStep = 4 * ceil(RND.float() * 8)
+                const arpSynth = pickRandom(SYNTH_OPTIONS, RND)
+                const arpStep = 8 * ceil(RND.float() * 8)
                 return arpeggio(
                     notes.map((n) => ({
                         ...n,
@@ -226,7 +223,7 @@ const resolveState = (config) =>
 
                 patternCells[0].map((cells, j) => {
                     for (let k = 0; k < cells.length; k++) {
-                        const stripeLines = fillCell(cells[k], fillType, 0)
+                        const stripeLines = fillCell(cells[k], fillType(), 0)
                         groups[j % loopStep].push(
                             ...stripeLines.map((ln) =>
                                 polyline(ln, {
