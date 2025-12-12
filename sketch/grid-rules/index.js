@@ -70,13 +70,26 @@ const init = async () => {
         ])
     )
 
+    const compressor = AUDIO_CTX.createDynamicsCompressor()
+    const masterGain = AUDIO_CTX.createGain()
+    // Compressor settings
+    compressor.threshold.value = -12
+    compressor.knee.value = 50
+    compressor.ratio.value = 12
+    compressor.attack.value = 0.003
+    compressor.release.value = 0.25
+
+    compressor.connect(masterGain)
+    masterGain.connect(AUDIO_CTX.destination)
+
     const arpSynthClass = getSynth(arpeggioSequence[currArpeggNote].synth)
-    arpSynth = new arpSynthClass(AUDIO_CTX, AUDIO_OUT)
+    arpSynth = new arpSynthClass(AUDIO_CTX, masterGain)
     mainSynths = notes.map((n) => {
         if (!n.synth) return
         const Synth = getSynth(n.synth)
-        return new Synth(AUDIO_CTX, AUDIO_OUT)
+        return new Synth(AUDIO_CTX, masterGain)
     })
+    // source.connect(AUDIO_CTX.destination)
 }
 
 const playArpeggio = () => {

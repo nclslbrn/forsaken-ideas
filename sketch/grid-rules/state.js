@@ -95,10 +95,12 @@ const BASE = (config) => {
 
             noNoteChance: 0.9,
 
+            baseTone: 48,
+
             octaveSpan: 1,
 
-            frequencies: ({ loopStep, seqType }) =>
-                generateFreqSeq(loopStep, 48, seqType),
+            frequencies: ({ loopStep, baseTone, seqType }) =>
+                generateFreqSeq(loopStep, baseTone, seqType),
 
             arpPattern: () => pickRandom(PATTERNS, RND),
 
@@ -109,7 +111,7 @@ const BASE = (config) => {
                             ...acc,
                             {
                                 velocity: 0.1 + round(100 * abs(w)) / 160,
-                                duration: pickRandom([30, 60, 90], RND),
+                                duration: pickRandom([30, 60, 90, 120], RND),
                                 frequency: pickRandom(frequencies, RND),
                                 synth:
                                     RND.float() > noNoteChance
