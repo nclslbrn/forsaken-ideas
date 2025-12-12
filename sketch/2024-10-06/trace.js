@@ -31,7 +31,7 @@ const trace = (STATE) => {
             ...cropped.map((line) =>
                 polyline(line, {
                     stroke: strokeById(idx),
-                    weight: 0.5
+                    weight: 1.5
                 })
             )
         ]
@@ -47,7 +47,7 @@ const trace = (STATE) => {
         ]
     }, [])
     */
-   return comp(lines, fntSz, STATE)
+    return comp(lines, fntSz, STATE)
 }
 
 const comp = (
@@ -57,8 +57,8 @@ const comp = (
 ) => [
     rect([width, height], { fill: colors[0] }),
 
-    group({ weight: 0.75 }, [
-        // bottom right label seed + attractor name + mixing formula
+    group({}, [
+        /*  bottom right label seed + attractor name + mixing formula
         group(
             { stroke: colors[2] },
             [
@@ -92,8 +92,9 @@ const comp = (
                 []
             )
         ),
+        */
         // the flow fields trails
-        ...uniqueLines,
+        ...uniqueLines
         // group({ stroke: colors[1] }, isoShapes)
     ])
 ]

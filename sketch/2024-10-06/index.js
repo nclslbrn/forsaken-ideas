@@ -27,10 +27,10 @@ import { trace, traceLoadScreen } from './trace'
 
 const DPI = quantity(96, dpi),
     // TWOK_16_9 = quantity([1080, 607], mm),
-    // TWOK_9_16 = quantity([607, 1080], mm),
+    TWOK_9_16 = quantity([607, 1080], mm),
     // IG_SQ = quantity([700, 700], mm),
     // IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(DIN_A3, DPI).deref(),
+    SIZE = mul(TWOK_9_16, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -147,7 +147,9 @@ window.onkeydown = (e) => {
             break
 
         case 'r':
+            if (isRecording) stopRecording()
             isRecording = !isRecording
+            isAnimated = !isAnimated
             init()
             break
     }
@@ -155,10 +157,14 @@ window.onkeydown = (e) => {
 
 const startRecording = () => {
     if (!isRecording) return
-    recorder = canvasRecorder(CANVAS, `${seed}-${new Date().toISOString()}`, {
-        mimeType: 'video/webm;codecs=vp9',
-        fps: 60
-    })
+    recorder = canvasRecorder(
+        CANVAS,
+        `${seed}-${new Date().toISOString()}.mp4`,
+        {
+            mimeType: 'video/mp4',
+            fps: 30
+        }
+    )
     recorder.start()
     console.log('%c Record started ', 'background: tomato; color: white')
 }

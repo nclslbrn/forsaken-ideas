@@ -49,8 +49,8 @@ const BASE = (config) => {
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
             shapesNum: RND.minmaxInt(1, 4),
             shapes: ({ width, height, shapesNum }) => [
-                ...repeatedly(() => {
-                    return {
+                ...repeatedly(
+                    () => ({
                         rot: Math.PI / RND.minmaxInt(1, 3),
                         center: [
                             0.5 * width - RND.float() - 0.5 * width,
@@ -61,8 +61,9 @@ const BASE = (config) => {
                             height * RND.float() * 0.15
                         ],
                         height: height * RND.minmax(0.01, 0.16)
-                    }
-                }, shapesNum)
+                    }),
+                    shapesNum
+                )
             ],
             theme: pickRandomKey(THEMES, RND),
             colors: ({ theme }) => THEMES[theme]
