@@ -5,7 +5,7 @@ import { traceShape } from './traceShape'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
-    const { width, height, inner, trails, colors, margin, shapes } = STATE
+    const { width, height, inner, trails, colors, margin } = STATE
     const domainScale = 0.95
     const cropPoly = [
         [margin, margin],
@@ -31,7 +31,7 @@ const trace = (STATE) => {
             ...cropped.map((line) =>
                 polyline(line, {
                     stroke: strokeById(idx),
-                    weight: 1.5
+                    weight: 1.25
                 })
             )
         ]

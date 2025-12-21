@@ -26,7 +26,6 @@ import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { iterMenu } from './iter-menu'
 import { operate } from './operator'
 import { trace, traceLoadScreen } from './trace'
-import { MATH } from '@thi.ng/vectors'
 
 const DPI = quantity(96, dpi),
     // TWOK_16_9 = quantity([1080, 607], mm),
@@ -52,9 +51,10 @@ let STATE,
     isRecording = false,
     isAnimated = false,
     recorder = null,
-    uniform = {}
+    uniform = {},
+    pixels = null
 
-const init = async () => {
+const init = () => {
     if (!seed) return
     if (frameReq) cancelAnimationFrame(frameReq)
     if (isRecording) startRecording()
@@ -68,6 +68,7 @@ const init = async () => {
         height: SIZE[1],
         margin: MARGIN,
         CANVAS_GL,
+        GL,
         seed
     })
     CANVAS_2D.width = SIZE[0]
@@ -76,6 +77,21 @@ const init = async () => {
     CANVAS_GL.height = SIZE[1]
     GL.viewport(0, 0, CANVAS_GL.width, CANVAS_GL.height)
 
+    renderGLTexture()
+
+    if (isAnimated) {
+        currFrame = 0
+        update()
+    } else {
+        draw(CTX_2D, traceLoadScreen(STATE))
+        for (let i = 0; i < NUM_ITER; i++) {
+            iterate()
+        }
+        draw(CTX_2D, group({}, trace(STATE, 'pixel')))
+    }
+}
+const renderGLTexture = () => {
+    const { glUniform } = STATE
     const vertexShader = createShader(GL, GL.VERTEX_SHADER, vertSrc),
         fragmentShader = createShader(GL, GL.FRAGMENT_SHADER, fragSrc),
         program = createProgram(GL, vertexShader, fragmentShader)
@@ -85,7 +101,6 @@ const init = async () => {
     const buffer = GL.createBuffer(),
         verts = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
         positionLoc = GL.getAttribLocation(program, 'a_position')
-
     uniform.uTimeLoc = GL.getUniformLocation(program, 'u_time')
     uniform.uResolution = GL.getUniformLocation(program, 'u_resolution')
     uniform.uNoiseSeed = GL.getUniformLocation(program, 'u_noiseSeed')
@@ -101,31 +116,39 @@ const init = async () => {
     GL.enable(GL.BLEND)
     GL.clearColor(1, 1, 1, 1)
     GL.clear(GL.COLOR_BUFFER_BIT)
+
     GL.uniform1f(uniform.uTimeLoc, 0.1)
     GL.uniform2f(uniform.uResolution, CANVAS_GL.width, CANVAS_GL.height)
-    GL.uniform1f(uniform.uNoiseSeed, STATE.glUniform.noiseSeed)
-    GL.uniform1f(uniform.uNoiseSize, STATE.glUniform.noiseSize)
-    GL.uniform1i(uniform.uNumCell, STATE.glUniform.numCell)
+    GL.uniform1f(uniform.uNoiseSeed, glUniform.noiseSeed)
+    GL.uniform1f(uniform.uNoiseSize, glUniform.noiseSize)
+    GL.uniform1i(uniform.uNumCell, glUniform.numCell)
     GL.uniform4fv(
         uniform.uCells,
-        STATE.glUniform.cells.reduce((s, c) => [...s, ...c], [])
+        glUniform.cells.reduce((s, c) => [...s, ...c], [])
     )
     GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4)
 
-    if (isAnimated) {
-        currFrame = 0
-        update()
-    } else {
-        draw(CTX_2D, traceLoadScreen(STATE))
-        for (let i = 0; i < NUM_ITER; i++) {
-            iterate()
-        }
-        draw(CTX_2D, group({}, trace(STATE, 'pixel')))
+    const sample = document.createElement('canvas'),
+        ctx = sample.getContext('2d', { willReadFrequently: true })
+    sample.width = SIZE[0]
+    sample.height = SIZE[1]
+    ctx.drawImage(CANVAS_GL, 0, 0)
+    pixels = ctx.getImageData(0, 0, sample.width, sample.height).data
+    ROOT.appendChild(sample)
+
+    console.log(pixels)
+}
+
+const glGrayscale = ([x, y]) => {
+    if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height) {
+        return 0
     }
+    const pixIdx = (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
+    return pixels[pixIdx]
 }
 
 const iterate = () => {
-    const { prtcls, trails, attractor, operator, noise, glGrayscale } = STATE
+    const { prtcls, trails, attractor, operator, noise, domainToPixels } = STATE
     for (let j = 0; j < prtcls.length; j++) {
         const pos = ATTRACT_ENGINE.attractors[attractor]({
                 x: prtcls[j][0],
@@ -134,8 +157,8 @@ const iterate = () => {
             k = noise.fbm(pos.x * 900, pos.y * 900),
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
-            g = glGrayscale(pos.x, pos.y),
-            r = g > 275 ? (g / 255) * Math.PI * 2 : m,
+            g = glGrayscale(domainToPixels(prtcls[j])),
+            r = g > 230 ? m : k * (g / 150),
             n = [
                 prtcls[j][0] + Math.cos(r) * 0.002 * k,
                 prtcls[j][1] + Math.sin(r) * 0.002 * k
@@ -230,12 +253,9 @@ const stopRecording = () => {
 window.infobox = infobox
 
 ROOT.removeChild(document.getElementById('loading'))
-ROOT.appendChild(CANVAS_GL)
 ROOT.appendChild(CANVAS_2D)
-ROOT.appendChild(ITER_LIST)
 
-CANVAS_GL.width /= 10
-CANVAS_GL.height /= 10
+ROOT.appendChild(ITER_LIST)
 
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)

@@ -2,6 +2,8 @@ import { resolve } from '@thi.ng/resolve-map'
 import { pickRandom, pickRandomKey, SFC32 } from '@thi.ng/random'
 import { repeatedly2d, repeatedly } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
+
+import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
 import { THEMES } from './THEMES'
@@ -42,6 +44,7 @@ const BASE = (config) => {
     return resolve(
         {
             ...config,
+            DOMAIN,
             inner: ({ width, height, margin }) => [
                 width - margin * 2,
                 height - margin * 2
@@ -83,35 +86,8 @@ const BASE = (config) => {
                     DOMAIN
                 )
             ],
+
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
-            shapesNum: RND.minmaxInt(1, 4),
-            shapes: ({ width, height, shapesNum }) => [
-                ...repeatedly(
-                    () => ({
-                        rot: Math.PI / RND.minmaxInt(1, 3),
-                        center: [
-                            0.5 * width - RND.float() - 0.5 * width,
-                            0.5 * height - RND.float() - 0.5 * height
-                        ],
-                        size: [
-                            height * RND.float() * 0.15,
-                            height * RND.float() * 0.15
-                        ],
-                        height: height * RND.minmax(0.01, 0.16)
-                    }),
-                    shapesNum
-                )
-            ],
-
-            glPixels: ({ CANVAS_GL }) => {
-                const sample = document.createElement('canvas'),
-                    ctx = sample.getContext('2d', { willReadFrequently: true })
-                sample.width = CANVAS_GL.width
-                sample.height = CANVAS_GL.height
-                ctx.drawImage(CANVAS_GL, 0, 0)
-                return ctx.getImageData(0, 0, sample.width, sample.height)
-            },
-
             theme: pickRandomKey(THEMES, RND),
             colors: ({ theme }) => THEMES[theme]
         },
@@ -125,22 +101,9 @@ const resolveState = (config) =>
         {
             ...BASE(config),
             ...config,
-
-            glGrayscale:
-                ({ CANVAS_GL, glPixels }) =>
-                (x, y) => {
-                    if (
-                        x < 0 ||
-                        x >= CANVAS_GL.width ||
-                        y < 0 ||
-                        y >= CANVAS_GL.height
-                    ) {
-                        return 0
-                    }
-                    const pixIdx =
-                        (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
-                    return glPixels[pixIdx]
-                }
+            domainToPixels:
+                ({ width, height }) =>
+                ([x, y]) => [width / 2 + x * width, height / 2 + y * height]
         },
         { onlyFnRefs: true }
     )

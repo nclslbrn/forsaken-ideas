@@ -42,14 +42,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                     {},
                     tr({}, td({}, 'Theme'), td({}, STATE.theme)),
                     tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
-                    tr({}, td({}, 'Operate'), td({}, STATE.operator)),
-                    tr(
-                        {},
-                        td({}, 'Shapes'),
-                        td({}, 
-                          ...STATE.shapes.map((s) => para(null, JSON.stringify(s)))
-                        )
-                    )
+                    tr({}, td({}, 'Operate'), td({}, STATE.operator))
                 )
             ),
             para(null, 'SEEDS'),

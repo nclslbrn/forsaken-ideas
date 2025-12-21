@@ -117,7 +117,7 @@ void main() {
                     }
                     float d = sdBox(stToCell, cellSiz);
                     float rep = abs(sdfRep(d, .1) - .2);
-                    depth += rep * 2.;
+                    depth += rep * 8.;
                 }
             }
         }
