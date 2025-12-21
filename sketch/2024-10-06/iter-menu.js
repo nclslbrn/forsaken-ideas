@@ -32,6 +32,7 @@ const iterMenu = (ITER_LIST, STATE) => {
     if (ITER_LIST === undefined) return
     ITER_LIST.innerHTML = ''
     const saved = getSavedSeed()
+    const { theme, attractor, operator, shape } = STATE
     $compile(
         div(
             {},
@@ -40,9 +41,14 @@ const iterMenu = (ITER_LIST, STATE) => {
                 thead({}, tr({}, th({}, 'Property'), th({}, 'Value'))),
                 tbody(
                     {},
-                    tr({}, td({}, 'Theme'), td({}, STATE.theme)),
-                    tr({}, td({}, 'Attractor'), td({}, STATE.attractor)),
-                    tr({}, td({}, 'Operate'), td({}, STATE.operator))
+                    tr({}, td({}, 'Theme'), td({}, theme)),
+                    tr({}, td({}, 'Attractor'), td({}, attractor)),
+                    tr({}, td({}, 'Operate'), td({}, operator)),
+                    tr(
+                        {},
+                        td({}, 'Shape'),
+                        td({}, shape.type === 0 ? 'sphere' : 'cube')
+                    )
                 )
             ),
             para(null, 'SEEDS'),

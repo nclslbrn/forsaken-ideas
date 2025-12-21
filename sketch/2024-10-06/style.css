@@ -3,7 +3,7 @@
 body {
   overflow-y: scroll;
 }
-*/ 
+*/
 
 #windowFrame {
     display: flex;
@@ -17,6 +17,11 @@ body {
     padding: 0;
     max-height: 100%;
     width: auto;
+}
+
+#windowFrame > canvas:last-of-type {
+    max-width: 400px;
+    max-height: 400px;
 }
 
 #windowFrame div {

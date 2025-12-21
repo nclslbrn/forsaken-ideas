@@ -1,126 +1,129 @@
-
-precision highp float;
-
-#define MAX_CELL 64.0
-#define PI 3.14159265358979323846
+precision mediump float;
 
 uniform vec2 u_resolution;
-uniform int u_numCell;
-uniform vec4 u_cells[int(MAX_CELL)];
-uniform float u_noiseSize;
-uniform float u_noiseSeed;
-uniform float u_time;
+uniform int u_shapeType;      // 0: sphere, 1: cube
+uniform vec3 u_shapePos;
+uniform float u_shapeSize;
+uniform vec3 u_shapeRot;      // rotation in radians (x, y, z)
+uniform vec3 u_lightPos;
 
-vec2 hash22(vec2 p, float seed) {
-    vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-    p3 += dot(p3, p3.yzx + 33.33 + seed);
-    return fract((p3.xx + p3.yz) * p3.zy);
-}
+// Create rotation matrix from Euler angles
+mat3 rotationMatrix(vec3 rot) {
+    float cx = cos(rot.x);
+    float sx = sin(rot.x);
+    float cy = cos(rot.y);
+    float sy = sin(rot.y);
+    float cz = cos(rot.z);
+    float sz = sin(rot.z);
 
-float smooth_noise(vec2 p, float seed) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    float a = hash22(i, seed).x;
-    float b = hash22(i + vec2(1.0, 0.0), seed).x;
-    float c = hash22(i + vec2(0.0, 1.0), seed).x;
-    float d = hash22(i + vec2(1.0, 1.0), seed).x;
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(
-        mix(a, b, u.x),
-        mix(c, d, u.x),
-        u.y
+    // Rotation around X axis
+    mat3 rx = mat3(
+        1.0, 0.0, 0.0,
+        0.0, cx, -sx,
+        0.0, sx, cx
     );
+
+    // Rotation around Y axis
+    mat3 ry = mat3(
+        cy, 0.0, sy,
+        0.0, 1.0, 0.0,
+        -sy, 0.0, cy
+    );
+
+    // Rotation around Z axis
+    mat3 rz = mat3(
+        cz, -sz, 0.0,
+        sz, cz, 0.0,
+        0.0, 0.0, 1.0
+    );
+
+    return rz * ry * rx;
 }
 
-float noise2D(vec2 p, float seed) {
-    float value = 0.0;
-    float amplitude = 0.5;
-    float frequency = 1.0;
-    for (int i = 0; i < 4; i++) {
-        value += smooth_noise(p * frequency, seed) * amplitude;
-        amplitude *= 0.5;
-        frequency *= 2.0;
-    }
-    return value;
-}
-
-vec2 wrapPosition(vec2 pos) {
-    vec2 noisePos = pos * u_noiseSize;
-    float n1 = noise2D(noisePos, u_noiseSeed);
-    float n2 = noise2D(noisePos + vec2(5.2, 1.3), u_noiseSeed);
-    float angle = n1 * 2.0 * PI;
-    vec2 displacement = vec2(cos(angle), sin(angle)) * .75;
-    displacement += vec2(n2, n1) * .75;
-    float distanceFromCenter = distance(pos, vec2(.5));
-    float falloff = smoothstep(.05, 1., distanceFromCenter);
-    return pos + displacement * falloff;
-}
-
-float sdBox(in vec2 p, in vec2 wh) {
-    vec2 d = abs(p) - wh;
-    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-}
-
-float sdCircle(vec2 p, float r) {
+// Signed Distance Function for sphere
+float sdSphere(vec3 p, float r) {
     return length(p) - r;
 }
 
-float sdfRep(in float x, in float r) {
-    x /= r;
-    x -= floor(x) + .5;
-    x *= r;
-    return x;
+// Signed Distance Function for box/cube
+float sdBox(vec3 p, vec3 b) {
+    vec3 q = abs(p) - b;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-vec2 rotate2D(vec2 _st, float _angle) {
-    _st -= 0.5;
-    _st = mat2(cos(_angle), -sin(_angle),
-            sin(_angle), cos(_angle)) * _st;
-    _st += 0.5;
-    return _st;
+// Main scene SDF
+float sceneSDF(vec3 p) {
+    // Transform point to local space (apply rotation and translation)
+    vec3 localP = rotationMatrix(u_shapeRot) * (p - u_shapePos);
+
+    if (u_shapeType == 0) {
+        // Sphere
+        return sdSphere(localP, u_shapeSize);
+    } else {
+        // Cube
+        return sdBox(localP, vec3(u_shapeSize));
+    }
+}
+
+// Calculate surface normal using gradient
+vec3 calcNormal(vec3 p) {
+    float eps = 0.001;
+    vec2 h = vec2(eps, 0.0);
+    return normalize(vec3(
+        sceneSDF(p + h.xyy) - sceneSDF(p - h.xyy),
+        sceneSDF(p + h.yxy) - sceneSDF(p - h.yxy),
+        sceneSDF(p + h.yyx) - sceneSDF(p - h.yyx)
+    ));
 }
 
 void main() {
-    vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    vec2 bckSt = st;
-    float depth = 0.;
+    // Normalize coordinates
+    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution) / u_resolution.y;
 
-    for (int i = 0; i <= int(MAX_CELL); i++) {
-        if (i < u_numCell) {
-            vec2 cellPos = vec2(u_cells[i].xy);
-            vec2 cellSiz = vec2(u_cells[i].zw);
-            int j = int(mod(float(i), 4.));
+    // Camera setup
+    vec3 ro = vec3(0.0, 0.0, 2.0);  // ray origin
+    vec3 rd = normalize(vec3(uv, -1.0));  // ray direction
 
-            if (mod(float(i), 2.) == 0.) {
-                st = bckSt;
-            } else {
-                st = wrapPosition(st);
-            }
+    // Raymarching
+    float t = 0.0;
+    float maxDist = 10.0;
+    bool hit = false;
 
-            if (abs(st.y - cellPos.y) <= cellSiz.y * .66) {
-                if (abs(st.x - cellPos.x) <= cellSiz.x * .66) {
-                    st = rotate2D(st, PI * (float(i) * .5));
+    for (int i = 0; i < 100; i++) {
+        vec3 p = ro + rd * t;
+        float d = sceneSDF(p);
 
-                    vec2 stToCell = st - cellPos;
-
-                    if (j == 0) {
-                        stToCell -= cellSiz;
-                    }
-                    if (j == 1) {
-                        stToCell.x += cellSiz.x * 2.;
-                    }
-                    if (j == 2) {
-                        stToCell += cellSiz * 2.;
-                    }
-                    if (j == 3) {
-                        stToCell.y += cellSiz.y * 2.;
-                    }
-                    float d = sdBox(stToCell, cellSiz);
-                    float rep = abs(sdfRep(d, .1) - .2);
-                    depth += rep * 8.;
-                }
-            }
+        if (d < 0.001) {
+            hit = true;
+            break;
         }
+
+        if (t > maxDist) break;
+
+        t += d;
     }
-    gl_FragColor = vec4(vec3(fract(depth)), 1.0);
+
+    float color = 0.0;
+
+    if (hit) {
+        vec3 p = ro + rd * t;
+        vec3 normal = calcNormal(p);
+        vec3 lightDir = normalize(u_lightPos - p);
+
+        // Diffuse lighting
+        float diff = max(dot(normal, lightDir), 0.0);
+
+        // Ambient lighting
+        float ambient = 0.2;
+
+        // Specular lighting (Phong)
+        vec3 viewDir = normalize(ro - p);
+        vec3 reflectDir = reflect(-lightDir, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+
+        // Combine lighting components
+        color = ambient + diff * 0.7 + spec * 0.3;
+    }
+
+    gl_FragColor = vec4(vec3(color), 1.0);
 }

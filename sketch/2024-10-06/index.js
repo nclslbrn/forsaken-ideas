@@ -30,9 +30,9 @@ import { trace, traceLoadScreen } from './trace'
 const DPI = quantity(96, dpi),
     // TWOK_16_9 = quantity([1080, 607], mm),
     TWOK_9_16 = quantity([607, 1080], mm),
-    // IG_SQ = quantity([700, 700], mm),
+    IG_SQ = quantity([700, 700], mm),
     // IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(TWOK_9_16, DPI).deref(),
+    SIZE = mul(IG_SQ, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS_2D = document.createElement('canvas'),
@@ -51,7 +51,7 @@ let STATE,
     isRecording = false,
     isAnimated = false,
     recorder = null,
-    uniform = {},
+    uniforms = {},
     pixels = null
 
 const init = () => {
@@ -91,41 +91,43 @@ const init = () => {
     }
 }
 const renderGLTexture = () => {
-    const { glUniform } = STATE
+    const { GLUniform, width, height, shape } = STATE
     const vertexShader = createShader(GL, GL.VERTEX_SHADER, vertSrc),
         fragmentShader = createShader(GL, GL.FRAGMENT_SHADER, fragSrc),
         program = createProgram(GL, vertexShader, fragmentShader)
 
     GL.useProgram(program)
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1])
 
-    const buffer = GL.createBuffer(),
-        verts = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-        positionLoc = GL.getAttribLocation(program, 'a_position')
-    uniform.uTimeLoc = GL.getUniformLocation(program, 'u_time')
-    uniform.uResolution = GL.getUniformLocation(program, 'u_resolution')
-    uniform.uNoiseSeed = GL.getUniformLocation(program, 'u_noiseSeed')
-    uniform.uNoiseSize = GL.getUniformLocation(program, 'u_noiseSize')
-    uniform.uNumCell = GL.getUniformLocation(program, 'u_numCell')
-    uniform.uCells = GL.getUniformLocation(program, 'u_cells')
-
+    const buffer = GL.createBuffer()
     GL.bindBuffer(GL.ARRAY_BUFFER, buffer)
-    GL.bufferData(GL.ARRAY_BUFFER, verts, GL.STATIC_DRAW)
-    GL.enableVertexAttribArray(positionLoc)
-    GL.vertexAttribPointer(positionLoc, 2, GL.FLOAT, false, 0, 0)
-    GL.disable(GL.DEPTH_TEST)
-    GL.enable(GL.BLEND)
-    GL.clearColor(1, 1, 1, 1)
+    GL.bufferData(GL.ARRAY_BUFFER, vertices, GL.STATIC_DRAW)
+
+    const positionLocation = GL.getAttribLocation(program, 'position')
+    GL.enableVertexAttribArray(positionLocation)
+    GL.vertexAttribPointer(positionLocation, 2, GL.FLOAT, false, 0, 0)
+
+    uniforms = {
+        resolution: GL.getUniformLocation(program, 'u_resolution'),
+        shapeType: GL.getUniformLocation(program, 'u_shapeType'),
+        shapePos: GL.getUniformLocation(program, 'u_shapePos'),
+        shapeSize: GL.getUniformLocation(program, 'u_shapeSize'),
+        shapeRot: GL.getUniformLocation(program, 'u_shapeRot'),
+        lightPos: GL.getUniformLocation(program, 'u_lightPos')
+    }
+
+    GL.viewport(0, 0, width, height)
+    GL.clearColor(0, 0, 0, 1)
     GL.clear(GL.COLOR_BUFFER_BIT)
 
-    GL.uniform1f(uniform.uTimeLoc, 0.1)
-    GL.uniform2f(uniform.uResolution, CANVAS_GL.width, CANVAS_GL.height)
-    GL.uniform1f(uniform.uNoiseSeed, glUniform.noiseSeed)
-    GL.uniform1f(uniform.uNoiseSize, glUniform.noiseSize)
-    GL.uniform1i(uniform.uNumCell, glUniform.numCell)
-    GL.uniform4fv(
-        uniform.uCells,
-        glUniform.cells.reduce((s, c) => [...s, ...c], [])
-    )
+    GL.useProgram(program)
+    GL.uniform2f(uniforms.resolution, width, height)
+    GL.uniform1i(uniforms.shapeType, shape.type)
+    GL.uniform3f(uniforms.shapePos, ...shape.pos)
+    GL.uniform1f(uniforms.shapeSize, shape.size)
+    GL.uniform3f(uniforms.shapeRot, ...shape.rot)
+    GL.uniform3f(uniforms.lightPos, ...shape.lightPos)
+
     GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4)
 
     const sample = document.createElement('canvas'),
@@ -134,15 +136,12 @@ const renderGLTexture = () => {
     sample.height = SIZE[1]
     ctx.drawImage(CANVAS_GL, 0, 0)
     pixels = ctx.getImageData(0, 0, sample.width, sample.height).data
-    ROOT.appendChild(sample)
-
-    console.log(pixels)
 }
 
 const glGrayscale = ([x, y]) => {
-    if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height) {
+    if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height)
         return 0
-    }
+
     const pixIdx = (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
     return pixels[pixIdx]
 }
@@ -158,10 +157,13 @@ const iterate = () => {
             l = Math.atan2(pos.y, pos.x),
             m = operate(operator, l, k, j),
             g = glGrayscale(domainToPixels(prtcls[j])),
-            r = g > 230 ? m : k * (g / 150),
+            r =
+                g > 0
+                    ? (Math.floor(((m + g) / 256) * 12) / 6) * Math.PI * 2
+                    : m,
             n = [
-                prtcls[j][0] + Math.cos(r) * 0.002 * k,
-                prtcls[j][1] + Math.sin(r) * 0.002 * k
+                prtcls[j][0] + Math.cos(r) * 0.003 * k,
+                prtcls[j][1] + Math.sin(r) * 0.003 * k
             ]
         trails[j].push(n)
         prtcls[j] = n
@@ -169,7 +171,6 @@ const iterate = () => {
 }
 
 const update = () => {
-    console.log(STATE)
     if (currFrame < NUM_ITER) {
         frameReq = requestAnimationFrame(update)
         iterate()
@@ -254,7 +255,7 @@ window.infobox = infobox
 
 ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS_2D)
-
+ROOT.appendChild(CANVAS_GL)
 ROOT.appendChild(ITER_LIST)
 
 const queryString = window.location.search

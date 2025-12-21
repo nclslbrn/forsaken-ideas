@@ -30,73 +30,19 @@ const trace = (STATE) => {
             ...acc,
             ...cropped.map((line) =>
                 polyline(line, {
-                    stroke: strokeById(idx),
+                    stroke: `${strokeById(idx)}cc`,
                     weight: 1.25
                 })
             )
         ]
     }, [])
-    /*const isoShapes = shapes.reduce((l, shape) => {
-        const s = traceShape(shape, [width*.5, height*.5])
-        return [
-            ...l,
-            polygon(s.top, { fill: `${colors[0]}aa`}),
-            polygon(s.bottom, { fill: `${colors[1]}33`}),
-            polygon(s.left, { fill: `${colors[2]}cc`}),
-            polygon(s.right, { fill: `${colors[3]}66`})
-        ]
-    }, [])
-    */
-    return comp(lines, fntSz, STATE)
+
+    return comp(lines, STATE)
 }
 
-const comp = (
-    uniqueLines,
-    fntSz,
-    { width, height, colors, seed, attractor, operator, margin } = STATE
-) => [
+const comp = (uniqueLines, { width, height, colors } = STATE) => [
     rect([width, height], { fill: colors[0] }),
-
-    group({}, [
-        /*  bottom right label seed + attractor name + mixing formula
-        group(
-            { stroke: colors[2] },
-            [
-                ...seed.substring(0, 24),
-                ...' → ',
-                ...attractor,
-                ...' → ',
-                ...operator
-            ].reduce(
-                (poly, letter, x) => [
-                    ...poly,
-                    ...getGlyphVector(letter, fntSz, [
-                        margin + fntSz[0] * x * 1.1,
-                        height - margin
-                    ]).map((vecs) => polyline(vecs))
-                ],
-                []
-            )
-        ),
-        // bottom left label timestamp
-        group(
-            { stroke: colors[2] },
-            [...new Date().toISOString()].reduce(
-                (poly, letter, x) => [
-                    ...poly,
-                    ...getGlyphVector(letter, fntSz, [
-                        width - margin - fntSz[0] * 26.4 + fntSz[0] * x * 1.1,
-                        height - margin
-                    ]).map((vecs) => polyline(vecs))
-                ],
-                []
-            )
-        ),
-        */
-        // the flow fields trails
-        ...uniqueLines
-        // group({ stroke: colors[1] }, isoShapes)
-    ])
+    group({}, [...uniqueLines])
 ]
 // Display message while flow field is processed ---------------------------------
 const traceLoadScreen = (STATE) => {

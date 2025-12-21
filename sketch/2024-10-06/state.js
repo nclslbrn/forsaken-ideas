@@ -2,8 +2,6 @@ import { resolve } from '@thi.ng/resolve-map'
 import { pickRandom, pickRandomKey, SFC32 } from '@thi.ng/random'
 import { repeatedly2d, repeatedly } from '@thi.ng/transducers'
 import strangeAttractor from '../../sketch-common/strange-attractors'
-
-import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import { OPERATORS } from './operator'
 import Fbm from './FBM'
 import { THEMES } from './THEMES'
@@ -49,18 +47,21 @@ const BASE = (config) => {
                 width - margin * 2,
                 height - margin * 2
             ],
-            glUniform: () => {
-                const numCell = 3 + Math.ceil(RND.float() * 12)
-                let cells = [[0.5, 0.5, 1, 1]]
-                for (let i = 0; i < numCell; i++)
-                    cells = splitCell(i % 2 === 0, cells)
-                return {
-                    noiseSeed: RND.float() * 999,
-                    noiseSize: 2 + RND.float() * 10,
-                    numCell,
-                    cells
-                }
-            },
+            shape: () => ({
+                type: 1, //RND.minmaxInt(0, 2), // 0: sphere, 1: cube
+                pos: [RND.float() - 0.5, RND.float() - 0.5, RND.float() - 1],
+                size: RND.minmax(0.33, 0.66),
+                rot: [
+                    RND.minmaxInt(0, 360),
+                    RND.minmaxInt(0, 360),
+                    RND.minmaxInt(0, 360)
+                ], // rotation in radians
+                lightPos: [
+                    (RND.float() - 0.5) * 5,
+                    (RND.float() - 0.5) * 5,
+                    RND.float() + 1
+                ]
+            }),
             attractor: () => {
                 const picked = pickRandom(
                     Object.keys(ATTRACT_ENGINE.attractors),
