@@ -9,11 +9,36 @@ import { seedFromHash } from './seed-from-hash'
 
 const ATTRACT_ENGINE = strangeAttractor()
 
-// Pick random value to build an edition ----------------------------------------
+// Pick RND. value to build an edition ----------------------------------------
 const DOMAIN = 70
 const BASE = (config) => {
     const RND = new SFC32(seedFromHash(config.seed))
-
+    const shuffle = (array) => array.sort(() => 0.5 - RND.float())
+    const splitCell = (isHorizontal, grid) => {
+        const toSplit = grid.sort((a, b) => a[2] * a[3] < b[2] * b[3])[0]
+        const [x, y, w, h] = toSplit
+        const c =
+            RND.float() > 0.5
+                ? 1 / Math.ceil(1 + RND.float() * 2)
+                : 1 - 1 / Math.ceil(1 + RND.float() * 2)
+        let splitted = []
+        if (isHorizontal) {
+            const ws = shuffle([w * c, w * (1 - c)])
+            splitted = [
+                [x - w * 0.5 + ws[0] * 0.5, y, ws[0], h],
+                [x + w * 0.5 - ws[1] * 0.5, y, ws[1], h]
+            ]
+        } else {
+            const hs = shuffle([h * c, h * (1 - c)])
+            splitted = [
+                [x, y - h * 0.5 + hs[0] * 0.5, w, hs[0]],
+                [x, y + h * 0.5 - hs[1] * 0.5, w, hs[1]]
+            ]
+        }
+        grid.splice(grid.indexOf(toSplit), 1)
+        grid.push(...splitted)
+        return grid
+    }
     return resolve(
         {
             ...config,
@@ -21,6 +46,18 @@ const BASE = (config) => {
                 width - margin * 2,
                 height - margin * 2
             ],
+            glUniform: () => {
+                const numCell = 3 + Math.ceil(RND.float() * 12)
+                let cells = [[0.5, 0.5, 1, 1]]
+                for (let i = 0; i < numCell; i++)
+                    cells = splitCell(i % 2 === 0, cells)
+                return {
+                    noiseSeed: RND.float() * 999,
+                    noiseSize: 2 + RND.float() * 10,
+                    numCell,
+                    cells
+                }
+            },
             attractor: () => {
                 const picked = pickRandom(
                     Object.keys(ATTRACT_ENGINE.attractors),
@@ -65,6 +102,16 @@ const BASE = (config) => {
                     shapesNum
                 )
             ],
+
+            glPixels: ({ CANVAS_GL }) => {
+                const sample = document.createElement('canvas'),
+                    ctx = sample.getContext('2d', { willReadFrequently: true })
+                sample.width = CANVAS_GL.width
+                sample.height = CANVAS_GL.height
+                ctx.drawImage(CANVAS_GL, 0, 0)
+                return ctx.getImageData(0, 0, sample.width, sample.height)
+            },
+
             theme: pickRandomKey(THEMES, RND),
             colors: ({ theme }) => THEMES[theme]
         },
@@ -77,7 +124,23 @@ const resolveState = (config) =>
     resolve(
         {
             ...BASE(config),
-            ...config
+            ...config,
+
+            glGrayscale:
+                ({ CANVAS_GL, glPixels }) =>
+                (x, y) => {
+                    if (
+                        x < 0 ||
+                        x >= CANVAS_GL.width ||
+                        y < 0 ||
+                        y >= CANVAS_GL.height
+                    ) {
+                        return 0
+                    }
+                    const pixIdx =
+                        (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
+                    return glPixels[pixIdx]
+                }
         },
         { onlyFnRefs: true }
     )
