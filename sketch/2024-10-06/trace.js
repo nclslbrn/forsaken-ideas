@@ -1,21 +1,28 @@
 import { rect, group, polyline, polygon } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
-import { traceShape } from './traceShape'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
-    const { width, height, inner, trails, colors, margin } = STATE
+    const { width, height, inner, trails, colors, margin, domain } = STATE
     const domainScale = 0.95
     const cropPoly = [
         [margin, margin],
         [width - margin, margin],
-        [width - margin, height - margin * 1.33],
-        [margin, height - margin * 1.33]
+        [width - margin, height - margin],
+        [margin, height - margin]
     ]
-    const fntSz = [width * 0.009, height * 0.017]
-    const strokeById = (idx) =>
-        colors[idx % 17 === 0 ? 3 : idx % 43 === 0 ? 4 : 1]
+
+    const strokeById = (idx) => {
+        const x = idx % domain
+        const y = Math.floor(idx / domain)
+        const distFromCenter = Math.floor(
+            Math.sqrt((x - domain / 2) ** 2 + (y - domain / 2) ** 2)
+        )
+        return colors[
+            distFromCenter < 20 ? 2 + (distFromCenter % (colors.length - 2)) : 1
+        ]
+    }
 
     const lines = trails.reduce((acc, line, idx) => {
         const cropped = clipPolylinePoly(
@@ -28,10 +35,10 @@ const trace = (STATE) => {
 
         return [
             ...acc,
-            ...cropped.map((line) =>
+            ...cropped.map((line, i) =>
                 polyline(line, {
-                    stroke: `${strokeById(idx)}cc`,
-                    weight: 1.25
+                    stroke: `${strokeById(idx)}`,
+                    weight: 1
                 })
             )
         ]

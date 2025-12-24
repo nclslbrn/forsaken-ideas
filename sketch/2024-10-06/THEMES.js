@@ -18,9 +18,37 @@ const THEMES = {
     F: ['#d6e2ed', '#111111', '#004455', '#33cc33'],
 
     Chocolat: ['#5f4240', '#fcfcfc', '#fcfcfc', '#ccff33'],
-    'Bleu france': ['#257cc4', '#2f297b', '#ffcc33', '#000']
+    'Bleu france': ['#333333', '#257cc4', '#2f297b', '#ffcc33', '#cc99bb'],
     */
-    Noir: ['#222', '#cccccc', '#ffffff', '#eeffff']
+    Noir: ['#222', '#cccccc', '#ff7777', '#ffffff', '#eeffff'],
+    Nord: [
+        '#2e3440',
+        '#8fbcbb',
+        '#88c0d0',
+        '#5e81ac',
+        '#bf616a',
+        '#ebcb8b',
+        '#a3be8c'
+    ],
+    Everforest: [
+        '#1e2326',
+        '#d3c6aa',
+        '#9da9a0',
+        '#a7c080',
+        '#dbbc7f',
+        '#e67e80',
+        '#9da9a0'
+    ],
+    Caputchinni: [
+        '#232634',
+        '#e5c890',
+        '#e78284',
+        '#99d1db',
+        '#c6d0f5',
+        '#ef9f76',
+        '#85c1dc'
+    ],
+    Matcha: ['#273136', '#7EB08A', '#D2B48C', '#FF819F', '#7EA4B0', '#D1DED3']
 }
 
 export { THEMES }

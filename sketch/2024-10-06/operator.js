@@ -1,6 +1,4 @@
-import { DOMAIN } from './state'
-
-const OPERATORS = [ ...'ABCDEF']
+const OPERATORS = [...'ABCDEF']
 /**
  * Custom function to mix noise and attractor value
  * @param {number} a attractor angle
@@ -8,12 +6,12 @@ const OPERATORS = [ ...'ABCDEF']
  * @param {number} c particle index
  */
 const { round, ceil, sin, cos, max, atan, PI, atan2, hypot } = Math
-const operate = (type, a, b, c) => {
+const operate = (type, a, b, c, domain) => {
     let x, y, d
     if (['C', 'D', 'E', 'F'].includes(type)) {
-        y = c % DOMAIN
+        y = c % domain
         x = c - y
-        d = hypot(x - DOMAIN / 2, y - DOMAIN / 2)
+        d = hypot(x - domain / 2, y - domain / 2)
     }
     switch (type) {
         case 'A':
@@ -21,11 +19,11 @@ const operate = (type, a, b, c) => {
         case 'B':
             return (1 + a) ** 2 % sin(b)
         case 'C':
-            return (a % ((d / DOMAIN) * b)) * 1.25
+            return (a % ((d / domain) * b)) * 1.25
         case 'D':
-            return (sin(a||0.03) * cos(d * 0.05)) ^ (b || 0.03)
+            return (sin(a || 0.03) * cos(d * 0.05)) ^ (b || 0.03)
         case 'E':
-            return (1+a) - max(d / DOMAIN ** 2, b) * 0.15
+            return 1 + a - max(d / domain ** 2, b) * 0.15
         case 'F':
             const step1 = PI / 4,
                 step2 = PI / 2

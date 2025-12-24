@@ -26,14 +26,15 @@ import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { iterMenu } from './iter-menu'
 import { operate } from './operator'
 import { trace, traceLoadScreen } from './trace'
-
+//  2160x3840
 const DPI = quantity(96, dpi),
     // TWOK_16_9 = quantity([1080, 607], mm),
-    TWOK_9_16 = quantity([607, 1080], mm),
-    IG_SQ = quantity([700, 700], mm),
-    // IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(IG_SQ, DPI).deref(),
-    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
+    // TWOK_9_16 = quantity([607, 1080], mm),
+    // IG_SQ = quantity([700, 700], mm),
+    // EXHIBIT = quantity([216 * 2.65, 384 * 2.65], mm),
+    IG_4BY5 = quantity([600, 755], mm),
+    SIZE = mul(IG_4BY5, DPI).deref(),
+    MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS_2D = document.createElement('canvas'),
     CTX_2D = CANVAS_2D.getContext('2d'),
@@ -41,7 +42,7 @@ const DPI = quantity(96, dpi),
     GL = CANVAS_GL.getContext('webgl', { preserveDrawingBuffer: true }),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 70
+    NUM_ITER = 130
 
 let STATE,
     seed = false,
@@ -113,7 +114,8 @@ const renderGLTexture = () => {
         shapePos: GL.getUniformLocation(program, 'u_shapePos'),
         shapeSize: GL.getUniformLocation(program, 'u_shapeSize'),
         shapeRot: GL.getUniformLocation(program, 'u_shapeRot'),
-        lightPos: GL.getUniformLocation(program, 'u_lightPos')
+        lightPos: GL.getUniformLocation(program, 'u_lightPos'),
+        fractalIterations: GL.getUniformLocation(program, 'u_fractalIterations')
     }
 
     GL.viewport(0, 0, width, height)
@@ -127,6 +129,7 @@ const renderGLTexture = () => {
     GL.uniform1f(uniforms.shapeSize, shape.size)
     GL.uniform3f(uniforms.shapeRot, ...shape.rot)
     GL.uniform3f(uniforms.lightPos, ...shape.lightPos)
+    GL.uniform1i(uniforms.fractalIterations, shape.fractalIterations)
 
     GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4)
 
@@ -138,16 +141,29 @@ const renderGLTexture = () => {
     pixels = ctx.getImageData(0, 0, sample.width, sample.height).data
 }
 
-const glGrayscale = ([x, y]) => {
+const normalize = (v) => {
+    const len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+    return [v[0] / len, v[1] / len, v[2] / len]
+}
+const glRGB = ([x, y]) => {
     if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height)
-        return 0
-
+        return [0, 0, 0]
     const pixIdx = (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
-    return pixels[pixIdx]
+    const [r, g, b] = [pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2]]
+
+    return normalize([r * 2 - 1, g * 2 - 1, b * 2 - 1])
 }
 
 const iterate = () => {
-    const { prtcls, trails, attractor, operator, noise, domainToPixels } = STATE
+    const {
+        prtcls,
+        trails,
+        attractor,
+        operator,
+        noise,
+        domainToPixels,
+        domain
+    } = STATE
     for (let j = 0; j < prtcls.length; j++) {
         const pos = ATTRACT_ENGINE.attractors[attractor]({
                 x: prtcls[j][0],
@@ -155,15 +171,15 @@ const iterate = () => {
             }),
             k = noise.fbm(pos.x * 900, pos.y * 900),
             l = Math.atan2(pos.y, pos.x),
-            m = operate(operator, l, k, j),
-            g = glGrayscale(domainToPixels(prtcls[j])),
-            r =
-                g > 0
-                    ? (Math.floor(((m + g) / 256) * 12) / 6) * Math.PI * 2
-                    : m,
+            m = operate(operator, l, k, j, domain),
+            [rx, ry, rz] = glRGB(domainToPixels(prtcls[j])),
+            ra = Math.atan2(ry, rx),
+            isOverSolid = rx > 0 && ry > 0 && rz > 0,
+            rs = isOverSolid ? rz * 0.001 : k * 0.002,
+            mra = isOverSolid ? ra : m,
             n = [
-                prtcls[j][0] + Math.cos(r) * 0.003 * k,
-                prtcls[j][1] + Math.sin(r) * 0.003 * k
+                prtcls[j][0] + Math.cos(mra) * rs,
+                prtcls[j][1] + Math.sin(mra) * rs
             ]
         trails[j].push(n)
         prtcls[j] = n
@@ -175,7 +191,7 @@ const update = () => {
         frameReq = requestAnimationFrame(update)
         iterate()
         drawElems = trace(STATE, 'pixel')
-        draw(CTX, group({}, drawElems))
+        draw(CTX_2D, group({}, drawElems))
         currFrame++
     } else {
         if (isRecording) stopRecording()
