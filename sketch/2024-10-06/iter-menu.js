@@ -50,7 +50,7 @@ const iterMenu = (ITER_LIST, STATE) => {
                     tr({}, td({}, 'Theme'), td({}, theme)),
                     tr({}, td({}, 'Attractor'), td({}, attractor)),
                     tr({}, td({}, 'Operate'), td({}, operator)),
-                    tr({}, td({}, 'Shape'), td({}, shapeName))
+                    tr({}, td({}, 'Shape'), td({}, shapeName.join(' ')))
                 )
             ),
             para(null, 'SEEDS'),

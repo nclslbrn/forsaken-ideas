@@ -19,8 +19,7 @@ const THEMES = {
 
     Chocolat: ['#5f4240', '#fcfcfc', '#fcfcfc', '#ccff33'],
     'Bleu france': ['#333333', '#257cc4', '#2f297b', '#ffcc33', '#cc99bb'],
-    */
-    Noir: ['#222', '#cccccc', '#ff7777', '#ffffff', '#eeffff'],
+
     Nord: [
         '#2e3440',
         '#8fbcbb',
@@ -49,6 +48,8 @@ const THEMES = {
         '#85c1dc'
     ],
     Matcha: ['#273136', '#7EB08A', '#D2B48C', '#FF819F', '#7EA4B0', '#D1DED3']
+    */
+    Noir: ['#222', '#cfcfcf', '#ffa', '#ffaaaa']
 }
 
 export { THEMES }

@@ -42,7 +42,7 @@ const DPI = quantity(96, dpi),
     GL = CANVAS_GL.getContext('webgl', { preserveDrawingBuffer: true }),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 130
+    NUM_ITER = 150
 
 let STATE,
     seed = false,
@@ -92,7 +92,7 @@ const init = () => {
     }
 }
 const renderGLTexture = () => {
-    const { GLUniform, width, height, shape } = STATE
+    const { width, height, shapeCount, shapes } = STATE
     const vertexShader = createShader(GL, GL.VERTEX_SHADER, vertSrc),
         fragmentShader = createShader(GL, GL.FRAGMENT_SHADER, fragSrc),
         program = createProgram(GL, vertexShader, fragmentShader)
@@ -110,6 +110,7 @@ const renderGLTexture = () => {
 
     uniforms = {
         resolution: GL.getUniformLocation(program, 'u_resolution'),
+        shapeCount: GL.getUniformLocation(program, 'u_shapeCount'),
         shapeType: GL.getUniformLocation(program, 'u_shapeType'),
         shapePos: GL.getUniformLocation(program, 'u_shapePos'),
         shapeSize: GL.getUniformLocation(program, 'u_shapeSize'),
@@ -124,12 +125,16 @@ const renderGLTexture = () => {
 
     GL.useProgram(program)
     GL.uniform2f(uniforms.resolution, width, height)
-    GL.uniform1i(uniforms.shapeType, shape.type)
-    GL.uniform3f(uniforms.shapePos, ...shape.pos)
-    GL.uniform1f(uniforms.shapeSize, shape.size)
-    GL.uniform3f(uniforms.shapeRot, ...shape.rot)
-    GL.uniform3f(uniforms.lightPos, ...shape.lightPos)
-    GL.uniform1i(uniforms.fractalIterations, shape.fractalIterations)
+    GL.uniform1i(uniforms.shapeCount, shapeCount)
+    GL.uniform1iv(uniforms.shapeType, [...shapes.map((s) => s.type).flat()])
+    GL.uniform3fv(uniforms.shapePos, [...shapes.map((s) => s.pos).flat()])
+    GL.uniform3fv(uniforms.shapeSize, [...shapes.map((s) => s.size).flat()])
+    GL.uniform3fv(uniforms.shapeRot, [...shapes.map((s) => s.rot).flat()])
+    GL.uniform3fv(uniforms.lightPos, [...shapes.map((s) => s.lightPos).flat()])
+    GL.uniform1iv(
+        uniforms.fractalIterations,
+        shapes.map((s) => s.fractalIterations).flat()
+    )
 
     GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4)
 
@@ -145,6 +150,7 @@ const normalize = (v) => {
     const len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
     return [v[0] / len, v[1] / len, v[2] / len]
 }
+
 const glRGB = ([x, y]) => {
     if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height)
         return [0, 0, 0]
@@ -174,9 +180,9 @@ const iterate = () => {
             m = operate(operator, l, k, j, domain),
             [rx, ry, rz] = glRGB(domainToPixels(prtcls[j])),
             ra = Math.atan2(ry, rx),
-            isOverSolid = rx > 0 && ry > 0 && rz > 0,
-            rs = isOverSolid ? rz * 0.001 : k * 0.002,
-            mra = isOverSolid ? ra : m,
+            notOverSolid = rx > 0.5 && ry > 0.5 && rz > 0.5,
+            rs = notOverSolid ? k * 0.002 : rz * 0.0007,
+            mra = notOverSolid ? m : ra,
             n = [
                 prtcls[j][0] + Math.cos(mra) * rs,
                 prtcls[j][1] + Math.sin(mra) * rs

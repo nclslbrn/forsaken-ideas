@@ -23,30 +23,46 @@ const BASE = (config) => {
                 width - margin * 2,
                 height - margin * 2
             ],
-            shape: () => ({
-                type: RND.minmaxInt(0, 4),
-                pos: [RND.float() - 0.5, RND.float() - 0.5, RND.float() - 1],
-                size: RND.minmax(0.2, 0.5),
-                rot: [
-                    RND.minmaxInt(0, 360),
-                    RND.minmaxInt(0, 360),
-                    RND.minmaxInt(0, 360)
-                ], // rotation in radians
-                fractalIterations: RND.minmaxInt(2, 4),
-                lightPos: [
-                    (RND.float() - 0.5) * 5,
-                    (RND.float() - 0.5) * 5,
-                    RND.float() + 0.5
-                ]
-            }),
-            shapeName: ({ shape }) =>
-                [
-                    'sphere',
-                    'cube',
-                    'menger sponge',
-                    'sierpinski pyramid',
-                    'mandelbox'
-                ][shape.type],
+            shapeCount: RND.minmaxInt(1, 5),
+            shapes: ({ shapeCount }) => [
+                ...repeatedly(
+                    () => ({
+                        type: RND.minmaxInt(0, 5),
+                        pos: [
+                            (RND.float() - 0.5) * 2,
+                            (RND.float() - 0.5) * 2,
+                            RND.float() - 1
+                        ],
+                        size: [
+                            RND.minmax(0.2, 0.5),
+                            RND.minmax(0.2, 0.5),
+                            RND.minmax(0.2, 0.5)
+                        ],
+                        rot: [
+                            RND.minmaxInt(0, 360),
+                            RND.minmaxInt(0, 360),
+                            RND.minmaxInt(0, 360)
+                        ], // rotation in radians
+                        lightPos: [
+                            (RND.float() - 0.5) * 5,
+                            (RND.float() - 0.5) * 5,
+                            RND.float() + 0.5
+                        ]
+                    }),
+                    shapeCount
+                )
+            ],
+            shapeName: ({ shapes }) =>
+                shapes.map(
+                    (s) =>
+                        [
+                            'Box',
+                            'Torus',
+                            'Vertical Capped Cylinder',
+                            'Cut Hollow Sphere',
+                            'Triangular Prism'
+                        ][s.type]
+                ),
             attractor: () => {
                 const picked = pickRandom(
                     Object.keys(ATTRACT_ENGINE.attractors),
@@ -75,7 +91,8 @@ const BASE = (config) => {
 
             trails: ({ prtcls }) => prtcls.map((p) => [p]),
             theme: pickRandomKey(THEMES, RND),
-            colors: ({ theme }) => THEMES[theme]
+            colors: ({ theme }) => THEMES[theme],
+            verticalColorAssignation: RND.float() > 0.5
         },
         { onlyFnRefs: true }
     )

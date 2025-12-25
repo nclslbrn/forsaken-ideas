@@ -1,12 +1,13 @@
 precision mediump float;
 
+#define MAX_SDF 13
 uniform vec2 u_resolution;
-uniform int u_shapeType;
-uniform vec3 u_shapePos;
-uniform float u_shapeSize;
-uniform vec3 u_shapeRot;
-uniform vec3 u_lightPos;
-uniform int u_fractalIterations;
+uniform int u_shapeCount;
+
+uniform int  u_shapeType[MAX_SDF];
+uniform vec3 u_shapePos[MAX_SDF];
+uniform vec3 u_shapeRot[MAX_SDF];
+uniform vec3 u_shapeSize[MAX_SDF];
 
 mat3 rotationMatrix(vec3 rot) {
     float cx = cos(rot.x);
@@ -37,141 +38,58 @@ mat3 rotationMatrix(vec3 rot) {
     return rz * ry * rx;
 }
 
-float sdSphere(vec3 p, float r) {
-    return length(p) - r;
-}
-
 float sdBox(vec3 p, vec3 b) {
     vec3 q = abs(p) - b;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-float sdMengerSponge(vec3 p, float s) {
-    float d = sdBox(p, vec3(s));
-
-    float scale = 1.0;
-    vec3 pos = p;
-
-    for (int i = 0; i < 8; i++) {
-        if (i >= u_fractalIterations) break;
-
-        vec3 a = mod(pos * scale, 2.0) - 1.0;
-        scale *= 2.5;
-        vec3 r = abs(1.0 - 2.5 * abs(a));
-
-        float da = max(r.x, r.y);
-        float db = max(r.y, r.z);
-        float dc = max(r.z, r.x);
-        float c = (min(da, min(db, dc)) - 1.0) / scale;
-
-        d = max(d, c);
-    }
-
-    return d;
+float sdTorus(vec3 p, vec2 t){
+  vec2 q = vec2(length(p.xz)-t.x,p.y);
+  return length(q)-t.y;
 }
 
-float sdTetrahedron(vec3 p, float r) {
-    float k = sqrt(2.0);
-    return (max(abs(p.x + p.y) - p.z, abs(p.x - p.y) + p.z) - r) / k;
+float sdCappedCylinder(vec3 p, float r, float h){
+  vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(r,h);
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
-float sdSierpinskiPyramid(vec3 p, float s) {
-    vec3 pos = p / s;
-    float scale = 1.0;
-
-    for (int i = 0; i < 8; i++) {
-        if (i >= u_fractalIterations) break;
-
-        if (pos.x + pos.y < 0.0) pos.xy = -pos.yx;
-        if (pos.x + pos.z < 0.0) pos.xz = -pos.zx;
-        if (pos.y + pos.z < 0.0) pos.zy = -pos.yz;
-
-        pos = pos * 2.0 - vec3(1.0);
-        scale *= 2.0;
-    }
-
-    return sdTetrahedron(pos, 1.0) / scale * s;
+float sdCutHollowSphere(vec3 p, float r, float h, float t){
+  float w = sqrt(r*r-h*h);
+  vec2 q = vec2( length(p.xz), p.y );
+  return ((h*q.x<w*q.y)
+    ? length(q-vec2(w,h))
+    : abs(length(q)-r) ) - t;
 }
 
-float sdMandelbox(vec3 p, float s) {
-    vec3 pos = p / s;
-    float dr = 1.0;
-    float r = length(pos);
-
-    float scale = 2.0;
-    float fixedRadius = 1.0;
-    float foldingLimit = 1.0;
-
-    for (int i = 0; i < 8; i++) {
-        if (i >= u_fractalIterations) break;
-
-        pos = clamp(pos, -foldingLimit, foldingLimit) * 2.0 - pos;
-
-        float r2 = dot(pos, pos);
-        if (r2 < fixedRadius * fixedRadius) {
-            float temp = (fixedRadius * fixedRadius / r2);
-            pos *= temp;
-            dr *= temp;
-        }
-
-        pos = scale * pos + p / s;
-        dr = dr * abs(scale) + 1.0;
-    }
-
-    float dist = length(pos) / abs(dr);
-    return dist * s;
+float sdTriPrism(vec3 p, vec2 h){
+  vec3 q = abs(p);
+  return max(q.z-h.y,max(q.x*0.866025+p.y*0.5,-p.y)-h.x*0.5);
 }
 
-float sdMandelbulb(vec3 p, float s) {
-    vec3 pos = p / s;
-    vec3 z = pos;
-    float dr = 1.0;
-    float r = 0.0;
-    float power = 8.0;
+float sdfByType(int type, vec3 p, vec3 size) {
 
-    for (int i = 0; i < 8; i++) {
-        if (i >= u_fractalIterations) break;
+    if (type == 0) return sdBox(p, size);
+    if (type == 1) return sdTorus(p, vec2(size.x, size.y * 0.35));
+    if (type == 2) return sdCappedCylinder(p, size.x, size.y);
+    if (type == 3) return sdCutHollowSphere(p, size.x, size.y * 0.5, size.z * 0.3);
+    if (type == 4) return sdTriPrism(p, size.xy);
 
-        r = length(z);
-        if (r > 2.0) break;
 
-        float theta = acos(z.z / r);
-        float phi = atan(z.y, z.x);
-        dr = pow(r, power - 1.0) * power * dr + 1.0;
-
-        float zr = pow(r, power);
-        theta = theta * power;
-        phi = phi * power;
-
-        z = zr * vec3(
-            sin(theta) * cos(phi),
-            sin(phi) * sin(theta),
-            cos(theta)
-        );
-        z += pos;
-    }
-
-    return 0.5 * log(r) * r / dr * s;
+    return sdBox(p, size);
 }
 
 float sceneSDF(vec3 p) {
-    vec3 localP = rotationMatrix(u_shapeRot) * (p - u_shapePos);
+    float d = 1e6;
 
-    if (u_shapeType == 0) {
-        return sdSphere(localP, u_shapeSize);
-    } else if (u_shapeType == 1) {
-        return sdBox(localP, vec3(u_shapeSize));
-    } else if (u_shapeType == 2) {
-        return sdMengerSponge(localP, u_shapeSize);
-    } else if (u_shapeType == 3) {
-        return sdSierpinskiPyramid(localP, u_shapeSize);
-    } else if (u_shapeType == 4) {
-        return sdMandelbox(localP, u_shapeSize);
-    } else if (u_shapeType == 5) {
-        return sdMandelbulb(localP, u_shapeSize);
+    for (int i = 0; i < MAX_SDF; i++) {
+        if (i >= u_shapeCount) break;
+
+        vec3 lp = rotationMatrix(u_shapeRot[i]) * (p - u_shapePos[i]);
+        float di = sdfByType(u_shapeType[i], lp, u_shapeSize[i]);
+
+        d = min(d, di);
     }
-
-    return sdSphere(localP, u_shapeSize);
+    return d;
 }
 
 vec3 calcNormal(vec3 p) {
@@ -195,12 +113,7 @@ void main() {
     float maxDist = 10.0;
     bool hit = false;
 
-    // Adaptive step count - fractals need more iterations
-    int maxSteps = u_shapeType >= 2 ? 200 : 100;
-
     for (int i = 0; i < 200; i++) {
-        if (i >= maxSteps) break;
-
         vec3 p = ro + rd * t;
         float d = sceneSDF(p);
 
@@ -210,21 +123,18 @@ void main() {
         }
 
         if (t > maxDist) break;
-
         t += d;
     }
 
-    vec3 color = vec3(0.0);  // Default background (no hit)
+    vec3 color = vec3(0.5); // neutral normal background
 
     if (hit) {
         vec3 p = ro + rd * t;
         vec3 normal = calcNormal(p);
-
-        // Encode the normal as an RGB color
-        color = (normal * 0.5) + 0.5; // Normalize the normal to [0,1] range
+        color = normal * 0.5 + 0.5;
     }
 
-    gl_FragColor = vec4(color, 1.0);  // Return the normal as color
+    gl_FragColor = vec4(color, 1.0);
 }
 
 

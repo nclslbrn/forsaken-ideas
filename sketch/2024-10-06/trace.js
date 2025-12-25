@@ -1,10 +1,21 @@
 import { rect, group, polyline, polygon } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
+import { pickRandom } from '@thi.ng/random'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
-    const { width, height, inner, trails, colors, margin, domain } = STATE
+    const {
+        width,
+        height,
+        inner,
+        trails,
+        colors,
+        margin,
+        domain,
+        verticalColorAssignation,
+        RND
+    } = STATE
     const domainScale = 0.95
     const cropPoly = [
         [margin, margin],
@@ -20,7 +31,9 @@ const trace = (STATE) => {
             Math.sqrt((x - domain / 2) ** 2 + (y - domain / 2) ** 2)
         )
         return colors[
-            distFromCenter < 20 ? 2 + (distFromCenter % (colors.length - 2)) : 1
+            distFromCenter < 10
+                ? 2 + ((verticalColorAssignation ? y : x) % (colors.length - 2))
+                : 1
         ]
     }
 
@@ -38,7 +51,10 @@ const trace = (STATE) => {
             ...cropped.map((line, i) =>
                 polyline(line, {
                     stroke: `${strokeById(idx)}`,
-                    weight: 1
+                    weight: pickRandom(
+                        [0.66, 0.75, 1, 1.25, 1.33, 1.66, 2, 3],
+                        RND
+                    )
                 })
             )
         ]

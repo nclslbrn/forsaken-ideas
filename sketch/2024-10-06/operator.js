@@ -5,7 +5,7 @@ const OPERATORS = [...'ABCDEF']
  * @param {number} b noise angle
  * @param {number} c particle index
  */
-const { round, ceil, sin, cos, max, atan, PI, atan2, hypot } = Math
+const { round, ceil, sin, cos, max, PI, hypot } = Math
 const operate = (type, a, b, c, domain) => {
     let x, y, d
     if (['C', 'D', 'E', 'F'].includes(type)) {
