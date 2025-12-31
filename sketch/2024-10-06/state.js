@@ -17,8 +17,8 @@ const BASE = (config) => {
     return resolve(
         {
             ...config,
-            domain: 70,
-
+            domain: 120,
+            numIter: 200,
             inner: ({ width, height, margin }) => [
                 width - margin * 2,
                 height - margin * 2

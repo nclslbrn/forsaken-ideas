@@ -1,7 +1,7 @@
-import { rect, group, polyline, polygon } from '@thi.ng/geom'
+import { rect, group, polyline } from '@thi.ng/geom'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
-import { pickRandom } from '@thi.ng/random'
+import { pickRandom, weightedRandom } from '@thi.ng/random'
 
 // Trace flow trails ------------------------------------------------------------
 const trace = (STATE) => {
@@ -51,8 +51,9 @@ const trace = (STATE) => {
             ...cropped.map((line, i) =>
                 polyline(line, {
                     stroke: `${strokeById(idx)}`,
-                    weight: pickRandom(
-                        [0.66, 0.75, 1, 1.25, 1.33, 1.66, 2, 3],
+                    weight: weightedRandom(
+                        [0.66, 0.75, 1, 1.25, 1.33, 1.66, 2, 3, 4],
+                        [3, 3, 3, 2, 2, 2, 1, 1, 1],
                         RND
                     )
                 })

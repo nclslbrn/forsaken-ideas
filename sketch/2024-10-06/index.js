@@ -42,7 +42,7 @@ const DPI = quantity(96, dpi),
     GL = CANVAS_GL.getContext('webgl', { preserveDrawingBuffer: true }),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    NUM_ITER = 150
+    { floor, round, sqrt, atan2, cos, sin, abs } = Math
 
 let STATE,
     seed = false,
@@ -85,7 +85,7 @@ const init = () => {
         update()
     } else {
         draw(CTX_2D, traceLoadScreen(STATE))
-        for (let i = 0; i < NUM_ITER; i++) {
+        for (let i = 0; i < STATE.numIter; i++) {
             iterate()
         }
         draw(CTX_2D, group({}, trace(STATE, 'pixel')))
@@ -147,17 +147,17 @@ const renderGLTexture = () => {
 }
 
 const normalize = (v) => {
-    const len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+    const len = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
     return [v[0] / len, v[1] / len, v[2] / len]
 }
 
 const glRGB = ([x, y]) => {
     if (x < 0 || x >= CANVAS_GL.width || y < 0 || y >= CANVAS_GL.height)
         return [0, 0, 0]
-    const pixIdx = (Math.floor(x) + Math.floor(y) * CANVAS_GL.width) * 4
-    const [r, g, b] = [pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2]]
+    const pixIdx = (floor(x) + floor(y) * CANVAS_GL.width) * 4
+    const rgb = [pixels[pixIdx], pixels[pixIdx + 1], pixels[pixIdx + 2]]
 
-    return normalize([r * 2 - 1, g * 2 - 1, b * 2 - 1])
+    return normalize(rgb.map((x) => x * 2 - 1))
 }
 
 const iterate = () => {
@@ -176,24 +176,25 @@ const iterate = () => {
                 y: prtcls[j][1]
             }),
             k = noise.fbm(pos.x * 900, pos.y * 900),
-            l = Math.atan2(pos.y, pos.x),
+            l = atan2(pos.y, pos.x),
             m = operate(operator, l, k, j, domain),
             [rx, ry, rz] = glRGB(domainToPixels(prtcls[j])),
-            ra = Math.atan2(ry, rx),
-            notOverSolid = rx > 0.5 && ry > 0.5 && rz > 0.5,
-            rs = notOverSolid ? k * 0.002 : rz * 0.0007,
+            ra = atan2(ry, rx),
+            sufaceThreshold = 0.08,
+            notOverSolid =
+                abs(rx - 0.5) < sufaceThreshold &&
+                abs(ry - 0.5) < sufaceThreshold &&
+                abs(rz - 0.5) < sufaceThreshold,
+            rs = notOverSolid ? k * 0.0003 : rz * 0.01,
             mra = notOverSolid ? m : ra,
-            n = [
-                prtcls[j][0] + Math.cos(mra) * rs,
-                prtcls[j][1] + Math.sin(mra) * rs
-            ]
+            n = [prtcls[j][0] + cos(mra) * rs, prtcls[j][1] + sin(mra) * rs]
         trails[j].push(n)
         prtcls[j] = n
     }
 }
 
 const update = () => {
-    if (currFrame < NUM_ITER) {
+    if (currFrame < STATE.numIter) {
         frameReq = requestAnimationFrame(update)
         iterate()
         drawElems = trace(STATE, 'pixel')
