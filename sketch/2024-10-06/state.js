@@ -42,11 +42,6 @@ const BASE = (config) => {
                             RND.minmaxInt(0, 360),
                             RND.minmaxInt(0, 360),
                             RND.minmaxInt(0, 360)
-                        ], // rotation in radians
-                        lightPos: [
-                            (RND.float() - 0.5) * 5,
-                            (RND.float() - 0.5) * 5,
-                            RND.float() + 0.5
                         ]
                     }),
                     shapeCount

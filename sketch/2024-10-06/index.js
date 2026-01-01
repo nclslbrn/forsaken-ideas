@@ -42,7 +42,7 @@ const DPI = quantity(96, dpi),
     GL = CANVAS_GL.getContext('webgl', { preserveDrawingBuffer: true }),
     ATTRACT_ENGINE = strangeAttractor(),
     ITER_LIST = document.createElement('div'),
-    { floor, round, sqrt, atan2, cos, sin, abs } = Math
+    { floor, sqrt, atan2, cos, sin, abs } = Math
 
 let STATE,
     seed = false,
@@ -114,9 +114,7 @@ const renderGLTexture = () => {
         shapeType: GL.getUniformLocation(program, 'u_shapeType'),
         shapePos: GL.getUniformLocation(program, 'u_shapePos'),
         shapeSize: GL.getUniformLocation(program, 'u_shapeSize'),
-        shapeRot: GL.getUniformLocation(program, 'u_shapeRot'),
-        lightPos: GL.getUniformLocation(program, 'u_lightPos'),
-        fractalIterations: GL.getUniformLocation(program, 'u_fractalIterations')
+        shapeRot: GL.getUniformLocation(program, 'u_shapeRot')
     }
 
     GL.viewport(0, 0, width, height)
@@ -130,12 +128,6 @@ const renderGLTexture = () => {
     GL.uniform3fv(uniforms.shapePos, [...shapes.map((s) => s.pos).flat()])
     GL.uniform3fv(uniforms.shapeSize, [...shapes.map((s) => s.size).flat()])
     GL.uniform3fv(uniforms.shapeRot, [...shapes.map((s) => s.rot).flat()])
-    GL.uniform3fv(uniforms.lightPos, [...shapes.map((s) => s.lightPos).flat()])
-    GL.uniform1iv(
-        uniforms.fractalIterations,
-        shapes.map((s) => s.fractalIterations).flat()
-    )
-
     GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4)
 
     const sample = document.createElement('canvas'),
