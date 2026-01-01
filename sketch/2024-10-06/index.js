@@ -31,10 +31,10 @@ const DPI = quantity(96, dpi),
     // TWOK_16_9 = quantity([1080, 607], mm),
     // TWOK_9_16 = quantity([607, 1080], mm),
     // IG_SQ = quantity([700, 700], mm),
-    // EXHIBIT = quantity([216 * 2.65, 384 * 2.65], mm),
-    IG_4BY5 = quantity([600, 755], mm),
-    SIZE = mul(IG_4BY5, DPI).deref(),
-    MARGIN = convert(mul(quantity(20, mm), DPI), NONE),
+    EXHIBIT = quantity([384 * 2.646, 216 * 2.646], mm),
+    // IG_4BY5 = quantity([600, 755], mm),
+    SIZE = mul(EXHIBIT, DPI).deref(),
+    MARGIN = convert(mul(quantity(50, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS_2D = document.createElement('canvas'),
     CTX_2D = CANVAS_2D.getContext('2d'),
@@ -172,12 +172,12 @@ const iterate = () => {
             m = operate(operator, l, k, j, domain),
             [rx, ry, rz] = glRGB(domainToPixels(prtcls[j])),
             ra = atan2(ry, rx),
-            sufaceThreshold = 0.08,
+            sufaceThreshold = 0.083,
             notOverSolid =
                 abs(rx - 0.5) < sufaceThreshold &&
                 abs(ry - 0.5) < sufaceThreshold &&
                 abs(rz - 0.5) < sufaceThreshold,
-            rs = notOverSolid ? k * 0.0003 : rz * 0.01,
+            rs = notOverSolid ? k * 0.0006 : rz * 0.01,
             mra = notOverSolid ? m : ra,
             n = [prtcls[j][0] + cos(mra) * rs, prtcls[j][1] + sin(mra) * rs]
         trails[j].push(n)
@@ -270,7 +270,6 @@ window.infobox = infobox
 
 ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS_2D)
-ROOT.appendChild(CANVAS_GL)
 ROOT.appendChild(ITER_LIST)
 
 const queryString = window.location.search

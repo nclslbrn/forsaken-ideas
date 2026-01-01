@@ -19,14 +19,12 @@ body {
     width: auto;
 }
 
-#windowFrame > canvas:last-of-type {
-    max-width: 400px;
-    max-height: 400px;
-}
-
 #windowFrame div {
-    padding-left: 2em;
+    position: absolute;
+    right: 0;
+    top: 0;
     align-self: flex-start;
+    background: #00000033;
 }
 
 #windowFrame div ul {
