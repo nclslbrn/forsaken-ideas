@@ -9,9 +9,9 @@ const { round, ceil, sin, cos, max, PI, hypot } = Math
 const operate = (type, a, b, c, domain) => {
     let x, y, d
     if (['C', 'D', 'E', 'F'].includes(type)) {
-        y = c % domain
+        y = c % domain[1]
         x = c - y
-        d = hypot(x - domain / 2, y - domain / 2)
+        d = hypot(x - domain[0] / 2, y - domain[1] / 2)
     }
     switch (type) {
         case 'A':
@@ -19,11 +19,11 @@ const operate = (type, a, b, c, domain) => {
         case 'B':
             return (1 + a) ** 2 % sin(b)
         case 'C':
-            return (a % ((d / domain) * b)) * 1.25
+            return (a % ((d / domain[1]) * b)) * 1.25
         case 'D':
             return (sin(a || 0.03) * cos(d * 0.05)) ^ (b || 0.03)
         case 'E':
-            return 1 + a - max(d / domain ** 2, b) * 0.15
+            return 1 + a - max(d / domain[0] ** 2, b) * 0.15
         case 'F':
             const step1 = PI / 4,
                 step2 = PI / 2

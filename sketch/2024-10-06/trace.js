@@ -25,14 +25,18 @@ const trace = (STATE) => {
     ]
 
     const strokeById = (idx) => {
-        const x = idx % domain
-        const y = Math.floor(idx / domain)
+        const x = idx % domain[0]
+        const y = Math.floor(idx / domain[0])
         const distFromCenter = Math.floor(
-            Math.sqrt((x - domain / 2) ** 2 + (y - domain / 2) ** 2)
+            Math.sqrt((x - domain[0] / 2) ** 2 + (y - domain[1] / 2) ** 2)
         )
         return colors[
-            distFromCenter < 10
-                ? 2 + ((verticalColorAssignation ? y : x) % (colors.length - 2))
+            distFromCenter < 15
+                ? 2 +
+                  ((verticalColorAssignation
+                      ? Math.round((y * 20) / domain[1])
+                      : Math.round((x * 20) / domain[0])) %
+                      (colors.length - 2))
                 : 1
         ]
     }

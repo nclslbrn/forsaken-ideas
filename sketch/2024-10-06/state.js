@@ -17,7 +17,7 @@ const BASE = (config) => {
     return resolve(
         {
             ...config,
-            domain: 120,
+            domain: [120, 80],
             numIter: 200,
             inner: ({ width, height, margin }) => [
                 width - margin * 2,
@@ -76,11 +76,11 @@ const BASE = (config) => {
             prtcls: ({ domain }) => [
                 ...repeatedly2d(
                     (x, y) => [
-                        (RND.norm(5) + x) / domain - 0.5,
-                        (RND.norm(5) + y) / domain - 0.5
+                        (RND.norm(5) + x) / domain[0] - 0.5,
+                        (RND.norm(5) + y) / domain[1] - 0.5
                     ],
-                    domain,
-                    domain
+                    domain[0],
+                    domain[1]
                 )
             ],
 
