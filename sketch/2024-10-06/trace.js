@@ -16,7 +16,7 @@ const trace = (STATE) => {
         verticalColorAssignation,
         RND
     } = STATE
-    const domainScale = 0.95
+    const domainScale = 1.1
     const cropPoly = [
         [margin, margin],
         [width - margin, margin],
