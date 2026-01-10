@@ -203,7 +203,7 @@ window['init'] = () => {
     init()
 }
 window['exportJPG'] = () =>
-    downloadCanvas(CANVAS_2D, `2024 10 60-${seed}`, 'jpeg', 1)
+    downloadCanvas(CANVAS_2D, `2024-10-06-${seed}`, 'jpeg', 1)
 
 window['exportSVG'] = () =>
     downloadWithMime(
