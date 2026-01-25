@@ -17,10 +17,14 @@ const BASE = (config) => {
     return resolve(
         {
             RND,
-            baseFontSize: () => 12 + floor(RND.float() * 16),
+            ...config,
+            margin: ({ width, height }) => {
+                const baseMargin = RND.minmax(0.001, 0.05)
+                return [baseMargin, (width / height) * baseMargin]
+            },
             gridSize: () => [
-                6 + ceil(RND.float() * 8),
-                8 + ceil(RND.float() * 6)
+                4, //6 + ceil(RND.float() * 8),
+                4 //8 + ceil(RND.float() * 6)
             ],
             ruleIdx: () => floor(rules.length * RND.float()),
             cells:
@@ -45,9 +49,17 @@ const BASE = (config) => {
                 }
             },
 
-            grid: ({ gridSize, cells, pattern }) => {
-                const [_, grid] = cells(gridSize[1], [pattern.type])
-                return grid
+            grid: ({ gridSize, cells, pattern, margin }) => {
+                // const margin = 0.01
+                const [_, baseGrid] = cells(gridSize[1], [pattern.type])
+                const resized = baseGrid.map(([x, y, w, h]) => [
+                    remap(x, 0, 1, margin[0], 1 - margin[0]),
+                    remap(y, 0, 1, margin[1], 1 - margin[1]),
+                    w * (1 - margin[0] * 2),
+                    h * (1 - margin[1] * 2)
+                ])
+
+                return resized
             }
         },
         { onlyFnRefs: true }
@@ -62,27 +74,36 @@ const resolveState = (config) =>
 
             rule: ({ ruleIdx }) => rules[ruleIdx],
 
-            subcells: ({ grid, pattern, rule }) => {
+            subcells: ({ grid, pattern, rule, RND }) => {
                 const cells = []
                 const cellType = []
+                const lights = []
                 for (let i = 0; i < grid.length; i++) {
                     const [x, y, w, h] = grid[i]
                     for (let j = 0; j < pattern.elem.length; j++) {
                         const [dx, dy, dw, dh] = pattern.elem[j]
-                        const patternCell = [x + dx, y + dy, dw * w, dh * h]
+                        const pCell = [x + dx, y + dy, dw * w, dh * h]
 
                         if (!rule(i, j)) {
-                            cells.push(patternCell)
-                            cellType.push(1)
+                            cells.push(pCell)
+                            cellType.push(1.0)
                         } else {
-                            cells.push(patternCell)
-                            cellType.push(0)
+                            cells.push(pCell)
+                            cellType.push(0.0)
+                            if (RND.float() > 0.5) {
+                                lights.push([
+                                    RND.minmax(pCell[0], pCell[0] + pCell[2]),
+                                    RND.minmax(pCell[1], pCell[1] + pCell[3]),
+                                    5
+                                ])
+                            }
                         }
                     }
                 }
                 return {
                     cells,
-                    cellType
+                    cellType,
+                    lights
                 }
             }
         },

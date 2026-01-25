@@ -3,7 +3,7 @@ import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { resolveState } from './state'
 
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { createShader, createProgram } from '../../sketch-common/shaderUtils'
@@ -11,8 +11,8 @@ import vertSrc from './glsl/shader.vert'
 import fragSrc from './glsl/shader.frag'
 
 const DPI = quantity(96, dpi), // default settings in inkscape
-    [width, height] = mul(DIN_A3, DPI).deref(),
-    margin = convert(mul(quantity(15, mm), DPI), NONE),
+    //[width, height] = mul(DIN_A3, DPI).deref(),
+    [width, height] = [window.innerWidth, window.innerHeight],
     main = document.getElementById('windowFrame'),
     canvas = document.createElement('canvas'),
     loader = document.getElementById('loading')
@@ -31,14 +31,11 @@ const _ = {
     state: {},
     uniforms: {},
     init: () => {
-        state = resolveState({ width, height, margin })
-    },
-    setup: () => {
+        state = resolveState({ width, height })
         if (!_.gl) {
             console.error('WebGL not supported')
             return
         }
-        console.log(state)
         canvas.width = width
         canvas.height = height
         _.gl.viewport(0, 0, width, height)
@@ -57,10 +54,13 @@ const _ = {
             cellCount: _.gl.getUniformLocation(program, 'u_cellCount'),
             cells: _.gl.getUniformLocation(program, 'u_cells'),
             cellType: _.gl.getUniformLocation(program, 'u_cellType'),
-            borderWidth: _.gl.getUniformLocation(program, 'u_borderWidth'),
-            bgColor: _.gl.getUniformLocation(program, 'u_bgColor'),
-            borderColor: _.gl.getUniformLocation(program, 'u_borderColor'),
-            cellColor: _.gl.getUniformLocation(program, 'u_cellColor')
+            depthA: _.gl.getUniformLocation(program, 'u_depthA'),
+            depthB: _.gl.getUniformLocation(program, 'u_depthB'),
+            colorA: _.gl.getUniformLocation(program, 'u_colorA'),
+            colorB: _.gl.getUniformLocation(program, 'u_colorB'),
+            lightPos: _.gl.getUniformLocation(program, 'u_lightPos'),
+            lightColor: _.gl.getUniformLocation(program, 'u_lightColor'),
+            lightCount: _.gl.getUniformLocation(program, 'u_lightCount')
         }
         _.gl.bindBuffer(_.gl.ARRAY_BUFFER, buffer)
         _.gl.bufferData(_.gl.ARRAY_BUFFER, verts, _.gl.STATIC_DRAW)
@@ -68,10 +68,12 @@ const _ = {
         _.gl.vertexAttribPointer(positionLoc, 2, _.gl.FLOAT, false, 0, 0)
         _.gl.disable(_.gl.DEPTH_TEST)
         _.gl.enable(_.gl.BLEND)
-        _.init()
+        _.gl.clearColor(1, 1, 1, 1)
+        _.render()
     },
     render: () => {
         const { subcells: grid } = state
+
         _.gl.clear(_.gl.COLOR_BUFFER_BIT)
         _.gl.uniform2f(_.uniforms.resolution, width, height)
         _.gl.uniform1i(_.uniforms.cellCount, grid.cells.length)
@@ -79,11 +81,24 @@ const _ = {
             _.uniforms.cells,
             grid.cells.reduce((acc, c) => [...acc, ...c], [])
         )
-        _.gl.uniform1iv(_.uniforms.cellType, grid.cellType.flat())
+        _.gl.uniform1fv(_.uniforms.cellType, grid.cellType.flat())
+        _.gl.uniform1f(_.uniforms.depthA, 0.5)
+        _.gl.uniform1f(_.uniforms.depthB, 0.25)
+
+        _.gl.uniform3f(_.uniforms.colorA, 0.0, 1.0, 1.0)
+        _.gl.uniform3f(_.uniforms.colorB, 1.0, 1.0, 0.0)
+
+        _.gl.uniform3fv(
+            _.uniforms.lightPos,
+            grid.lights.reduce((acc, c) => [...acc, ...c], [])
+        )
+        _.gl.uniform3f(_.uniforms.lightColor, 1.0, 1.0, 1.0)
+        _.gl.uniform1i(_.uniforms.lightCount, grid.lights.length)
+        _.gl.drawArrays(_.gl.TRIANGLE_STRIP, 0, 4)
     }
 }
 
-_.setup()
+_.init()
 window.init = _.init
 
 window['exportJPG'] = () => {
