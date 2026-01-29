@@ -4,8 +4,8 @@ precision highp float;
 precision lowp float;
 #endif
 
-#define MAX_STEPS 128
-#define MAX_DIST 100.0
+#define MAX_STEPS 64
+#define MAX_DIST 5.0
 #define SURF_DIST 0.001
 
 #define MAX_CELLS 256
@@ -29,6 +29,8 @@ uniform vec3 u_lightPos[MAX_LIGHTS];
 uniform vec3 u_lightColor;
 uniform int u_lightCount;
 
+// time
+uniform float u_time;
 
 // Signed distance function (credit Inigo Quilez)
 float sdCube(vec3 p, vec3 b) {
@@ -46,6 +48,15 @@ mat3 rotateY(float angle) {
         -s, 0, c
     );
 }
+mat3 rotateX(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat3(
+        1, 0, 0,
+        0, c, -s,
+        0, s, c
+    );
+}
 
 vec2 iBox(vec3 ro, vec3 rd, vec3 rad) {
     vec3 m = 1.0 / rd;
@@ -60,6 +71,9 @@ vec2 iBox(vec3 ro, vec3 rd, vec3 rad) {
 vec4 map(vec3 p) {
     float d = MAX_DIST;
     int hitCell = -1;
+    float cellType = 0.0;
+    p *= rotateY(radians(u_time));
+    // p *= rotateX(radians(-60. + 180. * u_time));
 
     for (int i = 0; i < MAX_CELLS; i++) {
         if (i >= u_cellCount) break;
@@ -71,28 +85,30 @@ vec4 map(vec3 p) {
         vec3 center = vec3(
             c.x + c.z * 0.5,
             c.y + c.w * 0.5,
-            depth
+            depth * 0.33
         );
 
-        vec3 size = vec3(c.z, c.w, 0.5); // thickness
+        vec3 size = vec3(c.z * 0.94, c.w * 0.94, 0.33); // thickness
 
         float dBox = sdCube(p - center, size * 0.5);
 
         if (dBox < d) {
             d = dBox;
             hitCell = i;
+            cellType = u_cellType[i];
         }
     }
 
-    return vec4(d, 1.0, 1.0, 1.0);
+    return vec4(d, 1.0, 1.0, cellType);
 }
 
 vec3 calcNormal(vec3 pos) {
     vec3 eps = vec3(.001, 0., 0.);
     return normalize(vec3(
-            map(pos + eps.xyy).x - map(pos - eps.xyy).x,
-            map(pos + eps.yxy).x - map(pos - eps.yxy).x,
-            map(pos + eps.yyx).x - map(pos - eps.yyx).x));
+        map(pos + eps.xyy).x - map(pos - eps.xyy).x,
+        map(pos + eps.yxy).x - map(pos - eps.yxy).x,
+        map(pos + eps.yyx).x - map(pos - eps.yyx).x)
+    );
 }
 
 vec4 intersect(vec3 ro, vec3 rd) {
@@ -133,35 +149,35 @@ float softshadow(in vec3 ro, in vec3 rd, float mint, float k) {
 void main() {
     vec2 st = (gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0;
     st.x *= u_resolution.x / u_resolution.y;
-    vec3 evrfrst[6];
-    evrfrst[0] = vec3(.28, .32, .35);
-    evrfrst[1] = vec3(.14, .16, .18);
-    evrfrst[2] = vec3(.31, .35, .37);
-    evrfrst[3] = vec3(.65, .75, .5);
-    evrfrst[4] = vec3(.24, .28, .3);
-    evrfrst[5] = vec3(.14, .16, .18);
 
-    vec3 rayOrigin = vec3(0.5, 0.5, -0.75);
+    float camAngle = u_time * 0.5;
+    float camDist = 1.125;
+    vec3 rayOrigin = vec3(
+        camDist * cos(camAngle),
+        0.5,
+        camDist * sin(camAngle)
+    );
+    vec3 target = vec3(0.0, 0.0, 0.0);
+    vec3 forward = normalize(target - rayOrigin);
+    vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
+    vec3 up = cross(forward, right);
 
-    vec3 rayDir = normalize(vec3(st, 1.0));
-    vec3 col = evrfrst[5];
+    vec3 rayDir = normalize(forward + st.x * right + st.y * up);
+
+    vec3 col = vec3(0.01);
     vec4 tmat = intersect(rayOrigin, rayDir);
 
     if (tmat.x > 0.) {
         vec3 pos = rayOrigin + tmat.x * rayDir;
         vec3 nor = calcNormal(pos);
-        vec3 matcol = evrfrst[0];
-        int colIdx = int(floor(tmat.z * 5.));
-        if (colIdx==1) matcol = evrfrst[1];
-        if (colIdx==2) matcol = evrfrst[2];
-        if (colIdx==3) matcol = evrfrst[3];
-        if (colIdx==4) matcol = evrfrst[4];
-        if (colIdx==5) matcol = evrfrst[5];
-        //  0.5 + 0.5 * cos(vec3(0.0, 1.0, 2.0) + 2.0 * tmat.z);
+        vec3 matcol = vec3(0.95);
+        // mix(
+        //    u_colorA, u_colorB, tmat.w
+        // );
 
-        float occ = tmat.y * 4.;
+        float occ = tmat.y * 3.;
 
-        const vec3 light = normalize(vec3(.5, .5, -6.));
+        const vec3 light = normalize(vec3(-7., 1., -1.));
         float dif = dot(nor, light);
         float sha = 1.;
         if (dif > 0.) sha = softshadow(pos, light, .01, 64.);
@@ -169,7 +185,7 @@ void main() {
         vec3 hal = normalize(light - rayDir);
         float spe = dif * sha *
                 pow(clamp(dot(hal, nor), 0., 1.), 16.) *
-                (.3 + .7 * pow(clamp(1. - dot(hal, light), 0., 1.), 5.));
+                (.3 + .6 * pow(clamp(1. - dot(hal, light), 0., 1.), 5.));
 
         float sky = 0.5 + 0.5 * nor.y;
         float bac = max(

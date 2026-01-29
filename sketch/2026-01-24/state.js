@@ -23,8 +23,8 @@ const BASE = (config) => {
                 return [baseMargin, (width / height) * baseMargin]
             },
             gridSize: () => [
-                4, //6 + ceil(RND.float() * 8),
-                4 //8 + ceil(RND.float() * 6)
+                2 + ceil(RND.float() * 3),
+                2 + ceil(RND.float() * 3)
             ],
             ruleIdx: () => floor(rules.length * RND.float()),
             cells:
@@ -50,16 +50,8 @@ const BASE = (config) => {
             },
 
             grid: ({ gridSize, cells, pattern, margin }) => {
-                // const margin = 0.01
                 const [_, baseGrid] = cells(gridSize[1], [pattern.type])
-                const resized = baseGrid.map(([x, y, w, h]) => [
-                    remap(x, 0, 1, margin[0], 1 - margin[0]),
-                    remap(y, 0, 1, margin[1], 1 - margin[1]),
-                    w * (1 - margin[0] * 2),
-                    h * (1 - margin[1] * 2)
-                ])
-
-                return resized
+                return baseGrid
             }
         },
         { onlyFnRefs: true }
@@ -74,15 +66,22 @@ const resolveState = (config) =>
 
             rule: ({ ruleIdx }) => rules[ruleIdx],
 
-            subcells: ({ grid, pattern, rule, RND }) => {
+            subcells: ({ grid, pattern, rule, RND, margin }) => {
                 const cells = []
                 const cellType = []
                 const lights = []
+                const scale = margin.map((x) => 1 - x * 2)
                 for (let i = 0; i < grid.length; i++) {
                     const [x, y, w, h] = grid[i]
                     for (let j = 0; j < pattern.elem.length; j++) {
                         const [dx, dy, dw, dh] = pattern.elem[j]
-                        const pCell = [x + dx, y + dy, dw * w, dh * h]
+                        const pCell = [
+                            remap(x + dx * w, 0, 1, -0.5, 0.5),
+                            remap(y + dy * h, 0, 1, -0.5, 0.5),
+                            w * dw,
+                            h * dh
+                        ]
+                        // const pCell = [x + dx, y + dy, dw * w, dh * h]
 
                         if (!rule(i, j)) {
                             cells.push(pCell)

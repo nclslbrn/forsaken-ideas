@@ -1,8 +1,8 @@
-import { pickRandom } from '@thi.ng/random'
+// import { pickRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { resolveState } from './state'
 
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+// import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
@@ -10,7 +10,7 @@ import { createShader, createProgram } from '../../sketch-common/shaderUtils'
 import vertSrc from './glsl/shader.vert'
 import fragSrc from './glsl/shader.frag'
 
-const DPI = quantity(96, dpi), // default settings in inkscape
+const // DPI = quantity(96, dpi), // default settings in inkscape
     //[width, height] = mul(DIN_A3, DPI).deref(),
     [width, height] = [window.innerWidth, window.innerHeight],
     main = document.getElementById('windowFrame'),
@@ -28,7 +28,7 @@ main.appendChild(canvas)
 const _ = {
     gl: canvas.getContext('webgl', { preserveDrawingBuffer: true }),
     frame: 0,
-    state: {},
+    frameRequest: null,
     uniforms: {},
     init: () => {
         state = resolveState({ width, height })
@@ -60,7 +60,8 @@ const _ = {
             colorB: _.gl.getUniformLocation(program, 'u_colorB'),
             lightPos: _.gl.getUniformLocation(program, 'u_lightPos'),
             lightColor: _.gl.getUniformLocation(program, 'u_lightColor'),
-            lightCount: _.gl.getUniformLocation(program, 'u_lightCount')
+            lightCount: _.gl.getUniformLocation(program, 'u_lightCount'),
+            time: _.gl.getUniformLocation(program, 'u_time')
         }
         _.gl.bindBuffer(_.gl.ARRAY_BUFFER, buffer)
         _.gl.bufferData(_.gl.ARRAY_BUFFER, verts, _.gl.STATIC_DRAW)
@@ -69,11 +70,13 @@ const _ = {
         _.gl.disable(_.gl.DEPTH_TEST)
         _.gl.enable(_.gl.BLEND)
         _.gl.clearColor(1, 1, 1, 1)
+
+        if (_.frameRequest) cancelAnimationFrame(_.frameRequest)
         _.render()
     },
     render: () => {
         const { subcells: grid } = state
-
+        _.frame++
         _.gl.clear(_.gl.COLOR_BUFFER_BIT)
         _.gl.uniform2f(_.uniforms.resolution, width, height)
         _.gl.uniform1i(_.uniforms.cellCount, grid.cells.length)
@@ -82,19 +85,22 @@ const _ = {
             grid.cells.reduce((acc, c) => [...acc, ...c], [])
         )
         _.gl.uniform1fv(_.uniforms.cellType, grid.cellType.flat())
-        _.gl.uniform1f(_.uniforms.depthA, 0.5)
-        _.gl.uniform1f(_.uniforms.depthB, 0.25)
+        _.gl.uniform1f(_.uniforms.depthA, 0.25)
+        _.gl.uniform1f(_.uniforms.depthB, 0.5)
 
-        _.gl.uniform3f(_.uniforms.colorA, 0.0, 1.0, 1.0)
-        _.gl.uniform3f(_.uniforms.colorB, 1.0, 1.0, 0.0)
+        _.gl.uniform3f(_.uniforms.colorA, 0.0, 0.1, 1.0)
+        _.gl.uniform3f(_.uniforms.colorB, 1.0, 0.0, 0.0)
 
         _.gl.uniform3fv(
             _.uniforms.lightPos,
-            grid.lights.reduce((acc, c) => [...acc, ...c], [])
+            grid.lights.reduce((acc, l) => [...acc, ...l], [])
         )
         _.gl.uniform3f(_.uniforms.lightColor, 1.0, 1.0, 1.0)
         _.gl.uniform1i(_.uniforms.lightCount, grid.lights.length)
         _.gl.drawArrays(_.gl.TRIANGLE_STRIP, 0, 4)
+
+        _.gl.uniform1f(_.uniforms.time, _.frame * 0.01)
+        _.frameRequest = requestAnimationFrame(_.render)
     }
 }
 
