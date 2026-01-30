@@ -99,8 +99,9 @@ const _ = {
         _.gl.uniform1i(_.uniforms.lightCount, grid.lights.length)
         _.gl.drawArrays(_.gl.TRIANGLE_STRIP, 0, 4)
 
-        _.gl.uniform1f(_.uniforms.time, _.frame * 0.01)
-        _.frameRequest = requestAnimationFrame(_.render)
+        _.gl.uniform1f(_.uniforms.time, _.frame * 0.03)
+        //
+        // $_.frameRequest = requestAnimationFrame(_.render)
     }
 }
 

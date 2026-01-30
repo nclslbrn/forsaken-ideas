@@ -6,7 +6,7 @@ precision lowp float;
 
 #define MAX_STEPS 64
 #define MAX_DIST 5.0
-#define SURF_DIST 0.001
+#define SURF_DIST 0.0001
 
 #define MAX_CELLS 256
 #define MAX_LIGHTS 12
@@ -14,7 +14,7 @@ precision lowp float;
 uniform vec2 u_resolution;
 
 // cell data
-uniform vec4 u_cells[MAX_CELLS];     // x, y, w, h
+uniform vec4 u_cells[MAX_CELLS]; // x, y, w, h
 uniform float u_cellType[MAX_CELLS]; // 0.0 or 1.0
 uniform int u_cellCount;
 
@@ -83,12 +83,12 @@ vec4 map(vec3 p) {
         float depth = mix(u_depthA, u_depthB, u_cellType[i]);
 
         vec3 center = vec3(
-            c.x + c.z * 0.5,
-            c.y + c.w * 0.5,
-            depth * 0.33
-        );
+                c.x + c.z * 0.5,
+                c.y + c.w * 0.5,
+                depth * 0.33
+            );
 
-        vec3 size = vec3(c.z * 0.94, c.w * 0.94, 0.33); // thickness
+        vec3 size = vec3(c.z * 0.97, c.w * 0.97, .5); // thickness
 
         float dBox = sdCube(p - center, size * 0.5);
 
@@ -105,14 +105,14 @@ vec4 map(vec3 p) {
 vec3 calcNormal(vec3 pos) {
     vec3 eps = vec3(.001, 0., 0.);
     return normalize(vec3(
-        map(pos + eps.xyy).x - map(pos - eps.xyy).x,
-        map(pos + eps.yxy).x - map(pos - eps.yxy).x,
-        map(pos + eps.yyx).x - map(pos - eps.yyx).x)
+            map(pos + eps.xyy).x - map(pos - eps.xyy).x,
+            map(pos + eps.yxy).x - map(pos - eps.yxy).x,
+            map(pos + eps.yyx).x - map(pos - eps.yyx).x)
     );
 }
 
 vec4 intersect(vec3 ro, vec3 rd) {
-    vec2 bb = iBox(ro, rd, vec3(8.05));
+    vec2 bb = iBox(ro, rd, vec3(30.05));
     if (bb.y < bb.x) return vec4(-1.0);
 
     float tmin = bb.x;
@@ -150,13 +150,13 @@ void main() {
     vec2 st = (gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0;
     st.x *= u_resolution.x / u_resolution.y;
 
-    float camAngle = u_time * 0.5;
+    float camAngle = radians(90.); //u_time * 0.5;
     float camDist = 1.125;
     vec3 rayOrigin = vec3(
-        camDist * cos(camAngle),
-        0.5,
-        camDist * sin(camAngle)
-    );
+            camDist * cos(camAngle),
+            0.,
+            camDist * sin(camAngle)
+        );
     vec3 target = vec3(0.0, 0.0, 0.0);
     vec3 forward = normalize(target - rayOrigin);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
@@ -164,7 +164,7 @@ void main() {
 
     vec3 rayDir = normalize(forward + st.x * right + st.y * up);
 
-    vec3 col = vec3(0.01);
+    vec3 col = vec3(0.95);
     vec4 tmat = intersect(rayOrigin, rayDir);
 
     if (tmat.x > 0.) {
@@ -175,9 +175,9 @@ void main() {
         //    u_colorA, u_colorB, tmat.w
         // );
 
-        float occ = tmat.y * 3.;
+        float occ = tmat.y * 1.;
 
-        const vec3 light = normalize(vec3(-7., 1., -1.));
+        const vec3 light = normalize(vec3(-5., 15., 5.));
         float dif = dot(nor, light);
         float sha = 1.;
         if (dif > 0.) sha = softshadow(pos, light, .01, 64.);
@@ -185,7 +185,7 @@ void main() {
         vec3 hal = normalize(light - rayDir);
         float spe = dif * sha *
                 pow(clamp(dot(hal, nor), 0., 1.), 16.) *
-                (.3 + .6 * pow(clamp(1. - dot(hal, light), 0., 1.), 5.));
+                (.3 + .7 * pow(clamp(1. - dot(hal, light), 0., 1.), 5.));
 
         float sky = 0.5 + 0.5 * nor.y;
         float bac = max(
