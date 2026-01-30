@@ -23,7 +23,7 @@ let isRecording = false,
     recorder = false,
     frameReq = 0,
     state = null,
-    gl = canvas.getContext('webgl2')
+    gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true })
 
 main.appendChild(canvas)
 

@@ -8,8 +8,8 @@ precision lowp float;
 #define MAX_DIST 5.0
 #define SURF_DIST 0.001
 
-#define MAX_CELLS 128
-#define MAX_LIGHTS 64
+#define MAX_CELLS 96
+#define MAX_LIGHTS 48
 
 uniform vec2 u_resolution;
 
