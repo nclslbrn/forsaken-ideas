@@ -22,10 +22,7 @@ const BASE = (config) => {
                 const baseMargin = RND.minmax(0.001, 0.05)
                 return [baseMargin, (width / height) * baseMargin]
             },
-            gridSize: () => [
-                2 + ceil(RND.float() * 3),
-                2 + ceil(RND.float() * 3)
-            ],
+            gridSize: () => [ceil(RND.float() * 6), ceil(RND.float() * 6)],
             ruleIdx: () => floor(rules.length * RND.float()),
             cells:
                 () =>
@@ -70,7 +67,6 @@ const resolveState = (config) =>
                 const cells = []
                 const cellType = []
                 const lights = []
-                const scale = margin.map((x) => 1 - x * 2)
                 for (let i = 0; i < grid.length; i++) {
                     const [x, y, w, h] = grid[i]
                     for (let j = 0; j < pattern.elem.length; j++) {
@@ -89,11 +85,15 @@ const resolveState = (config) =>
                         } else {
                             cells.push(pCell)
                             cellType.push(0.0)
-                            if (RND.float() > 0.5) {
+                            if (RND.float() > 0.5 || lights.length < 1) {
                                 lights.push([
-                                    RND.minmax(pCell[0], pCell[0] + pCell[2]),
-                                    RND.minmax(pCell[1], pCell[1] + pCell[3]),
-                                    5
+                                    pCell[0] +
+                                        pCell[2] / 2 +
+                                        RND.minmax(-pCell[2], pCell[2]) / 2,
+                                    pCell[1] +
+                                        pCell[1] / 2 +
+                                        RND.minmax(-pCell[3], pCell[3]) / 2,
+                                    0.5
                                 ])
                             }
                         }
