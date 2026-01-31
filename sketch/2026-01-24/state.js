@@ -22,7 +22,7 @@ const BASE = (config) => {
                 const baseMargin = RND.minmax(0.001, 0.05)
                 return [baseMargin, (width / height) * baseMargin]
             },
-            gridSize: () => [ceil(RND.float() * 6), ceil(RND.float() * 6)],
+            gridSize: () => [ceil(RND.float() * 3), ceil(RND.float() * 3)],
             ruleIdx: () => floor(rules.length * RND.float()),
             cells:
                 () =>
@@ -65,7 +65,6 @@ const resolveState = (config) =>
 
             subcells: ({ grid, pattern, rule, RND, margin }) => {
                 const cells = []
-                const cellType = []
                 const lights = []
                 for (let i = 0; i < grid.length; i++) {
                     const [x, y, w, h] = grid[i]
@@ -81,11 +80,11 @@ const resolveState = (config) =>
 
                         if (!rule(i, j)) {
                             cells.push(pCell)
-                            cellType.push(1.0)
+                            // cellType.push(1.0)
                         } else {
-                            cells.push(pCell)
-                            cellType.push(0.0)
-                            if (RND.float() > 0.5 || lights.length < 1) {
+                            // cells.push(pCell)
+                            // cellType.push(0.0)
+                            if (RND.float() > 0.75 || lights.length === 0) {
                                 lights.push([
                                     pCell[0] +
                                         pCell[2] / 2 +
@@ -93,7 +92,7 @@ const resolveState = (config) =>
                                     pCell[1] +
                                         pCell[1] / 2 +
                                         RND.minmax(-pCell[3], pCell[3]) / 2,
-                                    0.5
+                                    1
                                 ])
                             }
                         }
@@ -101,7 +100,6 @@ const resolveState = (config) =>
                 }
                 return {
                     cells,
-                    cellType,
                     lights
                 }
             }
