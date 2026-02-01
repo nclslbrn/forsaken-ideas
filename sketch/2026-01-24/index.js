@@ -54,9 +54,6 @@ const _ = {
             resolution: gl.getUniformLocation(program, 'u_resolution'),
             cellCount: gl.getUniformLocation(program, 'u_cellCount'),
             cells: gl.getUniformLocation(program, 'u_cells'),
-            // cellType: gl.getUniformLocation(program, 'u_cellType'),
-            // depthA: gl.getUniformLocation(program, 'u_depthA'),
-            // depthB: gl.getUniformLocation(program, 'u_depthB'),
             colorA: gl.getUniformLocation(program, 'u_colorA'),
             colorB: gl.getUniformLocation(program, 'u_colorB'),
             lightPos: gl.getUniformLocation(program, 'u_lightPos'),
@@ -91,13 +88,8 @@ const _ = {
             _.uniforms.cells,
             grid.cells.reduce((acc, c) => [...acc, ...c], [])
         )
-        // gl.uniform1fv(_.uniforms.cellType, grid.cellType.flat())
-        // gl.uniform1f(_.uniforms.depthA, 0.25)
-        // gl.uniform1f(_.uniforms.depthB, 0.5)
-
         gl.uniform3f(_.uniforms.colorA, 0.0, 0.1, 1.0)
         gl.uniform3f(_.uniforms.colorB, 1.0, 0.0, 0.0)
-
         gl.uniform3fv(
             _.uniforms.lightPos,
             grid.lights.reduce((acc, l) => [...acc, ...l], [])
