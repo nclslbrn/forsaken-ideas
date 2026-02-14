@@ -1,0 +1,87 @@
+/** fullsize (zoomed) configuration
+
+body {
+  overflow-y: scroll;
+}
+*/ 
+
+#windowFrame {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    overflow-y: auto;
+    padding-left: 2em;
+}
+
+#windowFrame canvas {
+    padding: 0;
+    max-height: 100%;
+    width: auto;
+}
+
+#windowFrame div {
+    padding-left: 2em;
+    align-self: flex-start;
+}
+
+#windowFrame div ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#windowFrame div ul li {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: 0.25em;
+}
+
+#windowFrame div ul li button {
+    padding: 0.25em 0.5em;
+    border: 1px solid #666;
+    border-radius: 0.5em;
+}
+
+#windowFrame div ul li:not(:first-child) button {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-secondary);
+}
+
+#windowFrame div ul li:not(:first-child) button:first-child {
+    border-right: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#windowFrame div ul li:not(:first-child) button:last-child {
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#windowFrame div ul li:not(:first-child) button.current {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+#windowFrame table {
+    padding-left: 1em;
+    align-self: flex-start;
+    border-collapse: collapse;
+}
+
+#windowFrame table thead tr th,
+#windowFrame table tbody tr td {
+    padding: 0.5em 0.33em;
+    text-align: left;
+    vertical-align: text-top;
+}
+#windowFrame table thead tr th {
+    border-bottom: 3px solid #ccc;
+    text-transform: uppercase;
+}
+
+#windowFrame table tbody tr td {
+    border-bottom: 1px solid #ccc;
+}

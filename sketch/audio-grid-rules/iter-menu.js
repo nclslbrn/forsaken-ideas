@@ -41,6 +41,14 @@ const iterMenu = (ITER_LIST, STATE) => {
                 tbody(
                     {},
                     tr({}, td({}, 'Theme'), td({}, STATE.theme[0])),
+                    tr(
+                        {},
+                        td({}, 'Frequencies'),
+                        td({}, STATE.frequencies.join(', '))
+                    ),
+                    tr({}, td({}, 'Arp pattern'), td({}, STATE.arpPattern)),
+
+                    tr({}, td({}, 'Text'), td({}, STATE.str.join(''))),
 
                     tr({}, td({}, 'Rule'), td({}, STATE.rule)),
 
