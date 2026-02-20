@@ -1,16 +1,14 @@
 import { resolve } from '@thi.ng/resolve-map'
-import { pickRandom, weightedRandom, SFC32 } from '@thi.ng/random'
-import { repeatedly2d } from '@thi.ng/transducers'
-import { polyline, polygon, transform, scale, group3 } from '@thi.ng/geom'
+import { pickRandom, SFC32 } from '@thi.ng/random'
+import { polyline, transform, group } from '@thi.ng/geom'
 import * as mat from '@thi.ng/matrices'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
-import SENTENCES from './SENTENCES'
 import SCHEMES from './schemes'
 import { seedFromHash } from './seed-from-hash'
 import { getParagraphVector } from '@nclslbrn/plot-writer'
 import hashes from './hashes'
-const { floor, ceil, min, max, round, abs } = Math
+const { floor, ceil } = Math
 
 const remap = (n, start1, stop1, start2, stop2) =>
     ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2
@@ -24,26 +22,7 @@ const BASE = (config) => {
 
             RND,
 
-            str: () => [...pickRandom(SENTENCES, RND)],
-
-            baseFontSize: () => 12 + floor(RND.float() * 16),
-
-            fontSize: ({ baseFontSize }) => [
-                baseFontSize,
-                baseFontSize * floor(1 + RND.float() * 0.5)
-            ],
-
-            oneLetterPerCellChance: () => 0.66 + RND.float() * 0.33,
-
-            textColorPerCell: () => RND.float() > 0.5,
-
-            theme: () => {
-                const origin = pickRandom(SCHEMES, RND)
-                return [
-                    origin[0],
-                    origin[1].sort((_a, _b) => RND.float() > 0.5)
-                ]
-            },
+            theme: () => pickRandom(SCHEMES, RND),
 
             areCellsDupplicated: () => RND.float() > 0.75,
 
@@ -54,20 +33,9 @@ const BASE = (config) => {
 
             ruleIdx: () => floor(RULES.length * RND.float()),
 
-            rotation: () => (Math.PI * RND.minmaxInt(-4, 4)) / 8,
+            // rotation: () => (Math.PI * RND.minmaxInt(-4, 4)) / 8,
 
             skewType: () => pickRandom(['skewY23', 'skewX23'], RND),
-
-            skewTransform: ({ width: w, height: h }) => ({
-                skewY23: [
-                    [w * 0.5, h * 0.2],
-                    [w * 0.5, h * 0.8]
-                ],
-                skewX23: [
-                    [w * 0.2, h * 0.5],
-                    [w * 0.8, h * 0.5]
-                ]
-            }),
 
             cells:
                 () =>
@@ -94,9 +62,7 @@ const BASE = (config) => {
             grid: ({ gridSize, cells, pattern }) => {
                 const [_, grid] = cells(gridSize[1], [pattern.type])
                 return grid
-            },
-
-            loopStep: ({ pattern }) => min(pattern.elem.length, 16)
+            }
         },
         { onlyFnRefs: true }
     )
@@ -137,65 +103,54 @@ const resolveState = (config) =>
                 return cells
             },
 
+            skewAngles: ({ patternCells }) =>
+                patternCells.map((_, i) => (Math.PI / 8) * (i % 2 ? -1 : 1)),
+
             groupedElems: ({
                 patternCells,
                 skewType,
                 width,
                 height,
-                skewTransform,
-                rotation,
-                theme
+                skewAngles,
+                theme,
+                RND
             }) =>
                 patternCells.map((layer, i) =>
                     transform(
-                        group3(
-                            {},
-                            layer.map(
-                                ([x, y, w, h], j) =>
-                                    polygon(
-                                        [
-                                            [x, y],
-                                            [x + w, y],
-                                            [x + w, y + h],
-                                            [x, y + h],
-                                            [x, y]
-                                        ],
-                                        {
-                                            fill: `${theme[1][j % theme[1].length]}`
-                                        }
-                                    )
-                                /*
-                                hashes([x, y, w, h], 0, 0.0001).map((line) =>
-                                    polyline(line)
-                                )
-                                */
-                            )
+                        group(
+                            { stroke: theme[1][2] },
+                            layer.reduce((lines, cell, j) => {
+                                // Scale cell dimensions first before generating hashes
+                                const [x, y, w, h] = cell
+                                const scaledCell = [
+                                    x * width,
+                                    y * height,
+                                    w * width,
+                                    h * height
+                                ]
+                                console.log(i, lines.length)
+
+                                return [
+                                    ...lines,
+                                    ...hashes(
+                                        scaledCell,
+                                        RND.minmaxInt(0, 3),
+                                        10
+                                    ).map((line) => polyline(line))
+                                ]
+                            }, [])
                         ),
-                        // order seems to be translate, rotate then scale
                         mat.concat(
                             [],
 
-                            mat.translation23(null, [
-                                width * 0.255,
-                                height * 0.255
-                            ]),
+                            mat[skewType](null, skewAngles[i]),
 
-                            mat[skewType](
-                                null,
-                                (Math.PI / 8) * (i % 2 ? -1 : 1)
-                            ),
-                            mat.scale23(null, [width / 2, height / 2])
+                            mat.scale23(null, [0.5, 0.5]),
+                            mat.translation23(null, [width * 0.5, height * 0.5])
 
                             // mat.rotation23(null, rotation)
 
                             //mat.translation23(null, [width / 2, height / 2])
-
-                            /*
-                                mat.translation23(
-                                    null,
-                                    skewTransform[skewType][j % 2]
-                                )
-                                */
                         )
                     )
                 ),

@@ -15,9 +15,9 @@ export default function ([cx, cy, cw, ch], dir, res) {
     if (dir < 2) {
         // vertical lines
         if (dir === 0) {
-            for (let x = cx; x < cw; x += res) {
+            for (let x = cx; x < cx+cw; x += res) {
                 let ln = []
-                for (let y = cy; y < ch; y++) {
+                for (let y = cy; y < cy+ch; y += res) {
                     ln.push([x, y])
                 }
                 ln.length && ls.push(ln)
@@ -25,9 +25,9 @@ export default function ([cx, cy, cw, ch], dir, res) {
         }
         // horizontal lines
         else {
-            for (let y = cy; y < ch; y += res) {
+            for (let y = cy; y < cy+ch; y += res) {
                 let ln = []
-                for (let x = cx; x < cw; x++) {
+                for (let x = cx; x < cx+cw; x += res) {
                     ln.push([x, y])
                 }
                 ln.length && ls.push(ln)
@@ -39,10 +39,10 @@ export default function ([cx, cy, cw, ch], dir, res) {
         const step = hypot(res, res)
         const diag = hypot(cw, ch)
         const theta = (dir === 2 ? -PI : PI) / 4
-        const cntr = [cw / 2, ch / 2]
+        const cntr = [cx + (cw / 2), cy + (ch / 2)]
         for (let x = -diag; x <= diag; x += step) {
             let ln = []
-            for (let y = -diag; y <= diag; y++) {
+            for (let y = -diag; y <= diag; y += step) {
                 const xx =
                     cos(theta) * (x - cntr[0]) -
                     sin(theta) * (y - cntr[1]) +
@@ -62,3 +62,4 @@ export default function ([cx, cy, cw, ch], dir, res) {
 
     return ls
 }
+ 
