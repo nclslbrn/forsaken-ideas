@@ -4,7 +4,6 @@
 import './style.css'
 import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -15,7 +14,7 @@ import {
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
-
+import { getParagraphPath } from '@nclslbrn/plot-writer'
 // import { scribbleLine } from './scribbleLine'
 
 import { iterMenu } from './iter-menu'
@@ -47,15 +46,16 @@ const init = async () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const { theme, groupedElems } = STATE
-    console.log(groupedElems)
+    const { theme, groupedElems, edMeta } = STATE
+
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
             ...groupedElems.map((elems, i) =>
-                group({ fill: theme[1][i] }, elems)
+                group({ stroke: theme[1][0] }, elems)
             )
+            // group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
         ])
     )
 }
@@ -83,7 +83,10 @@ window['exportSVG'] = () => {
                 },
                 group({}, [
                     rect(SIZE, { fill: STATE.theme[1][0] }),
-                    ...groupedElems.map((elems) => group({}, elems))
+                    ...STATE.groupedElems.map((elems) =>
+                        group({ fill: STATE.theme[1][1] }, elems)
+                    ),
+                    group({ stroke: STATE.theme[1][1] }, STATE.edMeta)
                 ])
             )
         )

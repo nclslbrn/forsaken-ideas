@@ -44,7 +44,17 @@ const iterMenu = (ITER_LIST, STATE) => {
 
                     tr({}, td({}, 'Rule'), td({}, STATE.rule)),
 
-                    tr({}, td({}, 'Pattern'), td({}, STATE.pattern.type))
+                    tr({}, td({}, 'Pattern'), td({}, STATE.pattern.type)),
+
+                    tr(
+                        {},
+                        td({}, 'Dupplicated'),
+                        td({}, STATE.areCellsDupplicated ? 'Y' : 'N')
+                    ),
+
+                    tr({}, td({}, 'Rotation'), td({}, STATE.rotation)),
+
+                    tr({}, td({}, 'Skew'), td({}, STATE.skewType))
                 )
             ),
             para(null, 'SEEDS'),
