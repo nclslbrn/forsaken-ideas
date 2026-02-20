@@ -21,17 +21,15 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
-    CUSTOM_FORMAT = quantity([50, 50], 'cm'),
-    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
+    // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(120, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     ITER_LIST = document.createElement('div')
 
-let seed,
-    STATE,
-    groupedElems = []
+let seed, STATE
 
 const init = async () => {
     if (!seed) return
@@ -52,9 +50,7 @@ const init = async () => {
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            ...groupedElems.map((elems, i) =>
-                group({ stroke: theme[1][0] }, elems)
-            )
+            ...groupedElems
             // group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
         ])
     )
@@ -83,10 +79,9 @@ window['exportSVG'] = () => {
                 },
                 group({}, [
                     rect(SIZE, { fill: STATE.theme[1][0] }),
-                    ...STATE.groupedElems.map((elems) =>
-                        group({ fill: STATE.theme[1][1] }, elems)
-                    ),
-                    group({ stroke: STATE.theme[1][1] }, STATE.edMeta)
+                    ...STATE.groupedElems.map((elems, i) =>
+                        group({ stroke: STATE.theme[1][0] }, elems)
+                    )
                 ])
             )
         )

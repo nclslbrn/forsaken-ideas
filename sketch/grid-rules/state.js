@@ -135,21 +135,20 @@ const resolveState = (config) =>
                                     ...hashes(
                                         scaledCell,
                                         RND.minmaxInt(0, 3),
-                                        10
+                                        5
                                     ).map((line) => polyline(line))
                                 ]
                             }, [])
                         ),
                         mat.concat(
                             [],
-
-                            mat[skewType](null, skewAngles[i]),
-
                             mat.scale23(null, [0.5, 0.5]),
-                            mat.translation23(null, [width * 0.5, height * 0.5])
-
+                            mat.translation23(null, [
+                                width * 0.5,
+                                height * 0.5
+                            ]),
+                            mat[skewType](null, skewAngles[i])
                             // mat.rotation23(null, rotation)
-
                             //mat.translation23(null, [width / 2, height / 2])
                         )
                     )
