@@ -1,6 +1,6 @@
 import { resolve } from '@thi.ng/resolve-map'
 import { pickRandom, SFC32 } from '@thi.ng/random'
-import { polyline, transform, group } from '@thi.ng/geom'
+import { polyline, transform, group, rect } from '@thi.ng/geom'
 import * as mat from '@thi.ng/matrices'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
@@ -27,8 +27,8 @@ const BASE = (config) => {
             areCellsDupplicated: () => RND.float() > 0.75,
 
             gridSize: () => [
-                6 + ceil(RND.float() * 16),
-                8 + ceil(RND.float() * 16)
+                6 + ceil(RND.float() * 8),
+                8 + ceil(RND.float() * 8)
             ],
 
             ruleIdx: () => floor(RULES.length * RND.float()),
@@ -128,15 +128,23 @@ const resolveState = (config) =>
                                     w * width,
                                     h * height
                                 ]
-                                console.log(i, lines.length)
 
                                 return [
                                     ...lines,
-                                    ...hashes(
-                                        scaledCell,
-                                        RND.minmaxInt(0, 3),
-                                        5
-                                    ).map((line) => polyline(line))
+                                    transform(
+                                        group(
+                                            {},
+                                            hashes(
+                                                scaledCell,
+                                                RND.minmaxInt(0, 3),
+                                                RND.minmaxInt(1, 3) * 8
+                                            ).map((line) => polyline(line))
+                                        ),
+                                        mat[skewType](
+                                            null,
+                                            j % 4 === 0 ? skewAngles[j % 2] : 0
+                                        )
+                                    )
                                 ]
                             }, [])
                         ),
