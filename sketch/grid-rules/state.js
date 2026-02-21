@@ -1,6 +1,6 @@
 import { resolve } from '@thi.ng/resolve-map'
 import { pickRandom, SFC32 } from '@thi.ng/random'
-import { polyline, transform, group, rect } from '@thi.ng/geom'
+import { polyline, transform, group, rect, bounds } from '@thi.ng/geom'
 import * as mat from '@thi.ng/matrices'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
@@ -106,12 +106,12 @@ const resolveState = (config) =>
             skewAngles: ({ patternCells }) =>
                 patternCells.map((_, i) => (Math.PI / 8) * (i % 2 ? -1 : 1)),
 
-            groupedElems: ({
+            hashes: ({
                 patternCells,
-                skewType,
                 width,
                 height,
                 skewAngles,
+                skewType,
                 theme,
                 RND
             }) =>
@@ -140,6 +140,7 @@ const resolveState = (config) =>
                                                 RND.minmaxInt(1, 3) * 8
                                             ).map((line) => polyline(line))
                                         ),
+
                                         mat[skewType](
                                             null,
                                             j % 4 === 0 ? skewAngles[j % 2] : 0
@@ -148,15 +149,36 @@ const resolveState = (config) =>
                                 ]
                             }, [])
                         ),
+                        mat[skewType](null, skewAngles[i])
+                    )
+                ),
+
+            compBounds: ({ hashes }) => bounds(group({}, hashes)),
+
+            groupedElems: ({
+                hashes,
+                compBounds,
+                skewType,
+                width,
+                height,
+                skewAngles
+            }) =>
+                hashes.map((group, i) =>
+                    transform(
+                        group,
                         mat.concat(
                             [],
+                            mat.fit23(
+                                null,
+                                compBounds.pos,
+                                compBounds.size,
+                                [0, 0],
+                                [width, height]
+                            ),
+
                             mat.scale23(null, [0.5, 0.5]),
-                            mat.translation23(null, [
-                                width * 0.5,
-                                height * 0.5
-                            ]),
-                            mat[skewType](null, skewAngles[i])
-                            // mat.rotation23(null, rotation)
+                            mat.translation23(null, [width * 0.5, height * 0.5])
+
                             //mat.translation23(null, [width / 2, height / 2])
                         )
                     )
