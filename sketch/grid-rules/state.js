@@ -118,7 +118,9 @@ const resolveState = (config) =>
                 patternCells.map((layer, i) =>
                     transform(
                         group(
-                            { stroke: theme[1][2] },
+                            {
+                                stroke: theme[1][(i + 1) % theme[1].length]
+                            },
                             layer.reduce((lines, cell, j) => {
                                 // Scale cell dimensions first before generating hashes
                                 const [x, y, w, h] = cell
@@ -137,7 +139,7 @@ const resolveState = (config) =>
                                             hashes(
                                                 scaledCell,
                                                 RND.minmaxInt(0, 3),
-                                                RND.minmaxInt(1, 3) * 8
+                                                RND.minmaxInt(1, 3) * 4
                                             ).map((line) => polyline(line))
                                         ),
 
@@ -168,6 +170,7 @@ const resolveState = (config) =>
                         group,
                         mat.concat(
                             [],
+                            /*
                             mat.fit23(
                                 null,
                                 compBounds.pos,
@@ -175,11 +178,11 @@ const resolveState = (config) =>
                                 [0, 0],
                                 [width, height]
                             ),
-
+                            */
                             mat.scale23(null, [0.5, 0.5]),
-                            mat.translation23(null, [width * 0.5, height * 0.5])
+                            mat.translation23(null, [width / 2, height / 2])
 
-                            //mat.translation23(null, [width / 2, height / 2])
+                            // mat.translation23(null, [width * 0.33, height * 0.33])
                         )
                     )
                 ),

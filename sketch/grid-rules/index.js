@@ -51,7 +51,7 @@ const init = async () => {
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
             ...groupedElems
-            // group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
+            //group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
         ])
     )
 }
