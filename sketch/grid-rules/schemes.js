@@ -8,9 +8,9 @@ const SCHEMES = [
     ['nord', nord.split(';:')],
     ['everforest', frst.split(';:')],
     ['capputccin', cptc.split(';:')],
-    ['matcha', mtch.split(';:')]
-    //['mono light', monoLight.split(';:')],
-    //['mono dark', monoDark.split(';:')]
+    ['matcha', mtch.split(';:')],
+    ['mono light', monoLight.split(';:')],
+    ['mono dark', monoDark.split(';:')]
 ]
 
 export default SCHEMES

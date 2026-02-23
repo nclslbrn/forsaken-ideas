@@ -1,6 +1,7 @@
 import { resolve } from '@thi.ng/resolve-map'
 import { pickRandom, SFC32 } from '@thi.ng/random'
-import { polyline, transform, group, rect, bounds } from '@thi.ng/geom'
+import { polyline, transform, group, bounds } from '@thi.ng/geom'
+import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import * as mat from '@thi.ng/matrices'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
@@ -22,13 +23,29 @@ const BASE = (config) => {
 
             RND,
 
-            theme: () => pickRandom(SCHEMES, RND),
+            theme: () => {
+                const [themeName, colors] = structuredClone(
+                    pickRandom(SCHEMES, RND)
+                )
+                const bgColor = colors.shift()
+                return [
+                    themeName,
+                    [bgColor, ...colors.sort(() => RND.float() > 0.5)]
+                ]
+            },
 
             areCellsDupplicated: () => RND.float() > 0.75,
 
             gridSize: () => [
                 6 + ceil(RND.float() * 8),
                 8 + ceil(RND.float() * 8)
+            ],
+
+            cropPoly: ({ margin, width, height }) => [
+                [margin, margin],
+                [width - margin, margin],
+                [width - margin, height - margin],
+                [margin, height - margin]
             ],
 
             ruleIdx: () => floor(RULES.length * RND.float()),
@@ -119,7 +136,8 @@ const resolveState = (config) =>
                     transform(
                         group(
                             {
-                                stroke: theme[1][(i + 1) % theme[1].length]
+                                stroke: theme[1][(i + 1) % theme[1].length],
+                                weight: 3
                             },
                             layer.reduce((lines, cell, j) => {
                                 // Scale cell dimensions first before generating hashes
@@ -133,21 +151,26 @@ const resolveState = (config) =>
 
                                 return [
                                     ...lines,
-                                    transform(
+                                    ...transform(
                                         group(
                                             {},
                                             hashes(
                                                 scaledCell,
                                                 RND.minmaxInt(0, 3),
-                                                RND.minmaxInt(1, 3) * 4
+                                                RND.minmaxInt(1, 3) * 8
                                             ).map((line) => polyline(line))
                                         ),
-
-                                        mat[skewType](
-                                            null,
-                                            j % 4 === 0 ? skewAngles[j % 2] : 0
+                                        mat.concat(
+                                            [],
+                                            mat[skewType](
+                                                null,
+                                                j % 4 === 0
+                                                    ? skewAngles[j % 2]
+                                                    : 0
+                                            ),
+                                            mat.scale23(null, [1.15, 1.15])
                                         )
-                                    )
+                                    ).children
                                 ]
                             }, [])
                         ),
@@ -157,35 +180,34 @@ const resolveState = (config) =>
 
             compBounds: ({ hashes }) => bounds(group({}, hashes)),
 
-            groupedElems: ({
-                hashes,
-                compBounds,
-                skewType,
-                width,
-                height,
-                skewAngles
-            }) =>
-                hashes.map((group, i) =>
-                    transform(
-                        group,
-                        mat.concat(
-                            [],
-                            /*
-                            mat.fit23(
-                                null,
-                                compBounds.pos,
-                                compBounds.size,
-                                [0, 0],
-                                [width, height]
-                            ),
-                            */
-                            mat.scale23(null, [0.5, 0.5]),
-                            mat.translation23(null, [width / 2, height / 2])
-
-                            // mat.translation23(null, [width * 0.33, height * 0.33])
+            groupedElems: ({ hashes, cropPoly, width, height, skewAngles }) =>
+                hashes
+                    /*
+                    .map((group, i) =>
+                        transform(
+                            group,
+                            mat.concat(
+                                [],
+                                mat.scale23(null, [0.5, 0.5]),
+                                mat.translation23(null, [width / 2, height / 2])
+                                // mat.translation23(null, [width * 0.33, height * 0.33])
+                            )
                         )
-                    )
-                ),
+                    )*/
+                    .map((hashGroup) =>
+                        group(
+                            hashGroup.attribs,
+                            hashGroup.children.reduce(
+                                (crp, l) => [
+                                    ...crp,
+                                    ...clipPolylinePoly(l.points, cropPoly).map(
+                                        (pts) => polyline(pts)
+                                    )
+                                ],
+                                []
+                            )
+                        )
+                    ),
 
             edMeta: ({ rule, margin: m, width: w, height: h }) => {
                 const { vectors, height: txtHeight } = getParagraphVector(

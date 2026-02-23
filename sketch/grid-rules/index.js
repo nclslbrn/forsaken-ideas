@@ -2,13 +2,13 @@
 // import '../framed-canvas.css'
 
 import './style.css'
-import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
+import { rect, group, svgDoc, asSvg, polyline } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, cm, dpi, DIN_A3 } from '@thi.ng/units'
 import {
     getRandSeed,
     saveSeed,
@@ -21,9 +21,9 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
-    // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
-    SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(120, mm), DPI), NONE),
+    CUSTOM_FORMAT = quantity([50, 50], 'cm'),
+    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
+    MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
@@ -44,12 +44,13 @@ const init = async () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const { theme, groupedElems, edMeta } = STATE
+    const { theme, groupedElems, edMeta, cropPoly } = STATE
 
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
+            polyline(...cropPoly, { stroke: 'tomato' }),
             ...groupedElems
             //group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
         ])
