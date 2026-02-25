@@ -11,9 +11,6 @@ import { getParagraphVector } from '@nclslbrn/plot-writer'
 import hashes from './hashes'
 const { floor, ceil } = Math
 
-const remap = (n, start1, stop1, start2, stop2) =>
-    ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2
-
 const BASE = (config) => {
     const RND = new SFC32(seedFromHash(config.seed))
 
@@ -137,7 +134,7 @@ const resolveState = (config) =>
                         group(
                             {
                                 stroke: theme[1][(i + 1) % theme[1].length],
-                                weight: 3
+                                weight: 1
                             },
                             layer.reduce((lines, cell, j) => {
                                 // Scale cell dimensions first before generating hashes
@@ -182,18 +179,20 @@ const resolveState = (config) =>
 
             groupedElems: ({ hashes, cropPoly, width, height, skewAngles }) =>
                 hashes
-                    /*
                     .map((group, i) =>
                         transform(
                             group,
                             mat.concat(
                                 [],
-                                mat.scale23(null, [0.5, 0.5]),
-                                mat.translation23(null, [width / 2, height / 2])
+                                mat.scale23(null, [0.7, 0.7]),
+                                mat.translation23(null, [
+                                    width * 0.15,
+                                    height * 0.15
+                                ])
                                 // mat.translation23(null, [width * 0.33, height * 0.33])
                             )
                         )
-                    )*/
+                    )
                     .map((hashGroup) =>
                         group(
                             hashGroup.attribs,
@@ -209,28 +208,51 @@ const resolveState = (config) =>
                         )
                     ),
 
-            edMeta: ({ rule, margin: m, width: w, height: h }) => {
-                const { vectors, height: txtHeight } = getParagraphVector(
-                    rule.toString(),
-                    48,
+            edMeta: ({ seed, rule, margin: m, width: w, height: h }) => {
+                const { vectors: seedV } = getParagraphVector(
+                    seed,
+                    72,
                     0,
-                    7,
+                    0.5,
                     [1, 0.6]
                 )
-                return vectors.reduce(
-                    (acc, glyph) => [
-                        ...acc,
-                        ...glyph.map((line) =>
-                            polyline(
-                                line.map(([x, y]) => [
-                                    m * 0.5 + x * w * 0.1,
-                                    h - m * 0.5 + y * h * 0.1
-                                ])
-                            )
-                        )
-                    ],
-                    []
+                const { vectors: ruleV } = getParagraphVector(
+                    rule.toString(),
+                    72,
+                    0,
+                    0.5,
+                    [1, 0.6]
                 )
+                return [
+                    ...seedV.reduce(
+                        (acc, glyph) => [
+                            ...acc,
+                            ...glyph.map((line) =>
+                                polyline(
+                                    line.map(([x, y]) => [
+                                        m + x * w,
+                                        h - m * 0.8 + y * h
+                                    ])
+                                )
+                            )
+                        ],
+                        []
+                    ),
+                    ...ruleV.reduce(
+                        (acc, glyph, i) => [
+                            ...acc,
+                            ...glyph.map((line) =>
+                                polyline(
+                                    line.map(([x, y]) => [
+                                        m - (glyph.length - i) + x * w,
+                                        h - m * 0.8 + y * h
+                                    ])
+                                )
+                            )
+                        ],
+                        []
+                    )
+                ]
             }
         },
         { onlyFnRefs: true }

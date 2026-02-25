@@ -14,7 +14,7 @@ import {
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
-import { getParagraphPath } from '@nclslbrn/plot-writer'
+
 // import { scribbleLine } from './scribbleLine'
 
 import { iterMenu } from './iter-menu'
@@ -50,9 +50,8 @@ const init = async () => {
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            polyline(...cropPoly, { stroke: 'tomato' }),
             ...groupedElems
-            //group({ stroke: theme[1][1], fill: '#00000000', weight: 2 }, edMeta)
+            //group({stroke: theme[1][1], fill: '#00000000'}, edMeta)
         ])
     )
 }
