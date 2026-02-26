@@ -21,8 +21,8 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
-    CUSTOM_FORMAT = quantity([50, 50], 'cm'),
-    SIZE = mul(CUSTOM_FORMAT, DPI).deref(),
+    // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
