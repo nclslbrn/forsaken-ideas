@@ -47,7 +47,7 @@ const BASE = (config) => {
 
             ruleIdx: () => floor(RULES.length * RND.float()),
 
-            // rotation: () => (Math.PI * RND.minmaxInt(-4, 4)) / 8,
+            rotation: () => (Math.PI * RND.minmaxInt(-4, 4)) / 8,
 
             skewType: () => pickRandom(['skewY23', 'skewX23'], RND),
 
@@ -177,13 +177,31 @@ const resolveState = (config) =>
 
             compBounds: ({ hashes }) => bounds(group({}, hashes)),
 
-            groupedElems: ({ hashes, cropPoly, width, height, skewAngles }) =>
+            groupedElems: ({
+                hashes,
+                cropPoly,
+                width,
+                height,
+                skewAngles,
+                rotation
+            }) =>
                 hashes
                     .map((group, i) =>
                         transform(
                             group,
                             mat.concat(
                                 [],
+
+                                mat.translation23(null, [
+                                    width * 0.5,
+                                    height * 0.5
+                                ]),
+                                mat.rotation23(null, rotation),
+
+                                mat.translation23(null, [
+                                    -width * 0.5,
+                                    -height * 0.5
+                                ]),
                                 mat.scale23(null, [0.7, 0.7]),
                                 mat.translation23(null, [
                                     width * 0.15,
