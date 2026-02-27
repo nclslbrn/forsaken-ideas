@@ -7,6 +7,7 @@ import RULES from './RULES'
 import GRIDS from './GRIDS'
 import SCHEMES from './schemes'
 import { seedFromHash } from './seed-from-hash'
+import { cartelCells, cartelContent } from './cartel'
 import { getParagraphVector } from '@nclslbrn/plot-writer'
 import hashes from './hashes'
 const { floor, ceil } = Math
@@ -34,22 +35,20 @@ const BASE = (config) => {
             areCellsDupplicated: () => RND.float() > 0.75,
 
             gridSize: () => [
-                6 + ceil(RND.float() * 8),
-                8 + ceil(RND.float() * 8)
+                2 + ceil(RND.float() * 4),
+                2 + ceil(RND.float() * 4)
             ],
 
             cropPoly: ({ margin, width, height }) => [
                 [margin, margin],
                 [width - margin, margin],
-                [width - margin, height - margin],
-                [margin, height - margin]
+                [width - margin, height - margin * 2],
+                [margin, height - margin * 2]
             ],
 
             ruleIdx: () => floor(RULES.length * RND.float()),
 
             rotation: () => (Math.PI * RND.minmaxInt(-4, 4)) / 8,
-
-            skewType: () => pickRandom(['skewY23', 'skewX23'], RND),
 
             cells:
                 () =>
@@ -117,24 +116,20 @@ const resolveState = (config) =>
                 return cells
             },
 
-            skewAngles: ({ patternCells }) =>
-                patternCells.map((_, i) => (Math.PI / 8) * (i % 2 ? -1 : 1)),
+            skew: ({ patternCells, RND }) => ({
+                type: pickRandom(['skewY23', 'skewX23'], RND),
+                angle: patternCells.map(
+                    (_, i) => (Math.PI / 8) * (i % 2 ? -1 : 1)
+                )
+            }),
 
-            hashes: ({
-                patternCells,
-                width,
-                height,
-                skewAngles,
-                skewType,
-                theme,
-                RND
-            }) =>
+            hashes: ({ patternCells, width, height, skew, theme, RND }) =>
                 patternCells.map((layer, i) =>
                     transform(
                         group(
                             {
                                 stroke: theme[1][(i + 1) % theme[1].length],
-                                weight: 1
+                                weight: 3
                             },
                             layer.reduce((lines, cell, j) => {
                                 // Scale cell dimensions first before generating hashes
@@ -159,10 +154,10 @@ const resolveState = (config) =>
                                         ),
                                         mat.concat(
                                             [],
-                                            mat[skewType](
+                                            mat[skew.type](
                                                 null,
                                                 j % 4 === 0
-                                                    ? skewAngles[j % 2]
+                                                    ? skew.angle[j % 2]
                                                     : 0
                                             ),
                                             mat.scale23(null, [1.15, 1.15])
@@ -171,20 +166,11 @@ const resolveState = (config) =>
                                 ]
                             }, [])
                         ),
-                        mat[skewType](null, skewAngles[i])
+                        mat[skew.type](null, skew.angle[i])
                     )
                 ),
 
-            compBounds: ({ hashes }) => bounds(group({}, hashes)),
-
-            groupedElems: ({
-                hashes,
-                cropPoly,
-                width,
-                height,
-                skewAngles,
-                rotation
-            }) =>
+            groupedElems: ({ hashes, cropPoly, width, height, rotation }) =>
                 hashes
                     .map((group, i) =>
                         transform(
@@ -226,6 +212,14 @@ const resolveState = (config) =>
                         )
                     ),
 
+            cartel: ({ width, height, margin }) =>
+                cartelCells([
+                    margin,
+                    height - margin * 1.66,
+                    width - margin * 2,
+                    margin
+                ])
+            /*
             edMeta: ({ seed, rule, margin: m, width: w, height: h }) => {
                 const { vectors: seedV } = getParagraphVector(
                     seed,
@@ -236,10 +230,10 @@ const resolveState = (config) =>
                 )
                 const { vectors: ruleV } = getParagraphVector(
                     rule.toString(),
-                    72,
+                    128,
                     0,
                     0.5,
-                    [1, 0.6]
+                    [1, 0.4]
                 )
                 return [
                     ...seedV.reduce(
@@ -262,7 +256,7 @@ const resolveState = (config) =>
                             ...glyph.map((line) =>
                                 polyline(
                                     line.map(([x, y]) => [
-                                        m - (glyph.length - i) + x * w,
+                                        w * 0.5 - (glyph.length - i) + x * w,
                                         h - m * 0.8 + y * h
                                     ])
                                 )
@@ -270,8 +264,10 @@ const resolveState = (config) =>
                         ],
                         []
                     )
+
                 ]
             }
+            */
         },
         { onlyFnRefs: true }
     )

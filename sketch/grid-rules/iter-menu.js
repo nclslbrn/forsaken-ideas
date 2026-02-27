@@ -54,7 +54,11 @@ const iterMenu = (ITER_LIST, STATE) => {
 
                     tr({}, td({}, 'Rotation'), td({}, STATE.rotation)),
 
-                    tr({}, td({}, 'Skew'), td({}, STATE.skewType))
+                    tr(
+                        {},
+                        td({}, 'Skew'),
+                        td({}, STATE.skew.type, STATE.skew.angle.join(', '))
+                    )
                 )
             ),
             para(null, 'SEEDS'),

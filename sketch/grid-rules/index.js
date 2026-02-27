@@ -14,6 +14,7 @@ import {
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
+import { cartelContent } from './cartel'
 
 // import { scribbleLine } from './scribbleLine'
 
@@ -21,6 +22,7 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
+    // F_9_16 = quantity([60.7, 108], cm),
     // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
     SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
@@ -40,19 +42,54 @@ const init = async () => {
         margin: MARGIN,
         seed
     })
-    console.log(STATE)
+    // console.log(STATE)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const { theme, groupedElems, edMeta, cropPoly } = STATE
+    const { theme, groupedElems, cartel } = STATE
+    const [
+        pattern, 
+        rule, 
+        gridSize, 
+        rotation, 
+        skew, 
+        areCellsDupplicated
+        ] = cartel.map(([param, cell], i) => 
+            cartelContent(STATE[param], cell, i)
+        )
 
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            ...groupedElems
-            //group({stroke: theme[1][1], fill: '#00000000'}, edMeta)
-        ])
+            ...groupedElems,
+            group({ stroke: theme[1][1] }, 
+                [
+                    ...pattern,
+                    ...gridSize,
+                    /*
+                    ...cartel.map(([__dirname, cell]) => 
+                        rect([cell[0], cell[1]], [cell[2], cell[3]])
+                    )
+                    */
+                ]
+            ),
+            group(
+                {
+                    font: `14px monospace`,
+                    align: 'center',
+                    baseline: 'middle',
+                    fill: theme[1][1]
+                },
+                [
+                    rule,
+                    rotation,
+                    skew,
+                    areCellsDupplicated
+                ]
+            )
+        ]),
+        
     )
 }
 
@@ -68,6 +105,16 @@ window['exportJPG'] = () => {
 }
 
 window['exportSVG'] = () => {
+     const [
+        pattern, 
+        rule, 
+        gridSize, 
+        rotation, 
+        skew, 
+        areCellsDupplicated
+        ] = STATE.cartel.map(([param, cell], i) => 
+            cartelContent(STATE[param], cell, i)
+        )
     downloadWithMime(
         `Grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
@@ -79,8 +126,31 @@ window['exportSVG'] = () => {
                 },
                 group({}, [
                     rect(SIZE, { fill: STATE.theme[1][0] }),
-                    ...STATE.groupedElems.map((elems, i) =>
-                        group({ stroke: STATE.theme[1][0] }, elems)
+                    ...STATE.groupedElems,
+                    group({ stroke: STATE.theme[1][1] }, 
+                        [
+                            ...pattern,
+                            ...gridSize,
+                            /*
+                            ...cartel.map(([__dirname, cell]) => 
+                                rect([cell[0], cell[1]], [cell[2], cell[3]])
+                            )
+                            */
+                        ]
+                    ),
+                    group(
+                        {
+                            font: `14px monospace`,
+                            align: 'center',
+                            baseline: 'middle',
+                            fill: STATE.theme[1][1]
+                        },
+                        [
+                            rule,
+                            rotation,
+                            skew,
+                            areCellsDupplicated
+                        ]
                     )
                 ])
             )

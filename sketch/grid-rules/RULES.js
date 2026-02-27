@@ -57,10 +57,8 @@ export default [
     // Bit manipulation artistry
     (i, j) => ((i << 1) | (j >> 1)) % 5 > ((j << 1) | (i >> 1)) % 3,
     (i, j) => ((i & 0xa) ^ (j & 0xc)) !== 0,
-    (i, j) =>
-        (i.toString(2).split('1').length + j.toString(2).split('1').length) %
-            3 >
-        0,
+    // prettier-ignore
+    (i, j) => (i.toString(2).split('1').length + j.toString(2).split('1').length) % 3 > 0,
 
     // Cellular automata inspired
     (i, j) => ((i + j) % 3 === 0) !== ((i * j) % 5 === 0),
