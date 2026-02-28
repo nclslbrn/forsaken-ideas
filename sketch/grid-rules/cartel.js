@@ -1,5 +1,5 @@
-// import { getParagraphVector } from '@nclslbrn/plot-writer'
-import { rect, text } from '@thi.ng/geom'
+import { getParagraphVector } from '@nclslbrn/plot-writer'
+import { rect, text, polyline } from '@thi.ng/geom'
 /*
   Return an array of[x, y, width, heigth] cells
 
@@ -21,12 +21,7 @@ const cartelCells = ([xPos, yPos, width, height]) => {
         for (let x = 0; x < 3; x++) {
             comp.push([
                 traits[y][x],
-                [
-                    dx, 
-                    dy, 
-                    cellWidths[x] * width, 
-                    cellHeights[y] * height
-                ]
+                [dx, dy, cellWidths[x] * width, cellHeights[y] * height]
             ])
             dx += cellWidths[x] * width
         }
@@ -35,13 +30,26 @@ const cartelCells = ([xPos, yPos, width, height]) => {
     return comp
 }
 
+// draw text with plotterWritter
+const plotterWriterHelper = (text, [cellX, cellY, cellW, cellH]) => {
+    const glyphs = getParagraphVector(text, 64, 0, 460, [1, 0.4])
+    return glyphs.vectors.reduce(
+        (acc, glyph, i) => [
+            ...acc,
+            ...glyph.map((line) =>
+                polyline(line.map(([x, y]) => [cellX + x, cellY + y]))
+            )
+        ],
+        []
+    )
+}
 /*
   Returns Hicup elem (rect, polyline) from stateParam and cartel cell
 
   @param {String|Array|Object|Number} trait - the parameter (value) to draw
   @param {Array} cell - cartel cell [x pos, y pos, width, height]
-  @param {number} i - parameter and cell index 
-  
+  @param {number} i - parameter and cell index
+
   @returns an array or a single Hicup element
 */
 const cartelContent = (trait, cell, i, color) => {
@@ -60,7 +68,12 @@ const cartelContent = (trait, cell, i, color) => {
 
         // rule
         case 1:
-            return text([cellX + cellW/2, cellY + cellH/2], trait.toString())
+            return plotterWriterHelper(trait.toString(), [
+                cellX,
+                cellY,
+                cellW,
+                cellH
+            ])
 
         // cols x rows
         case 2:
@@ -86,38 +99,29 @@ const cartelContent = (trait, cell, i, color) => {
 
         // rotation
         case 3:
-            return text([cellX + cellW/2, cellY + cellH/2], trait.toFixed(3).toString())
+            return plotterWriterHelper(trait.toFixed(3).toString(), [
+                cellX,
+                cellY,
+                cellW,
+                cellH
+            ])
 
         // skew
         case 4:
-            return text([cellX + cellW/2, cellY + cellH/2], `${trait.type} [${trait.angle.map(x => x.toFixed(2))}]`)
+            return plotterWriterHelper(
+                `${trait.type} [${trait.angle.map((x) => x.toFixed(2))}]`,
+                [cellX, cellY, cellW, cellH]
+            )
 
         // cell dupplicated
         case 5:
-            return text([cellX + cellW/2, cellY + cellH/2], trait ? 'Dupplicated' : 'Separated')
+            return plotterWriterHelper(trait ? 'Dupplicated' : 'Separated', [
+                cellX,
+                cellY,
+                cellW,
+                cellH
+            ])
     }
 }
- /* 
-    draw text with plotterWritter 
-    return getParagraphVector(
-        trait.toString(),
-        128,
-        0,
-        0.5,
-        [0.4, 1]
-    ).reduce(
-        (acc, glyph, i) => [
-            ...acc,
-            ...glyph.map((line) =>
-                polyline(
-                    line.map(([x, y]) => [
-                        cellX + x * cellW,
-                        cellY + y * cellH
-                    ])
-                )
-            )
-        ],
-        []
-    )
-*/
+
 export { cartelCells, cartelContent }

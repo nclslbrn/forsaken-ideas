@@ -47,49 +47,30 @@ const init = async () => {
     CANVAS.height = SIZE[1]
 
     const { theme, groupedElems, cartel } = STATE
-    const [
-        pattern, 
-        rule, 
-        gridSize, 
-        rotation, 
-        skew, 
-        areCellsDupplicated
-        ] = cartel.map(([param, cell], i) => 
-            cartelContent(STATE[param], cell, i)
-        )
+    const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
+        cartel.map(([param, cell], i) => cartelContent(STATE[param], cell, i))
 
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
             ...groupedElems,
-            group({ stroke: theme[1][1] }, 
-                [
-                    ...pattern,
-                    ...gridSize,
-                    /*
-                    ...cartel.map(([__dirname, cell]) => 
+            group({ stroke: theme[1][1] }, [
+                ...pattern,
+                ...gridSize
+                /*
+                    ...cartel.map(([__dirname, cell]) =>
                         rect([cell[0], cell[1]], [cell[2], cell[3]])
                     )
                     */
-                ]
-            ),
+            ]),
             group(
                 {
-                    font: `14px monospace`,
-                    align: 'center',
-                    baseline: 'middle',
-                    fill: theme[1][1]
+                    stroke: theme[1][1]
                 },
-                [
-                    rule,
-                    rotation,
-                    skew,
-                    areCellsDupplicated
-                ]
+                [...rule, ...rotation, ...skew, ...areCellsDupplicated]
             )
-        ]),
-        
+        ])
     )
 }
 
@@ -105,14 +86,8 @@ window['exportJPG'] = () => {
 }
 
 window['exportSVG'] = () => {
-     const [
-        pattern, 
-        rule, 
-        gridSize, 
-        rotation, 
-        skew, 
-        areCellsDupplicated
-        ] = STATE.cartel.map(([param, cell], i) => 
+    const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
+        STATE.cartel.map(([param, cell], i) =>
             cartelContent(STATE[param], cell, i)
         )
     downloadWithMime(
@@ -127,17 +102,15 @@ window['exportSVG'] = () => {
                 group({}, [
                     rect(SIZE, { fill: STATE.theme[1][0] }),
                     ...STATE.groupedElems,
-                    group({ stroke: STATE.theme[1][1] }, 
-                        [
-                            ...pattern,
-                            ...gridSize,
-                            /*
-                            ...cartel.map(([__dirname, cell]) => 
+                    group({ stroke: STATE.theme[1][1] }, [
+                        ...pattern,
+                        ...gridSize
+                        /*
+                            ...cartel.map(([__dirname, cell]) =>
                                 rect([cell[0], cell[1]], [cell[2], cell[3]])
                             )
                             */
-                        ]
-                    ),
+                    ]),
                     group(
                         {
                             font: `14px monospace`,
@@ -145,12 +118,7 @@ window['exportSVG'] = () => {
                             baseline: 'middle',
                             fill: STATE.theme[1][1]
                         },
-                        [
-                            rule,
-                            rotation,
-                            skew,
-                            areCellsDupplicated
-                        ]
+                        [rule, rotation, skew, areCellsDupplicated]
                     )
                 ])
             )
