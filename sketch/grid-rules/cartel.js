@@ -1,11 +1,14 @@
-import { getParagraphVector } from '@nclslbrn/plot-writer'
-import { rect, text, polyline } from '@thi.ng/geom'
+import { textToStrokes } from './font'
+import { rect, transform, line, circle } from '@thi.ng/geom'
+import * as mat from '@thi.ng/matrices'
 /*
   Return an array of[x, y, width, heigth] cells
 
   @param {Array} - cell define the position of the cartel [x, y, width, height]
   @returns {array} - cells defines each cell in cartel
 */
+const margin = 8
+
 const cartelCells = ([xPos, yPos, width, height]) => {
     const cellWidths = [0.2, 0.6, 0.2]
     const cellHeights = [0.8, 0.2]
@@ -21,7 +24,12 @@ const cartelCells = ([xPos, yPos, width, height]) => {
         for (let x = 0; x < 3; x++) {
             comp.push([
                 traits[y][x],
-                [dx, dy, cellWidths[x] * width, cellHeights[y] * height]
+                [
+                    dx + margin,
+                    dy,
+                    cellWidths[x] * width - margin,
+                    cellHeights[y] * height - margin * 2
+                ]
             ])
             dx += cellWidths[x] * width
         }
@@ -30,19 +38,6 @@ const cartelCells = ([xPos, yPos, width, height]) => {
     return comp
 }
 
-// draw text with plotterWritter
-const plotterWriterHelper = (text, [cellX, cellY, cellW, cellH]) => {
-    const glyphs = getParagraphVector(text, 64, 0, 460, [1, 0.4])
-    return glyphs.vectors.reduce(
-        (acc, glyph, i) => [
-            ...acc,
-            ...glyph.map((line) =>
-                polyline(line.map(([x, y]) => [cellX + x, cellY + y]))
-            )
-        ],
-        []
-    )
-}
 /*
   Returns Hicup elem (rect, polyline) from stateParam and cartel cell
 
@@ -52,10 +47,10 @@ const plotterWriterHelper = (text, [cellX, cellY, cellW, cellH]) => {
 
   @returns an array or a single Hicup element
 */
-const cartelContent = (trait, cell, i, color) => {
+const cartelContent = (STATE, param, cell, i) => {
     const [cellX, cellY, cellW, cellH] = cell
-    const margin = 8
-
+    const trait = STATE[param]
+    const textOption = { size: 18, tracking: 0, lineHeight: 1.4 }
     switch (i) {
         // pattern
         case 0:
@@ -68,12 +63,11 @@ const cartelContent = (trait, cell, i, color) => {
 
         // rule
         case 1:
-            return plotterWriterHelper(trait.toString(), [
-                cellX,
-                cellY,
-                cellW,
-                cellH
-            ])
+            return textToStrokes(trait.toString(), {
+                ...textOption,
+                x: cellX + margin * 2,
+                y: cellY + margin
+            })
 
         // cols x rows
         case 2:
@@ -81,46 +75,153 @@ const cartelContent = (trait, cell, i, color) => {
                 (cellW - margin * trait[0]) / trait[0],
                 (cellH - margin * trait[1]) / trait[1]
             ]
-            const rects = []
+            const shapes = []
             for (let x = 0; x < trait[0]; x++) {
                 for (let y = 0; y < trait[1]; y++) {
-                    rects.push(
-                        rect(
-                            [
-                                cellX + margin * x + thumb[0] * x,
-                                cellY + margin * y + thumb[1] * y
-                            ],
-                            thumb
+                    if (STATE.rule(x, y)) {
+                        shapes.push(
+                            rect(
+                                [
+                                    margin + cellX + margin * x + thumb[0] * x,
+                                    margin + cellY + margin * y + thumb[1] * y
+                                ],
+                                thumb
+                            )
                         )
-                    )
+                    } else {
+                        shapes.push(
+                            ...[
+                                line(
+                                    [
+                                        margin +
+                                            cellX +
+                                            margin * x +
+                                            thumb[0] * x,
+                                        margin +
+                                            cellY +
+                                            margin * y +
+                                            thumb[1] * y
+                                    ],
+                                    [
+                                        margin +
+                                            cellX +
+                                            margin * x +
+                                            thumb[0] * (x + 1),
+                                        margin +
+                                            cellY +
+                                            margin * y +
+                                            thumb[1] * (y + 1)
+                                    ]
+                                ),
+                                line(
+                                    [
+                                        margin +
+                                            cellX +
+                                            margin * x +
+                                            thumb[0] * (x + 1),
+                                        margin +
+                                            cellY +
+                                            margin * y +
+                                            thumb[1] * y
+                                    ],
+                                    [
+                                        margin +
+                                            cellX +
+                                            margin * x +
+                                            thumb[0] * x,
+                                        margin +
+                                            cellY +
+                                            margin * y +
+                                            thumb[1] * (y + 1)
+                                    ]
+                                )
+                            ]
+                        )
+                    }
                 }
             }
-            return rects
+            return shapes
 
         // rotation
         case 3:
-            return plotterWriterHelper(trait.toFixed(3).toString(), [
-                cellX,
-                cellY,
-                cellW,
-                cellH
-            ])
+            return textToStrokes(trait.toFixed(3).toString(), {
+                ...textOption,
+                x: cellX + margin * 2,
+                y: cellY + margin
+            })
 
         // skew
         case 4:
-            return plotterWriterHelper(
-                `${trait.type} [${trait.angle.map((x) => x.toFixed(2))}]`,
-                [cellX, cellY, cellW, cellH]
-            )
+            return [
+                transform(
+                    rect([0, 0], [textOption.size, textOption.size], {
+                        fill: 'tomato'
+                    }),
+                    mat.concat(
+                        [],
+                        mat.translation23(null, [
+                            STATE.width / 2 + textOption.size / 2,
+                            STATE.height / 2 + textOption.size / 2
+                        ]),
+                        // mat.scale23(null, [0.5, 0.5]),
+                        mat[trait.type](null, trait.angle[0]),
+                        mat.translation23(null, [
+                            -STATE.width / 2 +
+                                cellX +
+                                margin * 2 -
+                                textOption.size / 2,
+                            -STATE.height / 2 +
+                                cellY +
+                                margin -
+                                textOption.size / 2
+                        ])
+                    )
+                ),
+                ...textToStrokes(
+                    `${trait.type} [${trait.angle.map((x) => x.toFixed(2))}]`,
+                    {
+                        ...textOption,
+                        x: cellX + margin * 2,
+                        y: cellY + margin
+                    }
+                )
+            ]
 
         // cell dupplicated
         case 5:
-            return plotterWriterHelper(trait ? 'Dupplicated' : 'Separated', [
-                cellX,
-                cellY,
-                cellW,
-                cellH
-            ])
+            return [
+                ...(trait
+                    ? [
+                          circle(
+                              [
+                                  cellX + margin * 2,
+                                  cellY + margin + textOption.size / 2
+                              ],
+                              textOption.size / 2
+                          ),
+                          circle(
+                              [
+                                  cellX + margin * 2 + textOption.size / 1.5,
+                                  cellY + margin + textOption.size / 2
+                              ],
+                              textOption.size / 2
+                          )
+                      ]
+                    : [
+                          circle(
+                              [
+                                  cellX + margin * 2,
+                                  cellY + margin + textOption.size / 2
+                              ],
+                              textOption.size / 2
+                          )
+                      ]),
+                ...textToStrokes(trait ? 'Dupplicated' : 'Separated', {
+                    ...textOption,
+                    x: cellX + margin * 2 + textOption.size * (trait ? 1.5 : 1),
+                    y: cellY + margin
+                })
+            ]
     }
 }
 

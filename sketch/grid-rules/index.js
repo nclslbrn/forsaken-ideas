@@ -2,7 +2,7 @@
 // import '../framed-canvas.css'
 
 import './style.css'
-import { rect, group, svgDoc, asSvg, polyline } from '@thi.ng/geom'
+import { rect, group, svgDoc, asSvg, polyline, line } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
@@ -23,6 +23,7 @@ import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
     // F_9_16 = quantity([60.7, 108], cm),
+    // IG_SQ = quantity([40, 40], cm),
     // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
     SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
@@ -45,10 +46,10 @@ const init = async () => {
     // console.log(STATE)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-
+    console.log(STATE)
     const { theme, groupedElems, cartel } = STATE
     const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
-        cartel.map(([param, cell], i) => cartelContent(STATE[param], cell, i))
+        cartel.map(([param, cell], i) => cartelContent(STATE, param, cell, i))
 
     draw(
         CTX,
@@ -57,19 +58,15 @@ const init = async () => {
             ...groupedElems,
             group({ stroke: theme[1][1] }, [
                 ...pattern,
-                ...gridSize
-                /*
-                    ...cartel.map(([__dirname, cell]) =>
-                        rect([cell[0], cell[1]], [cell[2], cell[3]])
-                    )
-                    */
-            ]),
-            group(
-                {
-                    stroke: theme[1][1]
-                },
-                [...rule, ...rotation, ...skew, ...areCellsDupplicated]
-            )
+                ...gridSize,
+                ...rule,
+                ...rotation,
+                ...skew,
+                ...areCellsDupplicated,
+                ...cartel.map(([__dirname, cell]) =>
+                    line([cell[0], cell[1]], [cell[0] + cell[2], cell[1]])
+                )
+            ])
         ])
     )
 }

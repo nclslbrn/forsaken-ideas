@@ -35,7 +35,7 @@ const BASE = (config) => {
             areCellsDupplicated: () => RND.float() > 0.75,
 
             gridSize: () => [
-                2 + ceil(RND.float() * 4),
+                2 + ceil(RND.float() * 6),
                 2 + ceil(RND.float() * 4)
             ],
 
@@ -217,57 +217,8 @@ const resolveState = (config) =>
                     margin,
                     height - margin * 1.66,
                     width - margin * 2,
-                    margin
+                    margin * 1.33
                 ])
-            /*
-            edMeta: ({ seed, rule, margin: m, width: w, height: h }) => {
-                const { vectors: seedV } = getParagraphVector(
-                    seed,
-                    72,
-                    0,
-                    0.5,
-                    [1, 0.6]
-                )
-                const { vectors: ruleV } = getParagraphVector(
-                    rule.toString(),
-                    128,
-                    0,
-                    0.5,
-                    [1, 0.4]
-                )
-                return [
-                    ...seedV.reduce(
-                        (acc, glyph) => [
-                            ...acc,
-                            ...glyph.map((line) =>
-                                polyline(
-                                    line.map(([x, y]) => [
-                                        m + x * w,
-                                        h - m * 0.8 + y * h
-                                    ])
-                                )
-                            )
-                        ],
-                        []
-                    ),
-                    ...ruleV.reduce(
-                        (acc, glyph, i) => [
-                            ...acc,
-                            ...glyph.map((line) =>
-                                polyline(
-                                    line.map(([x, y]) => [
-                                        w * 0.5 - (glyph.length - i) + x * w,
-                                        h - m * 0.8 + y * h
-                                    ])
-                                )
-                            )
-                        ],
-                        []
-                    )
-
-                ]
-            }
-            */
         },
         { onlyFnRefs: true }
     )
