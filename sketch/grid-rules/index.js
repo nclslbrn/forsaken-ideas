@@ -22,11 +22,12 @@ import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
+    // F_16_9 = quantity([108, 60.7], cm),
     // F_9_16 = quantity([60.7, 108], cm),
     // IG_SQ = quantity([40, 40], cm),
     // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
     SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
+    MARGIN = convert(mul(quantity(1.5, cm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
@@ -41,6 +42,8 @@ const init = async () => {
         width: SIZE[0],
         height: SIZE[1],
         margin: MARGIN,
+        density: 8,
+        weight: 2,
         seed
     })
     // console.log(STATE)
@@ -48,14 +51,17 @@ const init = async () => {
     CANVAS.height = SIZE[1]
     console.log(STATE)
     const { theme, groupedElems, cartel } = STATE
+    /*
     const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
         cartel.map(([param, cell], i) => cartelContent(STATE, param, cell, i))
+    */
 
     draw(
         CTX,
         group({}, [
             rect(SIZE, { fill: theme[1][0] }),
-            ...groupedElems,
+            ...groupedElems
+            /*
             group({ stroke: theme[1][1] }, [
                 ...pattern,
                 ...gridSize,
@@ -67,6 +73,7 @@ const init = async () => {
                     line([cell[0], cell[1]], [cell[0] + cell[2], cell[1]])
                 )
             ])
+            */
         ])
     )
 }
@@ -98,25 +105,7 @@ window['exportSVG'] = () => {
                 },
                 group({}, [
                     rect(SIZE, { fill: STATE.theme[1][0] }),
-                    ...STATE.groupedElems,
-                    group({ stroke: STATE.theme[1][1] }, [
-                        ...pattern,
-                        ...gridSize
-                        /*
-                            ...cartel.map(([__dirname, cell]) =>
-                                rect([cell[0], cell[1]], [cell[2], cell[3]])
-                            )
-                            */
-                    ]),
-                    group(
-                        {
-                            font: `14px monospace`,
-                            align: 'center',
-                            baseline: 'middle',
-                            fill: STATE.theme[1][1]
-                        },
-                        [rule, rotation, skew, areCellsDupplicated]
-                    )
+                    ...STATE.groupedElems
                 ])
             )
         )

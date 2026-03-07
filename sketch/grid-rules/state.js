@@ -5,11 +5,13 @@ import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import * as mat from '@thi.ng/matrices'
 import RULES from './RULES'
 import GRIDS from './GRIDS'
+import SENTENCES from './SENTENCES'
 import SCHEMES from './schemes'
 import { seedFromHash } from './seed-from-hash'
 import { cartelCells, cartelContent } from './cartel'
 import { getParagraphVector } from '@nclslbrn/plot-writer'
 import hashes from './hashes'
+import { textToStrokes } from './font'
 const { floor, ceil } = Math
 
 const BASE = (config) => {
@@ -42,8 +44,8 @@ const BASE = (config) => {
             cropPoly: ({ margin, width, height }) => [
                 [margin, margin],
                 [width - margin, margin],
-                [width - margin, height - margin * 2],
-                [margin, height - margin * 2]
+                [width - margin, height - margin],
+                [margin, height - margin]
             ],
 
             ruleIdx: () => floor(RULES.length * RND.float()),
@@ -75,7 +77,9 @@ const BASE = (config) => {
             grid: ({ gridSize, cells, pattern }) => {
                 const [_, grid] = cells(gridSize[1], [pattern.type])
                 return grid
-            }
+            },
+
+            sentence: () => pickRandom(SENTENCES, RND)
         },
         { onlyFnRefs: true }
     )
@@ -123,13 +127,23 @@ const resolveState = (config) =>
                 )
             }),
 
-            hashes: ({ patternCells, width, height, skew, theme, RND }) =>
+            hashes: ({
+                patternCells,
+                width,
+                height,
+                skew,
+                theme,
+                density,
+                weight,
+                sentence,
+                RND
+            }) =>
                 patternCells.map((layer, i) =>
                     transform(
                         group(
                             {
                                 stroke: theme[1][(i + 1) % theme[1].length],
-                                weight: 3
+                                weight
                             },
                             layer.reduce((lines, cell, j) => {
                                 // Scale cell dimensions first before generating hashes
@@ -146,12 +160,32 @@ const resolveState = (config) =>
                                     ...transform(
                                         group(
                                             {},
-                                            hashes(
-                                                scaledCell,
-                                                RND.minmaxInt(0, 3),
-                                                RND.minmaxInt(1, 3) * 8
-                                            ).map((line) => polyline(line))
+                                            j % 4 === 0
+                                                ? textToStrokes(
+                                                      sentence.substring(
+                                                          (j / 4) %
+                                                              sentence.length,
+                                                          Math.ceil(
+                                                              scaledCell[2] / 24
+                                                          ) % sentence.length
+                                                      ),
+                                                      {
+                                                          size:
+                                                              scaledCell[3] / 6,
+                                                          x: scaledCell[0],
+                                                          y: scaledCell[1]
+                                                      }
+                                                  )
+                                                : hashes(
+                                                      scaledCell,
+                                                      RND.minmaxInt(0, 3),
+                                                      RND.minmaxInt(1, 3) *
+                                                          density
+                                                  ).map((line) =>
+                                                      polyline(line)
+                                                  )
                                         ),
+
                                         mat.concat(
                                             [],
                                             mat[skew.type](
