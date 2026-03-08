@@ -14,7 +14,6 @@ import {
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
-import { cartelContent } from './cartel'
 
 // import { scribbleLine } from './scribbleLine'
 
@@ -27,7 +26,7 @@ const DPI = quantity(96, dpi),
     // IG_SQ = quantity([40, 40], cm),
     // CUSTOM_FORMAT = quantity([50, 50], 'cm'),
     SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(1.5, cm), DPI), NONE),
+    MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
@@ -42,7 +41,7 @@ const init = async () => {
         width: SIZE[0],
         height: SIZE[1],
         margin: MARGIN,
-        density: 8,
+        density: 4,
         weight: 2,
         seed
     })
@@ -50,32 +49,9 @@ const init = async () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     console.log(STATE)
-    const { theme, groupedElems, cartel } = STATE
-    /*
-    const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
-        cartel.map(([param, cell], i) => cartelContent(STATE, param, cell, i))
-    */
+    const { theme, groupedElems } = STATE
 
-    draw(
-        CTX,
-        group({}, [
-            rect(SIZE, { fill: theme[1][0] }),
-            ...groupedElems
-            /*
-            group({ stroke: theme[1][1] }, [
-                ...pattern,
-                ...gridSize,
-                ...rule,
-                ...rotation,
-                ...skew,
-                ...areCellsDupplicated,
-                ...cartel.map(([__dirname, cell]) =>
-                    line([cell[0], cell[1]], [cell[0] + cell[2], cell[1]])
-                )
-            ])
-            */
-        ])
-    )
+    draw(CTX, group({}, [rect(SIZE, { fill: theme[1][0] }), ...groupedElems]))
 }
 
 // document.getElementById('iconav').style.display = 'none'
@@ -90,10 +66,6 @@ window['exportJPG'] = () => {
 }
 
 window['exportSVG'] = () => {
-    const [pattern, rule, gridSize, rotation, skew, areCellsDupplicated] =
-        STATE.cartel.map(([param, cell], i) =>
-            cartelContent(STATE[param], cell, i)
-        )
     downloadWithMime(
         `Grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(

@@ -8,8 +8,6 @@ import GRIDS from './GRIDS'
 import SENTENCES from './SENTENCES'
 import SCHEMES from './schemes'
 import { seedFromHash } from './seed-from-hash'
-import { cartelCells, cartelContent } from './cartel'
-import { getParagraphVector } from '@nclslbrn/plot-writer'
 import hashes from './hashes'
 import { textToStrokes } from './font'
 const { floor, ceil } = Math
@@ -136,6 +134,7 @@ const resolveState = (config) =>
                 density,
                 weight,
                 sentence,
+                rule,
                 RND
             }) =>
                 patternCells.map((layer, i) =>
@@ -244,15 +243,7 @@ const resolveState = (config) =>
                                 []
                             )
                         )
-                    ),
-
-            cartel: ({ width, height, margin }) =>
-                cartelCells([
-                    margin,
-                    height - margin * 1.66,
-                    width - margin * 2,
-                    margin * 1.33
-                ])
+                    )
         },
         { onlyFnRefs: true }
     )
