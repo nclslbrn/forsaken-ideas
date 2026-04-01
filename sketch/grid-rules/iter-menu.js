@@ -58,7 +58,9 @@ const iterMenu = (ITER_LIST, STATE) => {
                         {},
                         td({}, 'Skew'),
                         td({}, STATE.skew.type, STATE.skew.angle.join(', '))
-                    )
+                    ),
+
+                    tr({}, td({}, 'Sentence'), td({}, STATE.sentence))
                 )
             ),
             para(null, 'SEEDS'),
