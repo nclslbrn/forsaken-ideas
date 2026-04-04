@@ -1,0 +1,11 @@
+{
+    "topic": "Perlin noise",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "exportJPG", "icon": "file-media" },
+        { "name": "exportSVG", "icon": "desktop-download" }
+    ],
+    "info": "todo",
+    "date": "2026-04-03"
+}
