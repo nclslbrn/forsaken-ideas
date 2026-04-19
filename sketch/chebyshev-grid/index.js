@@ -27,13 +27,15 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     THRESHOLD = 15,
     RADIUS = 15,
     PALETTES = {
-        mono: (v, a) => `hsla(0,0%,${Math.round(v * 100)}%, ${a})`,
+        mono: (v, a) => `hsla(0,0%,${Math.round(v * 100)}%, ${a})`
+        /*
         heat: (v, a) =>
             `hsla(${Math.round((1 - v) * 240)},80%,${40 + Math.round(v * 30)}%, ${a})`,
         ocean: (v, a) =>
             `hsla(${200 + Math.round(v * 40)},${60 + Math.round(v * 30)}%,${30 + Math.round(v * 40)}%, ${a})`,
         forest: (v, a) =>
             `hsla(${100 + Math.round(v * 60)},${50 + Math.round(v * 20)}%,${25 + Math.round(v * 40)}%, ${a})`
+            */
     },
     POLY_PTS = (x, y) => [
         [x, y],
