@@ -30,7 +30,8 @@ if (!fs.existsSync(`./sketch/${src}`)) {
     })
     confirmCreation
         .run()
-        .then(async function () {
+        .then(async function (answer) {
+            if (!answer) process.exit()
             console.log(`Creating folder sketch/${src} `)
             fs.mkdir(`sketch/${src}`, { recursive: true }, (err) => {
                 if (err) throw err
@@ -48,7 +49,8 @@ if (!fs.existsSync(`./sketch/${src}`)) {
         const generateJson = new Enquirer.Confirm({
             message: `Do you want to create it (sketch/${src}/property.json) ?`
         })
-        generateJson.run().then(async function () {
+        generateJson.run().then(async function (answer) {
+            if (!answer) process.exit()
             await generatePropertyJson(`sketch/${src}`)
             await generateSketchSetup(`sketch/${src}`, src)
         })

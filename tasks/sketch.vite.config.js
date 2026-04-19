@@ -1,8 +1,11 @@
 import { fileURLToPath, URL } from 'node:url'
+import fs from 'node:fs'
 import { defineConfig } from 'vite'
 import createExternal from 'vite-plugin-external'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import glsl from 'vite-plugin-glsl'
+
+const hasAssets = fs.existsSync('sketch/{{src}}/assets')
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,7 +33,7 @@ export default defineConfig({
             targets: [
                 { src: 'capture.jpg', dest: '' },
                 { src: 'thumbnail.webp', dest: '' },
-                { src: 'assets/**', dest: 'assets' }
+                ...(hasAssets ? [{ src: 'assets/**', dest: 'assets' }] : [])
             ]
         }),
         glsl()
