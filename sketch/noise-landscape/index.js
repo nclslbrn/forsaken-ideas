@@ -10,14 +10,14 @@ const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 let canvas
 const sketch = (p5) => {
-    const scale = 2.5
+    const scale = 0.1
     const numPoints = 3000
     let topoPoints, pTransform, fbm
     let noiseScale = 0.5
     let noiseSample = 5
-    let opacity = 50
-    const squeeze_y = 0.45
-    const perspective_x = 0.75
+    let opacity = 25
+    const squeeze_y = 0.55
+    const perspective_x = 0.5
 
     sketch.init = () => {
         fbm = new Fbm({
@@ -31,17 +31,17 @@ const sketch = (p5) => {
         for (let i = 0; i < numPoints; i++) {
             topoPoints.push({
                 pos: p5.createVector(
-                    p5.randomGaussian(p5.width / 2, p5.width / 8),
-                    p5.randomGaussian(p5.height / 2, p5.height / 8)
+                    p5.randomGaussian(p5.width / 2, p5.width / 4),
+                    p5.randomGaussian(0, p5.height / 4)
                 ),
-                angle: p5.random(p5.TWO_PI),
+                angle: p5.random(p5.PI),
                 height: 0
             })
         }
 
-        p5.background(50)
-        p5.strokeWeight(2)
-        p5.stroke(255, opacity)
+        p5.background(25)
+        p5.strokeWeight(1)
+        p5.stroke(180, opacity)
     }
     const setupParamInteraction = () => {
         const paramBox = document.createElement('div')
@@ -76,8 +76,8 @@ const sketch = (p5) => {
             {
                 value: opacity,
                 options: {
-                    min: 25,
-                    max: 75,
+                    min: 15,
+                    max: 65,
                     step: 0.1,
                     label: 'Opacity'
                 },
@@ -101,13 +101,12 @@ const sketch = (p5) => {
         document.body.appendChild(paramBox)
     }
     sketch.exportPNG = () => {
-        const date = new Date()
-        const filename = 'Noise-landscape.' + new Date.toISOString()
+        const filename = 'Noise-landscape.' + new Date().toISOString()
         p5.save(canvas, filename, 'jpg')
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(window.innerWidth * 2, window.innerHeight * 2)
+        canvas = p5.createCanvas(window.innerWidth, window.innerHeight)
         const pad_x = (p5.width - p5.width * perspective_x) / 2
         const pad_y = (p5.height - p5.height * squeeze_y) / 2
         var srcCorners = [0, 0, p5.width, 0, p5.width, p5.height, 0, p5.height]
@@ -124,14 +123,14 @@ const sketch = (p5) => {
         pTransform = new Perspective(srcCorners, dstCorners)
         p5.randomSeed(p5.floor(p5.random(9999999)))
         setupParamInteraction()
-        init()
+        sketch.init()
     }
 
     p5.draw = () => {
         if (typeof topoPoints[0] !== 'undefined') {
             for (let i = 0; i < topoPoints.length; i++) {
                 const nx = p5.map(topoPoints[i].pos.x, 0, p5.width, -0.8, 0.8)
-                const ny = p5.map(topoPoints[i].pos.y, 0, p5.height, -0.6, 1.2)
+                const ny = p5.map(topoPoints[i].pos.y, 0, p5.height, -0.8, 0.8)
 
                 const np = pTransform.transform([
                     topoPoints[i].pos.x,
@@ -151,7 +150,7 @@ const sketch = (p5) => {
                 topoPoints[i].height = 0.5 + n1
                 topoPoints[i].pos.x += p5.cos(topoPoints[i].angle) * scale
                 topoPoints[i].pos.y += p5.sin(topoPoints[i].angle) * scale
-                topoPoints[i].angle += n1 * 0.1
+                topoPoints[i].angle += n1 * 0.01
             }
         }
     }

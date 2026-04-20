@@ -7,6 +7,7 @@
         "gallery:dev": "vite --host",
         "gallery:build": "run-p gallery:type-check gallery:build-only",
         "gallery:preview": "vite preview",
+        "gallery:serve": "http-server dist/",
         "gallery:build-only": "vite build",
         "gallery:type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
         "gallery:lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",

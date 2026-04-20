@@ -6,6 +6,6 @@
         { "name": "capture", "icon": "file-media" },
         { "name": "download", "icon": "desktop-download" }
     ],
-    "info": "todo",
+    "info": "Initially created to illustrate an edition/portfolio of my works, this sketch use two <em>while</em> loops to write and repeat some words/concepts that I consider essential to my own research.",
     "date": "2025-03-31"
 }

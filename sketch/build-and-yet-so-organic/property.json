@@ -6,7 +6,6 @@
         { "name": "capture", "icon": "file-media" },
         { "name": "plot", "icon": "desktop-download" }
     ],
-    "info": "raymarching and Menger Sponge",
+    "info": "A risky experiment that uses Signed Distance Functions (with JavaScript) to draw lines and raycasting to create contour lines",
     "date": "2025-02-20"
 }
-

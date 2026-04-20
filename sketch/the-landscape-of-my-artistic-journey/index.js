@@ -37,22 +37,22 @@ const sketch = {
     init: () => {
         const inner = [SVG.width - MARGIN * 2, SVG.height - MARGIN * 2],
             base = 10,
-            svgDisplayWidth = SVG.elem.getBoundingClientRect().width,
             texts =
-                'singular/alterity/similar/alteration/system/protocole/structure'.split(
-                    '/'
-                )
+                'singular/alterity/similar/alteration/system/protocole/structure'
+                    .split('/')
+                    .sort(() => Math.random() > 0.5),
+            incrTxtSize = 1 + Math.random() / 12
 
         let y = MARGIN,
-            fontSize = base
+            fontSize = (Math.random() + 0.5) * base
 
         SVG.clear()
         addFontFile()
         SVG.rect({
             x: 0,
             y: 0,
-            w: SVG.width + 1,
-            h: SVG.height,
+            w: Math.ceil(SVG.width),
+            h: Math.ceil(SVG.height + 4),
             fill: '#111'
         })
         while (y < inner[1]) {
@@ -77,7 +77,7 @@ const sketch = {
 
                 x += textWidth + fontSize
             }
-            fontSize *= 1.16
+            fontSize *= incrTxtSize
         }
     }
 }
@@ -91,8 +91,13 @@ addFontFile()
 sketch.init()
 window['init'] = () => sketch.init()
 window['download'] = () =>
-    SVG.export({ name: `cover-${new Date().toISOString()}` })
+    SVG.export({
+        name: `the-landscape-of-my-artistic-journey-${new Date().toISOString()}`
+    })
 window['capture'] = () =>
-    SVG.exportPng({ name: `cover-${new Date().toISOString()}`, quality: 1 })
+    SVG.exportPng({
+        name: `the-landscape-of-my-artistic-journey-${new Date().toISOString()}`,
+        quality: 1
+    })
 window['infobox'] = infobox
 handleAction()
