@@ -9,7 +9,7 @@ const ROOT = document.getElementById('windowFrame'),
     SVG = new SvgTracer({
         parentElem: ROOT,
         size: 'A3_landscape', //{ w: 45.5, h: 27 },
-        background: '#fff',
+        background: '#111',
         dpi: 300
     }),
     { floor, random } = Math
@@ -36,7 +36,7 @@ const addFontFile = () => {
 const sketch = {
     init: () => {
         const inner = [SVG.width - MARGIN * 2, SVG.height - MARGIN * 2],
-            base = 10,
+            base = 16,
             texts =
                 'singular/alterity/similar/alteration/system/protocole/structure'
                     .split('/')
@@ -44,7 +44,7 @@ const sketch = {
             incrTxtSize = 1 + Math.random() / 12
 
         let y = MARGIN,
-            fontSize = (Math.random() + 0.5) * base
+            fontSize = (Math.random() + 1.5) * base
 
         SVG.clear()
         addFontFile()
@@ -52,7 +52,7 @@ const sketch = {
             x: 0,
             y: 0,
             w: Math.ceil(SVG.width),
-            h: Math.ceil(SVG.height + 4),
+            h: Math.ceil(SVG.height + 24),
             fill: '#111'
         })
         while (y < inner[1]) {
@@ -71,11 +71,16 @@ const sketch = {
                     text,
                     fontFamily: 'Geist',
                     fontWeight: Math.round(100 + 300 * (1 - base / fontSize)),
-                    fill: '#333',
+                    fill:
+                        Math.random() < 0.01
+                            ? Math.random() < 0.5
+                                ? '#6e3329'
+                                : '#555555'
+                            : '#333',
                     anchor: 'middle'
                 })
 
-                x += textWidth + fontSize
+                x += textWidth + fontSize * 0.66
             }
             fontSize *= incrTxtSize
         }
