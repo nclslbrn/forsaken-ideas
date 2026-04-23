@@ -1,23 +1,20 @@
-// import '../full-canvas.css'
-// import '../framed-canvas.css'
-
 import './style.css'
-import { rect, group, svgDoc, asSvg, polyline, line } from '@thi.ng/geom'
+// import '../full-canvas.css'
+import '../framed-canvas.css'
+
+import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, cm, dpi, DIN_A3 } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, cm, dpi } from '@thi.ng/units'
 import {
     getRandSeed,
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
-
-// import { scribbleLine } from './scribbleLine'
-
-import { iterMenu } from './iter-menu'
+// import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
@@ -29,8 +26,8 @@ const DPI = quantity(96, dpi),
     MARGIN = convert(mul(quantity(1, cm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d'),
-    ITER_LIST = document.createElement('div')
+    CTX = CANVAS.getContext('2d')
+// ITER_LIST = document.createElement('div')
 
 let seed, STATE
 
@@ -45,7 +42,6 @@ const init = async () => {
         weight: 2,
         seed
     })
-    // console.log(STATE)
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     console.log(STATE)
@@ -53,8 +49,6 @@ const init = async () => {
 
     draw(CTX, group({}, [rect(SIZE, { fill: theme[1][0] }), ...groupedElems]))
 }
-
-// document.getElementById('iconav').style.display = 'none'
 
 window['init'] = () => {
     seed = getRandSeed()
@@ -100,12 +94,12 @@ document.addEventListener('keypress', (e) => {
 
         case 's':
             saveSeed(seed)
-            iterMenu(ITER_LIST, STATE)
+            // iterMenu(ITER_LIST, STATE)
             break
 
         case 'c':
             cleanSavedSeed()
-            iterMenu(ITER_LIST, STATE)
+            // iterMenu(ITER_LIST, STATE)
             break
     }
 })
@@ -120,7 +114,7 @@ window.infobox = infobox
 
 ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS)
-ROOT.appendChild(ITER_LIST)
+// ROOT.appendChild(ITER_LIST)
 init()
-iterMenu(ITER_LIST, STATE)
+// iterMenu(ITER_LIST, STATE)
 handleAction()

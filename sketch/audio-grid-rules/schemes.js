@@ -5,13 +5,10 @@ const mtch = '#273136;:#7EB08A;:#D2B48C;:#FF819F;:#7EA4B0;:#D1DED3'
 const monoLight = '#fcfcfc;:#333333;:#222222;:#111111;:#444444'
 const monoDark = '#333333;:#cccccc;:#fefefe;:#fcfcfc;:#ffffff'
 const SCHEMES = [
-    /*
-['nord', nord.split(';:')],
-['everforest', frst.split(';:')],
-['capputccin', cptc.split(';:')],
-['matcha', mtch.split(';:')]
-*/
-    ['mono light', monoLight.split(';:')],
+    ['nord', nord.split(';:')],
+    ['everforest', frst.split(';:')],
+    ['capputccin', cptc.split(';:')],
+    ['matcha', mtch.split(';:')][('mono light', monoLight.split(';:'))],
     ['mono dark', monoDark.split(';:')]
 ]
 

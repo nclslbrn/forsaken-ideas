@@ -1,6 +1,12 @@
 {
-	"topic":"Random distribution","libs":[],"action":[
-		{"name":"init","icon":"sync"},
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "play", "icon": "play" },
         { "name": "exportJPG", "icon": "file-media" },
         { "name": "exportSVG", "icon": "desktop-download" }
-	],"info":"todo","date":"2025-09-06"}
+    ],
+    "info": "Visually, the grid uses the width and height of each cell to create a melody with arpeggios and various sounds (synths/oscillators). When the program switches to playback mode, it hides the cell containing the current note, as if it were leaving the visual realm to become a sound vibration. The sounds are created using only vanilla JavaScript.",
+    "date": "2025-09-06"
+}

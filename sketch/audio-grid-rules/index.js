@@ -1,7 +1,7 @@
-// import '../full-canvas.css'
-// import '../framed-canvas.css'
-
 import './style.css'
+// import '../full-canvas.css'
+import '../framed-canvas.css'
+
 import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 
@@ -9,16 +9,15 @@ import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, mm, dpi } from '@thi.ng/units'
 import {
     getRandSeed,
     saveSeed,
     cleanSavedSeed
 } from '../../sketch-common/random-seed'
 
-// import { scribbleLine } from './scribbleLine'
 import { getSynth } from './Synths'
-import { iterMenu } from './iter-menu'
+// import { iterMenu } from './iter-menu'
 import { resolveState } from './state'
 
 const DPI = quantity(96, dpi),
@@ -30,7 +29,7 @@ const DPI = quantity(96, dpi),
     CTX = CANVAS.getContext('2d'),
     AUDIO_CTX = new AudioContext(),
     AUDIO_OUT = AUDIO_CTX.createGain(),
-    ITER_LIST = document.createElement('div'),
+    // ITER_LIST = document.createElement('div'),
     TEMPO = 90
 
 AUDIO_OUT.connect(AUDIO_CTX.destination)
@@ -56,7 +55,7 @@ const init = async () => {
         margin: MARGIN,
         seed
     })
-    console.log(STATE)
+
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
@@ -89,7 +88,6 @@ const init = async () => {
         const Synth = getSynth(n.synth)
         return new Synth(AUDIO_CTX, masterGain)
     })
-    // source.connect(AUDIO_CTX.destination)
 }
 
 const playArpeggio = () => {
@@ -115,7 +113,6 @@ const animate = () => {
     const { notes, groupedElems, theme } = STATE
     if (!isPlaying || !notes[currNote].duration || notes.length === 0) return
 
-    // if (currNote === 0)
     playArpeggio()
 
     const secondsPerBeat = (notes[currNote].duration / TEMPO) * 1000
@@ -145,7 +142,7 @@ const animate = () => {
     }, secondsPerBeat)
 }
 
-CANVAS.onclick = function () {
+const play = () => {
     isPlaying = !isPlaying
     if (isPlaying) {
         animate()
@@ -154,7 +151,10 @@ CANVAS.onclick = function () {
         AUDIO_CTX.suspend()
     }
 }
-// document.getElementById('iconav').style.display = 'none'
+
+CANVAS.onclick = play
+
+window['play'] = play
 
 window['init'] = () => {
     seed = getRandSeed()
@@ -162,12 +162,17 @@ window['init'] = () => {
 }
 
 window['exportJPG'] = () => {
-    downloadCanvas(CANVAS, `Grid rules-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(
+        CANVAS,
+        `Audio grid rules-${FMT_yyyyMMdd_HHmmss()}`,
+        'jpeg',
+        1
+    )
 }
 
 window['exportSVG'] = () => {
     downloadWithMime(
-        `Grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `Audio grid rules-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -200,12 +205,12 @@ document.addEventListener('keypress', (e) => {
 
         case 's':
             saveSeed(seed)
-            iterMenu(ITER_LIST, STATE)
+            // iterMenu(ITER_LIST, STATE)
             break
 
         case 'c':
             cleanSavedSeed()
-            iterMenu(ITER_LIST, STATE)
+            // iterMenu(ITER_LIST, STATE)
             break
 
         case ' ':
@@ -224,7 +229,7 @@ window.infobox = infobox
 
 ROOT.removeChild(document.getElementById('loading'))
 ROOT.appendChild(CANVAS)
-ROOT.appendChild(ITER_LIST)
+// ROOT.appendChild(ITER_LIST)
 init()
-iterMenu(ITER_LIST, STATE)
+// iterMenu(ITER_LIST, STATE)
 handleAction()
