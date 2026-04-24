@@ -1,0 +1,10 @@
+{
+    "topic": "Random distribution",
+    "libs": [],
+    "action": [
+        { "name": "init", "icon": "sync" },
+        { "name": "download", "icon": "file-media" }
+    ],
+    "info": "G--R--I--D_-_RULES explores the intersection of mathematics and visual aesthetics through computational pattern generation. Each piece is created using a unique combination of mathematical rules that transform simple grid coordinates into complex, organic patterns.",
+    "date": "2026-01-24"
+}
