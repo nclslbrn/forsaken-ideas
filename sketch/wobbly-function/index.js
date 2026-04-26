@@ -5,16 +5,21 @@ import p5 from 'p5'
 
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
-let f, canvas
+let isPlaying = true,
+    f,
+    canvas
 const sketch = (p5) => {
-    const res = 2, m = 520,
+    const res = 2,
+        m = 520,
         wobbly = (x, t) =>
-            Math.sin(1.2 * x - 1 * t + 1 + 2 * Math.sin(2 * x + 1.3 * t + 5) ** 3)
+            Math.sin(
+                1.2 * x - 1 * t + 1 + 2 * Math.sin(2 * x + 1.3 * t + 5) ** 3
+            )
     p5.preload = () => {
-        f = p5.loadFont('./assets/InterDisplay-Black.otf')
+        f = p5.loadFont('./InterDisplay-Black.otf')
     }
     p5.setup = () => {
-        canvas = p5.createCanvas(m*2, m*2)
+        canvas = p5.createCanvas(m * 2, m * 2)
         p5.textFont(f, 64)
         p5.textAlign(p5.CENTER)
         p5.fill('#333')
@@ -32,19 +37,12 @@ const sketch = (p5) => {
                     y = m + j * m * 0.45,
                     h = j + 0.5 - wobbly(i, t)
 
-                p5.text(
-                  h < 0.5 ? '0' : h < 0.75 ? '~' : '1', x+32, y+48)
-        
+                p5.text(h < 0.5 ? '0' : h < 0.75 ? '~' : '1', x + 32, y + 48)
             }
         }
     }
     p5.moussePressed = () => {
         p5.saveCanvas()
-    }
-    p5.windowResized = () => {
-        isPlaying = false
-        const size = sketchSize()
-        p5.resizeCanvas(size, size)
     }
 }
 
