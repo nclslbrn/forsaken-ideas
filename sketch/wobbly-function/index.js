@@ -5,9 +5,8 @@ import p5 from 'p5'
 
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
-let isPlaying = true,
-    f,
-    canvas
+let f, canvas
+
 const sketch = (p5) => {
     const res = 2,
         m = 520,

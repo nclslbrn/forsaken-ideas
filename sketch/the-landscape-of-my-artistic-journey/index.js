@@ -41,7 +41,7 @@ const sketch = {
                 'singular/alterity/similar/alteration/system/protocole/structure'
                     .split('/')
                     .sort(() => Math.random() > 0.5),
-            incrTxtSize = 1 + Math.random() / 12
+            incrTxtSize = 1.15 + Math.random() / 12
 
         let y = MARGIN,
             fontSize = (Math.random() + 1.5) * base
@@ -56,7 +56,7 @@ const sketch = {
             fill: '#111'
         })
         while (y < inner[1]) {
-            y += fontSize * 0.8
+            y += fontSize * 0.95
 
             let x = 0
 
@@ -70,7 +70,9 @@ const sketch = {
                     fontSize,
                     text,
                     fontFamily: 'Geist',
-                    fontWeight: Math.round(100 + 300 * (1 - base / fontSize)),
+                    fontWeight: Math.round(
+                        100 + Math.random() * 600 * (1 - base / fontSize)
+                    ),
                     fill:
                         Math.random() < 0.01
                             ? Math.random() < 0.5
@@ -80,7 +82,7 @@ const sketch = {
                     anchor: 'middle'
                 })
 
-                x += textWidth + fontSize * 0.66
+                x += textWidth + fontSize * 0.85
             }
             fontSize *= incrTxtSize
         }
