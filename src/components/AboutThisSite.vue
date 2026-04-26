@@ -1,13 +1,14 @@
 <template>
     <div id="about">
         <h2>Forsaken ideas</h2>
-        <h3>Currently, {{ projectCount }} projects archived 
-          <button class="small" @click.prevent="switchLang">
-            {{ lang === 'en' ? 'fr' : 'en' }}
-          </button>
+        <h3>
+            Currently, {{ projectCount }} projects archived
+            <button class="small" @click.prevent="switchLang">
+                {{ lang === 'en' ? 'fr' : 'en' }}
+            </button>
         </h3>
-        
-        <div class="site-description"> 
+
+        <div class="site-description">
             <div v-if="lang === 'en'" class="text-column">
                 <div>
                     <p>
@@ -93,10 +94,10 @@
                     <p>
                         Évidemment après avoir créé ce workflow et après l’avoir
                         utilisé sur une dizaine de projets, je suis passé à
-                        autre chose mais l’idée revenait souvent, quand je trouvais
-                        des programmes abandonnés (qui n’avait pas aboutis, pas
-                        montrés ou publiés en tant qu’œuvre), je les ajoutais au
-                        catalogue.
+                        autre chose mais l’idée revenait souvent, quand je
+                        trouvais des programmes abandonnés (qui n’avait pas
+                        aboutis, pas montrés ou publiés en tant qu’œuvre), je
+                        les ajoutais au catalogue.
                     </p>
                 </div>
                 <div>
@@ -105,10 +106,9 @@
                         permette de rapidement passer d’une idée à un prototype,
                         ce catalogue est devenu un refuge pour projets en manque
                         d’amour. Le statut de cette aire de jeu évolue encore
-                        entre ces deux visions. La nécessité
-                        technique est devenu avec le temps un objet presque
-                        poétique (recueil d’idées abandonnées ou de projets
-                        autocensurés).
+                        entre ces deux visions. La nécessité technique est
+                        devenu avec le temps un objet presque poétique (recueil
+                        d’idées abandonnées ou de projets autocensurés).
                     </p>
 
                     <p>
@@ -133,16 +133,24 @@
                     </p>
                 </div>
             </div>
-            <a class="button" href="https://github.com/nclslbrn/make/">
+            <a
+                class="button"
+                href="https://codeberg.org/nclslbrn/forsaken-ideas"
+            >
                 <svg class="icon icon-forward">
                     <use xlink:href="#icon-repo"></use>
                 </svg>
-                <span>For a technical description, visit github</span>
+                <span>For a technical description, visit Codeberg.org</span>
             </a>
 
             <div class="signature">
-                <img id="avatar" src="https://avatars.githubusercontent.com/u/1374627?v=1" />
-                <span>Nicolas Lebrun (<a href="https://nicolas-lebrun.fr/contact/">@nclslbrn</a>)</span>
+                <img id="avatar" src="@/assets/avatar.jpg" />
+                <span
+                    >Nicolas Lebrun (<a
+                        href="https://nicolas-lebrun.fr/contact/"
+                        >@nclslbrn</a
+                    >)</span
+                >
             </div>
         </div>
     </div>
@@ -151,15 +159,15 @@
 <script lang="ts">
 export default {
     name: 'AboutThisSite',
-    data () {
+    data() {
         return { lang: 'en' }
     },
     props: {
         projectCount: Number
     },
     methods: {
-        switchLang: function(): void {
-            this.lang = (this.lang === 'en') ? 'fr' : 'en'
+        switchLang: function (): void {
+            this.lang = this.lang === 'en' ? 'fr' : 'en'
         }
     }
 }
@@ -178,8 +186,8 @@ export default {
 }
 
 #about h2 {
-  font-weight: 300;
-  font-size: 4.5em;
+    font-weight: 300;
+    font-size: 4.5em;
 }
 
 #about h2,
@@ -191,10 +199,10 @@ export default {
 }
 
 #about h3 button {
-  margin-left: 1em;
+    margin-left: 1em;
 }
 
-#about>div {
+#about > div {
     display: flex;
     flex-flow: column nowrap;
     display: flex;
@@ -220,13 +228,13 @@ export default {
 
 @media screen and (min-width: 900px) {
     .site-description {
-      padding: 2em 6em;
+        padding: 2em 6em;
     }
 
     .text-column {
-       display: block;
-       column-count: 3;
-       column-gap: 40px;
+        display: block;
+        column-count: 3;
+        column-gap: 40px;
     }
 
     .site-description p {
