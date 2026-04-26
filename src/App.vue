@@ -63,6 +63,7 @@ export default defineComponent({
                         )[0]
                     )
                     this.currProjectIndex = this.prevClicked
+                    this.pushSeenProject(this.currProjectIndex)
                 }
             })
     },
