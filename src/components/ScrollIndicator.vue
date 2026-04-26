@@ -10,29 +10,31 @@ export default {
             type: Number,
             required: true
         }
+    },
+    computed: {
+        percent() {
+            return Math.round((this.current / this.count) * 100) + '%'
+        }
     }
 }
 </script>
 <template>
-  <div class="scroll-indicator">
-      <template v-for="i in count" v-bind:key="i">
-        <span :class="i <= current ? 'seen' : ''"></span>
-      </template>
-    </div>
+    <div
+        class="scroll-indicator"
+        :style="`
+            background: linear-gradient(
+              to right,
+              color-mix(in srgb, var(--color-primary), transparent 66%),
+              var(--color-primary) ${percent},
+              rgba(0, 0, 0, 0) ${percent},
+              rgba(0, 0, 0, 0)
+            );`"
+    ></div>
 </template>
 <style scoped>
-    .scroll-indicator {
-        display: flex;
-        flex-flow: row nowrap;
-        width: 100%;
-    }
-    .scroll-indicator span {
-      flex: 1 0 auto;
-      height: 2px;
-      background: var(--color-bg);
-      transition: background 10ms ease-in; 
-    }
-    .scroll-indicator span.seen {
-      background: var(--color-primary);
-    }
+.scroll-indicator {
+    display: block;
+    height: 2px;
+    width: 100%;
+}
 </style>
