@@ -13,7 +13,7 @@ export default {
     },
     computed: {
         percent() {
-            return Math.round((this.current / this.count) * 100) + '%'
+            return Math.round((this.current / this.count) * 100)
         }
     }
 }
@@ -25,8 +25,9 @@ export default {
             background: linear-gradient(
               to right,
               color-mix(in srgb, var(--color-primary), transparent 66%),
-              var(--color-primary) ${percent},
-              rgba(0, 0, 0, 0) ${percent},
+              color-mix(in srgb, var(--color-primary), transparent 66%) ${Math.max(0, percent - 0.15)}%,
+              var(--color-primary) ${percent}%,
+              rgba(0, 0, 0, 0) ${percent}%,
               rgba(0, 0, 0, 0)
             );`"
     ></div>

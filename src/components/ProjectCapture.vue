@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Project } from '../project'
-import loadingCover from '@/assets/loading-project-cover.svg'
+import DefaultCaptureImg from '@/components/DefaultCaptureImg.vue'
 export default {
+    components: { DefaultCaptureImg },
     props: {
         project: {
             type: Object as () => Project,
@@ -14,9 +15,6 @@ export default {
         index: {
             type: Number
         }
-    },
-    data() {
-        return { loadingCover }
     }
 }
 </script>
@@ -26,13 +24,13 @@ export default {
         class="project-preview"
     >
         <img
-            :class="seen ? 'loaded' : 'loading'"
-            :src="
-                seen ? `./sketch/${project.src}/thumbnail.webp` : loadingCover
-            "
+            v-if="seen"
+            class="loaded"
+            :src="`./sketch/${project.src}/thumbnail.webp`"
             :alt="project.title"
             :key="project.src"
         />
+        <DefaultCaptureImg v-else class="loading" />
     </button>
 </template>
 
@@ -49,7 +47,6 @@ export default {
     border: 1px solid #ffffff00;
     background: linear-gradient(to bottom, var(--color-bg), var(--color-solid));
     padding: 0.5vw;
-    border-radius: 2px;
 }
 
 .project-preview:focus,
@@ -61,13 +58,13 @@ export default {
 .project-preview:focus-visible {
     outline: none;
     border: 1px solid var(--color-primary);
-    /* background: var(--color-primary); */
 }
 
-.project-preview img.loading {
+.project-preview .loading {
     display: block;
     aspect-ratio: 1 / 1;
-    width: 600px;
+    width: auto;
+    min-height: 436px;
 }
 
 .project-preview img {

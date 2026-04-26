@@ -62,8 +62,7 @@ export default defineComponent({
                             (p: Project) => p.src === prevSrcHash
                         )[0]
                     )
-                    this.currProjectIndex = this.prevClicked
-                    this.pushSeenProject(this.currProjectIndex)
+                    this.setCurrentProject(this.prevClicked)
                 }
             })
     },
@@ -125,7 +124,8 @@ export default defineComponent({
         /**
          * Add project title slug when it appears on screeen
          */
-        pushSeenProject(projectIndex: number) {
+        setCurrentProject(projectIndex: number) {
+            this.currProjectIndex = projectIndex
             if (!this.projectSeen.includes(this.projects[projectIndex].src)) {
                 this.projectSeen.push(this.projects[projectIndex].src)
             }
@@ -153,10 +153,9 @@ export default defineComponent({
                                 entry.intersectionRatio > 0.55) &&
                             entry.isIntersecting
                         ) {
-                            this.currProjectIndex = captures.indexOf(
-                                entry.target as HTMLElement
+                            this.setCurrentProject(
+                                captures.indexOf(entry.target as HTMLElement)
                             )
-                            this.pushSeenProject(this.currProjectIndex)
                         }
                     })
                 }
@@ -175,34 +174,31 @@ export default defineComponent({
         },
         prevProj() {
             if (this.currProjectIndex > 0) {
-                this.currProjectIndex--
-                this.pushSeenProject(this.currProjectIndex)
+                this.setCurrentProject(this.currProjectIndex - 1)
                 this.prevClicked = this.currProjectIndex
                 this.scrollToCurrProject()
             }
         },
         nextProj() {
             if (this.currProjectIndex < this.projects.length - 1) {
-                this.currProjectIndex++
-                this.pushSeenProject(this.currProjectIndex)
+                this.setCurrentProject(this.currProjectIndex + 1)
                 this.prevClicked = this.currProjectIndex
                 this.scrollToCurrProject()
             }
         },
         async scrollToCurrProject() {
             this.navButtonOccurs = true
-            await this.$nextTick(() => {
-                const captures = Array.from(
-                    document.querySelectorAll('.project-preview')
-                )
-                captures[this.currProjectIndex]?.scrollIntoView({
-                    behavior: 'smooth'
-                })
-            }).then(() => {
-                setTimeout(() => {
-                    this.navButtonOccurs = false
-                }, 125)
+            await this.$nextTick()
+            const captures = Array.from(
+                document.querySelectorAll('.project-preview')
+            )
+            captures[this.currProjectIndex]?.scrollIntoView({
+                behavior: 'smooth'
             })
+
+            setTimeout(() => {
+                this.navButtonOccurs = false
+            }, 125)
         }
     }
 })
@@ -229,10 +225,10 @@ export default defineComponent({
                 :autofocus="index === prevClicked"
                 :project="item"
                 :index="index"
-                :seen="projectSeen.includes(item.src)"
-                @mouseover="currProjectIndex = index"
+                @mouseover="setCurrentProject(index)"
+                @focus="setCurrentProject(index)"
                 @openProject="openProject"
-                @focus="currProjectIndex = index"
+                :seen="projectSeen.includes(item.src)"
             />
         </div>
         <Transition name="slideDown">
