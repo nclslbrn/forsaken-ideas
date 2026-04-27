@@ -144,7 +144,7 @@
             </a>
 
             <div class="signature">
-                <img id="avatar" src="@/assets/avatar.jpg" />
+                <img id="avatar" src="@/avatar.jpg" />
                 <span
                     >Nicolas Lebrun (<a
                         href="https://nicolas-lebrun.fr/contact/"

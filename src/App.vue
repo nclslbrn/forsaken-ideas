@@ -193,7 +193,8 @@ export default defineComponent({
                 document.querySelectorAll('.project-preview')
             )
             captures[this.currProjectIndex]?.scrollIntoView({
-                behavior: 'smooth'
+                behavior: 'smooth',
+                inline: 'center'
             })
 
             setTimeout(() => {
@@ -393,7 +394,13 @@ button#toggleAbout {
     padding: 0.25em;
     color: var(--color-text);
     font-size: 1.5em;
+    background: none;
     writing-mode: vertical-rl;
     text-orientation: mixed;
+}
+
+button#toggleAbout:hover,
+button#toggleAbout:focus {
+    color: var(--color-primary);
 }
 </style>
