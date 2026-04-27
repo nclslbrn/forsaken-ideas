@@ -56,7 +56,7 @@ const sketch = (p5) => {
         return switchChars
     }
     p5.preload = () => {
-        f = p5.loadFont('./assets/Inter-Bold.otf')
+        f = p5.loadFont('./Inter-Bold.otf')
     }
     p5.setup = () => {
         const size = sketchSize()

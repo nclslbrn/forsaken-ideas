@@ -18,7 +18,7 @@ const sketch = (p5) => {
         traits.noiseSize = 2 + p5.random() * 3
     }
     p5.preload = () => {
-        shader = p5.loadShader('./assets/base.vert', './assets/base.frag')
+        shader = p5.loadShader('./base.vert', './base.frag')
     }
 
     p5.setup = () => {

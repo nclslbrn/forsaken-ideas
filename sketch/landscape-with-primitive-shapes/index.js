@@ -28,8 +28,8 @@ let traits = {
 const sketch = (p5) => {
     p5.preload = () => {
         shader = p5.loadShader(
-            'assets/primitive-shapes-landscape.vert',
-            'assets/primitive-shapes-landscape.frag'
+            'primitive-shapes-landscape.vert',
+            'primitive-shapes-landscape.frag'
         )
     }
 

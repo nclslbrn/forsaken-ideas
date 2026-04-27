@@ -15,7 +15,7 @@ const capture = (canvas) => {
     link.href = canvas.toDataURL('image/jpg')
     link.click()
 }
-img.src = 'assets/nasa-O0dEH-UPj68-unsplash.jpg'
+img.src = 'nasa-O0dEH-UPj68-unsplash.jpg'
 
 img.onload = () => {
     canvas.width = img.width
@@ -131,7 +131,6 @@ img.onload = () => {
         return pix
     }
 
-
     const main = () => {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
         let pix = imageData.data
@@ -139,7 +138,7 @@ img.onload = () => {
         pix = verticalSorting(pix, [60, 240])
         ctx.putImageData(imageData, 0, 0)
     }
-  
+
     main()
 }
 

@@ -26,8 +26,8 @@ const capture = () => {
 }
 
 async function loadShaderAndRun() {
-    const vert = await fetch('./assets/shader.vert').then((r) => r.text())
-    const frag = await fetch('./assets/shader.frag').then((r) => r.text())
+    const vert = await fetch('./shader.vert').then((r) => r.text())
+    const frag = await fetch('./shader.frag').then((r) => r.text())
 
     const createParticle = (num) => {
         partPos = []

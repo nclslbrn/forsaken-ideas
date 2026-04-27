@@ -17,7 +17,7 @@ const dpr = Math.ceil(window.devicePixelRatio) || 1
 
 const sketch = (p5) => {
     p5.preload = () => {
-        shader = p5.loadShader('assets/shader.vert', 'assets/shader.frag')
+        shader = p5.loadShader('shader.vert', 'shader.frag')
     }
 
     p5.setup = () => {

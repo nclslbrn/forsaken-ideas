@@ -8,7 +8,8 @@ const containerElement = document.getElementById('windowFrame'),
     gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }),
     startTime = new Date().getTime()
 
-let mouseX = 0, mouseY = 0
+let mouseX = 0,
+    mouseY = 0
 
 const capture = () => {
     const link = document.createElement('a')
@@ -17,18 +18,17 @@ const capture = () => {
     link.click()
 }
 const hex2Vec3 = (hex) => {
-  hex = hex.replace(/^#/, '');
-  // Convert the hex code to RGB values (revert opacity to 1)
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
-  return [r, g, b];
+    hex = hex.replace(/^#/, '')
+    // Convert the hex code to RGB values (revert opacity to 1)
+    const r = parseInt(hex.substring(0, 2), 16) / 255
+    const g = parseInt(hex.substring(2, 4), 16) / 255
+    const b = parseInt(hex.substring(4, 6), 16) / 255
+    return [r, g, b]
 }
 
-
 async function loadShaderAndRun() {
-    const vert = await fetch('./assets/shader.vert').then((r) => r.text())
-    const frag = await fetch('./assets/shader.frag').then((r) => r.text())
+    const vert = await fetch('./shader.vert').then((r) => r.text())
+    const frag = await fetch('./shader.frag').then((r) => r.text())
     const palette = getPalette()
 
     const animate = () => {
@@ -41,7 +41,7 @@ async function loadShaderAndRun() {
     }
 
     const resize = () => {
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1))
         canvas.width = window.innerWidth * dpr
         canvas.height = window.innerHeight * dpr
         canvas.style.width = window.innerWidth + 'px'
@@ -50,7 +50,7 @@ async function loadShaderAndRun() {
         uBackground.set(...hex2Vec3(palette.background))
         uStroke.set(...hex2Vec3(palette.stroke))
         uPalNum.set(palette.colors.length)
-        uPalCols.set(palette.colors.map(hex => hex2Vec3(hex)).flat())
+        uPalCols.set(palette.colors.map((hex) => hex2Vec3(hex)).flat())
         gl.viewport(0, 0, canvas.width, canvas.height)
     }
 
@@ -113,9 +113,9 @@ async function loadShaderAndRun() {
 
     gl.enableVertexAttribArray(positionLocation)
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
-    gl.disable(gl.DEPTH_TEST);
-    gl.enable(gl.BLEND);
-    
+    gl.disable(gl.DEPTH_TEST)
+    gl.enable(gl.BLEND)
+
     resize()
     animate()
     console.log(palette.meta.artist)

@@ -46,7 +46,7 @@ const sketch = (p5) => {
     }
     p5.preload = () => {
         samples.forEach((sample) =>
-            images.push(p5.loadImage(`./assets/${sample.sourceName}`))
+            images.push(p5.loadImage(`./${sample.sourceName}`))
         )
     }
     p5.setup = () => {
@@ -96,7 +96,7 @@ const sketch = (p5) => {
             move.d++
         }
     }
-    
+
     sketch.export = () => {
         const date = new Date()
         const filename =

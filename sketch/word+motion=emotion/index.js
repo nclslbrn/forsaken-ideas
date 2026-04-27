@@ -31,10 +31,7 @@ let frame = [0, 0],
     recordedFrame = 0
 
 const FPS = 30,
-    fontFace = new FontFace(
-        'FiraCode-Regular',
-        'url(./assets/FiraCode-Regular.otf)'
-    ),
+    fontFace = new FontFace('FiraCode-Regular', 'url(./FiraCode-Regular.otf)'),
     windowFrame = document.getElementById('windowFrame'),
     diag = Math.hypot(window.innerWidth, window.innerHeight),
     cell = [diag * 0.0178, diag * 0.0452].map((d) => d * 0.75),

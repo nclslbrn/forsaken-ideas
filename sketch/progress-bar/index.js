@@ -14,14 +14,14 @@ document.head.innerHTML += `<style>
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("./assets/InterVariable.woff2") format("woff2");
+  src: url("./InterVariable.woff2") format("woff2");
 }
 
 .world { position: absolute; display: flex; flex-flow: row nowrap; background: #fefefe; color: #333;}
 .column { position: relative; flex-basis: 3.86%; max-width: 3.86%; overflow: hidden; border-left: 1px solid #ccc; height: 100vh;}
 .column::after {
   position: absolute; bottom: 3%; content: attr(data-gmtOffset); width: 100%;
-  font-family: InterVariable; font-weight: 900; font-size: 2em; color: #ddd; text-align: center; 
+  font-family: InterVariable; font-weight: 900; font-size: 2em; color: #ddd; text-align: center;
 }
 .chart { position: absolute; bottom: 0; height: 40%; width: 100%; z-index: 0; }
 .chart .candles { position: relative; width: 100%; height: 100%; }
@@ -55,9 +55,9 @@ const htmlPlace = (p) => {
     c.innerHTML = subtitle
         ? `<h3>${title}</h3><p>${subtitle}</p>`
         : `<h3>${title}</h3>`
-    c.innerHTML += `<div><span>${p[3]}</span><span>${
-        String(p[2] > 0 ? '+' + p[2] : p[2]).replace('.', ':')
-    }</span></div>`
+    c.innerHTML += `<div><span>${p[3]}</span><span>${String(
+        p[2] > 0 ? '+' + p[2] : p[2]
+    ).replace('.', ':')}</span></div>`
     return c
 }
 

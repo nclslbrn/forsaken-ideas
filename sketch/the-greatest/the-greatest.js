@@ -27,21 +27,21 @@ const sketch = (p5) => {
     }
     p5.preload = () => {
         muhammad_ali_portrait = [
-            p5.loadImage('assets/muhammad_ali.0@58px.jpg'),
-            p5.loadImage('assets/muhammad_ali.1@58px.jpg'),
-            p5.loadImage('assets/muhammad_ali.2@58px.jpg'),
-            p5.loadImage('assets/muhammad_ali.3@58px.jpg')
+            p5.loadImage('muhammad_ali.0@58px.jpg'),
+            p5.loadImage('muhammad_ali.1@58px.jpg'),
+            p5.loadImage('muhammad_ali.2@58px.jpg'),
+            p5.loadImage('muhammad_ali.3@58px.jpg')
         ]
 
-        fonts[0] = p5.loadFont('assets/Inter-Thin.otf')
-        fonts[1] = p5.loadFont('assets/Inter-ExtraLight.otf')
-        fonts[2] = p5.loadFont('assets/Inter-Light.otf')
-        fonts[3] = p5.loadFont('assets/Inter-Regular.otf')
-        fonts[4] = p5.loadFont('assets/Inter-Medium.otf')
-        fonts[5] = p5.loadFont('assets/Inter-SemiBold.otf')
-        fonts[6] = p5.loadFont('assets/Inter-Bold.otf')
-        fonts[7] = p5.loadFont('assets/Inter-ExtraBold.otf')
-        fonts[8] = p5.loadFont('assets/Inter-Black.otf')
+        fonts[0] = p5.loadFont('Inter-Thin.otf')
+        fonts[1] = p5.loadFont('Inter-ExtraLight.otf')
+        fonts[2] = p5.loadFont('Inter-Light.otf')
+        fonts[3] = p5.loadFont('Inter-Regular.otf')
+        fonts[4] = p5.loadFont('Inter-Medium.otf')
+        fonts[5] = p5.loadFont('Inter-SemiBold.otf')
+        fonts[6] = p5.loadFont('Inter-Bold.otf')
+        fonts[7] = p5.loadFont('Inter-ExtraBold.otf')
+        fonts[8] = p5.loadFont('Inter-Black.otf')
     }
     p5.setup = () => {
         sketch.canvasSize()

@@ -16,12 +16,16 @@ const dpr = Math.round(window.devicePixelRatio) || 1
 
 const sketch = (p5) => {
     p5.preload = () => {
-        fontFace = p5.loadFont('./assets/FiraCode-Bold.otf')
-        shader = p5.loadShader('./assets/base.vert', './assets/base.frag')
+        fontFace = p5.loadFont('./FiraCode-Bold.otf')
+        shader = p5.loadShader('./base.vert', './base.frag')
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(window.innerWidth, window.innerHeight, p5.WEBGL)
+        canvas = p5.createCanvas(
+            window.innerWidth,
+            window.innerHeight,
+            p5.WEBGL
+        )
         text = p5.createGraphics(400, 84)
         text.noStroke()
         text.textSize(52)
@@ -44,14 +48,17 @@ const sketch = (p5) => {
         shader.setUniform('u_textSize', [3, 14])
         shader.setUniform('u_noiseSize', traits.noiseSize)
         shader.setUniform('u_time', p5.frameCount)
-        shader.setUniform('u_mouse', [p5.mouseX/p5.width, p5.mouseY/p5.height])
+        shader.setUniform('u_mouse', [
+            p5.mouseX / p5.width,
+            p5.mouseY / p5.height
+        ])
         p5.rect(p5.width * -0.5, p5.height * -0.5, p5.width, p5.height)
     }
 
     sketch.init = () => {
         traits.noiseSize = 2.0 + p5.random() * 4.0
         !isAnimated && p5.redraw()
-  }
+    }
 
     sketch.capture = () => p5.saveCanvas(canvas, '42 lines of code.jpg')
 

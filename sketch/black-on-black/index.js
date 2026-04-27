@@ -13,11 +13,15 @@ let traits = { constant: null },
 
 const sketch = (p5) => {
     p5.preload = () => {
-        shader = p5.loadShader('./assets/base.vert', './assets/base.frag')
+        shader = p5.loadShader('./base.vert', './base.frag')
     }
 
     p5.setup = () => {
-        canvas = p5.createCanvas(window.innerWidth, window.innerHeight, p5.WEBGL)
+        canvas = p5.createCanvas(
+            window.innerWidth,
+            window.innerHeight,
+            p5.WEBGL
+        )
         p5.noStroke()
         sketch.init()
         p5.noLoop()
@@ -43,7 +47,7 @@ const sketch = (p5) => {
             Math.round(1000000 * p5.random(-2, 2)) / 1000000,
             Math.round(1000000 * p5.random(-2, 2)) / 1000000
         ]
-        */ 
+        */
         traits.constant = p5.random(CONSTANTS)
         p5.redraw()
     }
@@ -52,8 +56,8 @@ const sketch = (p5) => {
 }
 
 window.onkeydown = (e) => {
-  e.key === "c" && alert(JSON.stringify(traits.constant))
-  e.key === "r" && sketch.init()
+    e.key === 'c' && alert(JSON.stringify(traits.constant))
+    e.key === 'r' && sketch.init()
 }
 
 new p5(sketch, containerElement)

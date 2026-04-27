@@ -19,7 +19,7 @@ const sketch = (p5) => {
         return (y / p5.height) * img.height
     }
     p5.preload = () => {
-        img = p5.loadImage('./assets/Lenna.png')
+        img = p5.loadImage('./Lenna.png')
     }
 
     p5.setup = () => {
