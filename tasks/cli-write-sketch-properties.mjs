@@ -57,7 +57,7 @@ export default async function (path) {
                 'Here is all possible icon' +
                 icons.reduce((acc, icon) => `${acc} \n-${icon}`, '') +
                 '\nWrite here some pair action name=icon name ' +
-                'You could had multiple actions separated by a coma (init=sync, download=file-media).',
+                'You could had multiple actions separated by a coma (init=sync, exportJPG=file-media, exportSVG=desktop-download).',
             result(input) {
                 let out = []
                 input
@@ -74,10 +74,10 @@ export default async function (path) {
             }
         },
         {
-          name: 'info',
-          type: 'input',
-          message: 'Write a short sketch description:',
-          initial: 'todo'
+            name: 'info',
+            type: 'input',
+            message: 'Write a short sketch description:',
+            initial: 'todo'
         }
     ]
 

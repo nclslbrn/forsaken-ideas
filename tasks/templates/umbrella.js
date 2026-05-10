@@ -1,4 +1,4 @@
-import { rect, group, svgDoc } from '@thi.ng/geom'
+import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
