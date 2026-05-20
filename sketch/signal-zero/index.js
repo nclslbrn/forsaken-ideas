@@ -11,97 +11,99 @@ import {
     canvasRecorder
 } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
-import { getPalette } from '@nclslbrn/artistry-swatch'
 import { charsGrid } from './charsGrid'
+import { randPartition } from './partition'
+import resizers from './resizers'
 import TEXTS from './TEXTS'
 import RULES from './RULES'
-const DPI = quantity(96, dpi), // default settings in inkscape
-    SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(25, mm), DPI), NONE),
-    ROOT = document.getElementById('windowFrame'),
+import THEMES from './THEMES'
+const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    MAX_COLS = 40,
-    MAX_ROWS = 60
+    SIZE = [1280, 1280],
+    MARGIN = 60,
+    MAX_COLS = 75,
+    MAX_ROWS = 35,
+    MAX_FPS = 30,
+    FPS_INTERVAL = 1000 / MAX_FPS,
+    NUM_FRAME = 200,
+    BASE_SIZE = 54
 
 let animation = 0,
     comp = [],
     state = {},
-    frame = 0,
+    frame = 1,
+    lastTime,
+    currentTime,
     isRecording = false,
     recorder = null
 
 ROOT.appendChild(CANVAS)
-const { sin, PI, random, round, abs } = Math
-
-const randPartition = (parts, size) => {
-    const rands = Array.from(Array(parts)).map(() => random())
-    const sum = rands.reduce((sum, val) => sum + val, 0)
-    return rands.map((x) => round((x / sum) * size))
-}
-
-const randomTextSize = [
-    () => 40,
-    (x, y, frame) =>
-        16 + abs(sin((((frame % 480) * 0.05 + y) / 24) * PI * 2) * 24),
-    (x, y, frame) => 16 + abs(sin((frame + (y % 480)) * 0.05 + x) * 24)
-]
 
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
-    const palette = getPalette()
+    const [background, ...colors] = pickRandom(THEMES).split(';:')
     const wave =
-        '-/\\-/|v_____-/\\-///|\\__/\\---___-W\\//T\\/====vi//\\___//\\\\____xx^xx#______________'
+        '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
+        '-W\\//T\\/====vi//\\___//\\\\____xx^yy' +
+        '______________::::::::|||/T\\___/A\\XW\\' +
+        '=========== v_________________[]'
     state = {
         randText,
         randRule,
         palette: {
-            ...palette,
-            colors: palette.colors.sort(() => random() > 0.5)
+            background,
+            colors
         },
         partition: randPartition(randMinMax(3, 5), MAX_COLS),
-        fontSize: pickRandom(randomTextSize),
+        fontSize: pickRandom(resizers),
         wave,
+        NUM_FRAME,
         MAX_COLS,
         MAX_ROWS,
         MARGIN,
-        SIZE
+        SIZE,
+        BASE_SIZE
     }
-    console.log(state)
+    console.log(String(state.fontSize))
     launch()
 }
 
 const launch = () => {
     if (animation) cancelAnimationFrame(animate)
     if (isRecording) startRecording()
-    frame = 0
+    frame = 1
     animate()
 }
 
 const animate = () => {
-    const { palette } = state
-
-    if (isRecording && frame >= 479) stopRecording()
     animation = requestAnimationFrame(animate)
+    currentTime = performance.now()
+    if (!lastTime) lastTime = currentTime
+    if (isRecording && frame === NUM_FRAME) stopRecording()
+    if (frame === NUM_FRAME) frame = 1
 
-    comp = [
-        rect(SIZE, { fill: palette.background }),
-        group({ weight: 3 }, charsGrid(state, frame))
-    ]
+    const elapsed = currentTime - lastTime
+    if (elapsed > FPS_INTERVAL) {
+        comp = [
+            rect(SIZE, { fill: state.palette.background }),
+            group({ weight: 3 }, charsGrid(state, frame))
+        ]
 
-    draw(CTX, group({ stroke: palette.colors[0] }, comp))
-    frame++
+        draw(CTX, group({}, comp))
+        lastTime = currentTime
+        frame++
+    }
 }
 
 const startRecording = () => {
     if (!isRecording) return
     recorder = canvasRecorder(
         CANVAS,
-        `Signal zero-${FMT_yyyyMMdd_HHmmss()}.mp4`,
+        `Signal zero-${FMT_yyyyMMdd_HHmmss()}.webm`,
         {
             mimeType: 'video/webm',
             fps: 30

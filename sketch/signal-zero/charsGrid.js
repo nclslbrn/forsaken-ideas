@@ -1,33 +1,30 @@
 import { repeatedly } from '@thi.ng/transducers'
 import { textToStrokes } from './font'
 import { polyline } from '@thi.ng/geom'
-const { round, max } = Math
 
 export const charsGrid = (state, frame) => {
-    const { fontSize, randText, randRule, wave, partition, palette } = state
+    const {
+        fontSize,
+        randText,
+        randRule,
+        wave,
+        partition,
+        palette,
+        MARGIN,
+        SIZE,
+        MAX_COLS,
+        MAX_ROWS
+    } = state
 
     const chars = [
         ...repeatedly(
             (y) =>
-                `${randText}${wave}`.split('').filter(
-                    (_, i) =>
-                        randRule(
-                            // i + ((round(frame / 5) * 5) % state.MAX_COLS),
-                            i + (frame % (state.MAX_COLS * state.MAX_ROWS)),
-                            y
-                        ) && i <= state.MAX_COLS
-                ),
-            state.MAX_ROWS
+                `${randText}${wave}`
+                    .split('')
+                    .filter((_, x) => randRule(x, y) && x < MAX_COLS),
+            MAX_ROWS
         )
     ]
-    /*
-    const grouped = partition.reduce((acc, length, gIdx, arr) => {
-        const startIndex = arr.slice(0, gIdx).reduce((sum, len) => sum + len, 0)
-        const textPart = chars.slice(startIndex, startIndex + length)
-        textPart.length > 0 && acc.push(textPart)
-        return acc
-    }, [])
-    */
     const letterColor = (x) =>
         partition.reduce(
             (colorRange, length, colIdx) => [
@@ -38,26 +35,31 @@ export const charsGrid = (state, frame) => {
             ],
             [0, 0]
         )[0]
-    let dx = state.MARGIN,
-        dy = state.MARGIN
+    let dx = MARGIN,
+        dy = MARGIN
 
     const glyphsPath = chars.reduce((acc, lineChars, y) => {
-        if (dy >= state.SIZE[1] - state.MARGIN) return acc
-        let maxFontSize = 0
-        dx = state.MARGIN
+        if (dy >= SIZE[1] - MARGIN) return acc
+        dx = MARGIN
+
+        const normSizes = lineChars.map((_, x) => fontSize(x, y, frame, state))
+        const baseSize = (SIZE[0] - MARGIN * 2) * 0.66
+        const sumSizes = normSizes.reduce((acc, sum) => acc + sum, 0)
+        const sizes = normSizes.map((x) => baseSize * (x / sumSizes))
         const polylineLines = lineChars.reduce((acc, letter, x) => {
-            const size = fontSize(x, y, frame)
-            dx += size * 0.66
-            if (dx >= state.SIZE[0] - state.MARGIN - size) return acc
-            maxFontSize = max(size, maxFontSize)
+            dx += sizes[x] * 1.33
+            if (dx >= SIZE[0] - MARGIN - sizes[x]) return acc
             return [
                 ...acc,
-                ...textToStrokes(letter, { x: dx, y: dy, size }).map((line) =>
-                    polyline(line, { stroke: palette.colors[letterColor(x)] })
+                ...textToStrokes(letter, { x: dx, y: dy, size: sizes[x] }).map(
+                    (line) =>
+                        polyline(line, {
+                            stroke: palette.colors[letterColor(x)]
+                        })
                 )
             ]
         }, [])
-        dy += maxFontSize
+        dy += (SIZE[1] - MARGIN * 2) / MAX_ROWS
         return [...acc, ...polylineLines]
     }, [])
     return glyphsPath

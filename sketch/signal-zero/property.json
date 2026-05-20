@@ -4,7 +4,7 @@
     "action": [
         { "name": "init", "icon": "sync" },
         { "name": "exportJPG", "icon": "file-media" },
-        { "name": "exportSVG", "icon": "destkop-download" }
+        { "name": "exportSVG", "icon": "desktop-download" }
     ],
     "info": "This sketch was made to illustrate a short text for <a href=\"https://bonne-ambiance.fr\">Bonne Ambiance</a> {web/fan}zine. To create this visual, the <a href=\"https://trmm.net/Asteroids_font/\">Asteroid Font</a> was used.",
     "date": "2026-05-09"
