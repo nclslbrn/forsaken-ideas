@@ -21,7 +21,7 @@ import THEMES from './THEMES'
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    SIZE = [2160, 3840],
+    SIZE = [2160, 2160],
     MARGIN = 60,
     MAX_COLS = 90,
     MAX_ROWS = 70,
@@ -49,9 +49,9 @@ const init = () => {
     const [background, ...colors] = pickRandom(THEMES).split(';:')
     const wave =
         '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
-        '-W\\//T\\/====vi//\\___//\\\\____xx^yy' +
-        '______________::::::::|||/T\\___/A\\XW\\' +
-        '=========== v_________________[]'
+        '-W\\//T\\/====  //\\___//  \\\\____  xx^yy' +
+        '______________::::::::|||/\\___/..%..\\\\' +
+        '== == === == == __ ____ _____ _____  []..'
     state = {
         randText,
         randRule,
@@ -69,6 +69,12 @@ const init = () => {
         SIZE,
         BASE_SIZE
     }
+    console.log(
+        'background',
+        state.palette.background,
+        'colors',
+        state.palette.colors
+    )
     console.log(String(state.fontSize))
     launch()
 }
@@ -91,7 +97,10 @@ const animate = () => {
     if (!isPlaying || elapsed > FPS_INTERVAL) {
         comp = [
             rect(SIZE, { fill: state.palette.background }),
-            group({ weight: 4 }, charsGrid(state, frame))
+            group(
+                { weight: 2, strokeLinejoin: 'round', strokeLinecap: 'round' },
+                charsGrid(state, frame)
+            )
         ]
 
         draw(CTX, group({}, comp))

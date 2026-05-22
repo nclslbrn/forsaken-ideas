@@ -1,9 +1,13 @@
 const { sin, cos, PI, abs, sqrt, floor, atan2, max, round } = Math
 
 export default [
-    (x, y, frame, { MAX_COLS, MAX_ROWS, NUM_FRAME }) =>
-        abs(sin((frame / NUM_FRAME + x / MAX_COLS + y / MAX_ROWS) * 2 * PI)),
+    /*
+     */
+    // 0. Vertical vawes
+    (x, y, frame, { MAX_ROWS, NUM_FRAME }) =>
+        abs(sin((frame / NUM_FRAME + y / MAX_ROWS) * 2 * PI))
 
+    /*
     // 1. Ripple from center
     (x, y, frame, { NUM_FRAME, MAX_ROWS, MAX_COLS }) => {
         const centerX = MAX_COLS / 2,
@@ -11,12 +15,15 @@ export default [
         const distance = sqrt((x - centerX) ** 2 + (y - centerY) ** 2)
         const t = (frame / NUM_FRAME) * PI * 2
         // Return a weight between 0 and 1
-        return (sin(distance * 0.1 - t) + 1) * 0.5
-    },
-    // 2. Horizontal wave
-    (x, y, frame, { MAX_COLS, NUM_FRAME }) =>
-        abs(sin(x / MAX_COLS + frame / NUM_FRAME) * 2 * PI),
-
+        return abs((sin(distance * 0.1 - t) + 1) * 0.5)
+    }
+    // 2. x split wave
+    (x, y, frame, { MAX_COLS, NUM_FRAME }) => {
+        const t = sin(
+            frame <= NUM_FRAME / 2 ? frame / NUM_FRAME : 1 - frame / NUM_FRAME
+        )
+        return abs(sin(x * t) / MAX_COLS)
+    }
     // 3. Vertical wave
     (x, y, frame, { MAX_ROWS, MAX_COLS, NUM_FRAME }) =>
         abs(
@@ -81,11 +88,10 @@ export default [
     (x, y, frame, { NUM_FRAME, MAX_COLS }) =>
         ((x + frame) % MAX_COLS) - MAX_COLS,
 
-    /*
     // 12. Vertical scroll
     (x, y, frame, { NUM_FRAME, MAX_ROWS }) =>
-        ((y + frame) % MAX_ROWS) - MAX_ROWS
-    */
+        ((y + frame) % MAX_ROWS) - MAX_ROWS,
+
     // 13. Corner radiating waves
     (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
@@ -146,7 +152,7 @@ export default [
         const angle = atan2(y - cy, x - cx)
         const distance = sqrt((x - cx) ** 2 + (y - cy) ** 2)
         const sectorAngle = abs(angle % (PI / 4)) * 8
-        return abs(sin(sectorAngle * 3 + distance * 0.3 - t))
+        return abs(sin(sectorAngle * 0.01 + distance - t))
     },
 
     // 19. Sine grid
@@ -169,4 +175,5 @@ export default [
         const maxDist = sqrt(MAX_COLS ** 2 + MAX_ROWS ** 2)
         return abs(max(0, 1 - (distance * 3) / maxDist))
     }
+     */
 ]

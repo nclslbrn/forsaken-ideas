@@ -75,26 +75,26 @@ export const charsGrid = (state, frame) => {
         })
     })
     const glyphsPath = normGlyphsGrid.reduce((acc, lineChars, y) => {
-        //if (dy >= SIZE[1] - MARGIN) return acc
         dx = MARGIN
 
         const polylineLines = lineChars.reduce((acc, letter, x) => {
             dx += letter.sizes[0]
             dy[x] += letter.sizes[1]
 
-            // if (dx >= SIZE[0] - MARGIN - sizes[x]) return acc
-            return [
-                ...acc,
-                ...getGlyphVector(
-                    letter.char,
-                    [letter.sizes[0] * 0.66, letter.sizes[1]],
-                    [dx, dy[x]]
-                ).map((line) =>
-                    polyline(line, {
-                        stroke: palette.colors[letterColor(x)]
-                    })
-                )
-            ]
+            return letter.char !== ' '
+                ? [
+                      ...acc,
+                      ...getGlyphVector(
+                          letter.char,
+                          [letter.sizes[0] * 0.66, letter.sizes[1]],
+                          [dx, dy[x]]
+                      ).map((line) =>
+                          polyline(line, {
+                              stroke: palette.colors[letterColor(x)]
+                          })
+                      )
+                  ]
+                : acc
         }, [])
 
         return [...acc, ...polylineLines]
