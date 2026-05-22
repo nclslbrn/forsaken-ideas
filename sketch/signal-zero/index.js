@@ -1,6 +1,7 @@
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import '../framed-canvas.css'
+// import '../framed-canvas.css'
+import '../full-canvas.css'
 import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom } from '@thi.ng/random'
 import { randMinMax } from '@thi.ng/vectors'
@@ -20,22 +21,22 @@ import THEMES from './THEMES'
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    SIZE = [1280, 1280],
+    SIZE = [2160, 3840],
     MARGIN = 60,
-    MAX_COLS = 75,
-    MAX_ROWS = 35,
-    MAX_FPS = 30,
+    MAX_COLS = 90,
+    MAX_ROWS = 70,
+    MAX_FPS = 25,
     FPS_INTERVAL = 1000 / MAX_FPS,
-    NUM_FRAME = 200,
+    NUM_FRAME = 260,
     BASE_SIZE = 54
 
-let animation = 0,
-    comp = [],
+let comp = [],
     state = {},
     frame = 1,
     lastTime,
     currentTime,
     isRecording = false,
+    isPlaying = true,
     recorder = null
 
 ROOT.appendChild(CANVAS)
@@ -73,24 +74,24 @@ const init = () => {
 }
 
 const launch = () => {
-    if (animation) cancelAnimationFrame(animate)
+    cancelAnimationFrame(animate)
     if (isRecording) startRecording()
     frame = 1
     animate()
 }
 
 const animate = () => {
-    animation = requestAnimationFrame(animate)
+    isPlaying && requestAnimationFrame(animate)
     currentTime = performance.now()
     if (!lastTime) lastTime = currentTime
     if (isRecording && frame === NUM_FRAME) stopRecording()
     if (frame === NUM_FRAME) frame = 1
 
     const elapsed = currentTime - lastTime
-    if (elapsed > FPS_INTERVAL) {
+    if (!isPlaying || elapsed > FPS_INTERVAL) {
         comp = [
             rect(SIZE, { fill: state.palette.background }),
-            group({ weight: 3 }, charsGrid(state, frame))
+            group({ weight: 4 }, charsGrid(state, frame))
         ]
 
         draw(CTX, group({}, comp))
@@ -106,7 +107,7 @@ const startRecording = () => {
         `Signal zero-${FMT_yyyyMMdd_HHmmss()}.webm`,
         {
             mimeType: 'video/webm',
-            fps: 30
+            fps: MAX_FPS
         }
     )
     recorder.start()
@@ -155,6 +156,10 @@ window.onkeydown = (e) => {
 
         case 's':
             window['exportJPG']()
+            break
+
+        case 'p':
+            isPlaying = !isPlaying
             break
 
         case 'r':

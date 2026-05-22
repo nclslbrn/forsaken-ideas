@@ -167,6 +167,6 @@ export default [
         const hotspotY = MAX_ROWS / 2 + (cos(t * 0.7) * MAX_ROWS) / 3
         const distance = sqrt((x - hotspotX) ** 2 + (y - hotspotY) ** 2)
         const maxDist = sqrt(MAX_COLS ** 2 + MAX_ROWS ** 2)
-        return max(0, 1 - (distance * 3) / maxDist)
+        return abs(max(0, 1 - (distance * 3) / maxDist))
     }
 ]

@@ -1,6 +1,6 @@
 export default [
-    '#111111;:#eeeeee;:#fefefe;:#bebebe',
-    '#111111;:#eeeeee;:#5b13d7;:#ffffff',
+    '#111111;:#fefecc;:#ffffff;:#ccfefe',
+    '#111111;:#ffeefc;:#5b13d7;:#ffffff',
     '#111111;:#eeeeee;:#ff9752;:#ffffff',
     '#fefefe:;#4cad5c;:#666666;:#333333',
     '#fefefe:;#d70917;:#666666;:#333333'
