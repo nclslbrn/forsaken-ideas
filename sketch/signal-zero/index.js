@@ -30,7 +30,7 @@ const ROOT = document.getElementById('windowFrame'),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
     MAX_FPS = 30,
     FPS_INTERVAL = 1000 / MAX_FPS,
-    NUM_FRAME = 60, //260,
+    NUM_FRAME = 260,
     BASE_SIZE = 54,
     WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1
 
@@ -99,7 +99,7 @@ const animate = () => {
     // if (isRecording && frame === NUM_FRAME) stopRecording()
     if (frame === NUM_FRAME) {
         frame = 1
-        //  isPlaying = false
+        isPlaying = false
     }
 
     const elapsed = currentTime - lastTime

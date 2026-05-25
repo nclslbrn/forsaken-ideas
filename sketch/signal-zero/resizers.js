@@ -181,6 +181,8 @@ export default [
     // 21. Horizontal scrolling line
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS }) => {
         const currCol = round((frame / NUM_FRAME) * MAX_COLS)
-        return abs(currCol - x) <= 4 ? (1 - abs(x - currCol)) * 0.5 : 0.5
+        return abs(currCol - x) <= 2
+            ? sin(2 - abs(x - currCol))
+            : abs(x - currCol) / MAX_COLS
     }
 ]
