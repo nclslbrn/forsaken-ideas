@@ -8,8 +8,8 @@ import { randMinMax } from '@thi.ng/vectors'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import {
     downloadCanvas,
-    downloadWithMime,
-    canvasRecorder
+    downloadWithMime
+    //canvasRecorder
 } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { charsGrid } from './charsGrid'
@@ -21,14 +21,18 @@ import THEMES from './THEMES'
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    SIZE = [2160, 2160],
+    PX_RATIO = window.devicePixelRatio,
+    SIZE = [window.innerWidth, window.innerHeight].map((d) =>
+        Math.floor(PX_RATIO * d)
+    ),
     MARGIN = 60,
-    MAX_COLS = 90,
-    MAX_ROWS = 70,
-    MAX_FPS = 25,
+    MAX_COLS = Math.floor(SIZE[0] / 18),
+    MAX_ROWS = Math.floor(SIZE[1] / 24),
+    MAX_FPS = 30,
     FPS_INTERVAL = 1000 / MAX_FPS,
-    NUM_FRAME = 260,
-    BASE_SIZE = 54
+    NUM_FRAME = 60, //260,
+    BASE_SIZE = 54,
+    WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1
 
 let comp = [],
     state = {},
@@ -36,8 +40,8 @@ let comp = [],
     lastTime,
     currentTime,
     isRecording = false,
-    isPlaying = true,
-    recorder = null
+    isPlaying = true // ,
+// recorder = null
 
 ROOT.appendChild(CANVAS)
 
@@ -46,7 +50,7 @@ const init = () => {
     CANVAS.height = SIZE[1]
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
-    const [background, ...colors] = pickRandom(THEMES).split(';:')
+    const [background, ...colors] = pickRandom(THEMES)
     const wave =
         '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
         '-W\\//T\\/====  //\\___//  \\\\____  xx^yy' +
@@ -59,8 +63,8 @@ const init = () => {
             background,
             colors
         },
-        partition: randPartition(randMinMax(3, 5), MAX_COLS),
-        fontSize: pickRandom(resizers),
+        partition: randPartition(randMinMax(null, 3, 5), MAX_COLS),
+        fontSize: resizers[21],
         wave,
         NUM_FRAME,
         MAX_COLS,
@@ -69,19 +73,21 @@ const init = () => {
         SIZE,
         BASE_SIZE
     }
+
     console.log(
-        'background',
-        state.palette.background,
-        'colors',
-        state.palette.colors
+        `%c ${randText} ${background}`,
+        `background: ${background}; color: ${colors[0]}`
     )
-    console.log(String(state.fontSize))
+    console.log(
+        `%c ${String(state.fontSize)}`,
+        `background: ${background}; color: ${colors[1]}`
+    )
     launch()
 }
 
 const launch = () => {
     cancelAnimationFrame(animate)
-    if (isRecording) startRecording()
+    // if (isRecording) startRecording()
     frame = 1
     animate()
 }
@@ -90,30 +96,45 @@ const animate = () => {
     isPlaying && requestAnimationFrame(animate)
     currentTime = performance.now()
     if (!lastTime) lastTime = currentTime
-    if (isRecording && frame === NUM_FRAME) stopRecording()
-    if (frame === NUM_FRAME) frame = 1
+    // if (isRecording && frame === NUM_FRAME) stopRecording()
+    if (frame === NUM_FRAME) {
+        frame = 1
+        //  isPlaying = false
+    }
 
     const elapsed = currentTime - lastTime
     if (!isPlaying || elapsed > FPS_INTERVAL) {
         comp = [
             rect(SIZE, { fill: state.palette.background }),
             group(
-                { weight: 2, strokeLinejoin: 'round', strokeLinecap: 'round' },
+                {
+                    weight: WEIGHT,
+                    strokeLinejoin: 'round',
+                    strokeLinecap: 'round'
+                },
                 charsGrid(state, frame)
             )
         ]
 
         draw(CTX, group({}, comp))
+        isPlaying &&
+            isRecording &&
+            downloadCanvas(
+                CANVAS,
+                `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${String(frame).padStart(3, '0')}`,
+                'jpeg',
+                1
+            )
         lastTime = currentTime
         frame++
     }
 }
-
+/*
 const startRecording = () => {
     if (!isRecording) return
     recorder = canvasRecorder(
         CANVAS,
-        `Signal zero-${FMT_yyyyMMdd_HHmmss()}.webm`,
+        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}.webm`,
         {
             mimeType: 'video/webm',
             fps: MAX_FPS
@@ -128,16 +149,22 @@ const stopRecording = () => {
     recorder.stop()
     console.log('%c Record stopped ', 'background: limegreen; color: black')
 }
+ */
 
 init()
 window.init = init
 
 window['exportJPG'] = () => {
-    downloadCanvas(CANVAS, `Signal zero-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(
+        CANVAS,
+        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}`,
+        'jpeg',
+        1
+    )
 }
 window['exportSVG'] = () => {
     downloadWithMime(
-        `Signal zero-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
             svgDoc(
                 {
@@ -169,10 +196,12 @@ window.onkeydown = (e) => {
 
         case 'p':
             isPlaying = !isPlaying
+            frame = 1
+            animate()
             break
 
         case 'r':
-            if (isRecording) stopRecording()
+            // if (isRecording) stopRecording()
             isRecording = !isRecording
             launch()
             break

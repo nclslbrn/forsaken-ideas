@@ -1,5 +1,4 @@
 import { repeatedly } from '@thi.ng/transducers'
-// import { textToStrokes } from './font'
 import { polyline } from '@thi.ng/geom'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 
@@ -46,7 +45,7 @@ export const charsGrid = (state, frame) => {
     // Glydph cell: char: String, size: Array[x, y]
     const glyphsGrid = chars.reduce((acc, lineChars, y) => {
         acc[y] = lineChars.map((char, x) => {
-            const size = fontSize(x, y, frame, state)
+            const size = fontSize({ x, y, frame }, state)
             return { char, sizes: [size, size] }
         })
         return acc
@@ -74,7 +73,7 @@ export const charsGrid = (state, frame) => {
             return { char: cell.char, sizes: normSizes }
         })
     })
-    const glyphsPath = normGlyphsGrid.reduce((acc, lineChars, y) => {
+    const glyphsPath = normGlyphsGrid.reduce((acc, lineChars) => {
         dx = MARGIN
 
         const polylineLines = lineChars.reduce((acc, letter, x) => {

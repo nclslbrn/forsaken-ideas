@@ -1,4 +1,4 @@
-const { sin, cos, floor, ceil, abs, sqrt, atan2, pow, random } = Math
+const { sin, cos, floor, abs, sqrt, atan2, pow } = Math
 export default [
     (i, j) => (i ^ j) === i + j || i >> j === i + j,
 

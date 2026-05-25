@@ -1,31 +1,30 @@
 const { sin, cos, PI, abs, sqrt, floor, atan2, max, round } = Math
 
 export default [
-    /*
-     */
     // 0. Vertical vawes
-    (x, y, frame, { MAX_ROWS, NUM_FRAME }) =>
-        abs(sin((frame / NUM_FRAME + y / MAX_ROWS) * 2 * PI))
+    ({ y, frame }, { MAX_ROWS, NUM_FRAME }) =>
+        abs(sin((frame / NUM_FRAME + y / MAX_ROWS) * 2 * PI)),
 
-    /*
     // 1. Ripple from center
-    (x, y, frame, { NUM_FRAME, MAX_ROWS, MAX_COLS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS, MAX_COLS }) => {
         const centerX = MAX_COLS / 2,
             centerY = MAX_ROWS / 2
         const distance = sqrt((x - centerX) ** 2 + (y - centerY) ** 2)
         const t = (frame / NUM_FRAME) * PI * 2
         // Return a weight between 0 and 1
         return abs((sin(distance * 0.1 - t) + 1) * 0.5)
-    }
+    },
+
     // 2. x split wave
-    (x, y, frame, { MAX_COLS, NUM_FRAME }) => {
+    ({ x, frame }, { MAX_COLS, NUM_FRAME }) => {
         const t = sin(
             frame <= NUM_FRAME / 2 ? frame / NUM_FRAME : 1 - frame / NUM_FRAME
         )
         return abs(sin(x * t) / MAX_COLS)
-    }
+    },
+
     // 3. Vertical wave
-    (x, y, frame, { MAX_ROWS, MAX_COLS, NUM_FRAME }) =>
+    ({ x, y, frame }, { MAX_ROWS, MAX_COLS, NUM_FRAME }) =>
         abs(
             sin(
                 (y / MAX_ROWS + frame / NUM_FRAME) * 2 * PI +
@@ -34,41 +33,41 @@ export default [
         ),
 
     // 4. Diagonal scroll
-    (x, y, frame, { MAX_COLS, MAX_ROWS, NUM_FRAME }) =>
+    ({ x, y, frame }, { MAX_COLS, MAX_ROWS, NUM_FRAME }) =>
         abs(
             sin(x / MAX_COLS + y / MAX_ROWS - sin((frame / NUM_FRAME) * 2 * PI))
         ),
 
     // 5. XOR pattern
-    (x, y, frame, { MAX_COLS, NUM_FRAME }) => {
+    ({ x, y, frame }, { MAX_COLS, NUM_FRAME }) => {
         const xorValue = (floor(x * 3) ^ floor(y * 3)) % MAX_COLS
         return abs(sin(xorValue + (frame / NUM_FRAME) * 2 * PI))
     },
 
     // 6. Expanding circles
-    (x, y, frame, { MAX_ROWS, MAX_COLS, NUM_FRAME }) => {
+    ({ x, y, frame }, { MAX_ROWS, MAX_COLS, NUM_FRAME }) => {
         const distance = sqrt((x - MAX_COLS / 2) ** 2 + (y - MAX_ROWS / 2) ** 2)
         return abs(sin(distance * 0.1 - (frame / NUM_FRAME) * 2 * PI))
     },
 
     // 7. Checkerboard pulse
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const checker = (floor(x / 5) + floor(y / 3)) % 2
         return checker ? abs(sin(t)) : abs(cos(t))
     },
 
     // 8. Radial breathing
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const angle = atan2(y, x)
         const distance = sqrt(x ** 2 + y ** 2)
         const maxDist = sqrt(MAX_COLS ** 2 + MAX_ROWS ** 2)
-        return (sin(angle * 3 + t) + 1) * 0.5 * (1 - distance / maxDist)
+        return abs((sin(angle * PI + t) + 1) * (1 - distance / maxDist))
     },
 
     // 9. Perlin-like noise
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const noise =
             sin((x / MAX_COLS) * PI) * cos((y / MAX_ROWS) * PI) * sin(t)
@@ -76,7 +75,7 @@ export default [
     },
 
     // 10. Spiral
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const cx = MAX_COLS / 2,
             cy = MAX_ROWS / 2
@@ -85,15 +84,13 @@ export default [
         return abs(sin(angle * 5 + distance * 0.3 - t))
     },
     // 11. Horizontal scroll
-    (x, y, frame, { NUM_FRAME, MAX_COLS }) =>
-        ((x + frame) % MAX_COLS) - MAX_COLS,
+    ({ x, frame }, { MAX_COLS }) => ((x + frame) % MAX_COLS) - MAX_COLS,
 
     // 12. Vertical scroll
-    (x, y, frame, { NUM_FRAME, MAX_ROWS }) =>
-        ((y + frame) % MAX_ROWS) - MAX_ROWS,
+    ({ y, frame }, { MAX_ROWS }) => ((y + frame) % MAX_ROWS) - MAX_ROWS,
 
     // 13. Corner radiating waves
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const d1 = sqrt(x ** 2 + y ** 2)
         const d2 = sqrt((x - MAX_COLS) ** 2 + y ** 2)
@@ -110,7 +107,7 @@ export default [
     },
 
     // 14. Interference pattern
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         return abs(
             (sin((x / MAX_COLS) * 2 * PI + t) *
@@ -121,31 +118,36 @@ export default [
     },
 
     // 15. Target rings
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const distance = sqrt((x - MAX_COLS / 2) ** 2 + (y - MAX_ROWS / 2) ** 2)
         return abs(sin(distance * 0.5 - t))
     },
 
     // 16. Turbulent flow
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = (frame / NUM_FRAME) * 2 * PI
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const ff =
+            (frame < NUM_FRAME * 0.5
+                ? frame / NUM_FRAME
+                : 1 - frame / NUM_FRAME) *
+            PI *
+            4
         const turbulence =
-            sin((x / MAX_COLS) * PI + t) *
-            cos((y / MAX_ROWS) * PI + t * 0.7) *
-            sin((x / MAX_COLS + y / MAX_ROWS) * PI + t * 1.3)
-        return abs(turbulence + 1) * 0.5
+            sin((x / (MAX_COLS * 0.5)) * ff) *
+            cos((y / (MAX_ROWS * 0.5)) * ff) *
+            sin(x / (MAX_COLS * 0.5) + (y / (MAX_ROWS * 0.5)) * ff)
+        return abs(sin(turbulence + 1) * ff)
     },
 
     // 17. Diamond pattern
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const diamond = abs(x / MAX_COLS) + abs(y / MAX_ROWS)
-        return abs(sin(diamond * PI * 3 - t))
+        return abs(sin(diamond * PI * 3 - t) * 2 * PI)
     },
 
     // 18. Kaleidoscope
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const cx = MAX_COLS / 2,
             cy = MAX_ROWS / 2
@@ -156,7 +158,7 @@ export default [
     },
 
     // 19. Sine grid
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         return abs(
             (sin((x / MAX_COLS) * 2 * PI + t) +
@@ -167,13 +169,18 @@ export default [
     },
 
     // 20. Wandering hotspot
-    (x, y, frame, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const hotspotX = MAX_COLS / 2 + (sin(t) * MAX_COLS) / 3
-        const hotspotY = MAX_ROWS / 2 + (cos(t * 0.7) * MAX_ROWS) / 3
+        const hotspotY = MAX_ROWS / 2 + (cos(t) * MAX_ROWS) / 3
         const distance = sqrt((x - hotspotX) ** 2 + (y - hotspotY) ** 2)
         const maxDist = sqrt(MAX_COLS ** 2 + MAX_ROWS ** 2)
-        return abs(max(0, 1 - (distance * 3) / maxDist))
+        return abs(sin(max(0, 1 - (distance * 3) / maxDist)) * 2 * PI)
+    },
+
+    // 21. Horizontal scrolling line
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS }) => {
+        const currCol = round((frame / NUM_FRAME) * MAX_COLS)
+        return abs(currCol - x) <= 4 ? (1 - abs(x - currCol)) * 0.5 : 0.5
     }
-     */
 ]
