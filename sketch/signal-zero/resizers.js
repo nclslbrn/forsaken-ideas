@@ -1,4 +1,4 @@
-const { sin, cos, PI, abs, sqrt, floor, atan2, max, round } = Math
+const { sin, cos, PI, abs, sqrt, floor, atan2, max, round, hypot } = Math
 
 export default [
     // 0. Vertical vawes
@@ -184,5 +184,16 @@ export default [
         return abs(currCol - x) <= 2
             ? sin(2 - abs(x - currCol))
             : abs(x - currCol) / MAX_COLS
+    },
+
+    // 22. Circle Ripple
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        //sin(t-sqrt((x-7.5)**2+(y-6)**2))
+        const t = sin(frame / NUM_FRAME) * PI
+        const cx = MAX_COLS / 2,
+            cy = MAX_ROWS / 2,
+            dx = (cx - x) / cx,
+            dy = (cy - y) / cy
+        return abs(sin(t - abs(dx * dy)))
     }
 ]

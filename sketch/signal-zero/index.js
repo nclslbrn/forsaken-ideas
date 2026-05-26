@@ -28,7 +28,7 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 30,
+    MAX_FPS = 5,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
@@ -64,7 +64,7 @@ const init = () => {
             colors
         },
         partition: randPartition(randMinMax(null, 3, 5), MAX_COLS),
-        fontSize: resizers[21],
+        fontSize: resizers[22],
         wave,
         NUM_FRAME,
         MAX_COLS,
@@ -98,6 +98,7 @@ const animate = () => {
     if (!lastTime) lastTime = currentTime
     // if (isRecording && frame === NUM_FRAME) stopRecording()
     if (frame === NUM_FRAME) {
+        console.log('done')
         frame = 1
         isPlaying = false
     }

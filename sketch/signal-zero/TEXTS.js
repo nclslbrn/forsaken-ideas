@@ -24,18 +24,17 @@ export default [
     'CONV3RGE',
     'DRIFT///',
     'MUTATION_',
-    'D1FFUS3',
     'FEEDBACK__',
     'OVERFL0W',
     'TRANSP0SE',
     'SCATTER_',
     'L00P/BACK',
     '[BREAK]',
-    'INTERF4CE',
     'DECAY__0',
     'SYMM3TRY',
     'PATCH//',
     'C0RRUPT',
     'SEGMENT_',
-    '[DE]PHASE'
+    '[DE]PHASE',
+    'FOLD'
 ]
