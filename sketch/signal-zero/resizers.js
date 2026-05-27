@@ -175,7 +175,7 @@ export default [
         const hotspotY = MAX_ROWS / 2 + (cos(t) * MAX_ROWS) / 3
         const distance = sqrt((x - hotspotX) ** 2 + (y - hotspotY) ** 2)
         const maxDist = sqrt(MAX_COLS ** 2 + MAX_ROWS ** 2)
-        return abs(sin(max(0, 1 - (distance * 3) / maxDist)) * 2 * PI)
+        return abs(sin(max(0, 1 - (distance * 2) / maxDist)) * 2 * PI)
     },
 
     // 21. Horizontal scrolling line
@@ -186,10 +186,10 @@ export default [
             : abs(x - currCol) / MAX_COLS
     },
 
-    // 22. Circle Ripple
+    // 22. Circle wrap
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         //sin(t-sqrt((x-7.5)**2+(y-6)**2))
-        const t = sin(frame / NUM_FRAME) * PI
+        const t = ((frame / NUM_FRAME) * 2 - 0.5) * PI * 2
         const cx = MAX_COLS / 2,
             cy = MAX_ROWS / 2,
             dx = (cx - x) / cx,

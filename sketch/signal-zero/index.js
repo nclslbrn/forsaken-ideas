@@ -28,7 +28,7 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 5,
+    MAX_FPS = 30,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
@@ -64,7 +64,7 @@ const init = () => {
             colors
         },
         partition: randPartition(randMinMax(null, 3, 5), MAX_COLS),
-        fontSize: resizers[22],
+        fontSize: resizers[20], //pickRandom(resizers),
         wave,
         NUM_FRAME,
         MAX_COLS,
@@ -204,6 +204,7 @@ window.onkeydown = (e) => {
         case 'r':
             // if (isRecording) stopRecording()
             isRecording = !isRecording
+            isPlaying = true
             launch()
             break
     }
