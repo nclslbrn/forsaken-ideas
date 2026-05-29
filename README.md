@@ -75,7 +75,7 @@ action.icon | (String) An icon name (must be declared in sketch-template.html)
 | yarn run sketch:setup {sketch} | Setup a new project or a config of an old one (create a folder with index.html and vite.config.js |
 | yarn run sketch {sketch} | Launch a sketch with Vite (dev server) |
 | yarn run sketch {sketch} build | Build the sketch and store files in ./public/sketch/{sketch} |
-| yarn run sketch:deploy | Copy sketch build from /public to a ftp (you need to install lftp) |
+| yarn run sketch:deploy {sketch} | Copy sketch build from /public to a ftp (you need to install lftp) |
 | yarn run sketck:list | List all project in a JSON file ./public/sketch/index.json |
 | yarn run sketch:publish | Copy all built from public/sketch to dist/sketch |
 
