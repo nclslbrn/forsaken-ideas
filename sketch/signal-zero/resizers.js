@@ -1,4 +1,4 @@
-const { sin, cos, PI, abs, sqrt, floor, atan2, max, round, hypot } = Math
+const { sin, cos, PI, abs, sqrt, floor, atan2, tan, max, round, hypot } = Math
 
 export default [
     // 0. Vertical vawes
@@ -186,14 +186,48 @@ export default [
             : abs(x - currCol) / MAX_COLS
     },
 
-    // 22. Circle wrap
+    // 22. Inverse circle wrap
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        //sin(t-sqrt((x-7.5)**2+(y-6)**2))
         const t = ((frame / NUM_FRAME) * 2 - 0.5) * PI * 2
         const cx = MAX_COLS / 2,
             cy = MAX_ROWS / 2,
             dx = (cx - x) / cx,
             dy = (cy - y) / cy
         return abs(sin(t - abs(dx * dy)))
+    },
+
+    // 23. Circle wrap
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const t = (1 - frame / NUM_FRAME) * PI
+        const cx = MAX_COLS / 2,
+            cy = MAX_ROWS / 2,
+            d = hypot((cx - x) / cx, (cy - y) / cy)
+        return sin(abs(t - d))
+    },
+
+    // 24. Circle wrap ripple
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        //sin(t-sqrt((x-7.5)**2+(y-6)**2))
+
+        const t = frame / NUM_FRAME
+        const cx = MAX_COLS / 2,
+            cy = MAX_ROWS / 2
+        let d = hypot(cx - (x + t), cy - (y + t))
+
+        return abs(sin(t - d))
+    },
+    // 25 horizontal sliding line
+    ({ x, frame }, { NUM_FRAME, MAX_COLS }) => {
+        const t = ((frame / NUM_FRAME) * 4) % 1,
+            normX = x / MAX_COLS,
+            tx = sin((t + normX) % 1)
+        return tx > 0.1 && tx < 0.3 ? 0.1 : 0.5
+    },
+    // 26 vertical sliding line
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME,
+            normY = sin((x ^ y) / MAX_ROWS),
+            ty = (t + normY * 2) % 1
+        return ty < 0.3 ? 0.1 : 0.3
     }
 ]

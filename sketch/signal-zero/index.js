@@ -6,11 +6,7 @@ import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom } from '@thi.ng/random'
 import { randMinMax } from '@thi.ng/vectors'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import {
-    downloadCanvas,
-    downloadWithMime
-    //canvasRecorder
-} from '@thi.ng/dl-asset'
+import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { charsGrid } from './charsGrid'
 import { randPartition } from './partition'
@@ -28,7 +24,7 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 30,
+    MAX_FPS = 10,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
@@ -40,8 +36,8 @@ let comp = [],
     lastTime,
     currentTime,
     isRecording = false,
-    isPlaying = true // ,
-// recorder = null
+    isPlaying = true,
+    animationIdx = 23
 
 ROOT.appendChild(CANVAS)
 
@@ -64,7 +60,7 @@ const init = () => {
             colors
         },
         partition: randPartition(randMinMax(null, 3, 5), MAX_COLS),
-        fontSize: resizers[20], //pickRandom(resizers),
+        fontSize: resizers[animationIdx], //pickRandom(resizers),
         wave,
         NUM_FRAME,
         MAX_COLS,
@@ -100,7 +96,7 @@ const animate = () => {
     if (frame === NUM_FRAME) {
         console.log('done')
         frame = 1
-        isPlaying = false
+        if (isRecording) isPlaying = false
     }
 
     const elapsed = currentTime - lastTime
@@ -130,27 +126,6 @@ const animate = () => {
         frame++
     }
 }
-/*
-const startRecording = () => {
-    if (!isRecording) return
-    recorder = canvasRecorder(
-        CANVAS,
-        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}.webm`,
-        {
-            mimeType: 'video/webm',
-            fps: MAX_FPS
-        }
-    )
-    recorder.start()
-    console.log('%c Record started ', 'background: tomato; color: white')
-}
-
-const stopRecording = () => {
-    if (!isRecording) return
-    recorder.stop()
-    console.log('%c Record stopped ', 'background: limegreen; color: black')
-}
- */
 
 init()
 window.init = init
@@ -182,7 +157,7 @@ window['exportSVG'] = () => {
 window.infobox = infobox
 handleAction()
 window.onkeydown = (e) => {
-    switch (e.key.toLowerCase()) {
+    switch (e.key) {
         case 'n':
             init()
             break
@@ -206,6 +181,22 @@ window.onkeydown = (e) => {
             isRecording = !isRecording
             isPlaying = true
             launch()
+            break
+
+        case 'ArrowRight':
+            animationIdx = (animationIdx + 1) % resizers.length
+            state.fontSize = resizers[animationIdx]
+            console.log('animationIdx', animationIdx)
+            break
+
+        case 'ArrowLeft':
+            animationIdx--
+            if (animationIdx < 0) animationIdx = resizers.length - 1
+            state.fontSize = resizers[animationIdx]
+            console.log('animationIdx', animationIdx)
+            break
+        default:
+            console.log(e.key)
             break
     }
 }
