@@ -13,7 +13,8 @@ export const charsGrid = (state, frame) => {
         MARGIN,
         SIZE,
         MAX_COLS,
-        MAX_ROWS
+        MAX_ROWS,
+        COLOR_AXE
     } = state
 
     const chars = [
@@ -27,10 +28,10 @@ export const charsGrid = (state, frame) => {
             )
         }, MAX_ROWS)
     ]
-    const letterColor = (x) =>
+    const letterColor = (i) =>
         partition.reduce(
             (colorRange, length, colIdx) => [
-                x >= colorRange[1] && x <= length + colorRange[0]
+                i >= colorRange[1] && i <= length + colorRange[0]
                     ? colIdx
                     : colorRange[0],
                 colorRange[1] + length
@@ -73,7 +74,7 @@ export const charsGrid = (state, frame) => {
             return { char: cell.char, sizes: normSizes }
         })
     })
-    const glyphsPath = normGlyphsGrid.reduce((acc, lineChars) => {
+    const glyphsPath = normGlyphsGrid.reduce((acc, lineChars, y) => {
         dx = MARGIN
 
         const polylineLines = lineChars.reduce((acc, letter, x) => {
@@ -89,7 +90,9 @@ export const charsGrid = (state, frame) => {
                           [dx, dy[x]]
                       ).map((line) =>
                           polyline(line, {
-                              stroke: palette.colors[letterColor(x)]
+                              stroke: palette.colors[
+                                  letterColor(COLOR_AXE ? x : y)
+                              ]
                           })
                       )
                   ]

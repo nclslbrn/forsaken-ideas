@@ -223,10 +223,24 @@ export default [
             tx = sin((t + normX) % 1)
         return tx > 0.1 && tx < 0.3 ? 0.1 : 0.5
     },
-    // 26 vertical sliding line
+    // 26 bitwise shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
             normY = sin((x ^ y) / MAX_ROWS),
+            ty = (t + normY * 2) % 1
+        return ty < 0.3 ? 0.1 : 0.3
+    },
+    // 27 another shrink
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME,
+            normY = sin((x | y) / MAX_ROWS),
+            ty = (t + normY * 2) % 1
+        return ty < 0.3 ? 0.1 : 0.3
+    },
+    // 28 another shrink
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME,
+            normY = sin((x & y % x) / MAX_ROWS),
             ty = (t + normY * 2) % 1
         return ty < 0.3 ? 0.1 : 0.3
     }

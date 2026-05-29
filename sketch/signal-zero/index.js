@@ -24,11 +24,12 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 10,
+    MAX_FPS = 25,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
-    WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1
+    WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1,
+    COLOR_AXE = Math.random() > 0.5
 
 let comp = [],
     state = {},
@@ -37,7 +38,7 @@ let comp = [],
     currentTime,
     isRecording = false,
     isPlaying = true,
-    animationIdx = 23
+    animationIdx = 0
 
 ROOT.appendChild(CANVAS)
 
@@ -59,7 +60,10 @@ const init = () => {
             background,
             colors
         },
-        partition: randPartition(randMinMax(null, 3, 5), MAX_COLS),
+        partition: randPartition(
+            randMinMax(null, 3, 5),
+            COLOR_AXE ? MAX_COLS : MAX_ROWS
+        ),
         fontSize: resizers[animationIdx], //pickRandom(resizers),
         wave,
         NUM_FRAME,
@@ -67,7 +71,8 @@ const init = () => {
         MAX_ROWS,
         MARGIN,
         SIZE,
-        BASE_SIZE
+        BASE_SIZE,
+        COLOR_AXE
     }
 
     console.log(
