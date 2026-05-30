@@ -31,6 +31,7 @@ const ROOT = document.getElementById('windowFrame'),
     WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1,
     COLOR_AXE = Math.random() > 0.5
 
+console.log('RULES', RULES.length, 'SIZER', resizers.length)
 let comp = [],
     state = {},
     frame = 1,
@@ -45,9 +46,14 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
+    animationIdx = Math.floor(Math.random() * resizers.length)
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
     const [background, ...colors] = pickRandom(THEMES)
+    const colorSectionNum = randMinMax(
+        Math.floor(colors.length / 2),
+        colors.length
+    )
     const wave =
         '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
         '-W\\//T\\/====  //\\___//  \\\\____  xx^yy' +
@@ -61,7 +67,7 @@ const init = () => {
             colors
         },
         partition: randPartition(
-            randMinMax(null, 3, 5),
+            colorSectionNum,
             COLOR_AXE ? MAX_COLS : MAX_ROWS
         ),
         fontSize: resizers[animationIdx], //pickRandom(resizers),
@@ -75,13 +81,16 @@ const init = () => {
         COLOR_AXE
     }
 
+    const debug = 
+` text: ${randText}
+  bg: ${background}
+  animation: ${animationIdx}
+  partition: ${colorSectionNum}/${state.palette.colors.length}\r\n `
     console.log(
-        `%c ${randText} ${background}`,
-        `background: ${background}; color: ${colors[0]}`
-    )
-    console.log(
-        `%c ${String(state.fontSize)}`,
-        `background: ${background}; color: ${colors[1]}`
+        state.palette.colors.reduce((acc, col, i) => acc + `%c ${i === 0 ? debug : ''}██ ${col} \n`, ''),
+        ...state.palette.colors.map(
+            (col) => `background: ${background}; color: ${col}`
+        )
     )
     launch()
 }

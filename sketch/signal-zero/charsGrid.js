@@ -1,7 +1,7 @@
 import { repeatedly } from '@thi.ng/transducers'
 import { polyline } from '@thi.ng/geom'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
-
+import { partitionColor } from './partition'
 export const charsGrid = (state, frame) => {
     const {
         fontSize,
@@ -28,16 +28,6 @@ export const charsGrid = (state, frame) => {
             )
         }, MAX_ROWS)
     ]
-    const letterColor = (i) =>
-        partition.reduce(
-            (colorRange, length, colIdx) => [
-                i >= colorRange[1] && i <= length + colorRange[0]
-                    ? colIdx
-                    : colorRange[0],
-                colorRange[1] + length
-            ],
-            [0, 0]
-        )[0]
 
     let dx = MARGIN,
         dy = Array.from(Array(MAX_COLS)).map(() => MARGIN)
@@ -91,7 +81,7 @@ export const charsGrid = (state, frame) => {
                       ).map((line) =>
                           polyline(line, {
                               stroke: palette.colors[
-                                  letterColor(COLOR_AXE ? x : y)
+                                  partitionColor(COLOR_AXE ? x : y, partition)
                               ]
                           })
                       )

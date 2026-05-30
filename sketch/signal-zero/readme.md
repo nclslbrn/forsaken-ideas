@@ -1,0 +1,18 @@
+Le fonctionnement de ces animations reposent sur deux éléments, une police un peu spéciale que j'ai crée en 2023 et une grille.
+
+Cette police n'est pas vraiment une police puisqu'on ne peut pas l'utiliser dans un logiciel de traitement de text. Elle fonctionne comme un programme, on lui donne une lettre ou un mot et des dimensions et il nous renvoie une liste de coordonnées qui vont servir à tracer la ou les lettres. Les tracés ne sont jamais rempli, ainsi si on change les dimensions du texte, on aura des coordonnées différentes mais cela n'affectera pas l'épaisseur du trait. La deuxième caractéristique de cette police est qu'on peut lui donner deux tailles différentes pour la hauteur et pour la largeur. Flexible, elle s'extrapole/répond au cadre qu'on lui donne. 
+
+
+Le deuxième élément fondamental dans ce projet, c'est la grille et cette grille a une fonctionnalité assez intéressante : quelque que soit la largeur et la hauteur de chaque cellule, elle va les redimensionner pour conserver ses propres dimensions, ainsi la grille ne rétrécit ou ne s'agrandit pas même si les tailles colonnes ou des rangées changent brutalement. Comme pour la police, la grille traduit une certaine flexibilité, elle absorbe et organise un désordre interne pour maintenir sa propre cohérence, ses propes dimensions.
+
+
+Entre ces deux éléments, il y a beacoup d'algorithmes, ils sont réunis en deux familles, les règles et les dimensionneurs, les règles vont être utiliser pour choisir les lettres et les signes (ponctuations, chiffres, symbôles...) et leurs ordres. Cela pourrait paraître trivial de confier à un fonction mathématique le soin de tronquer du texte mais en réalité ça ne l'est pas. Chacune des trente quatre fonctions de règles applique un motif qui est singulier, par exemple on pourrait en avoir une qui compte la position d'un signe et enlève tout ceux qui ont une position sur un index paire, en complexifiant cette règles avec d'autres seuils et d'autres opérations on peux commencer à voir des formes qui se répètent, des motifs qui émergent.      
+Ce n'est pas un hasard si cela évoque les métiers à tisser et les cartes à trous des premiers ordinateurs, cette oeuvre s'inscrit dans une démarche qui s'appuit sur les formes premières ou pionnières de l'Art Génératif.
+
+La deuxième famille d'algoritmes, les vingt-neufs dimensionneurs s'occupent de changer les tailles de chaque lettres en fonctions de leurs positions et du temps (compteur), ils s'interfacent entre la police et la grilles, tirant parti du fait que l'on peut étirer la police sur deux dimensions et que la grille, quoi qu'il se passe, maintiendra ses dimensions. En quelque sorte, ils viennent perturber la grille, ce qui va provoquer des déplacements de colonnes ou de rangée, en soit ils ne change pas la position, seulement la taille, mais cela, couplé avec la fonction d'auto-redimensionnement de la grille, va produire du mouvement, c'est une réaction en cascade. Les changements de tailles d'une cellules vont avoir une incidence sur toute les cellules de la rangée et de la colonne ainsi que sur leurs position. Il y a là une dimension auto-reflexive de l'art et on peux voir les différentes parties de ce mécanisme comme un écosystème qui évalue les conditions et réagit à des stimuli voire même prends conscience de son propre fonctionnement, une machine intelligente qui pourtant n'utilise pas de grands modèle de langage (LLM).  
+Les dimensionneurs ont une contrainte, il font évoluer les dimension sur une période en prenant soin à ce que les tailles en fin de période et en début soient indentiques, cela afin de créer une boucle parfaite, un cycle comme une respiration.
+
+
+29 dimensionneurs
+
+Lexique et collection
