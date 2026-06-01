@@ -24,7 +24,7 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 25,
+    MAX_FPS = 5,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
@@ -46,13 +46,13 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    animationIdx = Math.floor(Math.random() * resizers.length)
+    animationIdx = 27 // Math.floor(Math.random() * resizers.length)
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
     const [background, ...colors] = pickRandom(THEMES)
     const colorSectionNum = randMinMax(
-        Math.floor(colors.length / 2),
-        colors.length
+        Math.ceil(colors.length / 2),
+        colors.length - 1
     )
     const wave =
         '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
@@ -64,13 +64,13 @@ const init = () => {
         randRule,
         palette: {
             background,
-            colors
+            colors: colors.sort(() => Math.random() > 0.5)
         },
         partition: randPartition(
             colorSectionNum,
             COLOR_AXE ? MAX_COLS : MAX_ROWS
         ),
-        fontSize: resizers[animationIdx], //pickRandom(resizers),
+        fontSize: resizers[animationIdx],
         wave,
         NUM_FRAME,
         MAX_COLS,
@@ -81,17 +81,20 @@ const init = () => {
         COLOR_AXE
     }
 
-    const debug = 
-` text: ${randText}
+    const debug = ` text: ${randText}
   bg: ${background}
   animation: ${animationIdx}
   partition: ${colorSectionNum}/${state.palette.colors.length}\r\n `
     console.log(
-        state.palette.colors.reduce((acc, col, i) => acc + `%c ${i === 0 ? debug : ''}██ ${col} \n`, ''),
+        state.palette.colors.reduce(
+            (acc, col, i) => acc + `%c ${i === 0 ? debug : ''}██ ${col} \n`,
+            ''
+        ),
         ...state.palette.colors.map(
             (col) => `background: ${background}; color: ${col}`
         )
     )
+    console.log(state.partition)
     launch()
 }
 

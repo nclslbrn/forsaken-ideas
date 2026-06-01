@@ -9,7 +9,7 @@ export const randPartition = (parts, size) => {
 export const partitionColor = (i, partition) =>
     partition.reduce(
         (colorRange, length, colIdx) => [
-            i >= colorRange[1] && i <= length + colorRange[0]
+            i >= colorRange[1] && i < colorRange[1] + length
                 ? colIdx
                 : colorRange[0],
             colorRange[1] + length

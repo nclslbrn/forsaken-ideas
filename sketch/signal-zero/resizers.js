@@ -1,4 +1,20 @@
-const { sin, cos, PI, abs, sqrt, floor, atan2, tan, max, round, hypot } = Math
+import { fit01_4 } from '@thi.ng/vectors'
+
+const {
+    sin,
+    cos,
+    PI,
+    abs,
+    sqrt,
+    floor,
+    ceil,
+    atan2,
+    tan,
+    min,
+    max,
+    round,
+    hypot
+} = Math
 
 export default [
     // 0. Vertical vawes
@@ -32,7 +48,7 @@ export default [
             )
         ),
 
-   // 4. XOR pattern
+    // 4. XOR pattern
     ({ x, y, frame }, { MAX_COLS, NUM_FRAME }) => {
         const xorValue = (floor(x * 3) ^ floor(y * 3)) % MAX_COLS
         return abs(sin(xorValue + (frame / NUM_FRAME) * 2 * PI))
@@ -46,9 +62,10 @@ export default [
 
     // 6. Checkerboard pulse
     ({ x, y, frame }, { NUM_FRAME }) => {
-        const t = (frame / NUM_FRAME) * 2 * PI
-        const checker = (floor(x / 2) + floor(y / 2)) % 3
-        return (checker ? abs(sin(t)) : abs(cos(t)))
+        const t = (frame / NUM_FRAME) * PI * 2
+        const checker =
+            (floor(x / 4) + floor(y / 3)) % (frame < NUM_FRAME * 0.5 ? 4 : 4)
+        return min(max(0.25, abs(checker ? cos(t) : sin(t))), 1.75)
     },
 
     // 7. Radial breathing
@@ -120,29 +137,22 @@ export default [
 
     // 15. Turbulent flow
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        /* const ff =
-            (frame < NUM_FRAME * 0.5
-                ? frame / NUM_FRAME
-                : 1 - frame / NUM_FRAME) *
-            PI *
-            4
-        */
-        const f = (0.5 - frame / NUM_FRAME) * 2 * PI
-        const turbulence =
-            sin(x / (MAX_COLS / 2)) *
-            cos(y / (MAX_ROWS / 2)) *
-            (sin(x / (MAX_COLS / 2) + cos(y / (MAX_ROWS / 2))) * f)
-        return abs(sin(turbulence * f))
+        const t = frame / NUM_FRAME //* 2 * PI
+        const fx = (x + (frame % MAX_COLS)) % MAX_COLS
+        const fy = (y + (frame % MAX_ROWS)) % MAX_ROWS
+        const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS) // *
+        // (cos(fx / MAX_COLS) + sin(fy / MAX_ROWS))
+        return abs(sin(turbulence * t))
     },
 
-    // 16. Diamond pattern
+    // 16. Net
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const diamond = abs(x / MAX_COLS) + abs(y / MAX_ROWS)
-        return abs(sin(diamond * PI * 3 - t) * 2 * PI)
+        return abs(sin(diamond * PI * 2) + Math.cos(t))
     },
 
-    // 17. Kaleidoscope
+    // 17. fold
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const cx = MAX_COLS / 2,
@@ -150,7 +160,7 @@ export default [
         const angle = atan2(y - cy, x - cx)
         const distance = sqrt((x - cx) ** 2 + (y - cy) ** 2)
         const sectorAngle = abs(angle % (PI / 4)) * 8
-        return abs(sin(sectorAngle * 0.01 + distance - t))
+        return abs(sin(sectorAngle * 0.5 + distance * 0.01 - t))
     },
 
     // 18. Sine grid
@@ -236,8 +246,8 @@ export default [
     // 27 another shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
-            normY = sin((x & y % x) / MAX_ROWS),
-            ty = (t + normY * 2) % 1
+            normY = sin(((x & y) ^ x) / MAX_ROWS),
+            ty = sin((t + normY) << t)
         return ty < 0.3 ? 0.1 : 0.3
     }
 ]
