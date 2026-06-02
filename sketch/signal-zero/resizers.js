@@ -249,5 +249,20 @@ export default [
             normY = sin(((x & y) ^ x) / MAX_ROWS),
             ty = sin((t + normY) << t)
         return ty < 0.3 ? 0.1 : 0.3
+    },
+    // 28 another shrink
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        return (x + y * MAX_COLS) % MAX_ROWS < t * MAX_COLS ? 0.5 : 0.1
+    },
+    // 29 Growing circle
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const cx = round(MAX_COLS / 2),
+            cy = round(MAX_ROWS / 2)
+        const maxR = hypot(cx, cy)
+        const normR = hypot(x - cx, y - cy) / maxR
+        return abs(normR - t) % 0.5 > 0.25 ? 0.5 : 0.1
+        // return normR < t ? 1 - normR * 0.5 : 0.05
     }
 ]
