@@ -92,6 +92,7 @@ export default [
         const distance = sqrt((x - cx) ** 2 + (y - cy) ** 2)
         return abs(sin(angle * 5 + distance * 0.3 - t))
     },
+
     // 10. Horizontal scroll
     ({ x, frame }, { MAX_COLS }) => ((x + frame) % MAX_COLS) - MAX_COLS,
 
@@ -135,7 +136,7 @@ export default [
 
     // 15. Turbulent flow
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = frame / NUM_FRAME //* 2 * PI
+        const t = (frame / NUM_FRAME) * PI
         const fx = (x + (frame % MAX_COLS)) % MAX_COLS
         const fy = (y + (frame % MAX_ROWS)) % MAX_ROWS
         const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS) // *
@@ -192,7 +193,7 @@ export default [
 
     // 21. Inverse circle wrap
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = ((frame / NUM_FRAME) * 2 - 0.5) * PI * 2
+        const t = (frame / NUM_FRAME) * PI * 2
         const cx = MAX_COLS / 2,
             cy = MAX_ROWS / 2,
             dx = (cx - x) / cx,
@@ -211,15 +212,14 @@ export default [
 
     // 23. Circle wrap ripple
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        //sin(t-sqrt((x-7.5)**2+(y-6)**2))
-
-        const t = frame / NUM_FRAME
+        const t = frame / NUM_FRAME - 0.5
         const cx = MAX_COLS / 2,
-            cy = MAX_ROWS / 2
-        let d = hypot(cx - (x + t), cy - (y + t))
-
-        return abs(sin(t - d))
+            cy = MAX_ROWS / 2,
+            maxR = hypot(cx, cy) / 2
+        let d = hypot(cx - (x + t), cy - (y + t)) / maxR
+        return abs(sin(d - t * 4))
     },
+
     // 24 horizontal sliding line
     ({ x, frame }, { NUM_FRAME, MAX_COLS }) => {
         const t = ((frame / NUM_FRAME) * 4) % 1,
@@ -227,6 +227,7 @@ export default [
             tx = sin((t + normX) % 1)
         return tx > 0.1 && tx < 0.3 ? 0.1 : 0.5
     },
+
     // 25 bitwise shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
@@ -234,6 +235,7 @@ export default [
             ty = (t + normY * 2) % 1
         return ty < 0.3 ? 0.1 : 0.3
     },
+
     // 26 another shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
@@ -241,6 +243,7 @@ export default [
             ty = (t + normY * 2) % 1
         return ty < 0.3 ? 0.1 : 0.3
     },
+
     // 27 another shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
@@ -248,19 +251,44 @@ export default [
             ty = sin((t + normY) << t)
         return ty < 0.3 ? 0.1 : 0.3
     },
+
     // 28 another shrink
-    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = frame / NUM_FRAME
-        return (x + y * MAX_COLS) % MAX_ROWS < t * MAX_COLS ? 0.5 : 0.1
-    },
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) =>
+        abs(
+            (x + floor((frame / NUM_FRAME) * MAX_COLS * MAX_ROWS)) ^
+                (x + y * MAX_COLS)
+        ),
+
     // 29 Growing circle
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = frame / NUM_FRAME
-        const cx = round(MAX_COLS / 2),
-            cy = round(MAX_ROWS / 2)
+        const t = ((frame / NUM_FRAME) % 0.5) * 2
+        const cx = MAX_COLS / 2,
+            cy = MAX_ROWS / 2
         const maxR = hypot(cx, cy)
         const normR = hypot(x - cx, y - cy) / maxR
-        return (normR % 0.2) + (t % 0.2) // > 0.1 ? 0.5 : 0.1
-        // return normR < t ? 1 - normR * 0.5 : 0.05
+        return sin((normR + t) % 1) > 0.5 ? 0.5 : 0.1
+    },
+
+    // 30 Ripple rings expanding from center
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const cx = MAX_COLS / 2,
+            cy = MAX_ROWS / 2
+        const d = hypot(x - cx, y - cy) / hypot(cx, cy)
+        return sin((d - t) * PI * 8) > 0 ? 0.3 : 0.1
+    },
+
+    // 31 Diagonal wave sweep
+    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const diag = (x / MAX_COLS + y / MAX_ROWS) / 2
+        return (diag + t) % 1 < 0.4 ? 0.3 : 0.1
+    },
+
+    // 32 XOR plasma
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const v = sin(((x ^ y) + (frame >> 2)) / MAX_ROWS)
+        return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     }
 ]
