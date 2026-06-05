@@ -1,5 +1,3 @@
-import { fit01_4 } from '@thi.ng/vectors'
-
 const {
     sin,
     cos,
@@ -7,9 +5,9 @@ const {
     abs,
     sqrt,
     floor,
-    ceil,
+    // ceil,
     atan2,
-    tan,
+    // tan,
     min,
     max,
     round,
@@ -185,7 +183,7 @@ export default [
     },
 
     // 20. Horizontal scrolling line
-    ({ x, y, frame }, { NUM_FRAME, MAX_COLS }) => {
+    ({ x, frame }, { NUM_FRAME, MAX_COLS }) => {
         const currCol = round((frame / NUM_FRAME) * MAX_COLS)
         return abs(currCol - x) <= 2
             ? sin(2 - abs(x - currCol))
@@ -262,7 +260,7 @@ export default [
             cy = round(MAX_ROWS / 2)
         const maxR = hypot(cx, cy)
         const normR = hypot(x - cx, y - cy) / maxR
-        return abs(normR - t) % 0.5 > 0.25 ? 0.5 : 0.1
+        return (normR % 0.2) + (t % 0.2) // > 0.1 ? 0.5 : 0.1
         // return normR < t ? 1 - normR * 0.5 : 0.05
     }
 ]
