@@ -131,7 +131,7 @@ export default [
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = (frame / NUM_FRAME) * 2 * PI
         const distance = sqrt((x - MAX_COLS / 2) ** 2 + (y - MAX_ROWS / 2) ** 2)
-        return abs(sin(distance * 0.5 - t))
+        return abs(distance * sin(distance * 0.5 - t))
     },
 
     // 15. Turbulent flow

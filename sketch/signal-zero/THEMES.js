@@ -4,6 +4,8 @@ export default [
     ['#373333', '#ffeefc', '#5b13d7', '#ffffff'],
     ['#3d3d3d', '#eeeeee', '#ff9752', '#ffffff'],
     ['#c7b7b7', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
+    ['#113322', '#ffeecc', '#ffcccc', '#ffeeff', '#ffffee'],
+    ['#ffffff', 'tomato', 'steelblue', '#333333', '#222222'],
     [
         '#372e42',
         '#16a4d8',
