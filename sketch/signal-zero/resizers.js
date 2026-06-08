@@ -77,10 +77,15 @@ export default [
 
     // 8. Perlin-like noise
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = (frame / NUM_FRAME) * 2 * PI
+        const t = (frame / NUM_FRAME) * PI * 2
         const noise =
             sin((x / MAX_COLS) * PI) * cos((y / MAX_ROWS) * PI) * sin(t)
-        return (noise + 1) * 0.5
+        const fx =
+            (x + MAX_COLS / 2 + (frame / NUM_FRAME) * MAX_COLS) % MAX_COLS
+        const fy =
+            (y + MAX_ROWS / 2 + (frame / NUM_FRAME) * MAX_ROWS) % MAX_ROWS
+        const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS)
+        return abs(0.5 * PI - sin(turbulence * 0.75) * (noise + 1))
     },
 
     // 9. Spiral
@@ -139,8 +144,7 @@ export default [
         const t = (frame / NUM_FRAME) * PI
         const fx = (x + (frame % MAX_COLS)) % MAX_COLS
         const fy = (y + (frame % MAX_ROWS)) % MAX_ROWS
-        const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS) // *
-        // (cos(fx / MAX_COLS) + sin(fy / MAX_ROWS))
+        const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS)
         return abs(sin(turbulence * t))
     },
 
@@ -252,12 +256,26 @@ export default [
         return ty < 0.3 ? 0.1 : 0.3
     },
 
-    // 28 another shrink
+    // 28 sliding step
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) =>
-        abs(
+        (x + y * MAX_COLS + (frame / NUM_FRAME) * MAX_COLS) %
+            (MAX_COLS * MAX_ROWS * 0.5) <
+            MAX_ROWS * MAX_COLS * 0.125 ||
+        (x * MAX_ROWS + y + (frame / NUM_FRAME) * MAX_ROWS) %
+            (MAX_COLS * MAX_ROWS * 0.5) <
+            MAX_ROWS * MAX_COLS * 0.125
+            ? 0.75
+            : 0.33,
+    /*
+      abs(
             (x + floor((frame / NUM_FRAME) * MAX_COLS * MAX_ROWS)) ^
                 (x + y * MAX_COLS)
-        ),
+        ) %
+            (MAX_ROWS * MAX_COLS * NUM_FRAME) <
+        MAX_COLS * 0.5
+            ? 0.75
+            : 0.5,
+    */
 
     // 29 Growing circle
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
@@ -266,7 +284,7 @@ export default [
             cy = MAX_ROWS / 2
         const maxR = hypot(cx, cy)
         const normR = hypot(x - cx, y - cy) / maxR
-        return sin((normR + t) % 1) > 0.5 ? 0.5 : 0.1
+        return abs(sin((normR + t) % 1)) > 0.5 ? 0.5 : 0.1
     },
 
     // 30 Ripple rings expanding from center

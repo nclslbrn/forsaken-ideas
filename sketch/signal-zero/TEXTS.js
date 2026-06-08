@@ -36,5 +36,8 @@ export default [
     'C0RRUPT',
     'SEGMENT_',
     '[DE]PHASE',
-    'FOLD'
+    'FOLD',
+    'rain rythm',
+    'persistance',
+    'behaviour'
 ]
