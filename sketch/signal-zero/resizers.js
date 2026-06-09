@@ -7,7 +7,7 @@ const {
     floor,
     // ceil,
     atan2,
-    // tan,
+    tan,
     min,
     max,
     round,
@@ -260,23 +260,13 @@ export default [
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) =>
         (x + y * MAX_COLS + (frame / NUM_FRAME) * MAX_COLS) %
             (MAX_COLS * MAX_ROWS * 0.5) <
-            MAX_ROWS * MAX_COLS * 0.125 ||
+            MAX_ROWS * MAX_COLS * 0.1 ||
         (x * MAX_ROWS + y + (frame / NUM_FRAME) * MAX_ROWS) %
-            (MAX_COLS * MAX_ROWS * 0.5) <
-            MAX_ROWS * MAX_COLS * 0.125
+            (MAX_COLS * MAX_ROWS * 0.5) >
+            MAX_ROWS * MAX_COLS * 0.4
             ? 0.75
             : 0.33,
-    /*
-      abs(
-            (x + floor((frame / NUM_FRAME) * MAX_COLS * MAX_ROWS)) ^
-                (x + y * MAX_COLS)
-        ) %
-            (MAX_ROWS * MAX_COLS * NUM_FRAME) <
-        MAX_COLS * 0.5
-            ? 0.75
-            : 0.5,
-    */
-
+     
     // 29 Growing circle
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = ((frame / NUM_FRAME) % 0.5) * 2
@@ -308,5 +298,12 @@ export default [
         const t = frame / NUM_FRAME
         const v = sin(((x ^ y) + (frame >> 2)) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
-    }
+    },
+ 
+    // 33 bitwise swirl
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const v = sin(((x % y) + (frame >> 4 | x >> 4)) / MAX_ROWS)
+        return (v + t) % 1 < 0.5 ? 0.3 : 0.1
+    }   
 ]
