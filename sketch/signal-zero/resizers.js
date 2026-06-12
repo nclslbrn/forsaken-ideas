@@ -141,11 +141,11 @@ export default [
 
     // 15. Turbulent flow
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = (frame / NUM_FRAME) * PI
-        const fx = (x + (frame % MAX_COLS)) % MAX_COLS
-        const fy = (y + (frame % MAX_ROWS)) % MAX_ROWS
+        const t = sin((frame / NUM_FRAME) * 2 * PI)
+        const fx = (x + frame) % MAX_COLS
+        const fy = (y + frame) % MAX_ROWS
         const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS)
-        return abs(sin(turbulence * t))
+        return abs(sin((1+turbulence) - t))
     },
 
     // 16. Net
@@ -266,7 +266,7 @@ export default [
             MAX_ROWS * MAX_COLS * 0.4
             ? 0.75
             : 0.33,
-     
+
     // 29 Growing circle
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = ((frame / NUM_FRAME) % 0.5) * 2
@@ -299,11 +299,11 @@ export default [
         const v = sin(((x ^ y) + (frame >> 2)) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     },
- 
+
     // 33 bitwise swirl
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
-        const v = sin(((x % y) + (frame >> 4 | x >> 4)) / MAX_ROWS)
+        const v = sin(((x % y) + ((frame >> 4) | (x >> 4))) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
-    }   
+    }
 ]

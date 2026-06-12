@@ -24,7 +24,7 @@ const ROOT = document.getElementById('windowFrame'),
     MARGIN = 60,
     MAX_COLS = Math.floor(SIZE[0] / 18),
     MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 2,
+    MAX_FPS = 1,
     FPS_INTERVAL = 1000 / MAX_FPS,
     NUM_FRAME = 260,
     BASE_SIZE = 54,
@@ -34,7 +34,7 @@ const ROOT = document.getElementById('windowFrame'),
 console.log('RULES', RULES.length, 'SIZER', resizers.length)
 let comp = [],
     state = {},
-    frame = 1,
+    frame = 0,
     lastTime,
     currentTime,
     isRecording = false,
@@ -46,10 +46,10 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    animationIdx = 14 //Math.floor(Math.random() * resizers.length)
+    animationIdx = 15 //Math.floor(Math.random() * resizers.length)
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
-    const [background, ...colors] = THEMES[5] //pickRandom(THEMES)
+    const [background, ...colors] = pickRandom(THEMES)
     const colorSectionNum = randMinMax(
         Math.ceil(colors.length / 2),
         colors.length - 1
