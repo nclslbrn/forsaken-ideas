@@ -3,7 +3,7 @@ export default [
     ['#4e4a4a', '#fefecc', '#ffffff', '#ccfefe'],
     ['#242222', '#cbbec9', '#6b1df2', '#dfdfdf'],
     ['#3d3d3d', '#eeeeee', '#ff9752', '#ffffff'],
-    ['#c7b7b7', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
+    ['#f1e1e1', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
     ['#113322', '#ffeecc', '#ffcccc', '#ffeeff', '#ffffee'],
     ['#ffffff', 'tomato', 'steelblue', '#333333', '#222222'],
     [

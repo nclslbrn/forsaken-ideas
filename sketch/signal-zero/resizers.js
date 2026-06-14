@@ -145,7 +145,7 @@ export default [
         const fx = (x + frame) % MAX_COLS
         const fy = (y + frame) % MAX_ROWS
         const turbulence = cos(fx / MAX_COLS) * sin(fy / MAX_ROWS)
-        return abs(sin((1+turbulence) - t))
+        return abs(sin(1 + turbulence - t))
     },
 
     // 16. Net
@@ -304,6 +304,23 @@ export default [
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const v = sin(((x % y) + ((frame >> 4) | (x >> 4))) / MAX_ROWS)
+        return (v + t) % 1 < 0.5 ? 0.3 : 0.1
+    },
+
+    // 34 buggy scan and heavy rain
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const v = sin((y + (frame % x) + ((y ^ 6) | x % 3)) / MAX_ROWS)
+        return (v + t) % 1 < 0.5 ? 0.3 : 0.1
+    },
+
+    // 35 bitwise glitch
+    ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
+        const t = frame / NUM_FRAME
+        const v = sin(
+            (x + ((frame / 4) % (y / 4)) + ((x ^ 2) | y % (MAX_ROWS / 4))) /
+                MAX_ROWS
+        )
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     }
 ]

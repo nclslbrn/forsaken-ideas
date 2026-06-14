@@ -46,7 +46,7 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    animationIdx = 15 //Math.floor(Math.random() * resizers.length)
+    animationIdx = 35 // Math.floor(Math.random() * resizers.length)
     const randText = pickRandom(TEXTS)
     const randRule = pickRandom(RULES)
     const [background, ...colors] = pickRandom(THEMES)
