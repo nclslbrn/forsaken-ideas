@@ -1,115 +1,69 @@
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-// import '../framed-canvas.css'
-import '../full-canvas.css'
+import '../framed-canvas.css'
+// import '../full-canvas.css'
 import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
-import { pickRandom } from '@thi.ng/random'
-import { randMinMax } from '@thi.ng/vectors'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { charsGrid } from './charsGrid'
-import { randPartition } from './partition'
-import resizers from './resizers'
-import TEXTS from './TEXTS'
-import RULES from './RULES'
-import THEMES from './THEMES'
+import state from './state'
+
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d'),
-    PX_RATIO = window.devicePixelRatio,
-    SIZE = [window.innerWidth, window.innerHeight].map((d) =>
-        Math.floor(PX_RATIO * d)
-    ),
-    MARGIN = 60,
-    MAX_COLS = Math.floor(SIZE[0] / 18),
-    MAX_ROWS = Math.floor(SIZE[1] / 24),
-    MAX_FPS = 1,
-    FPS_INTERVAL = 1000 / MAX_FPS,
-    NUM_FRAME = 260,
-    BASE_SIZE = 54,
-    WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1,
-    COLOR_AXE = Math.random() > 0.5
+    CTX = CANVAS.getContext('2d')
 
-console.log('RULES', RULES.length, 'SIZER', resizers.length)
 let comp = [],
-    state = {},
     frame = 0,
     lastTime,
     currentTime,
     isRecording = false,
     isPlaying = true,
-    animationIdx = 0
+    mode = 'autonomous' // could also be 'static'
 
 ROOT.appendChild(CANVAS)
 
 const init = () => {
+    state.initstate()
+    const { SIZE } = state.constants
+    const { randText, palette, partition, animation, colorSectionNum } =
+        state.variations
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-    animationIdx = 35 // Math.floor(Math.random() * resizers.length)
-    const randText = pickRandom(TEXTS)
-    const randRule = pickRandom(RULES)
-    const [background, ...colors] = pickRandom(THEMES)
-    const colorSectionNum = randMinMax(
-        Math.ceil(colors.length / 2),
-        colors.length - 1
-    )
-    const wave =
-        '-/\\-/|v_____-/\\-///|\\__/\\---..___' +
-        '-W\\//T\\/====  //\\___//  \\\\____  xx^yy' +
-        '______________::::::::|||/\\___/..%..\\\\' +
-        '== == === == == __ ____ _____ _____  []..'
-    state = {
-        randText,
-        randRule,
-        palette: {
-            background,
-            colors: colors.sort(() => (Math.random() > 0.5 ? -1 : 1))
-        },
-        partition: randPartition(
-            colorSectionNum,
-            COLOR_AXE ? MAX_COLS : MAX_ROWS
-        ),
-        fontSize: resizers[animationIdx],
-        wave,
-        NUM_FRAME,
-        MAX_COLS,
-        MAX_ROWS,
-        MARGIN,
-        SIZE,
-        BASE_SIZE,
-        COLOR_AXE
-    }
+
+    console.log(state.variations)
 
     const debug = ` text: ${randText}
-  bg: ${background}
-  animation: ${animationIdx}
-  partition: ${colorSectionNum}/${state.palette.colors.length}\r\n `
+  bg: ${palette.background}
+  animation: ${animation}
+  partition: ${colorSectionNum}/${palette.colors.length}\r\n `
     console.log(
-        state.palette.colors.reduce(
+        palette.colors.reduce(
             (acc, col, i) => acc + `%c ${i === 0 ? debug : ''}██ ${col} \n`,
             ''
         ),
-        ...state.palette.colors.map(
-            (col) => `background: ${background}; color: ${col}`
+        ...palette.colors.map(
+            (col) => `background: ${palette.background}; color: ${col}`
         )
     )
-    console.log(state.partition)
     launch()
 }
 
 const launch = () => {
     cancelAnimationFrame(animate)
-    // if (isRecording) startRecording()
     frame = 1
     animate()
 }
 
+// Return
+const requestChange = () => {}
+
 const animate = () => {
+    const { NUM_FRAME, SIZE, FPS_INTERVAL, WEIGHT } = state.constants
+    const { palette, randText } = state.variations
     isPlaying && requestAnimationFrame(animate)
     currentTime = performance.now()
     if (!lastTime) lastTime = currentTime
-    // if (isRecording && frame === NUM_FRAME) stopRecording()
     if (frame === NUM_FRAME) {
         console.log('done')
         frame = 1
@@ -119,7 +73,7 @@ const animate = () => {
     const elapsed = currentTime - lastTime
     if (!isPlaying || elapsed > FPS_INTERVAL) {
         comp = [
-            rect(SIZE, { fill: state.palette.background }),
+            rect(SIZE, { fill: palette.background }),
             group(
                 {
                     weight: WEIGHT,
@@ -135,7 +89,7 @@ const animate = () => {
             isRecording &&
             downloadCanvas(
                 CANVAS,
-                `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${String(frame).padStart(3, '0')}`,
+                `SZ.${randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${String(frame).padStart(3, '0')}`,
                 'jpeg',
                 1
             )
@@ -194,24 +148,25 @@ window.onkeydown = (e) => {
             break
 
         case 'r':
-            // if (isRecording) stopRecording()
             isRecording = !isRecording
             isPlaying = true
             launch()
             break
 
+        case 'm':
+            mode = mode === 'static' ? 'autonomous' : 'static'
+            break
+
         case 'ArrowRight':
-            animationIdx = (animationIdx + 1) % resizers.length
-            state.fontSize = resizers[animationIdx]
-            console.log('animationIdx', animationIdx)
+            state.updateChoice.animation(1)
+            console.log('animationIdx', state.variations.animation)
             break
 
         case 'ArrowLeft':
-            animationIdx--
-            if (animationIdx < 0) animationIdx = resizers.length - 1
-            state.fontSize = resizers[animationIdx]
-            console.log('animationIdx', animationIdx)
+            state.updateChoice.animation(-1)
+            console.log('animationIdx', state.variations.animation)
             break
+
         default:
             console.log(e.key)
             break

@@ -3,23 +3,15 @@ import { polyline } from '@thi.ng/geom'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import { partitionColor } from './partition'
 export const charsGrid = (state, frame) => {
-    const {
-        fontSize,
-        randText,
-        randRule,
-        wave,
-        partition,
-        palette,
-        MARGIN,
-        SIZE,
-        MAX_COLS,
-        MAX_ROWS,
-        COLOR_AXE
-    } = state
+    const { MARGIN, SIZE, MAX_COLS, MAX_ROWS, COLOR_AXE, NUM_FRAME, WAVE } =
+        state.constants
+
+    const { fontSize, randText, randRule, partition, palette } =
+        state.variations
 
     const chars = [
         ...repeatedly((y) => {
-            const sample = `${randText}${wave}`
+            const sample = `${randText}${WAVE}`
                 .split('')
                 .filter((_, x) => randRule(x, y))
 
@@ -36,7 +28,10 @@ export const charsGrid = (state, frame) => {
     // Glydph cell: char: String, size: Array[x, y]
     const glyphsGrid = chars.reduce((acc, lineChars, y) => {
         acc[y] = lineChars.map((char, x) => {
-            const size = fontSize({ x, y, frame }, state)
+            const size = fontSize(
+                { x, y, frame },
+                { MAX_COLS, MAX_ROWS, NUM_FRAME }
+            )
             return { char, sizes: [size, size] }
         })
         return acc
