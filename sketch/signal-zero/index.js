@@ -1,13 +1,14 @@
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import '../framed-canvas.css'
-// import '../full-canvas.css'
+// import '../framed-canvas.css'
+import '../full-canvas.css'
 import { rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { charsGrid } from './charsGrid'
 import state from './state'
+import { pickRandom } from '@thi.ng/random'
 
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -15,6 +16,7 @@ const ROOT = document.getElementById('windowFrame'),
 
 let comp = [],
     frame = 0,
+    nextChange = {},
     lastTime,
     currentTime,
     isRecording = false,
@@ -26,8 +28,7 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     state.initstate()
     const { SIZE } = state.constants
-    const { randText, palette, partition, animation, colorSectionNum } =
-        state.variations
+    const { randText, palette, animation, colorSectionNum } = state.variations
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
@@ -51,12 +52,19 @@ const init = () => {
 
 const launch = () => {
     cancelAnimationFrame(animate)
-    frame = 1
+    frame = 0
+    requestChange()
     animate()
 }
 
 // Return
-const requestChange = () => {}
+const requestChange = () => {
+    const availableChanges = Object.keys(state.updateChoice)
+    nextChange = {
+        delay: 1 + Math.floor(Math.random() * (state.constants.NUM_FRAME - 1)),
+        variation: pickRandom(availableChanges)
+    }
+}
 
 const animate = () => {
     const { NUM_FRAME, SIZE, FPS_INTERVAL, WEIGHT } = state.constants
@@ -64,25 +72,37 @@ const animate = () => {
     isPlaying && requestAnimationFrame(animate)
     currentTime = performance.now()
     if (!lastTime) lastTime = currentTime
-    if (frame === NUM_FRAME) {
-        console.log('done')
-        frame = 1
-        if (isRecording) isPlaying = false
-    }
 
     const elapsed = currentTime - lastTime
     if (!isPlaying || elapsed > FPS_INTERVAL) {
-        comp = [
-            rect(SIZE, { fill: palette.background }),
-            group(
-                {
-                    weight: WEIGHT,
-                    strokeLinejoin: 'round',
-                    strokeLinecap: 'round'
-                },
-                charsGrid(state, frame)
-            )
-        ]
+        if (frame === NUM_FRAME) {
+            console.log('done')
+            frame = 0
+            if (isRecording) isPlaying = false
+        }
+        if (
+            nextChange.delay &&
+            mode === 'autonomous' &&
+            frame === nextChange.delay &&
+            nextChange.variation
+        ) {
+            state.updateChoice[nextChange.variation]()
+            console.log(nextChange.variation)
+            requestChange()
+        }
+
+        if (frame)
+            comp = [
+                rect(SIZE, { fill: palette.background }),
+                group(
+                    {
+                        weight: WEIGHT,
+                        strokeLinejoin: 'round',
+                        strokeLinecap: 'round'
+                    },
+                    charsGrid(state, frame)
+                )
+            ]
 
         draw(CTX, group({}, comp))
         isPlaying &&
@@ -155,6 +175,17 @@ window.onkeydown = (e) => {
 
         case 'm':
             mode = mode === 'static' ? 'autonomous' : 'static'
+            break
+
+        case 'l':
+            console.log(
+                'nextChange',
+                nextChange,
+                ' frame',
+                frame,
+                'variation',
+                state.variations
+            )
             break
 
         case 'ArrowRight':

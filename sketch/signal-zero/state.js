@@ -1,9 +1,8 @@
+import { pickRandom } from '@thi.ng/random'
+import { randMinMax } from '@thi.ng/vectors'
 import TEXTS from './TEXTS'
 import RULES from './RULES'
 import THEMES from './THEMES'
-import { pickRandom } from '@thi.ng/random'
-import { randMinMax } from '@thi.ng/vectors'
-
 import { randPartition } from './partition'
 import animators from './animators'
 
@@ -46,14 +45,19 @@ const state = {
         },
         colorAxis: () => {
             state.variations.colorAxis = Math.random() > 0.5
+            if (state.variations.colorSectionNum)
+                state.variations.partition = randPartition(
+                    state.variations.colorSectionNum,
+                    state.variations.colorAxis
+                        ? state.constants.MAX_COLS
+                        : state.constants.MAX_ROWS
+                )
         },
         colorSectionNum: () => {
             state.variations.colorSectionNum = randMinMax(
                 Math.ceil(state.variations.palette.colors.length / 2),
                 state.variations.palette.colors.length - 1
             )
-        },
-        partition: () => {
             state.variations.partition = randPartition(
                 state.variations.colorSectionNum,
                 state.variations.colorAxis
@@ -70,9 +74,9 @@ const state = {
             MARGIN = 60,
             MAX_COLS = Math.floor(SIZE[0] / 18),
             MAX_ROWS = Math.floor(SIZE[1] / 24),
-            MAX_FPS = 35,
+            MAX_FPS = 25,
             FPS_INTERVAL = 1000 / MAX_FPS,
-            NUM_FRAME = 260,
+            NUM_FRAME = 200,
             BASE_SIZE = 54,
             WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1
 
