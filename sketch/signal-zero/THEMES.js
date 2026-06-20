@@ -3,9 +3,9 @@ export default [
     ['#4e4a4a', '#fefecc', '#ffffff', '#ccfefe'],
     ['#242222', '#cbbec9', '#6b1df2', '#dfdfdf'],
     ['#3d3d3d', '#eeeeee', '#ff9752', '#ffffff'],
-    ['#f1e1e1', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
+    // ['#f1e1e1', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
     ['#113322', '#ffeecc', '#ffcccc', '#ffeeff', '#ffffee'],
-    ['#ffffff', 'tomato', 'steelblue', '#333333', '#222222'],
+    // ['#ffffff', 'tomato', 'steelblue', '#333333', '#222222'],
     [
         '#372e42',
         '#16a4d8',
@@ -27,7 +27,7 @@ export default [
         '#fca4c1'
     ],
     ['#3a4067', '#12d4b4', '#69cbb1', '#0c8c74', '#6a79de', '#cce0de'],
-    ['#ffc171', '#03653e', '#3f2f62', '#a9635c', '#5d4f6b', '#95dcf4'],
+    // ['#ffc171', '#03653e', '#3f2f62', '#a9635c', '#5d4f6b', '#95dcf4'],
     ['#30363c', '#dc4c4c', '#e17070', '#157394', '#589cb4', '#bcb4ac'],
     ['#15212c', '#2e9277', '#ad7a5b', '#ddb982', '#dd1111', '#ffffff'],
     [

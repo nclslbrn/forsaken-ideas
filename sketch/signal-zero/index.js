@@ -16,6 +16,7 @@ const ROOT = document.getElementById('windowFrame'),
 
 let comp = [],
     frame = 0,
+    loop = 0,
     nextChange = {},
     lastTime,
     currentTime,
@@ -53,6 +54,7 @@ const init = () => {
 const launch = () => {
     cancelAnimationFrame(animate)
     frame = 0
+    loop = 0
     requestChange()
     animate()
 }
@@ -60,8 +62,11 @@ const launch = () => {
 // Return
 const requestChange = () => {
     const availableChanges = Object.keys(state.updateChoice)
+    const NUM_FRAME = state.constants.NUM_FRAME
     nextChange = {
-        delay: 1 + Math.floor(Math.random() * (state.constants.NUM_FRAME - 1)),
+        delay:
+            (frame + Math.floor(Math.random() * 0.2 * NUM_FRAME)) %
+            (NUM_FRAME - 2),
         variation: pickRandom(availableChanges)
     }
 }
@@ -78,7 +83,8 @@ const animate = () => {
         if (frame === NUM_FRAME) {
             console.log('done')
             frame = 0
-            if (isRecording) isPlaying = false
+            if (mode === 'autonomous') loop++
+            if (isRecording && mode === 'static') isPlaying = false
         }
         if (
             nextChange.delay &&
@@ -105,14 +111,16 @@ const animate = () => {
             ]
 
         draw(CTX, group({}, comp))
-        isPlaying &&
-            isRecording &&
-            downloadCanvas(
-                CANVAS,
-                `SZ.${randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${String(frame).padStart(3, '0')}`,
-                'jpeg',
-                1
-            )
+
+        if (isPlaying && isRecording) {
+            const filename =
+                'SZ.' +
+                (mode === 'static'
+                    ? randText.replace(/[^a-zA-Z0-9\s]/g, '') + '-'
+                    : 'autonomous-') +
+                String(frame + NUM_FRAME * loop).padStart(6, '0')
+            downloadCanvas(CANVAS, filename, 'jpeg', 1)
+        }
         lastTime = currentTime
         frame++
     }

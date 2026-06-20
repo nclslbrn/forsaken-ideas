@@ -74,9 +74,9 @@ const state = {
             MARGIN = 60,
             MAX_COLS = Math.floor(SIZE[0] / 18),
             MAX_ROWS = Math.floor(SIZE[1] / 24),
-            MAX_FPS = 25,
+            MAX_FPS = 5,
             FPS_INTERVAL = 1000 / MAX_FPS,
-            NUM_FRAME = 200,
+            NUM_FRAME = 180,
             BASE_SIZE = 54,
             WEIGHT = Math.max(...SIZE) > 1080 ? 2 : 1
 
