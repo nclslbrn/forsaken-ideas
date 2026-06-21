@@ -8,7 +8,7 @@ import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { charsGrid } from './charsGrid'
 import state from './state'
-import { pickRandom } from '@thi.ng/random'
+import { weightedRandom } from '@thi.ng/random'
 
 const ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -25,6 +25,19 @@ let comp = [],
     mode = 'autonomous' // could also be 'static'
 
 ROOT.appendChild(CANVAS)
+
+const possibleChange = {
+    animation: 6,
+    text: 1,
+    rule: 1,
+    palette: 1,
+    colorAxis: 6,
+    colorSectionNum: 1
+}
+const randVariation = weightedRandom(
+    Object.keys(possibleChange),
+    Object.values(possibleChange)
+)
 
 const init = () => {
     state.initstate()
@@ -44,13 +57,17 @@ const launch = () => {
 
 // Return
 const requestChange = () => {
+    /*
     const availableChanges = Object.keys(state.updateChoice)
+    console.log(availableChanges)
+    */
+
     const NUM_FRAME = state.constants.NUM_FRAME
     nextChange = {
         delay:
             (frame + Math.floor(Math.random() * 0.2 * NUM_FRAME)) %
             (NUM_FRAME - 2),
-        variation: 'colorAxis' //pickRandom(availableChanges)
+        variation: randVariation()
     }
 }
 
@@ -76,7 +93,6 @@ const animate = () => {
             nextChange.variation
         ) {
             state.updateChoice[nextChange.variation]()
-            // console.log(nextChange.variation)
             requestChange()
         }
 

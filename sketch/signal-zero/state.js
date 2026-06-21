@@ -67,7 +67,7 @@ const state = {
                         : state.constants.MAX_ROWS
                 )
             console.log(
-                'colorAxis: ' + (state.variations.colorAxis ? 'y' : 'x')
+                'colorAxis: ' + (state.variations.colorAxis ? 'x' : 'y')
             )
         },
         colorSectionNum: () => {

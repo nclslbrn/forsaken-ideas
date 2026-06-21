@@ -1,18 +1,4 @@
-const {
-    sin,
-    cos,
-    PI,
-    abs,
-    sqrt,
-    floor,
-    // ceil,
-    atan2,
-    tan,
-    min,
-    max,
-    round,
-    hypot
-} = Math
+const { sin, cos, PI, abs, sqrt, floor, atan2, min, max, round, hypot } = Math
 
 export default [
     // 0. Vertical vawes
@@ -214,17 +200,7 @@ export default [
         return sin(abs(t - d))
     },
 
-    // 23. Circle wrap ripple
-    ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
-        const t = frame / NUM_FRAME - 0.5
-        const cx = MAX_COLS / 2,
-            cy = MAX_ROWS / 2,
-            maxR = hypot(cx, cy) / 2
-        let d = hypot(cx - (x + t), cy - (y + t)) / maxR
-        return abs(sin(d - t * 4))
-    },
-
-    // 24 horizontal sliding line
+    // 23 horizontal sliding line
     ({ x, frame }, { NUM_FRAME, MAX_COLS }) => {
         const t = ((frame / NUM_FRAME) * 4) % 1,
             normX = x / MAX_COLS,
@@ -232,7 +208,7 @@ export default [
         return tx > 0.1 && tx < 0.3 ? 0.1 : 0.5
     },
 
-    // 25 bitwise shrink
+    // 24 bitwise shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
             normY = sin((x ^ y) / MAX_ROWS),
@@ -240,7 +216,7 @@ export default [
         return ty < 0.3 ? 0.1 : 0.3
     },
 
-    // 26 another shrink
+    // 25 another shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
             normY = sin((x | y) / MAX_ROWS),
@@ -248,7 +224,7 @@ export default [
         return ty < 0.3 ? 0.1 : 0.3
     },
 
-    // 27 another shrink
+    // 26 another shrink
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME,
             normY = sin(((x & y) ^ x) / MAX_ROWS),
@@ -256,7 +232,7 @@ export default [
         return ty < 0.3 ? 0.1 : 0.3
     },
 
-    // 28 sliding step
+    // 27 sliding step
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) =>
         (x + y * MAX_COLS + (frame / NUM_FRAME) * MAX_COLS) %
             (MAX_COLS * MAX_ROWS * 0.5) <
@@ -267,7 +243,7 @@ export default [
             ? 0.75
             : 0.33,
 
-    // 29 Growing circle
+    // 28 Growing circle
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = ((frame / NUM_FRAME) % 0.5) * 2
         const cx = MAX_COLS / 2,
@@ -277,7 +253,7 @@ export default [
         return abs(sin((normR + t) % 1)) > 0.5 ? 0.5 : 0.1
     },
 
-    // 30 Ripple rings expanding from center
+    // 29 Ripple rings expanding from center
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const cx = MAX_COLS / 2,
@@ -286,35 +262,35 @@ export default [
         return sin((d - t) * PI * 8) > 0 ? 0.3 : 0.1
     },
 
-    // 31 Diagonal wave sweep
+    // 30 Diagonal wave sweep
     ({ x, y, frame }, { NUM_FRAME, MAX_COLS, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const diag = (x / MAX_COLS + y / MAX_ROWS) / 2
         return (diag + t) % 1 < 0.4 ? 0.3 : 0.1
     },
 
-    // 32 XOR plasma
+    // 31 XOR plasma
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const v = sin(((x ^ y) + (frame >> 2)) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     },
 
-    // 33 bitwise swirl
+    // 32 bitwise swirl
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const v = sin(((x % y) + ((frame >> 4) | (x >> 4))) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     },
 
-    // 34 buggy scan and heavy rain
+    // 33 buggy scan and heavy rain
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const v = sin((y + (frame % x) + ((y ^ 6) | x % 3)) / MAX_ROWS)
         return (v + t) % 1 < 0.5 ? 0.3 : 0.1
     },
 
-    // 35 bitwise glitch
+    // 34 bitwise glitch
     ({ x, y, frame }, { NUM_FRAME, MAX_ROWS }) => {
         const t = frame / NUM_FRAME
         const v = sin(
