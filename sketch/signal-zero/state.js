@@ -28,13 +28,17 @@ const state = {
                     Math.random() * animators.length
                 )
             }
+            console.log('animation: ', state.variations.animation)
             state.variations.fontSize = animators[state.variations.animation]
         },
-        randText: () => {
-            state.variations.randText = pickRandom(TEXTS)
+        text: () => {
+            state.variations.text = pickRandom(TEXTS)
+            console.log('text: ', state.variations.text)
         },
-        randRule: () => {
-            state.variations.randRule = pickRandom(RULES)
+        rule: () => {
+            state.variations.rule = pickRandom(RULES)
+
+            console.log('rule: ', state.variations.rule)
         },
         palette: () => {
             const [background, ...colors] = pickRandom(THEMES)
@@ -42,6 +46,16 @@ const state = {
                 background,
                 colors: colors.sort(() => (Math.random() > 0.5 ? -1 : 1))
             }
+            console.log(
+                colors.reduce(
+                    (acc, col, i) =>
+                        acc + `%c ${i === 0 ? 'color' : ''}██ ${col} \n`,
+                    ''
+                ),
+                ...colors.map(
+                    (col) => `background: ${background}; color: ${col}`
+                )
+            )
         },
         colorAxis: () => {
             state.variations.colorAxis = Math.random() > 0.5
@@ -52,6 +66,9 @@ const state = {
                         ? state.constants.MAX_COLS
                         : state.constants.MAX_ROWS
                 )
+            console.log(
+                'colorAxis: ' + (state.variations.colorAxis ? 'y' : 'x')
+            )
         },
         colorSectionNum: () => {
             state.variations.colorSectionNum = randMinMax(
@@ -64,6 +81,7 @@ const state = {
                     ? state.constants.MAX_COLS
                     : state.constants.MAX_ROWS
             )
+            console.log('colorSectionNum: ', state.variations.colorSectionNum)
         }
     },
     initstate: () => {
@@ -74,7 +92,7 @@ const state = {
             MARGIN = 60,
             MAX_COLS = Math.floor(SIZE[0] / 18),
             MAX_ROWS = Math.floor(SIZE[1] / 24),
-            MAX_FPS = 5,
+            MAX_FPS = 25,
             FPS_INTERVAL = 1000 / MAX_FPS,
             NUM_FRAME = 180,
             BASE_SIZE = 54,

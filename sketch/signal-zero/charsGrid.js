@@ -3,17 +3,17 @@ import { polyline } from '@thi.ng/geom'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
 import { partitionColor } from './partition'
 export const charsGrid = (state, frame) => {
-    const { MARGIN, SIZE, MAX_COLS, MAX_ROWS, COLOR_AXE, NUM_FRAME, WAVE } =
+    const { MARGIN, SIZE, MAX_COLS, MAX_ROWS, NUM_FRAME, WAVE } =
         state.constants
 
-    const { fontSize, randText, randRule, partition, palette } =
+    const { fontSize, text, rule, partition, palette, colorAxis } =
         state.variations
 
     const chars = [
         ...repeatedly((y) => {
-            const sample = `${randText}${WAVE}`
+            const sample = `${text}${WAVE}`
                 .split('')
-                .filter((_, x) => randRule(x, y))
+                .filter((_, x) => rule(x, y))
 
             return Array.from(Array(MAX_COLS)).map(
                 (_, i) => sample[i % sample.length]
@@ -61,7 +61,6 @@ export const charsGrid = (state, frame) => {
     })
     const glyphsPath = normGlyphsGrid.reduce((acc, lineChars, y) => {
         dx = MARGIN
-
         const polylineLines = lineChars.reduce((acc, letter, x) => {
             dx += letter.sizes[0]
             dy[x] += letter.sizes[1]
@@ -76,7 +75,7 @@ export const charsGrid = (state, frame) => {
                       ).map((line) =>
                           polyline(line, {
                               stroke: palette.colors[
-                                  partitionColor(COLOR_AXE ? x : y, partition)
+                                  partitionColor(colorAxis ? x : y, partition)
                               ]
                           })
                       )

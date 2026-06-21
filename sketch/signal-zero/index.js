@@ -29,25 +29,8 @@ ROOT.appendChild(CANVAS)
 const init = () => {
     state.initstate()
     const { SIZE } = state.constants
-    const { randText, palette, animation, colorSectionNum } = state.variations
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
-
-    console.log(state.variations)
-
-    const debug = ` text: ${randText}
-  bg: ${palette.background}
-  animation: ${animation}
-  partition: ${colorSectionNum}/${palette.colors.length}\r\n `
-    console.log(
-        palette.colors.reduce(
-            (acc, col, i) => acc + `%c ${i === 0 ? debug : ''}██ ${col} \n`,
-            ''
-        ),
-        ...palette.colors.map(
-            (col) => `background: ${palette.background}; color: ${col}`
-        )
-    )
     launch()
 }
 
@@ -67,13 +50,13 @@ const requestChange = () => {
         delay:
             (frame + Math.floor(Math.random() * 0.2 * NUM_FRAME)) %
             (NUM_FRAME - 2),
-        variation: pickRandom(availableChanges)
+        variation: 'colorAxis' //pickRandom(availableChanges)
     }
 }
 
 const animate = () => {
     const { NUM_FRAME, SIZE, FPS_INTERVAL, WEIGHT } = state.constants
-    const { palette, randText } = state.variations
+    const { palette, text } = state.variations
     isPlaying && requestAnimationFrame(animate)
     currentTime = performance.now()
     if (!lastTime) lastTime = currentTime
@@ -93,7 +76,7 @@ const animate = () => {
             nextChange.variation
         ) {
             state.updateChoice[nextChange.variation]()
-            console.log(nextChange.variation)
+            // console.log(nextChange.variation)
             requestChange()
         }
 
@@ -116,7 +99,7 @@ const animate = () => {
             const filename =
                 'SZ.' +
                 (mode === 'static'
-                    ? randText.replace(/[^a-zA-Z0-9\s]/g, '') + '-'
+                    ? text.replace(/[^a-zA-Z0-9\s]/g, '') + '-'
                     : 'autonomous-') +
                 String(frame + NUM_FRAME * loop).padStart(6, '0')
             downloadCanvas(CANVAS, filename, 'jpeg', 1)
@@ -132,14 +115,14 @@ window.init = init
 window['exportJPG'] = () => {
     downloadCanvas(
         CANVAS,
-        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}`,
+        `SZ.${state.text.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}`,
         'jpeg',
         1
     )
 }
 window['exportSVG'] = () => {
     downloadWithMime(
-        `SZ.${state.randText.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}.svg`,
+        `SZ.${state.text.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}.svg`,
         asSvg(
             svgDoc(
                 {
