@@ -1,7 +1,7 @@
 export default [
     ['#363030', '#fcfcfc', '#efefef', '#cfcfcf', '#bbb'],
     ['#4e4a4a', '#fefecc', '#ffffff', '#ccfefe'],
-    ['#242222', '#cbbec9', '#6b1df2', '#dfdfdf'],
+    ['#242222', '#cbbec9', '#644BFA', '#dfdfdf'],
     ['#3d3d3d', '#eeeeee', '#ff9752', '#ffffff'],
     // ['#f1e1e1', '#963c3c', '#5b4b4b', '#431c1c', '#2e2929'],
     ['#113322', '#ffeecc', '#ffcccc', '#ffeeff', '#ffffee'],

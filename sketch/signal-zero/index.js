@@ -27,12 +27,12 @@ let comp = [],
 ROOT.appendChild(CANVAS)
 
 const possibleChange = {
-    animation: 6,
+    animation: 3,
     text: 1,
     rule: 1,
     palette: 1,
     colorAxis: 6,
-    colorSectionNum: 1
+    colorSectionNum: 6
 }
 const randVariation = weightedRandom(
     Object.keys(possibleChange),
@@ -63,11 +63,14 @@ const requestChange = () => {
     */
 
     const NUM_FRAME = state.constants.NUM_FRAME
+
     nextChange = {
-        delay:
+        delay: Math.max(
+            1,
             (frame + Math.floor(Math.random() * 0.2 * NUM_FRAME)) %
-            (NUM_FRAME - 2),
-        variation: randVariation()
+                (NUM_FRAME - 2)
+        ),
+        variation: Math.random() > 0.5 ? randVariation() : false
     }
 }
 
@@ -89,10 +92,9 @@ const animate = () => {
         if (
             nextChange.delay &&
             mode === 'autonomous' &&
-            frame === nextChange.delay &&
-            nextChange.variation
+            frame === nextChange.delay
         ) {
-            state.updateChoice[nextChange.variation]()
+            nextChange.variation && state.updateChoice[nextChange.variation]()
             requestChange()
         }
 

@@ -87,12 +87,12 @@ const state = {
     initstate: () => {
         const PX_RATIO = window.devicePixelRatio,
             SIZE = [window.innerWidth, window.innerHeight].map((d) =>
-                Math.floor(PX_RATIO * d)
+                PX_RATIO > 1 ? Math.floor(PX_RATIO * 0.75 * d) : d
             ),
             MARGIN = 60,
             MAX_COLS = Math.floor(SIZE[0] / 18),
             MAX_ROWS = Math.floor(SIZE[1] / 24),
-            MAX_FPS = 25,
+            MAX_FPS = 24,
             FPS_INTERVAL = 1000 / MAX_FPS,
             NUM_FRAME = 180,
             BASE_SIZE = 54,
