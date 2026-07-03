@@ -133,7 +133,7 @@ window.init = init
 window['exportJPG'] = () => {
     downloadCanvas(
         CANVAS,
-        `SZ.${state.text.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}`,
+        `SZ.${state?.text?.replace(/[^a-zA-Z0-9\s]/g, '')}-${FMT_yyyyMMdd_HHmmss()}`,
         'jpeg',
         1
     )
