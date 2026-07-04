@@ -1,7 +1,9 @@
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
-import { sum2 } from '@thi.ng/vectors'
+import modularGrid from './modular-grid'
+import { pickRandom } from '@thi.ng/random'
+import { canvasRecorder } from '@thi.ng/dl-asset'
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
 
@@ -10,7 +12,13 @@ let img = new Image(),
     ctx = canvas.getContext('2d', { willReadFrequently: true }),
     frameRequest = 0,
     frame = 0,
-    numFrame = 0
+    numFrame = 0,
+    recorder = null,
+    isRecording = false,
+    rects = [],
+    rectsSortedCount = [],
+    minBrightness = 100,
+    maxBrightness = 180
 
 const capture = (canvas) => {
     const link = document.createElement('a')
@@ -18,39 +26,69 @@ const capture = (canvas) => {
     link.href = canvas.toDataURL('image/jpg')
     link.click()
 }
-// img.src = 'nasa-O0dEH-UPj68-unsplash.jpg'
-img.src = 'jason-leung-exYRCy4aj9E-unsplash.jpg'
-  // 'usgs-ScopIGGJAQ4-unsplash.jpg'
-  // 'usgs-siKUDDi4o64-unsplash.jpg'
+const LINE_WIDTH = 4
+
+img.src = 'compagnons-3udo6ejRdww-unsplash.jpg'
+/*
+  'leandre-c-CtT8eAv6GxA-unsplash.jpg'
+  'leandre-c-yjTzXnk8Kzo-unsplash.jpg'
+  'nasa-O0dEH-UPj68-unsplash.jpg'
+  'jason-leung-exYRCy4aj9E-unsplash.jpg'
+  'usgs-ScopIGGJAQ4-unsplash.jpg'
+  'usgs-siKUDDi4o64-unsplash.jpg'
+ */
 
 const getBrightness = (r, g, b) => (r + g + b) / 3
 
-const sortRegionRows = (pix, rx, ry, rw, rh, threshold) => {
+const sortRegionRows = (pix, { rx, ry, rw, rh }, threshold) => {
     for (let y = ry; y < ry + rh; y++) {
         let sortingStart = -1
         for (let x = rx; x < rx + rw; x++) {
             const idx = (y * canvas.width + x) * 4
-            const brightness = getBrightness(pix[idx], pix[idx + 1], pix[idx + 2])
-            if (brightness < threshold[1] && sortingStart === -1) sortingStart = x
-            if ((brightness <= threshold[0] || x === rx + rw - 1) && sortingStart !== -1) {
+            const brightness = getBrightness(
+                pix[idx],
+                pix[idx + 1],
+                pix[idx + 2]
+            )
+            if (brightness < threshold[1] && sortingStart === -1)
+                sortingStart = x
+            if (
+                (brightness <= threshold[0] || x === rx + rw - 1) &&
+                sortingStart !== -1
+            ) {
                 const len = x - sortingStart
-                if (len > 1) sortRow(pix, (y * canvas.width + sortingStart) * 4, len)
+                if (len > 1)
+                    sortRow(pix, (y * canvas.width + sortingStart) * 4, len)
                 sortingStart = -1
             }
         }
     }
 }
 
-const sortRegionCols = (pix, rx, ry, rw, rh, threshold) => {
+const sortRegionCols = (pix, { rx, ry, rw, rh }, threshold) => {
     for (let x = rx; x < rx + rw; x++) {
         let sortingStart = -1
         for (let y = ry; y < ry + rh; y++) {
             const idx = (y * canvas.width + x) * 4
-            const brightness = getBrightness(pix[idx], pix[idx + 1], pix[idx + 2])
-            if (brightness < threshold[1] && sortingStart === -1) sortingStart = y
-            if ((brightness <= threshold[0] || y === ry + rh - 1) && sortingStart !== -1) {
+            const brightness = getBrightness(
+                pix[idx],
+                pix[idx + 1],
+                pix[idx + 2]
+            )
+            if (brightness < threshold[1] && sortingStart === -1)
+                sortingStart = y
+            if (
+                (brightness <= threshold[0] || y === ry + rh - 1) &&
+                sortingStart !== -1
+            ) {
                 const len = y - sortingStart
-                if (len > 1) sortColumn(pix, (sortingStart * canvas.width + x) * 4, len, canvas.width)
+                if (len > 1)
+                    sortColumn(
+                        pix,
+                        (sortingStart * canvas.width + x) * 4,
+                        len,
+                        canvas.width
+                    )
                 sortingStart = -1
             }
         }
@@ -104,12 +142,24 @@ const sortColumn = (pix, startIndex, length, imageWidth) => {
     return pix
 }
 
+const randGrid = () => {
+    rects = modularGrid(Math.floor(3 + Math.random() + 4), Math.random).map(
+        ([x, y, w, h]) => ({
+            rx: x * img.width,
+            ry: y * img.height,
+            rw: w * img.width,
+            rh: h * img.height
+        })
+    )
+    rectsSortedCount = rects.map(() => 0)
+}
+
 img.onload = () => {
     canvas.width = img.width
     canvas.height = img.height
     numFrame = img.width * img.height
     ctx.drawImage(img, 0, 0)
-
+    randGrid()
     if (frameRequest) cancelAnimationFrame(frameRequest)
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -117,52 +167,88 @@ img.onload = () => {
 
     let phase = 'horizontal'
 
-    const randomRect = () => {
-        const w = Math.floor(Math.random() * (canvas.width * 0.4)) + 40
-        const h = Math.floor(Math.random() * (canvas.height * 0.4)) + 40
-        const x = Math.floor(Math.random() * (canvas.width - w))
-        const y = Math.floor(Math.random() * (canvas.height - h))
-        return { x, y, w, h }
-    }
-
-    const drawMarker = (rect, currentPhase) => {
-        //ctx.save()
-        ctx.lineWidth = 2
-        ctx.font = 'bold 10px monospace'
-        ctx.shadowColor = 'rgba(0,0,0,0.9)'
-        ctx.shadowBlur = 4
-        ctx.strokeStyle = currentPhase === 'horizontal' ? 'tomato' : 'steelblue'
-        ctx.fillStyle = currentPhase === 'horizontal' ? 'tomato' : 'steelblue'
-        ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1)
-        ctx.textAlign = 'right'
-        ctx.fillText(
-            `${rect.x}, ${rect.y}`,
-            rect.x + rect.w - 4,
-            rect.y + rect.h - 6
-        )
-        //ctx.restore()
+    const drawRects = () => {
+        ctx.save()
+        ctx.strokeStyle = '#00000022'
+        ctx.lineWidth = LINE_WIDTH
+        rects.forEach(({ rx, ry, rw, rh }) => {
+            ctx.strokeRect(
+                rx + LINE_WIDTH / 2,
+                ry + LINE_WIDTH / 2,
+                rw - LINE_WIDTH / 2,
+                rh - LINE_WIDTH / 2
+            )
+        })
+        ctx.restore()
     }
 
     const update = () => {
-        const rect = randomRect()
-        const currentPhase = phase
+        frameRequest = requestAnimationFrame(update)
+
+        const randRectIdx = Math.floor(Math.random() * rects.length),
+            randRect = rects[randRectIdx]
+        // rectSortCount = rectsSortedCount[randRectIdx]
+
+        if (minBrightness > 20 && Math.min(...rectsSortedCount) > 2)
+            minBrightness -= 1
+
+        if (maxBrightness < 235 && Math.min(...rectsSortedCount) > 2)
+            maxBrightness += 1
 
         if (phase === 'horizontal') {
-            sortRegionRows(pix, rect.x, rect.y, rect.w, rect.h, [40, 180])
+            sortRegionRows(pix, randRect, [minBrightness, maxBrightness])
             phase = 'vertical'
         } else {
-            sortRegionCols(pix, rect.x, rect.y, rect.w, rect.h, [40, 180])
+            sortRegionCols(pix, randRect, [minBrightness, maxBrightness])
             phase = 'horizontal'
         }
-
+        rectsSortedCount[randRectIdx]++
         ctx.putImageData(imageData, 0, 0)
-        capture(canvas)
-        frame++
-        drawMarker(rect, currentPhase)
-        frameRequest = requestAnimationFrame(update)
-    }
 
-    frameRequest = requestAnimationFrame(update)
+        frame++
+        // drawRects()
+
+        if (Math.min(...rectsSortedCount) > 3) {
+            console.log('randGrid')
+            randGrid()
+        }
+    }
+    update()
+}
+
+const startRecording = () => {
+    if (!isRecording) return
+    recorder = canvasRecorder(
+        canvas,
+        `pixel-sorting-${new Date().toISOString()}.mp4`,
+        {
+            mimeType: 'video/mp4',
+            fps: 30
+        }
+    )
+    recorder.start()
+    console.log('%c Record started ', 'background: tomato; color: white')
+}
+
+const stopRecording = () => {
+    recorder.stop()
+    console.log('%c Record stopped ', 'background: limegreen; color: black')
+}
+
+window.onkeydown = (e) => {
+    switch (e.key.toLowerCase()) {
+        case 'r':
+            isRecording = !isRecording
+            if (isRecording) {
+                startRecording()
+            } else {
+                stopRecording()
+            }
+            break
+        case 'd':
+            console.log('rectsSortedCount', rectsSortedCount)
+            break
+    }
 }
 
 containerElement.removeChild(loader)
