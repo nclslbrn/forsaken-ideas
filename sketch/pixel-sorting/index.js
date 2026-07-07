@@ -2,7 +2,6 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import modularGrid from './modular-grid'
-import { pickRandom } from '@thi.ng/random'
 import { canvasRecorder } from '@thi.ng/dl-asset'
 const containerElement = document.getElementById('windowFrame')
 const loader = document.getElementById('loading')
@@ -17,8 +16,12 @@ let img = new Image(),
     isRecording = false,
     rects = [],
     rectsSortedCount = [],
-    minBrightness = 100,
-    maxBrightness = 180
+    pendingWrites = [],
+    minBrightness = 120,
+    maxBrightness = 140,
+    phase = 'horizontal',
+    pix = null,
+    imageData = null
 
 const capture = (canvas) => {
     const link = document.createElement('a')
@@ -26,10 +29,14 @@ const capture = (canvas) => {
     link.href = canvas.toDataURL('image/jpg')
     link.click()
 }
-const LINE_WIDTH = 4
+const LINE_WIDTH = 4,
+    PIXELS_PER_FRAME = 200
 
-img.src = 'compagnons-3udo6ejRdww-unsplash.jpg'
+img.src = 'sebastian-schuster-lVVtKvlKetA-unsplash.jpg'
 /*
+  'martin-sanchez-LkN0Voym3Go-unsplash.jpg'
+  'GettyImages-2194275348-e1743046237756.jpg'
+  'compagnons-3udo6ejRdww-unsplash.jpg'
   'leandre-c-CtT8eAv6GxA-unsplash.jpg'
   'leandre-c-yjTzXnk8Kzo-unsplash.jpg'
   'nasa-O0dEH-UPj68-unsplash.jpg'
@@ -110,10 +117,7 @@ const sortRow = (pix, startIndex, length) => {
 
     for (let i = 0; i < length; i++) {
         const idx = startIndex + i * 4
-        pix[idx] = row[i].colors[0]
-        pix[idx + 1] = row[i].colors[1]
-        pix[idx + 2] = row[i].colors[2]
-        pix[idx + 3] = row[i].colors[3]
+        pendingWrites.push({ idx, colors: row[i].colors })
     }
 
     return pix
@@ -134,10 +138,7 @@ const sortColumn = (pix, startIndex, length, imageWidth) => {
 
     for (let i = 0; i < length; i++) {
         const idx = startIndex + i * imageWidth * 4
-        pix[idx] = column[i].colors[0]
-        pix[idx + 1] = column[i].colors[1]
-        pix[idx + 2] = column[i].colors[2]
-        pix[idx + 3] = column[i].colors[3]
+        pendingWrites.push({ idx, colors: column[i].colors })
     }
     return pix
 }
@@ -154,37 +155,36 @@ const randGrid = () => {
     rectsSortedCount = rects.map(() => 0)
 }
 
-img.onload = () => {
-    canvas.width = img.width
-    canvas.height = img.height
-    numFrame = img.width * img.height
-    ctx.drawImage(img, 0, 0)
-    randGrid()
-    if (frameRequest) cancelAnimationFrame(frameRequest)
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    const pix = imageData.data
-
-    let phase = 'horizontal'
-
-    const drawRects = () => {
-        ctx.save()
-        ctx.strokeStyle = '#00000022'
-        ctx.lineWidth = LINE_WIDTH
-        rects.forEach(({ rx, ry, rw, rh }) => {
-            ctx.strokeRect(
-                rx + LINE_WIDTH / 2,
-                ry + LINE_WIDTH / 2,
-                rw - LINE_WIDTH / 2,
-                rh - LINE_WIDTH / 2
-            )
-        })
-        ctx.restore()
+const flushPendingWrites = (pix) => {
+    const n = Math.min(PIXELS_PER_FRAME, pendingWrites.length)
+    for (let i = 0; i < n; i++) {
+        const { idx, colors } = pendingWrites.shift()
+        pix[idx] = colors[0]
+        pix[idx + 1] = colors[1]
+        pix[idx + 2] = colors[2]
+        pix[idx + 3] = colors[3]
     }
+}
 
-    const update = () => {
-        frameRequest = requestAnimationFrame(update)
-
+/*
+const drawRects = () => {
+    ctx.save()
+    ctx.strokeStyle = '#00000022'
+    ctx.lineWidth = LINE_WIDTH
+    rects.forEach(({ rx, ry, rw, rh }) => {
+        ctx.strokeRect(
+            rx + LINE_WIDTH / 2,
+            ry + LINE_WIDTH / 2,
+            rw - LINE_WIDTH / 2,
+            rh - LINE_WIDTH / 2
+        )
+    })
+    ctx.restore()
+}
+*/
+const update = () => {
+    frameRequest = requestAnimationFrame(update)
+    if (pendingWrites.length === 0) {
         const randRectIdx = Math.floor(Math.random() * rects.length),
             randRect = rects[randRectIdx]
         // rectSortCount = rectsSortedCount[randRectIdx]
@@ -203,16 +203,26 @@ img.onload = () => {
             phase = 'horizontal'
         }
         rectsSortedCount[randRectIdx]++
-        ctx.putImageData(imageData, 0, 0)
 
-        frame++
-        // drawRects()
-
-        if (Math.min(...rectsSortedCount) > 3) {
-            console.log('randGrid')
-            randGrid()
-        }
+        if (Math.min(...rectsSortedCount) > 3) randGrid()
     }
+    flushPendingWrites(pix)
+    ctx.putImageData(imageData, 0, 0)
+    frame++
+    // drawRects()
+}
+
+img.onload = () => {
+    canvas.width = img.width
+    canvas.height = img.height
+    numFrame = img.width * img.height
+    ctx.drawImage(img, 0, 0)
+    randGrid()
+    if (frameRequest) cancelAnimationFrame(frameRequest)
+
+    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    pix = imageData.data
+
     update()
 }
 
@@ -246,7 +256,7 @@ window.onkeydown = (e) => {
             }
             break
         case 'd':
-            console.log('rectsSortedCount', rectsSortedCount)
+            console.log('pendingWrites.length', pendingWrites.length)
             break
     }
 }
