@@ -11,17 +11,19 @@ let img = new Image(),
     ctx = canvas.getContext('2d', { willReadFrequently: true }),
     frameRequest = 0,
     frame = 0,
-    numFrame = 0,
     recorder = null,
     isRecording = false,
     rects = [],
     rectsSortedCount = [],
     pendingWrites = [],
-    minBrightness = 120,
-    maxBrightness = 140,
+    minBrightness = 60,
+    maxBrightness = 160,
     phase = 'horizontal',
     pix = null,
-    imageData = null
+    imageData = null,
+    gridRectIdx = 0,
+    gridsCompleted = 0,
+    awaitingGridBoundary = false
 
 const capture = (canvas) => {
     const link = document.createElement('a')
@@ -29,11 +31,14 @@ const capture = (canvas) => {
     link.href = canvas.toDataURL('image/jpg')
     link.click()
 }
-const LINE_WIDTH = 4,
-    PIXELS_PER_FRAME = 200
+const LINE_WIDTH = 2,
+    PIXELS_PER_FRAME = 100
 
-img.src = 'sebastian-schuster-lVVtKvlKetA-unsplash.jpg'
+img.src = 'usgs-08hjz7VzB84-unsplash.jpg'
+  'usgs-z7UN-MF4y1I-unsplash.jpg'
 /*
+  'jason-leung-IM0DTKkVMl4-unsplash.jpg'
+  'sebastian-schuster-lVVtKvlKetA-unsplash.jpg'
   'martin-sanchez-LkN0Voym3Go-unsplash.jpg'
   'GettyImages-2194275348-e1743046237756.jpg'
   'compagnons-3udo6ejRdww-unsplash.jpg'
@@ -63,7 +68,8 @@ const sortRegionRows = (pix, { rx, ry, rw, rh }, threshold) => {
                 (brightness <= threshold[0] || x === rx + rw - 1) &&
                 sortingStart !== -1
             ) {
-                const len = x - sortingStart
+                const closingAtEdge = x === rx + rw - 1 && brightness < threshold[1]
+                const len = x - sortingStart + (closingAtEdge ? 1 : 0)
                 if (len > 1)
                     sortRow(pix, (y * canvas.width + sortingStart) * 4, len)
                 sortingStart = -1
@@ -88,7 +94,8 @@ const sortRegionCols = (pix, { rx, ry, rw, rh }, threshold) => {
                 (brightness <= threshold[0] || y === ry + rh - 1) &&
                 sortingStart !== -1
             ) {
-                const len = y - sortingStart
+                const closingAtEdge = y === ry + rh - 1 && brightness < threshold[1]
+                const len = y - sortingStart + (closingAtEdge ? 1 : 0)
                 if (len > 1)
                     sortColumn(
                         pix,
@@ -166,7 +173,6 @@ const flushPendingWrites = (pix) => {
     }
 }
 
-/*
 const drawRects = () => {
     ctx.save()
     ctx.strokeStyle = '#00000022'
@@ -181,48 +187,75 @@ const drawRects = () => {
     })
     ctx.restore()
 }
-*/
+
 const update = () => {
     frameRequest = requestAnimationFrame(update)
+
     if (pendingWrites.length === 0) {
-        const randRectIdx = Math.floor(Math.random() * rects.length),
-            randRect = rects[randRectIdx]
-        // rectSortCount = rectsSortedCount[randRectIdx]
+        if (awaitingGridBoundary) {
+            // the previous grid has now been fully sorted AND fully drawn
+            awaitingGridBoundary = false
+            gridsCompleted++
+
+            if (gridsCompleted === 1) {
+                // grid 1 done — start recording before grid 2 begins
+                isRecording = true
+                startRecording()
+            } else if (gridsCompleted === 2) {
+                // grid 2 done — stop recording and halt
+                if (isRecording) {
+                    stopRecording()
+                    isRecording = false
+                }
+                drawRects()
+                cancelAnimationFrame(frameRequest)
+                return
+            }
+
+            randGrid()
+            gridRectIdx = 0
+        }
+
+        const currRect = rects[gridRectIdx]
 
         if (minBrightness > 20 && Math.min(...rectsSortedCount) > 2)
             minBrightness -= 1
-
         if (maxBrightness < 235 && Math.min(...rectsSortedCount) > 2)
             maxBrightness += 1
 
         if (phase === 'horizontal') {
-            sortRegionRows(pix, randRect, [minBrightness, maxBrightness])
+            sortRegionRows(pix, currRect, [minBrightness, maxBrightness])
             phase = 'vertical'
         } else {
-            sortRegionCols(pix, randRect, [minBrightness, maxBrightness])
+            sortRegionCols(pix, currRect, [minBrightness, maxBrightness])
             phase = 'horizontal'
         }
-        rectsSortedCount[randRectIdx]++
+        rectsSortedCount[gridRectIdx]++
 
-        if (Math.min(...rectsSortedCount) > 3) randGrid()
+        if (gridRectIdx === rects.length-1) {
+            awaitingGridBoundary = true
+        }
+        console.log(`cell ${gridRectIdx+1}/${rects.length}`)
+        gridRectIdx++ //= gridRectIdx === rects.length ? 0 : gridRectIdx + 1
     }
+
     flushPendingWrites(pix)
     ctx.putImageData(imageData, 0, 0)
+    drawRects()
     frame++
-    // drawRects()
 }
 
 img.onload = () => {
     canvas.width = img.width
     canvas.height = img.height
-    numFrame = img.width * img.height
     ctx.drawImage(img, 0, 0)
     randGrid()
     if (frameRequest) cancelAnimationFrame(frameRequest)
 
     imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     pix = imageData.data
-
+    // isRecording = true
+    // startRecording()
     update()
 }
 
@@ -232,8 +265,8 @@ const startRecording = () => {
         canvas,
         `pixel-sorting-${new Date().toISOString()}.mp4`,
         {
-            mimeType: 'video/mp4',
-            fps: 30
+            mimeType: 'video/webm',
+            fps: 10
         }
     )
     recorder.start()
