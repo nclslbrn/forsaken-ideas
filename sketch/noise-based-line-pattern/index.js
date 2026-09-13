@@ -166,29 +166,33 @@ const sketch = {
             svg.group({ name: `color-${i}`, stroke: c, strokeWidth: 4 })
         })
         const scanLines = traits.palette.colors.map(() => [])
-        for (let i = 1; i < 10; i++) {
+        for (let i = 1; i < 5; i++) {
             const j = i % traits.palette.colors.length,
                 sc = 25.5
             scanLines[j].push(
                 ...fillWithStraightLines(
                     canvas,
                     ([r, g, b]) =>
-                        j > 1 
-                        ? r < i * sc 
-                        : j < 1 
-                            ? g < i * sc
-                            : b < i * sc,
-                    pow(4, i*.5),
-                    i % 4
+                        j > 1 ? r < i * sc : j < 1 ? g < i * sc : b < i * sc,
+                    pow(2, i * 3),
+                    i % 2
                 )
             )
         }
         const filtered = scanLines.map((group, i) =>
             group.filter((_, i) => i % 24 !== 0)
         )
-        console.log(filtered.map((ln) => ln[0].length))
-        const sliced = filtered.map((g) => g.reduce((ls, ln, i) => [...ls, i % 5 ? chunkify(ln, 80, 20): chunkify(ln, 100, 10)]))
-        /* 
+        // console.log(filtered.map((ln) => ln[0].length))
+        const sliced = filtered.map((g) =>
+            g.reduce(
+                (ls, ln, i) => [
+                    ...ls,
+                    i % 5 ? chunkify(ln, 80, 20) : chunkify(ln, 100, 10)
+                ],
+                []
+            )
+        )
+        /*
         const grouped = sliced.reduce((g, ln, lidx) => {
                   g[lidx % traits.palette.colors.length].push(ln)
                   return g
@@ -220,8 +224,12 @@ containerElement.style.gridTemplateRows = '1.5vw 48vw 1vw 48vw 1.5vw'
 containerElement.appendChild(canvas)
 svg.elem.style.gridColumnStart = '4'
 */
+const before = performance.now()
 sketch.setup()
 sketch.init()
+
+const after = performance.now()
+console.log('Time taken:', after - before, 'ms')
 
 window['infobox'] = infobox
 window['randomize'] = sketch.init
