@@ -93,7 +93,7 @@ const sketch = {
 
         traits = {
             noiseSeed: random() * 999,
-            noiseSize: 1 + random(),
+            noiseSize: 1 + random() * 1.66,
             palette: getPalette(), //{ artist: "Alfons Mucha" }),
             numCell,
             cells
@@ -174,8 +174,8 @@ const sketch = {
                     canvas,
                     ([r, g, b]) =>
                         j > 1 ? r < i * sc : j < 1 ? g < i * sc : b < i * sc,
-                    pow(2, i * 3),
-                    i % 2
+                     i * 3,
+                    (i % 2) * 2
                 )
             )
         }
