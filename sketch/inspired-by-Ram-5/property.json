@@ -1,0 +1,11 @@
+{
+    "topic": "Line line collision",
+    "libs": [],
+    "action": [
+        { "name": "setup", "icon": "sync" },
+        { "name": "exportJPG", "icon": "file-media" },
+        { "name": "exportSVG", "icon": "desktop-download" }
+    ],
+    "info": "Based on Ram 5 by Edward Zajec",
+    "date": "2026-09-18"
+}
