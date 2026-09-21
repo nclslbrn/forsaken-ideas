@@ -1,35 +1,70 @@
 import { polyline, line, rect, group, svgDoc, asSvg } from '@thi.ng/geom'
-import { pickRandomKey, SYSTEM } from '@thi.ng/random'
+import { pickRandom, SYSTEM } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
-import { repeatedly } from '@thi.ng/transducers'
+import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
+import { getGlyphVector } from '@nclslbrn/plot-writer'
 import modularGrid from './modular-grid'
+import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([320, 460], mm),
+    CSTM_FORMAT = quantity([320, 320], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    { floor, hypot, min } = Math
+    PAPER = '#f2ede1',
+    INK = '#1a1a1a',
+    TEXT = '#888',
+    GRID = '#e8b4ae',
+    STROKE_WEIGHT = 2.5,
+    RAND_RANGE = {
+        numCell: [48, 128],
+        numLayer: [2, 4],
+        numLinePerLayer: [4, 32],
+        ptPerLine: [4, 24],
+        amplitude: [1.5, 2],
+        cellPadding: [-4, 4],
+        weight: []
+    }
 
-let width, height, drawElems
+let drawElems
 
 ROOT.appendChild(CANVAS)
 
-const PAPER = '#f2ede1'
-const INK = '#1a1a1a'
-const GRID = '#e8b4ae'
-const STROKE_WEIGHT = 2.5
+const fillPart = (text, x, y, w, h, b) => {
+    const cols = Math.floor(w / b),
+        rows = Math.floor(h / b),
+        grid = [
+            ...repeatedly2d(
+                (i, j) =>
+                    getGlyphVector(
+                        text[(i + cols * j) % text.length],
+                        [b, b],
+                        [x + i * b, y + j * b]
+                    ),
+                cols,
+                rows - 1
+            )
+        ]
+    return grid.flat()
+}
 
-const buildLineLayer = (numLayer, numLinePerLayer, numPoint, size, rand) => [
+const buildLineLayer = (
+    numLayer,
+    numLinePerLayer,
+    numPoint,
+    ampFactor,
+    size,
+    rand
+) => [
     ...repeatedly(() => {
         const isVertical = rand.float() > 0.5,
             amplitude = size[isVertical ? 0 : 1] / (numLinePerLayer + 1),
@@ -43,7 +78,7 @@ const buildLineLayer = (numLayer, numLinePerLayer, numPoint, size, rand) => [
                 ],
                 [[0], 0]
             )[0],
-            waveAmplitude = amplitude * 4,
+            waveAmplitude = amplitude * rand.minmax(...ampFactor),
             waveOffsets = normSteps.map(
                 () => (rand.float() * 2 - 1) * waveAmplitude
             )
@@ -67,41 +102,17 @@ const buildLineLayer = (numLayer, numLinePerLayer, numPoint, size, rand) => [
     }, numLayer)
 ]
 
-const buildGrid = (cells) =>
-    cells.map(([x, y, w, h]) => rect([x, y], [w, h], { stroke: GRID }))
-
-const variations = {
-    sparse: {
-        numCell: [6, 12],
-        numLayer: [4, 6],
-        numLinePerLayer: [4, 12],
-        ptPerLine: [16, 24]
-    },
-    scattered: {
-        numCell: [32, 48],
-        numLayer: [3, 6],
-        numLinePerLayer: [16, 32],
-        ptPerLine: [16, 24]
-    },
-    dense: {
-        numCell: [64, 98],
-        numLayer: [2, 4],
-        numLinePerLayer: [32, 64],
-        ptPerLine: [4, 8]
-    }
-}
 const setup = () => {
-    width = SIZE[0] - MARGIN * 2
-    height = SIZE[1] - MARGIN * 2
+    const width = SIZE[0] - MARGIN * 2
+    const height = SIZE[1] - MARGIN * 2
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
     const rand = SYSTEM,
-        iteration = pickRandomKey(variations, rand),
-        iterVals = variations[iteration],
-        numCell = rand.minmaxInt(...iterVals.numCell, rand),
-        numLayer = rand.minmaxInt(...iterVals.numLayer, rand),
-        numLinePerLayer = rand.minmaxInt(...iterVals.numLinePerLayer, rand),
+        numCell = rand.minmaxInt(...RAND_RANGE.numCell),
+        numLayer = rand.minmaxInt(...RAND_RANGE.numLayer),
+        numLinePerLayer = rand.minmaxInt(...RAND_RANGE.numLinePerLayer),
+        cellPadding = rand.normMinMax(...RAND_RANGE.cellPadding),
         cells = modularGrid(numCell, rand.float).map(([x, y, w, h]) => [
             x * width + MARGIN,
             y * height + MARGIN,
@@ -111,43 +122,67 @@ const setup = () => {
         lineLayer = buildLineLayer(
             numLayer,
             numLinePerLayer,
-            iterVals.ptPerLine,
+            RAND_RANGE.ptPerLine,
+            RAND_RANGE.amplitude,
             SIZE,
             rand
-        )
+        ),
+        text = pickRandom(SENTENCES, rand)
 
     drawElems = [
         rect(SIZE, { fill: PAPER }),
-        ...buildGrid(cells),
-        ...cells.flatMap(([x, y, w, h], cellIdx) => {
-            const pickedLayer = lineLayer[cellIdx % lineLayer.length]
-            const m = 0
-            return pickedLayer.reduce(
-                (acc, line) => [
-                    ...acc,
-                    ...clipPolylinePoly(line, [
-                        [x + m, y + m],
-                        [x + w - m, y + m],
-                        [x + w - m, y + h - m],
-                        [x + m, y + h - m]
-                    ]).map((p) =>
-                        polyline(p, { stroke: INK, weight: STROKE_WEIGHT })
-                    )
-                ],
-                []
-            )
-        })
-    ]
+        ...cells.map(([x, y, w, h]) => rect([x, y], [w, h], { stroke: GRID })),
+        group({}, [
+            ...cells
+                .map(([x, y, w, h], cellIdx) =>
+                    cellIdx % 3 === 0
+                        ? fillPart(text, x, y, w, h, MARGIN * 0.33).reduce(
+                              (acc, pts) => [
+                                  ...acc,
+                                  polyline(pts, { stroke: TEXT, weight: 1 })
+                              ],
+                              []
+                          )
+                        : []
+                )
+                .flat(),
 
+            ...cells
+                .map(([x, y, w, h], cellIdx) =>
+                    lineLayer[cellIdx % lineLayer.length].reduce(
+                        (acc, line) => [
+                            ...acc,
+                            ...clipPolylinePoly(line, [
+                                [x + cellPadding, y + cellPadding],
+                                [x + w - cellPadding, y + cellPadding],
+                                [x + w - cellPadding, y + h - cellPadding],
+                                [x + cellPadding, y + h - cellPadding]
+                            ]).map((p) =>
+                                polyline(p, {
+                                    stroke: INK,
+                                    weight: STROKE_WEIGHT
+                                })
+                            )
+                        ],
+                        []
+                    )
+                )
+                .flat()
+        ])
+    ]
     draw(CTX, group({}, drawElems))
-    console.log(iteration)
 }
 
 setup()
 window.setup = setup
 
 window['exportJPG'] = () => {
-    downloadCanvas(CANVAS, `Inspired-by-Ram-5-${FMT_yyyyMMdd_HHmmss()}`, 'jpeg', 1)
+    downloadCanvas(
+        CANVAS,
+        `Inspired-by-Ram-5-${FMT_yyyyMMdd_HHmmss()}`,
+        'jpeg',
+        1
+    )
 }
 window['exportSVG'] = () => {
     downloadWithMime(
