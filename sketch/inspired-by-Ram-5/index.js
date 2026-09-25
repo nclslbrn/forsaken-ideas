@@ -25,17 +25,18 @@ const DPI = quantity(96, dpi),
     TEXT = '#888',
     GRID = '#e8b4ae',
     STROKE_WEIGHT = 2.5,
-    RAND_RANGE = {
+    PRE_CHOICES = {
         numCell: [48, 128],
         numLayer: [2, 4],
         numLinePerLayer: [4, 32],
-        ptPerLine: [4, 24],
-        amplitude: [1.5, 2],
-        cellPadding: [-4, 4],
-        weight: []
+        ptPerLine: [1, 24],
+        amplitude: [0.5, 2],
+        cellPadding: [-4, 8],
+        hasText: 0.2,
+        hasCellDrawn: 0.8
     }
 
-let drawElems
+let drawElems, choices
 
 ROOT.appendChild(CANVAS)
 
@@ -63,11 +64,11 @@ const buildLineLayer = (
     numPoint,
     ampFactor,
     size,
+    amplitude,
     rand
 ) => [
     ...repeatedly(() => {
         const isVertical = rand.float() > 0.5,
-            amplitude = size[isVertical ? 0 : 1] / (numLinePerLayer + 1),
             stepNum = rand.minmaxInt(...numPoint),
             steps = Array.from(Array(stepNum)).map(() => rand.float() * 10),
             sum = steps.reduce((acc, val) => acc + val, 0),
@@ -109,10 +110,11 @@ const setup = () => {
     CANVAS.height = SIZE[1]
 
     const rand = SYSTEM,
-        numCell = rand.minmaxInt(...RAND_RANGE.numCell),
-        numLayer = rand.minmaxInt(...RAND_RANGE.numLayer),
-        numLinePerLayer = rand.minmaxInt(...RAND_RANGE.numLinePerLayer),
-        cellPadding = rand.normMinMax(...RAND_RANGE.cellPadding),
+        numCell = rand.minmaxInt(...PRE_CHOICES.numCell),
+        numLayer = rand.minmaxInt(...PRE_CHOICES.numLayer),
+        numLinePerLayer = rand.minmaxInt(...PRE_CHOICES.numLinePerLayer),
+        amplitude = Math.min(...SIZE) / (numLinePerLayer + 1),
+        cellPadding = rand.normMinMax(...PRE_CHOICES.cellPadding),
         cells = modularGrid(numCell, rand.float).map(([x, y, w, h]) => [
             x * width + MARGIN,
             y * height + MARGIN,
@@ -122,31 +124,62 @@ const setup = () => {
         lineLayer = buildLineLayer(
             numLayer,
             numLinePerLayer,
-            RAND_RANGE.ptPerLine,
-            RAND_RANGE.amplitude,
+            PRE_CHOICES.ptPerLine,
+            PRE_CHOICES.amplitude,
             SIZE,
+            amplitude,
             rand
         ),
-        text = pickRandom(SENTENCES, rand)
+        hasText = rand.float() < PRE_CHOICES.hasText,
+        hasCellDrawn = rand.float() < PRE_CHOICES.hasCellDrawn,
+        text = hasText ? pickRandom(SENTENCES, rand) : '',
+        choices = {
+            numCell,
+            numLayer,
+            numLinePerLayer,
+            amplitude,
+            cellPadding,
+            hasText,
+            hasCellDrawn,
+            text
+        }
 
     drawElems = [
         rect(SIZE, { fill: PAPER }),
-        ...cells.map(([x, y, w, h]) => rect([x, y], [w, h], { stroke: GRID })),
+        // cells contours
+        ...(hasCellDrawn
+            ? cells.map(([x, y, w, h]) =>
+                  rect([x, y], [w, h], { stroke: GRID })
+              )
+            : []),
+        // texts
         group({}, [
-            ...cells
-                .map(([x, y, w, h], cellIdx) =>
-                    cellIdx % 3 === 0
-                        ? fillPart(text, x, y, w, h, MARGIN * 0.33).reduce(
-                              (acc, pts) => [
-                                  ...acc,
-                                  polyline(pts, { stroke: TEXT, weight: 1 })
-                              ],
-                              []
-                          )
-                        : []
-                )
-                .flat(),
-
+            ...(hasText
+                ? cells
+                      .map(([x, y, w, h], cellIdx) =>
+                          cellIdx % 3 === 0
+                              ? fillPart(
+                                    text,
+                                    x,
+                                    y,
+                                    w,
+                                    h,
+                                    MARGIN * 0.33
+                                ).reduce(
+                                    (acc, pts) => [
+                                        ...acc,
+                                        polyline(pts, {
+                                            stroke: TEXT,
+                                            weight: 1
+                                        })
+                                    ],
+                                    []
+                                )
+                              : []
+                      )
+                      .flat()
+                : []),
+            // lines
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
@@ -171,6 +204,7 @@ const setup = () => {
         ])
     ]
     draw(CTX, group({}, drawElems))
+    console.log(choices)
 }
 
 setup()

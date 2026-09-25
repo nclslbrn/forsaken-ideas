@@ -1,23 +1,10 @@
 const SENTENCES = [
-    "no it's fine ",
-    'so far so good ',
-    'a picture of ',
-    'undefined is ',
-    "isNaN('Goldin') ",
-    'there is no point ',
-    'the past is now ',
-    'Done ',
-    'once upon a line ',
-    'feel free to ',
-    // 'it happens again ',
-    // 'the word is yours ',
-   
-  // 'no one can tell ',
-  //  'Is this real ? ',
-  //  'Somewhere between the void and the antimatter ',
-  //  'nothing ',
-  //  "Don't mind if I do ",
-  //  "let me insist "
+  "1 * 0 = 0 ----------------------",
+  "The pursuit of perfection leads to failure; the hunt for mistakes leads to the unexpected. ",
+  "It's just a program that works properly in an irrational world. ",
+  "It's not a technical issue; it's just curiosity. ",
+  "Here is this providential figure, the one who will bring us together before disappointing us all. ",
+  "/\c/\b - ******"
 ]
 
 export { SENTENCES }
