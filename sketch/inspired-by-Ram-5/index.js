@@ -28,9 +28,9 @@ const DPI = quantity(96, dpi),
     PRE_CHOICES = {
         numCell: [48, 128],
         numLayer: [2, 4],
-        numLinePerLayer: [4, 32],
-        ptPerLine: [1, 24],
-        amplitude: [0.5, 2],
+        numLinePerLayer: [24, 96],
+        ptPerLine: [4, 48],
+        amplitude: [0.5, 4],
         cellPadding: [-4, 8],
         hasText: 0.2,
         hasCellDrawn: 0.8
