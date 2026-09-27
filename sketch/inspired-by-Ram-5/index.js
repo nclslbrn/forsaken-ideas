@@ -154,14 +154,14 @@ const setup = () => {
 
     drawElems = [
         rect(SIZE, { fill: PAPER }),
-        // cells contours
-        ...(hasCellDrawn
-            ? cells.map(([x, y, w, h]) =>
-                  rect([x, y], [w, h], { stroke: GRID })
-              )
-            : []),
-        // texts
-        group({}, [
+        group({ __inkscapeLayer: 'Cell contours' }, [
+            ...(hasCellDrawn
+                ? cells.map(([x, y, w, h]) =>
+                      rect([x, y], [w, h], { stroke: GRID })
+                  )
+                : [])
+        ]),
+        group({ __inkscapeLayer: 'Random lines' }, [
             ...(hasText
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
@@ -186,8 +186,9 @@ const setup = () => {
                               : []
                       )
                       .flat()
-                : []),
-            // lines
+                : [])
+        ]),
+        group({ __inkscapeLayer: 'Random texts' }, [
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
@@ -211,7 +212,7 @@ const setup = () => {
                 .flat()
         ])
     ]
-    draw(CTX, group({}, drawElems))
+    draw(CTX, group({ __inkscapeLayer: 'Composition'}, drawElems))
     console.log(choices)
 }
 
