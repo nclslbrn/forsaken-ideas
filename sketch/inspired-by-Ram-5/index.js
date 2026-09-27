@@ -14,7 +14,7 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([320, 320], mm),
+    CSTM_FORMAT = quantity([420, 297], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -34,7 +34,13 @@ const DPI = quantity(96, dpi),
         cellPadding: [-4, 8],
         hasText: 0.2,
         hasCellDrawn: 0.8
-    }
+    },
+    GLYPHS = [
+        '-/\\-/|v_____-/\\-///|\\__/\\---..___',
+        '-W\\//T\\/====  //\\___//  \\\\____  xx^yy',
+        '______________::::::::|||/\\___/..%..\\\\',
+        '== == === == == __ ____ _____ _____  []..'
+    ]
 
 let drawElems, choices
 
@@ -132,7 +138,9 @@ const setup = () => {
         ),
         hasText = rand.float() < PRE_CHOICES.hasText,
         hasCellDrawn = rand.float() < PRE_CHOICES.hasCellDrawn,
-        text = hasText ? pickRandom(SENTENCES, rand) : '',
+        text = hasText
+            ? pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
+            : '',
         choices = {
             numCell,
             numLayer,
