@@ -28,13 +28,14 @@ const DPI = quantity(96, dpi),
     PRE_CHOICES = {
         numCell: [72, 256],
         numLayer: [2, 4],
-        numLinePerLayer: [48, 96],
+        numLinePerLayer: [96, 128],
         ptPerLine: [4, 48],
         amplitude: [0.5, 2],
-        cellPadding: [0, 4],
+        cellPadding: [0, 2],
         hasText: 0.01,
         hasCellDrawn: 0.8
     },
+    ANGLES = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4],
     GLYPHS = [
         '-/\\-/|v_____-/\\-///|\\__/\\---..___',
         '-W\\//T\\/====  //\\___//  \\\\____  xx^yy',
@@ -45,6 +46,14 @@ const DPI = quantity(96, dpi),
 let drawElems, choices
 
 ROOT.appendChild(CANVAS)
+
+const rotateAround = ([x, y], [cx, cy], a) => {
+    const c = Math.cos(a),
+        s = Math.sin(a),
+        dx = x - cx,
+        dy = y - cy
+    return [cx + dx * c - dy * s, cy + dx * s + dy * c]
+}
 
 const fillPart = (text, x, y, w, h, b) => {
     const cols = Math.floor(w / b),
@@ -66,7 +75,6 @@ const fillPart = (text, x, y, w, h, b) => {
 
 const buildLineLayer = (
     numLayer,
-    numLinePerLayer,
     numPoint,
     ampFactor,
     size,
@@ -75,40 +83,46 @@ const buildLineLayer = (
     rand
 ) => [
     ...repeatedly(() => {
-        const isVertical = rand.float() > 0.5,
+        const angle = pickRandom(ANGLES, rand),
+            isDiagonal = angle % (Math.PI / 2) !== 0,
+            center = [margin + size[0] / 2, margin + size[1] / 2],
+            diag = Math.hypot(size[0], size[1]),
+            // len = length of each line, stack = extent they are spread across
+            [len, stack] = isDiagonal
+                ? [diag, diag]
+                : angle === 0
+                  ? [size[0], size[1]]
+                  : [size[1], size[0]],
             stepNum = rand.minmaxInt(...numPoint),
             steps = Array.from(Array(stepNum)).map(() => rand.float() * 10),
             sum = steps.reduce((acc, val) => acc + val, 0),
             normSteps = steps.reduce(
-                (acc, x) => [
-                    [...acc[0], acc[1] + x / sum], // current pos
-                    acc[1] + x / sum // next break start
-                ],
+                (acc, x) => [[...acc[0], acc[1] + x / sum], acc[1] + x / sum],
                 [[0], 0]
             )[0],
             waveAmplitude = amplitude * rand.minmax(...ampFactor),
             waveOffsets = normSteps.map(
                 () => (rand.float() * 2 - 1) * waveAmplitude
             ),
-            stackSize = isVertical ? size[0] : size[1],
-            lineCount = Math.ceil(stackSize / amplitude)
-
+            lineCount = Math.ceil(stack / amplitude),
+            x0 = center[0] - len / 2,
+            y0 = center[1] - stack / 2
 
         return [
-            ...repeatedly((i) => {
-                const base = (i + 0.5) * amplitude
-                if (isVertical) {
-                    return normSteps.map((y, idx) => [
-                        base + waveOffsets[idx],
-                        margin + y * size[1]
-                    ])
-                } else {
-                    return normSteps.map((x, idx) => [
-                        margin + x * size[0],
-                        base + waveOffsets[idx]
-                    ])
-                }
-            }, lineCount)
+            ...repeatedly(
+                (i) =>
+                    normSteps.map((t, idx) =>
+                        rotateAround(
+                            [
+                                x0 + t * len,
+                                y0 + (i + 0.5) * amplitude + waveOffsets[idx]
+                            ],
+                            center,
+                            angle
+                        )
+                    ),
+                lineCount
+            )
         ]
     }, numLayer)
 ]
@@ -125,15 +139,16 @@ const setup = () => {
         numLinePerLayer = rand.minmaxInt(...PRE_CHOICES.numLinePerLayer),
         amplitude = Math.max(...SIZE) / (numLinePerLayer + 1),
         cellPadding = rand.normMinMax(...PRE_CHOICES.cellPadding),
-        cells = modularGrid(numCell, rand.float).map(([x, y, w, h]) => [
-            x * width + MARGIN,
-            y * height + MARGIN,
-            w * width,
-            h * height
-        ]),
+        cells = modularGrid(numCell, rand.float, height / width).map(
+            ([x, y, w, h]) => [
+                x * width + MARGIN,
+                y * height + MARGIN,
+                w * width,
+                h * height
+            ]
+        ),
         lineLayer = buildLineLayer(
             numLayer,
-            numLinePerLayer,
             PRE_CHOICES.ptPerLine,
             PRE_CHOICES.amplitude,
             [width, height],
@@ -149,14 +164,19 @@ const setup = () => {
         choices = {
             numCell,
             numLayer,
-            numLinePerLayer,
             amplitude,
             cellPadding,
             hasText,
             hasCellDrawn,
             text
         }
-  console.log('cell count', cells.length === numCell, cells.length - numCell)
+
+    console.log(
+        'cell count',
+        cells.length === numCell ? '✅' : '⚠️',
+        cells.length - numCell
+    )
+
     drawElems = [
         rect(SIZE, { fill: PAPER }),
         group({ __inkscapeLayer: 'Cells' }, [
