@@ -16,7 +16,7 @@ import { SENTENCES } from './SENTENCES'
 const DPI = quantity(96, dpi),
     CSTM_FORMAT = quantity([297, 420], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
-    MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
+    MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
@@ -30,10 +30,11 @@ const DPI = quantity(96, dpi),
         numLayer: [2, 4],
         numLinePerLayer: [96, 128],
         ptPerLine: [4, 48],
-        amplitude: [0.5, 2],
+        amplitude: [0.5, 4],
         cellPadding: [0, 2],
         hasText: 0.01,
-        hasCellDrawn: 0.8
+        hasCellContour: 0.8,
+        hasStripe: 0.85
     },
     ANGLES = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4],
     GLYPHS = [
@@ -108,6 +109,7 @@ const buildLineLayer = (
             x0 = center[0] - len / 2,
             y0 = center[1] - stack / 2
 
+
         return [
             ...repeatedly(
                 (i) =>
@@ -147,6 +149,7 @@ const setup = () => {
                 h * height
             ]
         ),
+        cellsStripes = cells.map(() => rand.float() < PRE_CHOICES.hasStripe),
         lineLayer = buildLineLayer(
             numLayer,
             PRE_CHOICES.ptPerLine,
@@ -157,17 +160,15 @@ const setup = () => {
             rand
         ),
         hasText = rand.float() < PRE_CHOICES.hasText,
-        hasCellDrawn = rand.float() < PRE_CHOICES.hasCellDrawn,
-        text = hasText
-            ? pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
-            : '',
+        hasCellContour = rand.float() < PRE_CHOICES.hasCellContour,
+        text = pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
         choices = {
             numCell,
             numLayer,
             amplitude,
             cellPadding,
             hasText,
-            hasCellDrawn,
+            hasCellContour,
             text
         }
 
@@ -180,7 +181,7 @@ const setup = () => {
     drawElems = [
         rect(SIZE, { fill: PAPER }),
         group({ __inkscapeLayer: 'Cells' }, [
-            ...(hasCellDrawn
+            ...(hasCellContour
                 ? cells.map(([x, y, w, h]) =>
                       rect([x, y], [w, h], { stroke: GRID })
                   )
@@ -217,7 +218,10 @@ const setup = () => {
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
-                        (acc, line) => [
+                      (acc, line) =>
+                        (cellsStripes[cellIdx]
+                          ?
+                          [
                             ...acc,
                             ...clipPolylinePoly(line, [
                                 [x + cellPadding, y + cellPadding],
@@ -230,9 +234,9 @@ const setup = () => {
                                     weight: STROKE_WEIGHT
                                 })
                             )
-                        ],
-                        []
-                    )
+                          ]
+                          : acc),
+                        [])
                 )
                 .flat()
         ])
