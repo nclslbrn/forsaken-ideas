@@ -28,7 +28,7 @@ export default (numCell, rand) => {
     let grid = [[0, 0, 1, 1]]
     for (let i = 0; i < numCell; i++) {
       const largerCell = grid.sort((a, b) => {
-        (b[2] - a[2]) +  (b[3] - a[3])
+        return (b[2] - a[2]) +  (b[3] - a[3])
       })[0]
         const cellIdx = grid.indexOf(largerCell)
         grid = splitCell(cellIdx, i % 2 === 0, grid)

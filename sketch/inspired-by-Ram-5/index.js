@@ -14,7 +14,7 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([420, 297], mm),
+    CSTM_FORMAT = quantity([297, 420], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(15, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -26,13 +26,13 @@ const DPI = quantity(96, dpi),
     GRID = '#e8b4ae',
     STROKE_WEIGHT = 2.5,
     PRE_CHOICES = {
-        numCell: [48, 128],
+        numCell: [72, 256],
         numLayer: [2, 4],
-        numLinePerLayer: [24, 96],
+        numLinePerLayer: [48, 96],
         ptPerLine: [4, 48],
-        amplitude: [0.5, 4],
-        cellPadding: [-4, 8],
-        hasText: 0.2,
+        amplitude: [0.5, 2],
+        cellPadding: [0, 4],
+        hasText: 0.01,
         hasCellDrawn: 0.8
     },
     GLYPHS = [
@@ -70,6 +70,7 @@ const buildLineLayer = (
     numPoint,
     ampFactor,
     size,
+    margin,
     amplitude,
     rand
 ) => [
@@ -88,7 +89,10 @@ const buildLineLayer = (
             waveAmplitude = amplitude * rand.minmax(...ampFactor),
             waveOffsets = normSteps.map(
                 () => (rand.float() * 2 - 1) * waveAmplitude
-            )
+            ),
+            stackSize = isVertical ? size[0] : size[1],
+            lineCount = Math.ceil(stackSize / amplitude)
+
 
         return [
             ...repeatedly((i) => {
@@ -96,15 +100,15 @@ const buildLineLayer = (
                 if (isVertical) {
                     return normSteps.map((y, idx) => [
                         base + waveOffsets[idx],
-                        y * size[1]
+                        margin + y * size[1]
                     ])
                 } else {
                     return normSteps.map((x, idx) => [
-                        x * size[0],
+                        margin + x * size[0],
                         base + waveOffsets[idx]
                     ])
                 }
-            }, numLinePerLayer)
+            }, lineCount)
         ]
     }, numLayer)
 ]
@@ -119,7 +123,7 @@ const setup = () => {
         numCell = rand.minmaxInt(...PRE_CHOICES.numCell),
         numLayer = rand.minmaxInt(...PRE_CHOICES.numLayer),
         numLinePerLayer = rand.minmaxInt(...PRE_CHOICES.numLinePerLayer),
-        amplitude = Math.min(...SIZE) / (numLinePerLayer + 1),
+        amplitude = Math.max(...SIZE) / (numLinePerLayer + 1),
         cellPadding = rand.normMinMax(...PRE_CHOICES.cellPadding),
         cells = modularGrid(numCell, rand.float).map(([x, y, w, h]) => [
             x * width + MARGIN,
@@ -132,7 +136,8 @@ const setup = () => {
             numLinePerLayer,
             PRE_CHOICES.ptPerLine,
             PRE_CHOICES.amplitude,
-            SIZE,
+            [width, height],
+            MARGIN,
             amplitude,
             rand
         ),
@@ -151,17 +156,17 @@ const setup = () => {
             hasCellDrawn,
             text
         }
-
+  console.log('cell count', cells.length === numCell, cells.length - numCell)
     drawElems = [
         rect(SIZE, { fill: PAPER }),
-        group({ __inkscapeLayer: 'Cell contours' }, [
+        group({ __inkscapeLayer: 'Cells' }, [
             ...(hasCellDrawn
                 ? cells.map(([x, y, w, h]) =>
                       rect([x, y], [w, h], { stroke: GRID })
                   )
                 : [])
         ]),
-        group({ __inkscapeLayer: 'Random lines' }, [
+        group({ __inkscapeLayer: 'Texts' }, [
             ...(hasText
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
@@ -188,7 +193,7 @@ const setup = () => {
                       .flat()
                 : [])
         ]),
-        group({ __inkscapeLayer: 'Random texts' }, [
+        group({ __inkscapeLayer: 'Lines' }, [
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
@@ -212,7 +217,7 @@ const setup = () => {
                 .flat()
         ])
     ]
-    draw(CTX, group({ __inkscapeLayer: 'Composition'}, drawElems))
+    draw(CTX, group({ __inkscapeLayer: 'Composition' }, drawElems))
     console.log(choices)
 }
 
