@@ -1,8 +1,8 @@
 import { polyline, line, rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, SYSTEM } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-// import '../framed-canvas.css'
-import '../full-canvas.css'
+import '../framed-canvas.css'
+// import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -15,8 +15,8 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([480, 320], mm),
-    SIZE = mul(CSTM_FORMAT, DPI).deref(),
+    // CSTM_FORMAT = quantity([480, 300], mm),
+    SIZE = mul(DIN_A3, DPI).deref(),
     MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
@@ -24,7 +24,7 @@ const DPI = quantity(96, dpi),
     COLORS = {
       paper: '#f2ede1',
       lines: '#1a1a1a',
-      texts: '#888',
+      texts: '#888888',
       cells: '#e8b4ae',
     },
     STROKE_WEIGHT = 2.5,
@@ -32,7 +32,7 @@ const DPI = quantity(96, dpi),
         numCell: [48, 256],
         numLayer: [2, 4],
         numLinePerLayer: [96, 128],
-        ptPerLine: [4, 48],
+        ptPerLine: [12, 96],
         amplitude: [0.5, 4],
         cellPadding: [0, 2],
         hasText: 0.9,
@@ -57,24 +57,6 @@ const rotateAround = ([x, y], [cx, cy], a) => {
         dx = x - cx,
         dy = y - cy
     return [cx + dx * c - dy * s, cy + dx * s + dy * c]
-}
-
-const fillPart = (text, x, y, w, h, b) => {
-    const cols = Math.floor(w / b),
-        rows = Math.floor(h / b),
-        grid = [
-            ...repeatedly2d(
-                (i, j) =>
-                    getGlyphVector(
-                        text[(i + cols * j) % text.length],
-                        [b, b],
-                        [x + i * b, y + j * b]
-                    ),
-                cols,
-                rows - 1
-            )
-        ]
-    return grid.flat()
 }
 
 const buildLineLayer = (
@@ -200,24 +182,21 @@ const setup = () => {
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
                           ! cellsStripes[cellIdx]
-                              ? fillPart(
-                                    text,
-                                    x,
-                                    y,
-                                    w,
-                                    h,
-                                    MARGIN * 0.095
-                                ).reduce(
-                                    (acc, pts) => [
-                                        ...acc,
-                                        polyline(pts)
-                                    ],
-                                    []
-                                )
+                              ? [
+                                  ...repeatedly2d((xx, yy) => 
+                                      getGlyphVector(
+                                          text[(cellIdx + xx + yy * 3) % text.length],
+                                          [8, 12],
+                                          [x + xx * 8, y + yy * 12]
+                                      ).map((pts) => polyline(pts)), 
+                                      Math.floor(w/8), 
+                                      Math.floor(h/12)
+                                  )
+                                ]
                               : []
-                      )
-                      .flat()
-                : [])
+                      ).flat() 
+                : []
+            ).flat()
         ]),
         group({ __inkscapeLayer: 'Lines', stroke: COLORS.lines, weight: STROKE_WEIGHT }, [
             ...cells
