@@ -1,7 +1,8 @@
 import { polyline, line, rect, group, svgDoc, asSvg } from '@thi.ng/geom'
 import { pickRandom, SYSTEM } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
-import '../framed-canvas.css'
+// import '../framed-canvas.css'
+import '../full-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
@@ -14,7 +15,7 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([420, 297], mm),
+    CSTM_FORMAT = quantity([480, 320], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -186,8 +187,8 @@ const setup = () => {
                           cellsStripes[cellIdx]
                               ? [
                                   ...contours, 
-                                  ...(x+w < width + MARGIN ? [line([x+w, y], [x+w, y+h])] : []),
-                                  ...(y+h < height + MARGIN ? [line([x, y+h], [x+w, y+h])] : [])
+                                  ...(x+w < width ? [line([x+w, y], [x+w, y+h])] : []),
+                                  ...(y+h < height ? [line([x, y+h], [x+w, y+h])] : [])
                                 ]
                               : contours,
                       []
