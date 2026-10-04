@@ -26,7 +26,7 @@ const DPI = quantity(96, dpi),
     GRID = '#e8b4ae',
     STROKE_WEIGHT = 2.5,
     PRE_CHOICES = {
-        numCell: [72, 256],
+        numCell: [48, 256],
         numLayer: [2, 4],
         numLinePerLayer: [96, 128],
         ptPerLine: [4, 48],
@@ -173,12 +173,6 @@ const setup = () => {
         text
     }
 
-    console.log(
-        'cell count',
-        cells.length === numCell ? '✅' : '⚠️',
-        cells.length - numCell
-    )
-
     drawElems = [
         rect(SIZE, { fill: PAPER }),
         group(
@@ -205,7 +199,7 @@ const setup = () => {
                                     y,
                                     w,
                                     h,
-                                    MARGIN * 0.07
+                                    MARGIN * 0.095
                                 ).reduce(
                                     (acc, pts) => [
                                         ...acc,
