@@ -14,16 +14,18 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([297, 420], mm),
+    CSTM_FORMAT = quantity([420, 297], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
-    PAPER = '#f2ede1',
-    INK = '#1a1a1a',
-    TEXT = '#888',
-    GRID = '#e8b4ae',
+    COLORS = {
+      paper: '#f2ede1',
+      lines: '#1a1a1a',
+      texts: '#888',
+      cells: '#e8b4ae',
+    },
     STROKE_WEIGHT = 2.5,
     PRE_CHOICES = {
         numCell: [48, 256],
@@ -174,21 +176,25 @@ const setup = () => {
     }
 
     drawElems = [
-        rect(SIZE, { fill: PAPER }),
+        rect(SIZE, { fill: COLORS.paper }),
         group(
-            { __inkscapeLayer: 'Cells', stroke: GRID },
+            { __inkscapeLayer: 'Cells', stroke: COLORS.cells },
             hasCellContour
                 ? cells.reduce(
                       (contours, [x, y, w, h], cellIdx) =>
                           // if there is cell stripes draw cell contour
                           cellsStripes[cellIdx]
-                              ? [...contours, rect([x, y], [w, h])]
+                              ? [
+                                  ...contours, 
+                                  ...(x+w < width + MARGIN ? [line([x+w, y], [x+w, y+h])] : []),
+                                  ...(y+h < height + MARGIN ? [line([x, y+h], [x+w, y+h])] : [])
+                                ]
                               : contours,
                       []
                   )
                 : []
         ),
-        group({ __inkscapeLayer: 'Texts', stroke: TEXT, weight: STROKE_WEIGHT }, [
+        group({ __inkscapeLayer: 'Texts', stroke: COLORS.texts, weight: STROKE_WEIGHT }, [
             ...(hasText
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
@@ -212,7 +218,7 @@ const setup = () => {
                       .flat()
                 : [])
         ]),
-        group({ __inkscapeLayer: 'Lines', stroke: INK, weight: STROKE_WEIGHT }, [
+        group({ __inkscapeLayer: 'Lines', stroke: COLORS.lines, weight: STROKE_WEIGHT }, [
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
