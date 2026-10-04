@@ -109,7 +109,6 @@ const buildLineLayer = (
             x0 = center[0] - len / 2,
             y0 = center[1] - stack / 2
 
-
         return [
             ...repeatedly(
                 (i) =>
@@ -162,15 +161,15 @@ const setup = () => {
         hasText = rand.float() < PRE_CHOICES.hasText,
         hasCellContour = rand.float() < PRE_CHOICES.hasCellContour,
         text = pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
-        choices = {
-            numCell,
-            numLayer,
-            amplitude,
-            cellPadding,
-            hasText,
-            hasCellContour,
-            text
-        }
+    choices = {
+        numCell,
+        numLayer,
+        amplitude,
+        cellPadding,
+        hasText,
+        hasCellContour,
+        text
+    }
 
     console.log(
         'cell count',
@@ -180,13 +179,19 @@ const setup = () => {
 
     drawElems = [
         rect(SIZE, { fill: PAPER }),
-        group({ __inkscapeLayer: 'Cells' }, [
-            ...(hasCellContour
-                ? cells.map(([x, y, w, h]) =>
-                      rect([x, y], [w, h], { stroke: GRID })
+        group(
+            { __inkscapeLayer: 'Cells', stroke: GRID },
+            hasCellContour
+                ? cells.reduce(
+                      (contours, [x, y, w, h], cellIdx) =>
+                          // if there is cell stripes draw cell contour
+                          cellsStripes[cellIdx]
+                              ? [...contours, rect([x, y], [w, h])]
+                              : contours,
+                      []
                   )
-                : [])
-        ]),
+                : []
+        ),
         group({ __inkscapeLayer: 'Texts' }, [
             ...(hasText
                 ? cells
@@ -218,25 +223,31 @@ const setup = () => {
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
-                      (acc, line) =>
-                        (cellsStripes[cellIdx]
-                          ?
-                          [
-                            ...acc,
-                            ...clipPolylinePoly(line, [
-                                [x + cellPadding, y + cellPadding],
-                                [x + w - cellPadding, y + cellPadding],
-                                [x + w - cellPadding, y + h - cellPadding],
-                                [x + cellPadding, y + h - cellPadding]
-                            ]).map((p) =>
-                                polyline(p, {
-                                    stroke: INK,
-                                    weight: STROKE_WEIGHT
-                                })
-                            )
-                          ]
-                          : acc),
-                        [])
+                        (acc, line) =>
+                            cellsStripes[cellIdx]
+                                ? [
+                                      ...acc,
+                                      ...clipPolylinePoly(line, [
+                                          [x + cellPadding, y + cellPadding],
+                                          [
+                                              x + w - cellPadding,
+                                              y + cellPadding
+                                          ],
+                                          [
+                                              x + w - cellPadding,
+                                              y + h - cellPadding
+                                          ],
+                                          [x + cellPadding, y + h - cellPadding]
+                                      ]).map((p) =>
+                                          polyline(p, {
+                                              stroke: INK,
+                                              weight: STROKE_WEIGHT
+                                          })
+                                      )
+                                  ]
+                                : acc,
+                        []
+                    )
                 )
                 .flat()
         ])
