@@ -32,7 +32,7 @@ const DPI = quantity(96, dpi),
         ptPerLine: [4, 48],
         amplitude: [0.5, 4],
         cellPadding: [0, 2],
-        hasText: 0.01,
+        hasText: 0.9,
         hasCellContour: 0.8,
         hasStripe: 0.85
     },
@@ -161,6 +161,8 @@ const setup = () => {
         hasText = rand.float() < PRE_CHOICES.hasText,
         hasCellContour = rand.float() < PRE_CHOICES.hasCellContour,
         text = pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
+
+    // Debug purpose
     choices = {
         numCell,
         numLayer,
@@ -192,25 +194,22 @@ const setup = () => {
                   )
                 : []
         ),
-        group({ __inkscapeLayer: 'Texts' }, [
+        group({ __inkscapeLayer: 'Texts', stroke: TEXT, weight: STROKE_WEIGHT }, [
             ...(hasText
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
-                          cellIdx % 3 === 0
+                          ! cellsStripes[cellIdx]
                               ? fillPart(
                                     text,
                                     x,
                                     y,
                                     w,
                                     h,
-                                    MARGIN * 0.33
+                                    MARGIN * 0.07
                                 ).reduce(
                                     (acc, pts) => [
                                         ...acc,
-                                        polyline(pts, {
-                                            stroke: TEXT,
-                                            weight: 1
-                                        })
+                                        polyline(pts)
                                     ],
                                     []
                                 )
@@ -219,7 +218,7 @@ const setup = () => {
                       .flat()
                 : [])
         ]),
-        group({ __inkscapeLayer: 'Lines' }, [
+        group({ __inkscapeLayer: 'Lines', stroke: INK, weight: STROKE_WEIGHT }, [
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
@@ -239,10 +238,7 @@ const setup = () => {
                                           ],
                                           [x + cellPadding, y + h - cellPadding]
                                       ]).map((p) =>
-                                          polyline(p, {
-                                              stroke: INK,
-                                              weight: STROKE_WEIGHT
-                                          })
+                                          polyline(p)
                                       )
                                   ]
                                 : acc,
