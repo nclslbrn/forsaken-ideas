@@ -15,29 +15,30 @@ import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
 
 const DPI = quantity(96, dpi),
-    // CSTM_FORMAT = quantity([480, 300], mm),
-    SIZE = mul(DIN_A3, DPI).deref(),
+    CSTM_FORMAT = quantity([420, 420], mm),
+    SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     COLORS = {
       paper: '#f2ede1',
-      lines: '#1a1a1a',
+      stripe: '#3a3a3a88',
       texts: '#888888',
-      cells: '#e8b4ae',
+      cells: '#e8b4ae'
     },
-    STROKE_WEIGHT = 2.5,
+    STROKE_WEIGHT = 5,
+    LETTER_SIZE = [24, 28],
     PRE_CHOICES = {
-        numCell: [48, 256],
-        numLayer: [2, 4],
-        numLinePerLayer: [96, 128],
+        numCell: [24, 128],
+        numLayer: [2, 6],
+        numLinePerLayer: [24, 96],
         ptPerLine: [12, 96],
-        amplitude: [0.5, 4],
-        cellPadding: [0, 2],
-        hasText: 0.9,
-        hasCellContour: 0.8,
-        hasStripe: 0.85
+        amplitude: [0.05, 1.5],
+        cellPadding: [-2, 2],
+        hasText: 0.5,
+        hasCellContour: 0.5,
+        hasStripe: 0.75
     },
     ANGLES = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4],
     GLYPHS = [
@@ -168,7 +169,7 @@ const setup = () => {
                           // if there is cell stripes draw cell contour
                           cellsStripes[cellIdx]
                               ? [
-                                  ...contours, 
+                                  ...contours,
                                   ...(x+w < width ? [line([x+w, y], [x+w, y+h])] : []),
                                   ...(y+h < height ? [line([x, y+h], [x+w, y+h])] : [])
                                 ]
@@ -177,28 +178,28 @@ const setup = () => {
                   )
                 : []
         ),
-        group({ __inkscapeLayer: 'Texts', stroke: COLORS.texts, weight: STROKE_WEIGHT }, [
+        group({ __inkscapeLayer: 'Texts', stroke: COLORS.texts, weight: STROKE_WEIGHT, strokeLinecap: 'round' }, [
             ...(hasText
                 ? cells
                       .map(([x, y, w, h], cellIdx) =>
-                          ! cellsStripes[cellIdx]
+                          ! cellsStripes[cellIdx] && rand.float() > 0.5
                               ? [
-                                  ...repeatedly2d((xx, yy) => 
+                                  ...repeatedly2d((xx, yy) =>
                                       getGlyphVector(
-                                          text[(cellIdx + xx + yy * 3) % text.length],
-                                          [8, 12],
-                                          [x + xx * 8, y + yy * 12]
-                                      ).map((pts) => polyline(pts)), 
-                                      Math.floor(w/8), 
-                                      Math.floor(h/12)
+                                          text[(xx + yy * Math.floor(w / LETTER_SIZE[0])) % text.length],
+                                          LETTER_SIZE,
+                                          [4 + x + xx * LETTER_SIZE[0], 4 + y + yy * LETTER_SIZE[1]]
+                                      ).map((pts) => polyline(pts)),
+                                      Math.floor(w / LETTER_SIZE[0]),
+                                      Math.floor(h / LETTER_SIZE[1])
                                   )
                                 ]
                               : []
-                      ).flat() 
+                      ).flat()
                 : []
             ).flat()
         ]),
-        group({ __inkscapeLayer: 'Lines', stroke: COLORS.lines, weight: STROKE_WEIGHT }, [
+        group({ __inkscapeLayer: 'Lines', stroke: COLORS.stripe, weight: STROKE_WEIGHT }, [
             ...cells
                 .map(([x, y, w, h], cellIdx) =>
                     lineLayer[cellIdx % lineLayer.length].reduce(
