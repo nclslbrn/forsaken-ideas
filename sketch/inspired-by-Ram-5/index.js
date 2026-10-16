@@ -6,13 +6,16 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
-import { repeatedly, repeatedly2d } from '@thi.ng/transducers'
+import { repeatedly2d } from '@thi.ng/transducers'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 import { getGlyphVector } from '@nclslbrn/plot-writer'
+
+import { COLORS, STROKE_WEIGHT, LETTER_SIZE, PRE_CHOICES, GLYPHS } from './CONST'
 import modularGrid from './modular-grid'
 import { SENTENCES } from './SENTENCES'
+import { buildLineLayer } from './buildLineLayer'
 
 const DPI = quantity(96, dpi),
     CSTM_FORMAT = quantity([420, 420], mm),
@@ -20,99 +23,13 @@ const DPI = quantity(96, dpi),
     MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
-    CTX = CANVAS.getContext('2d'),
-    COLORS = {
-      paper: '#f2ede1',
-      stripe: '#3a3a3a88',
-      texts: '#888888',
-      cells: '#e8b4ae'
-    },
-    STROKE_WEIGHT = 5,
-    LETTER_SIZE = [24, 28],
-    PRE_CHOICES = {
-        numCell: [24, 128],
-        numLayer: [2, 6],
-        numLinePerLayer: [24, 96],
-        ptPerLine: [12, 96],
-        amplitude: [0.05, 1.5],
-        cellPadding: [-2, 2],
-        hasText: 0.5,
-        hasCellContour: 0.5,
-        hasStripe: 0.75
-    },
-    ANGLES = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4],
-    GLYPHS = [
-        '-/\\-/|v_____-/\\-///|\\__/\\---..___',
-        '-W\\//T\\/====  //\\___//  \\\\____  xx^yy',
-        '______________::::::::|||/\\___/..%..\\\\',
-        '== == === == == __ ____ _____ _____  []..'
-    ]
+    CTX = CANVAS.getContext('2d')
+
 
 let drawElems, choices
 
 ROOT.appendChild(CANVAS)
 
-const rotateAround = ([x, y], [cx, cy], a) => {
-    const c = Math.cos(a),
-        s = Math.sin(a),
-        dx = x - cx,
-        dy = y - cy
-    return [cx + dx * c - dy * s, cy + dx * s + dy * c]
-}
-
-const buildLineLayer = (
-    numLayer,
-    numPoint,
-    ampFactor,
-    size,
-    margin,
-    amplitude,
-    rand
-) => [
-    ...repeatedly(() => {
-        const angle = pickRandom(ANGLES, rand),
-            isDiagonal = angle % (Math.PI / 2) !== 0,
-            center = [margin + size[0] / 2, margin + size[1] / 2],
-            diag = Math.hypot(size[0], size[1]),
-            // len = length of each line, stack = extent they are spread across
-            [len, stack] = isDiagonal
-                ? [diag, diag]
-                : angle === 0
-                  ? [size[0], size[1]]
-                  : [size[1], size[0]],
-            stepNum = rand.minmaxInt(...numPoint),
-            steps = Array.from(Array(stepNum)).map(() => rand.float() * 10),
-            sum = steps.reduce((acc, val) => acc + val, 0),
-            normSteps = steps.reduce(
-                (acc, x) => [[...acc[0], acc[1] + x / sum], acc[1] + x / sum],
-                [[0], 0]
-            )[0],
-            waveAmplitude = amplitude * rand.minmax(...ampFactor),
-            waveOffsets = normSteps.map(
-                () => (rand.float() * 2 - 1) * waveAmplitude
-            ),
-            lineCount = Math.ceil(stack / amplitude),
-            x0 = center[0] - len / 2,
-            y0 = center[1] - stack / 2
-
-        return [
-            ...repeatedly(
-                (i) =>
-                    normSteps.map((t, idx) =>
-                        rotateAround(
-                            [
-                                x0 + t * len,
-                                y0 + (i + 0.5) * amplitude + waveOffsets[idx]
-                            ],
-                            center,
-                            angle
-                        )
-                    ),
-                lineCount
-            )
-        ]
-    }, numLayer)
-]
 
 const setup = () => {
     const width = SIZE[0] - MARGIN * 2
