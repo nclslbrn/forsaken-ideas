@@ -1,5 +1,5 @@
 
-import { ANGLES } from './CONST'
+import { ANGLES, PRE_CHOICES } from './CONST'
 import { repeatedly } from "@thi.ng/transducers"
 import { pickRandom } from '@thi.ng/random'
 const { cos, sin, PI, ceil, hypot } = Math
@@ -14,8 +14,6 @@ const rotateAround = ([x, y], [cx, cy], a) => {
 
 const buildLineLayer = (
     numLayer,
-    numPoint,
-    ampFactor,
     size,
     margin,
     amplitude,
@@ -32,14 +30,14 @@ const buildLineLayer = (
                 : angle === 0
                   ? [size[0], size[1]]
                   : [size[1], size[0]],
-            stepNum = rand.minmaxInt(...numPoint),
+            stepNum = rand.minmaxInt(...PRE_CHOICES.ptPerLine),
             steps = Array.from(Array(stepNum)).map(() => rand.float() * 10),
             sum = steps.reduce((acc, val) => acc + val, 0),
             normSteps = steps.reduce(
                 (acc, x) => [[...acc[0], acc[1] + x / sum], acc[1] + x / sum],
                 [[0], 0]
             )[0],
-            waveAmplitude = amplitude * rand.minmax(...ampFactor),
+            waveAmplitude = amplitude * rand.minmax(...PRE_CHOICES.amplitude),
             waveOffsets = normSteps.map(
                 () => (rand.float() * 2 - 1) * waveAmplitude
             ),

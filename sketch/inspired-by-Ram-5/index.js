@@ -1,4 +1,12 @@
-import { polyline, line, rect, group, svgDoc, asSvg } from '@thi.ng/geom'
+import {
+    polyline,
+    line,
+    rect,
+    group,
+    svgDoc,
+    asSvg,
+    scaleWithCenter
+} from '@thi.ng/geom'
 import { pickRandom, SYSTEM } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
@@ -6,25 +14,21 @@ import '../framed-canvas.css'
 import infobox from '../../sketch-common/infobox'
 import handleAction from '../../sketch-common/handle-action'
 import { downloadCanvas, downloadWithMime } from '@thi.ng/dl-asset'
-import { repeatedly2d } from '@thi.ng/transducers'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
-import { getGlyphVector } from '@nclslbrn/plot-writer'
 
-import { COLORS, STROKE_WEIGHT, LETTER_SIZE, PRE_CHOICES, GLYPHS } from './CONST'
+import { COLORS, STROKE_WEIGHT, PRE_CHOICES } from './CONST'
 import modularGrid from './modular-grid'
-import { SENTENCES } from './SENTENCES'
 import { buildLineLayer } from './buildLineLayer'
 
 const DPI = quantity(96, dpi),
     CSTM_FORMAT = quantity([420, 420], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
-    MARGIN = convert(mul(quantity(35, mm), DPI), NONE),
+    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d')
-
 
 let drawElems, choices
 
@@ -52,29 +56,34 @@ const setup = () => {
             ]
         ),
         cellsStripes = cells.map(() => rand.float() < PRE_CHOICES.hasStripe),
+        // Add two more cells with different density
+        cellIdsWithVariation = Array.from(Array(2)).map(() => {
+            const freeCellIds = cellsStripes
+                    .map((isFilled, id) => ({ isFilled, id }))
+                    .filter((cell) => !cell.isFilled)
+                    .map((cell) => cell.id),
+                randId = pickRandom(freeCellIds, rand)
+            cellsStripes[randId] = true // set cell filled
+            return randId
+        }),
         lineLayer = buildLineLayer(
             numLayer,
-            PRE_CHOICES.ptPerLine,
-            PRE_CHOICES.amplitude,
             [width, height],
             MARGIN,
             amplitude,
             rand
         ),
-        hasText = rand.float() < PRE_CHOICES.hasText,
         hasCellContour = rand.float() < PRE_CHOICES.hasCellContour,
-        text = pickRandom(SENTENCES, rand) + pickRandom(GLYPHS, rand)
-
-    // Debug purpose
-    choices = {
-        numCell,
-        numLayer,
-        amplitude,
-        cellPadding,
-        hasText,
-        hasCellContour,
-        text
-    }
+        //  Debug purpose
+        choices = {
+            numCell,
+            cellPadding,
+            numLayer,
+            amplitude,
+            hasCellContour,
+            cellsStripes,
+            cellIdsWithVariation
+        }
 
     drawElems = [
         rect(SIZE, { fill: COLORS.paper }),
@@ -86,65 +95,73 @@ const setup = () => {
                           // if there is cell stripes draw cell contour
                           cellsStripes[cellIdx]
                               ? [
-                                  ...contours,
-                                  ...(x+w < width ? [line([x+w, y], [x+w, y+h])] : []),
-                                  ...(y+h < height ? [line([x, y+h], [x+w, y+h])] : [])
+                                    ...contours,
+                                    ...(x + w < width
+                                        ? [line([x + w, y], [x + w, y + h])]
+                                        : []),
+                                    ...(y + h < height
+                                        ? [line([x, y + h], [x + w, y + h])]
+                                        : [])
                                 ]
                               : contours,
                       []
                   )
                 : []
         ),
-        group({ __inkscapeLayer: 'Texts', stroke: COLORS.texts, weight: STROKE_WEIGHT, strokeLinecap: 'round' }, [
-            ...(hasText
-                ? cells
-                      .map(([x, y, w, h], cellIdx) =>
-                          ! cellsStripes[cellIdx] && rand.float() > 0.5
-                              ? [
-                                  ...repeatedly2d((xx, yy) =>
-                                      getGlyphVector(
-                                          text[(xx + yy * Math.floor(w / LETTER_SIZE[0])) % text.length],
-                                          LETTER_SIZE,
-                                          [4 + x + xx * LETTER_SIZE[0], 4 + y + yy * LETTER_SIZE[1]]
-                                      ).map((pts) => polyline(pts)),
-                                      Math.floor(w / LETTER_SIZE[0]),
-                                      Math.floor(h / LETTER_SIZE[1])
-                                  )
-                                ]
-                              : []
-                      ).flat()
-                : []
-            ).flat()
-        ]),
-        group({ __inkscapeLayer: 'Lines', stroke: COLORS.stripe, weight: STROKE_WEIGHT }, [
-            ...cells
-                .map(([x, y, w, h], cellIdx) =>
-                    lineLayer[cellIdx % lineLayer.length].reduce(
-                        (acc, line) =>
-                            cellsStripes[cellIdx]
-                                ? [
-                                      ...acc,
-                                      ...clipPolylinePoly(line, [
-                                          [x + cellPadding, y + cellPadding],
-                                          [
-                                              x + w - cellPadding,
-                                              y + cellPadding
-                                          ],
-                                          [
-                                              x + w - cellPadding,
-                                              y + h - cellPadding
-                                          ],
-                                          [x + cellPadding, y + h - cellPadding]
-                                      ]).map((p) =>
-                                          polyline(p)
-                                      )
-                                  ]
-                                : acc,
-                        []
+
+        group(
+            {
+                __inkscapeLayer: 'Lines',
+                stroke: COLORS.stripe,
+                weight: STROKE_WEIGHT
+            },
+            [
+                ...cells
+                    .map(([x, y, w, h], cellIdx) =>
+                        lineLayer[cellIdx % lineLayer.length].reduce(
+                            (acc, line) =>
+                                cellsStripes[cellIdx]
+                                    ? [
+                                          ...acc,
+                                          ...clipPolylinePoly(line, [
+                                              [
+                                                  x + cellPadding,
+                                                  y + cellPadding
+                                              ],
+                                              [
+                                                  x + w - cellPadding,
+                                                  y + cellPadding
+                                              ],
+                                              [
+                                                  x + w - cellPadding,
+                                                  y + h - cellPadding
+                                              ],
+                                              [
+                                                  x + cellPadding,
+                                                  y + h - cellPadding
+                                              ]
+                                          ]).map((p) => {
+                                            const hasVariation = cellIdsWithVariation.includes(cellIdx)
+                                            const stripes = scaleWithCenter(
+                                              polyline(p, {...(hasVariation) && { stroke: COLORS.variation } }),
+                                              [x + w / 2, y + h / 2],
+                                                hasVariation
+                                                ? cellIdsWithVariation[0] ===
+                                                  cellIdx
+                                                  ? 0.5
+                                                  : 1.15
+                                                : 1
+                                            )
+                                            return stripes
+                                          })
+                                      ]
+                                    : acc,
+                            []
+                        )
                     )
-                )
-                .flat()
-        ])
+                    .flat()
+            ]
+        )
     ]
     draw(CTX, group({ __inkscapeLayer: 'Composition' }, drawElems))
     console.log(choices)
