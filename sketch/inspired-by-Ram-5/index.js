@@ -23,7 +23,7 @@ import modularGrid from './modular-grid'
 import { buildLineLayer } from './buildLineLayer'
 
 const DPI = quantity(96, dpi),
-    CSTM_FORMAT = quantity([420, 420], mm),
+    CSTM_FORMAT = quantity([297, 297], mm),
     SIZE = mul(CSTM_FORMAT, DPI).deref(),
     MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
@@ -81,8 +81,6 @@ const setup = () => {
             numLayer,
             amplitude,
             hasCellContour,
-            cellsStripes,
-            cellIdsWithVariation
         }
 
     drawElems = [
@@ -164,7 +162,7 @@ const setup = () => {
         )
     ]
     draw(CTX, group({ __inkscapeLayer: 'Composition' }, drawElems))
-    console.log(choices)
+    console.table(choices)
 }
 
 setup()

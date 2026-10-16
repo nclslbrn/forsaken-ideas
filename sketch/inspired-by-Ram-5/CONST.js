@@ -1,16 +1,16 @@
 const  COLORS = {
     paper: '#f2ede1',
-    stripe: '#3a3a3a88',
+    stripe: '#555',
     variation: '#cc452d',
     cells: '#e8b4ae'
   },
-  STROKE_WEIGHT = 5,
+  STROKE_WEIGHT = 3,
   PRE_CHOICES = {
-      numCell: [24, 128],
-      numLayer: [2, 6],
-      numLinePerLayer: [24, 96],
-      ptPerLine: [12, 96],
-      amplitude: [0.05, 1.5],
+      numCell: [48, 192],
+      numLayer: [2, 7],
+      numLinePerLayer: [84, 156],
+      ptPerLine: [24, 126],
+      amplitude: [0.05, 2],
       cellPadding: [-2, 2],
       hasCellContour: 0.5,
       hasStripe: 0.75
