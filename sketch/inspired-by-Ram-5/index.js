@@ -47,7 +47,9 @@ const setup = () => {
         numLinePerLayer = rand.minmaxInt(...PRE_CHOICES.numLinePerLayer),
         amplitude = Math.max(...SIZE) / (numLinePerLayer + 1),
         cellPadding = rand.normMinMax(...PRE_CHOICES.cellPadding),
-        cells = modularGrid(numCell, rand.float, height / width).map(
+        baseCells = modularGrid(numCell/2, rand.float, [[0, 0, 1, 1]], height / width),
+        extCells = modularGrid(numCell, rand.float, baseCells, height / width),
+        cells = [ ...baseCells, ...extCells].map(
             ([x, y, w, h]) => [
                 x * width + MARGIN,
                 y * height + MARGIN,
@@ -86,12 +88,12 @@ const setup = () => {
     drawElems = [
         rect(SIZE, { fill: COLORS.paper }),
         group(
-            { __inkscapeLayer: 'Cells', stroke: COLORS.cells },
+            { __inkscapeLayer: 'Cells', stroke: COLORS.variation, weight: STROKE_WEIGHT },
             hasCellContour
                 ? cells.reduce(
                       (contours, [x, y, w, h], cellIdx) =>
                           // if there is cell stripes draw cell contour
-                          cellsStripes[cellIdx]
+                          !cellsStripes[cellIdx]
                               ? [
                                     ...contours,
                                     ...(x + w < width

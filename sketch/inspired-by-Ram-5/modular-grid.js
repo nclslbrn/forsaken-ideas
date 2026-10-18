@@ -1,10 +1,8 @@
-const { ceil, floor, sqrt } = Math
-
-export default (numCell, rand, aspect = 1) => {
+export default (numCell, rand, initGrid = [[0, 0, 1, 1]], aspect = 1) => {
     // aspect = drawable height / width, so proportions are judged in real units
     const area = ([, , w, h]) => w * h
 
-    let grid = [[0, 0, 1, 1]]
+    let grid = [ ...initGrid ]
 
     for (let i = 0; i < numCell; i++) {
         // 1. pick the largest cell by area
