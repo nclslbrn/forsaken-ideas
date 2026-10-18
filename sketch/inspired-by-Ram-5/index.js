@@ -1,13 +1,13 @@
 import {
     polyline,
-    line,
     rect,
     group,
     svgDoc,
     asSvg,
-    scaleWithCenter
+    scaleWithCenter,
+    text
 } from '@thi.ng/geom'
-import { pickRandom, SYSTEM } from '@thi.ng/random'
+import { pickRandom, pickRandomKey, SYSTEM } from '@thi.ng/random'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import '../framed-canvas.css'
 // import '../full-canvas.css'
@@ -18,7 +18,7 @@ import { draw } from '@thi.ng/hiccup-canvas'
 import { convert, mul, quantity, NONE, mm, dpi, DIN_A3 } from '@thi.ng/units'
 import { clipPolylinePoly } from '@thi.ng/geom-clip-line'
 
-import { COLORS, STROKE_WEIGHT, PRE_CHOICES } from './CONST'
+import { COLORS, PRE_CHOICES } from './CONST'
 import modularGrid from './modular-grid'
 import { buildLineLayer } from './buildLineLayer'
 
@@ -34,7 +34,6 @@ let drawElems, choices
 
 ROOT.appendChild(CANVAS)
 
-
 const setup = () => {
     const width = SIZE[0] - MARGIN * 2
     const height = SIZE[1] - MARGIN * 2
@@ -42,22 +41,27 @@ const setup = () => {
     CANVAS.height = SIZE[1]
 
     const rand = SYSTEM,
-        numCell = rand.minmaxInt(...PRE_CHOICES.numCell),
-        numLayer = rand.minmaxInt(...PRE_CHOICES.numLayer),
-        numLinePerLayer = rand.minmaxInt(...PRE_CHOICES.numLinePerLayer),
+        propsName = pickRandomKey(PRE_CHOICES),
+        iterationProps = PRE_CHOICES.dense, //PRE_CHOICES[propsName],
+        numCell = rand.minmaxInt(...iterationProps.numCell),
+        numLayer = rand.minmaxInt(...iterationProps.numLayer),
+        numLinePerLayer = rand.minmaxInt(...iterationProps.numLinePerLayer),
         amplitude = Math.max(...SIZE) / (numLinePerLayer + 1),
-        cellPadding = rand.normMinMax(...PRE_CHOICES.cellPadding),
-        baseCells = modularGrid(numCell/2, rand.float, [[0, 0, 1, 1]], height / width),
-        extCells = modularGrid(numCell, rand.float, baseCells, height / width),
-        cells = [ ...baseCells, ...extCells].map(
-            ([x, y, w, h]) => [
-                x * width + MARGIN,
-                y * height + MARGIN,
-                w * width,
-                h * height
-            ]
+        cellPadding = rand.normMinMax(...iterationProps.cellPadding),
+        baseCells = modularGrid(
+            numCell / 2,
+            rand.float,
+            [[0, 0, 1, 1]],
+            height / width
         ),
-        cellsStripes = cells.map(() => rand.float() < PRE_CHOICES.hasStripe),
+        extCells = modularGrid(numCell, rand.float, baseCells, height / width),
+        cells = [...baseCells, ...extCells].map(([x, y, w, h]) => [
+            x * width + MARGIN,
+            y * height + MARGIN,
+            w * width,
+            h * height
+        ]),
+        cellsStripes = cells.map(() => rand.float() < iterationProps.hasStripe),
         // Add two more cells with different density
         cellIdsWithVariation = Array.from(Array(2)).map(() => {
             const freeCellIds = cellsStripes
@@ -73,96 +77,101 @@ const setup = () => {
             [width, height],
             MARGIN,
             amplitude,
-            rand
-        ),
-        hasCellContour = rand.float() < PRE_CHOICES.hasCellContour,
-        //  Debug purpose
-        choices = {
-            numCell,
-            cellPadding,
-            numLayer,
-            amplitude,
-            hasCellContour,
-        }
+            rand,
+            iterationProps
+        )
+    //  Debug purpose
+    choices = {
+        propsName,
+        numCell,
+        cellPadding,
+        numLayer,
+        amplitude
+    }
 
     drawElems = [
-        rect(SIZE, { fill: COLORS.paper }),
-        group(
-            { __inkscapeLayer: 'Cells', stroke: COLORS.variation, weight: STROKE_WEIGHT },
-            hasCellContour
-                ? cells.reduce(
-                      (contours, [x, y, w, h], cellIdx) =>
-                          // if there is cell stripes draw cell contour
-                          !cellsStripes[cellIdx]
-                              ? [
-                                    ...contours,
-                                    ...(x + w < width
-                                        ? [line([x + w, y], [x + w, y + h])]
-                                        : []),
-                                    ...(y + h < height
-                                        ? [line([x, y + h], [x + w, y + h])]
-                                        : [])
-                                ]
-                              : contours,
-                      []
-                  )
-                : []
-        ),
-
-        group(
-            {
-                __inkscapeLayer: 'Lines',
-                stroke: COLORS.stripe,
-                weight: STROKE_WEIGHT
-            },
-            [
-                ...cells
-                    .map(([x, y, w, h], cellIdx) =>
-                        lineLayer[cellIdx % lineLayer.length].reduce(
-                            (acc, line) =>
-                                cellsStripes[cellIdx]
-                                    ? [
-                                          ...acc,
-                                          ...clipPolylinePoly(line, [
-                                              [
-                                                  x + cellPadding,
-                                                  y + cellPadding
-                                              ],
-                                              [
-                                                  x + w - cellPadding,
-                                                  y + cellPadding
-                                              ],
-                                              [
-                                                  x + w - cellPadding,
-                                                  y + h - cellPadding
-                                              ],
-                                              [
-                                                  x + cellPadding,
-                                                  y + h - cellPadding
-                                              ]
-                                          ]).map((p) => {
-                                            const hasVariation = cellIdsWithVariation.includes(cellIdx)
-                                            const stripes = scaleWithCenter(
-                                              polyline(p, {...(hasVariation) && { stroke: COLORS.variation } }),
-                                              [x + w / 2, y + h / 2],
-                                                hasVariation
-                                                ? cellIdsWithVariation[0] ===
-                                                  cellIdx
-                                                  ? 0.5
-                                                  : 1.15
-                                                : 1
-                                            )
-                                            return stripes
-                                          })
-                                      ]
-                                    : acc,
-                            []
-                        )
+      rect(SIZE, { fill: COLORS.paper }),
+      // Loops over grid cells
+      ...cells.reduce((groups, [x, y, w, h], cellIdx) => {
+        // Grab lines from one layer, (iterate layer for each cell
+        const lines = lineLayer[cellIdx % lineLayer.length].reduce((acc, line) => {
+            // Check whether a cell can contain stripes
+            if (cellsStripes[cellIdx]) {
+              const hasVariation = cellIdsWithVariation.includes(cellIdx)
+              const clipped = clipPolylinePoly(line, [
+                [x + cellPadding, y + cellPadding],
+                [x + w - cellPadding, y + cellPadding],
+                [x + w - cellPadding, y + h - cellPadding],
+                [x + cellPadding, y + h - cellPadding]
+              ])
+              // If cell has variation, rescale lines and put it on group #2
+              if (hasVariation) {
+                return [
+                  acc[0],
+                  [
+                    ...acc[1],
+                    ...clipped.map((pts) =>
+                      scaleWithCenter(
+                        polyline(pts),
+                        [x + w / 2, y + h / 2],
+                        cellIdsWithVariation[0] === cellIdx
+                          ? 0.5
+                          : 1.15
+                      )
                     )
-                    .flat()
-            ]
+                  ],
+                ]
+              } else {
+                // if not put them on group #1
+                return [
+                  [
+                    ...acc[0],
+                    ...clipped.map((pts) => polyline(pts))
+                  ],
+                  acc[1]
+                ]
+              }
+            } else {
+              return acc
+            }
+          },
+          [[], []]
         )
+        return groups.map((g, i) => g.add(...lines[i]))
+      },
+        [
+          group(
+              {
+                  __inkscapeLayer: 'Regular',
+                  stroke: COLORS.stripe,
+                  weight: iterationProps.weight,
+              },
+              [
+
+              ]
+          ),
+          group(
+              {
+                  __inkscapeLayer: 'Variation',
+                  stroke: COLORS.variation,
+                  weight: iterationProps.weight
+              },
+              []
+          )
+        ]
+      ),
+      text(
+        [MARGIN, CANVAS.height - MARGIN * 0.66],
+        `[${propsName}]`,
+        {
+          font: '28px Inter',
+          align: "left",
+          baseline: "middle",
+          fill: COLORS.stripe
+        }
+      )
     ]
+    console.log(drawElems)
     draw(CTX, group({ __inkscapeLayer: 'Composition' }, drawElems))
     console.table(choices)
 }
