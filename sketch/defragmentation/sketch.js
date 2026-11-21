@@ -8,11 +8,12 @@ import {
     polygon,
     polyline,
     rect,
+    resample,
     svgDoc
 } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
 import { SYSTEM } from '@thi.ng/random'
-import { convert, mul, quantity, NONE, cm, dpi, DIN_A3 } from '@thi.ng/units'
+import { convert, mul, quantity, NONE, cm, dpi } from '@thi.ng/units'
 import { downloadWithMime } from '@thi.ng/dl-asset'
 import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import {
@@ -34,6 +35,7 @@ const APP = document.getElementById('windowFrame'),
     MARGIN = convert(mul(quantity(3, cm), DPI), NONE),
     BIG = Math.hypot(...SIZE) * 2,
     I = 18,
+    STYLES = 6,
     lineStep = 6,
     lineWeight = 1.5,
     bgColor = '#e4c4c4',
@@ -55,6 +57,13 @@ let N, parts, drawing
 APP.appendChild(CANVAS)
 CANVAS.width = SIZE[0]
 CANVAS.height = SIZE[1]
+
+/**
+ * Create a part with a fixed hatch style, so it doesn't change on each render.
+ */
+const newPart = (pts, index) =>
+    polygon(pts, { index, style: SYSTEM.int() % STYLES })
+
 /**
  * Split a convex polygon in two along the infinite line a-b, by clipping it
  * against each half-plane. Returns undefined if the line misses the polygon.
@@ -83,100 +92,85 @@ const cutTile = () => {
         const halves = splitPart(part, a, b)
         return halves
             ? halves.map((h, k) =>
-                  polygon(h.points, { index: part.attribs.index + k + 1 })
+                  newPart(h.points, part.attribs.index + k + 1)
               )
             : [part]
     })
 }
 
-const hatchPart = (part, i) => {
+// join hatch lines into one continuous path (boustrophedon) → fewer pen lifts
+const serpentine = (segs) =>
+    segs.flatMap((s, i) => (i % 2 ? [...s].reverse() : s))
+
+// add points along the line so the noise actually bends it
+const wavy = (pts) => noiseLine(resample(polyline(pts), { dist: 4 }).points)
+
+const hatchPart = (part) => {
+    const { index, style } = part.attribs
     const { pos, size } = bounds(part)
     const max = add2([], pos, size)
     const lines = []
-    if (i % 2) {
+    if (index % 2) {
         for (let x = pos[0]; x <= max[0]; x += lineStep)
             lines.push(line([x, pos[1]], [x, max[1]]))
     } else {
         for (let y = pos[1]; y <= max[1]; y += lineStep)
             lines.push(line([pos[0], y], [max[0], y]))
     }
-    const lineStyle = SYSTEM.int() % 6
-    const segments = lines
+    const segs = lines
         .map((l) => clipConvex(l, part)?.[0]?.points)
         .filter(Boolean)
+    if (!segs.length) return []
 
-    switch (lineStyle) {
+    switch (style) {
         // dash noise
         case 0:
-            return segments.flatMap((s) =>
-                dashLine(s, 128, part.attribs.index % 2).map(noiseLine)
+            return segs.flatMap((s) =>
+                dashLine(s, 128, index % 2).map((d) => wavy(d))
             )
-        // full noise
+        // full noise, one continuous path
         case 1:
-            return segments.map(noiseLine)
+            return [wavy(serpentine(segs))]
         // uniform dash straight
         case 2:
-            return segments.flatMap((s) => dashLine(s, 256, 0))
+            return segs.flatMap((s) => dashLine(s, 512, 0))
         // random dash straight
         case 3:
-            return segments.flatMap((s) => dashLine(s, 128, 1))
+            return segs.flatMap((s) => dashLine(s, 256, 1))
         // empty
         case 4:
             return []
-        // straight line
+        // straight lines, one continuous path
         case 5:
-            return segments
+            return [serpentine(segs)]
+        // part without style (shouldn't happen): plain hatch
+        default:
+            return segs
     }
 }
 
 const render = () => {
-    const select = parts.flatMap(hatchPart).filter((pts) => pts.length < 1)
-    console.log('select', select)
-    const link = select.reduce(([polys, lastPt], pts, polyIdx) =>
-            [[...polys, [lastPt, pts[0]]], pts[pts.length-1]],
-        [])
-
-    console.log('link', link)
     drawing = group(
         { stroke: '#5a4869', weight: lineWeight, fill: 'none' },
-        [
-            ...parts.flatMap(hatchPart).map((pts) => polyline(pts)),
-            //...parts.flatMap(hatchPart).reduce((line) => )
-            ...link.map(pts => polyline(pts))
-        ]
+        parts
+            .flatMap(hatchPart)
+            .filter((pts) => pts && pts.length > 1)
+            .map((pts) => polyline(pts))
     )
 
     draw(
-      CTX,
-      group(
-        { __inkscapeLayer: 'Composition' },
-        [ rect(SIZE, { fill: bgColor }), drawing ]
-      )
+        CTX,
+        group({ __inkscapeLayer: 'Composition' }, [
+            rect(SIZE, { fill: bgColor }),
+            drawing
+        ])
     )
-    /*
-    APP.querySelector('svg')?.remove()
-    APP.insertAdjacentHTML(
-        'beforeend',
-        asSvg(
-            svgDoc(
-                {
-                    width: SIZE[0],
-                    height: SIZE[1],
-                    viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`,
-                    style: 'background: ;'
-                },
-                drawing
-            )
-        )
-    )
-    */
-
 }
 
 const sketch = {
     // reset value and relaunch drawing
     init: () => {
-        N = Math.ceil(SYSTEM.float(3))
+        N = Math.ceil(SYSTEM.float(3)) || 1
         const tileSize = [
             Math.round((SIZE[0] - MARGIN * 2) / N),
             Math.round((SIZE[1] - MARGIN * 2) / N)
@@ -189,14 +183,14 @@ const sketch = {
                     x1 = x0 + tileSize[0],
                     y1 = y0 + tileSize[1]
                 parts.push(
-                    polygon(
+                    newPart(
                         [
                             [x0, y0],
                             [x1, y0],
                             [x1, y1],
                             [x0, y1]
                         ],
-                        { index: (x + y) % 2 }
+                        (x + y) % 2
                     )
                 )
             }
