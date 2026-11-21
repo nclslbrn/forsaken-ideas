@@ -12,18 +12,21 @@ import {
     svgDoc
 } from '@thi.ng/geom'
 import { draw } from '@thi.ng/hiccup-canvas'
-import { SYSTEM } from '@thi.ng/random'
+import { SFC32 } from '@thi.ng/random'
 import { convert, mul, quantity, NONE, cm, dpi } from '@thi.ng/units'
 import { downloadWithMime } from '@thi.ng/dl-asset'
-import { FMT_yyyyMMdd_HHmmss } from '@thi.ng/date'
 import {
     add2,
+    distSq2,
     mulN2,
     normalize2,
     perpendicularCCW,
     sub2
 } from '@thi.ng/vectors'
 import { createNoise2D } from 'simplex-noise'
+import { getRandSeed } from '../../sketch-common/random-seed'
+import { getColorCombination } from '../../sketch-common/stabilo68-colors'
+import { seedFromHash } from '../grid-on-grid/seed-from-hash'
 import dashLine from './dashLine'
 
 const APP = document.getElementById('windowFrame'),
@@ -38,8 +41,15 @@ const APP = document.getElementById('windowFrame'),
     STYLES = 6,
     lineStep = 6,
     lineWeight = 1.5,
-    bgColor = '#e4c4c4',
-    simplex = createNoise2D(),
+    bgColor = '#e6d4d3',
+    FALLBACK_PALETTE = {
+        name: 'Default',
+        colors: [
+            { id: 0, name: 'Purple', value: '#5a4869' },
+            { id: 1, name: 'Black', value: '#000' }
+        ]
+    },
+    PARAMS = new URLSearchParams(window.location.search),
     noiseLine = (pts) => {
         const freq = 0.0007
         const turbulence = 15
@@ -53,16 +63,28 @@ const APP = document.getElementById('windowFrame'),
         })
     }
 
-let N, parts, drawing
+let RND, simplex, seed, folds, palette, N, parts, paths
+let firstRun = true
+
 APP.appendChild(CANVAS)
 CANVAS.width = SIZE[0]
 CANVAS.height = SIZE[1]
 
 /**
- * Create a part with a fixed hatch style, so it doesn't change on each render.
+ * Create a part. Everything random about it is decided here, so a part
+ * looks the same on every render (folding only changes the parts it cuts).
+ * @param {Array} pts polygon points
+ * @param {Number} index used for dash parity
+ * @param {Number} angle hatch direction (radians)
  */
-const newPart = (pts, index) =>
-    polygon(pts, { index, style: SYSTEM.int() % STYLES })
+const newPart = (pts, index, angle) =>
+    polygon(pts, {
+        index,
+        angle,
+        style: RND.int() % STYLES,
+        pen: RND.int() % palette.colors.length,
+        dashSeed: RND.int()
+    })
 
 /**
  * Split a convex polygon in two along the infinite line a-b, by clipping it
@@ -80,22 +102,48 @@ const splitPart = (part, a, b) => {
 }
 
 const cutTile = () => {
-    const isVertical = SYSTEM.float() > 0.5
+    const isVertical = RND.float() > 0.5
     const a = isVertical
-        ? [Math.round(SYSTEM.float(SIZE[0])), MARGIN / 2]
-        : [MARGIN / 2, Math.round(SYSTEM.float(SIZE[1]))]
+        ? [Math.round(RND.float(SIZE[0])), MARGIN / 2]
+        : [MARGIN / 2, Math.round(RND.float(SIZE[1]))]
     const b = isVertical
-        ? [Math.round(SYSTEM.float(SIZE[0])), SIZE[1] - MARGIN / 2]
-        : [SIZE[0] - MARGIN / 2, Math.round(SYSTEM.float(SIZE[1]))]
+        ? [Math.round(RND.float(SIZE[0])), SIZE[1] - MARGIN / 2]
+        : [SIZE[0] - MARGIN / 2, Math.round(RND.float(SIZE[1]))]
+    // one half is hatched along the cut, the other across it
+    const theta = Math.atan2(b[1] - a[1], b[0] - a[0])
 
     parts = parts.flatMap((part) => {
         const halves = splitPart(part, a, b)
         return halves
             ? halves.map((h, k) =>
-                  newPart(h.points, part.attribs.index + k + 1)
+                  newPart(
+                      h.points,
+                      part.attribs.index + k + 1,
+                      k ? theta : theta + Math.PI / 2
+                  )
               )
             : [part]
     })
+}
+
+/**
+ * Parallel lines at the part's angle, clipped to the part
+ */
+const hatchLines = (part) => {
+    const { pos, size } = bounds(part)
+    const c = [pos[0] + size[0] / 2, pos[1] + size[1] / 2]
+    const r = Math.hypot(...size) / 2 + lineStep
+    const { angle } = part.attribs
+    const dir = [Math.cos(angle) * r, Math.sin(angle) * r]
+    const nrm = [-Math.sin(angle), Math.cos(angle)]
+    const lines = []
+    for (let t = -r; t <= r; t += lineStep) {
+        const p = add2([], c, mulN2([], nrm, t))
+        lines.push(line(sub2([], p, dir), add2([], p, dir)))
+    }
+    return lines
+        .map((l) => clipConvex(l, part)?.[0]?.points)
+        .filter(Boolean)
 }
 
 // join hatch lines into one continuous path (boustrophedon) → fewer pen lifts
@@ -106,71 +154,114 @@ const serpentine = (segs) =>
 const wavy = (pts) => noiseLine(resample(polyline(pts), { dist: 4 }).points)
 
 const hatchPart = (part) => {
-    const { index, style } = part.attribs
-    const { pos, size } = bounds(part)
-    const max = add2([], pos, size)
-    const lines = []
-    if (index % 2) {
-        for (let x = pos[0]; x <= max[0]; x += lineStep)
-            lines.push(line([x, pos[1]], [x, max[1]]))
-    } else {
-        for (let y = pos[1]; y <= max[1]; y += lineStep)
-            lines.push(line([pos[0], y], [max[0], y]))
-    }
-    const segs = lines
-        .map((l) => clipConvex(l, part)?.[0]?.points)
-        .filter(Boolean)
+    const { index, style, dashSeed: s } = part.attribs
+    const segs = hatchLines(part)
     if (!segs.length) return []
+    // per-part generator: dashes don't change when another part is cut
+    const rnd = new SFC32([s, s ^ 0xdecafbad, s ^ 0x2fa9d75b, s ^ 0xe41f67e3])
 
     switch (style) {
         // dash noise
         case 0:
-            return segs.flatMap((s) =>
-                dashLine(s, 128, index % 2).map((d) => wavy(d))
+            return segs.flatMap((seg) =>
+                dashLine(seg, 128, index % 2, rnd).map((d) => wavy(d))
             )
         // full noise, one continuous path
         case 1:
             return [wavy(serpentine(segs))]
         // uniform dash straight
         case 2:
-            return segs.flatMap((s) => dashLine(s, 512, 0))
+            return segs.flatMap((seg) => dashLine(seg, 256, 0, rnd))
         // random dash straight
         case 3:
-            return segs.flatMap((s) => dashLine(s, 256, 1))
+            return segs.flatMap((seg) => dashLine(seg, 128, 1, rnd))
         // empty
         case 4:
             return []
         // straight lines, one continuous path
         case 5:
             return [serpentine(segs)]
-        // part without style (shouldn't happen): plain hatch
         default:
             return segs
     }
 }
 
-const render = () => {
-    drawing = group(
-        { stroke: '#5a4869', weight: lineWeight, fill: 'none' },
-        parts
-            .flatMap(hatchPart)
-            .filter((pts) => pts && pts.length > 1)
-            .map((pts) => polyline(pts))
+/**
+ * Greedy nearest-neighbour ordering (paths may be reversed) to cut pen travel
+ */
+const sortPaths = (list) => {
+    const todo = [...list]
+    const out = []
+    let cur = [0, 0]
+    while (todo.length) {
+        let best = 0,
+            bestD = Infinity,
+            rev = false
+        for (let i = 0; i < todo.length; i++) {
+            const p = todo[i]
+            const d0 = distSq2(cur, p[0])
+            const d1 = distSq2(cur, p[p.length - 1])
+            if (d0 < bestD) [bestD, best, rev] = [d0, i, false]
+            if (d1 < bestD) [bestD, best, rev] = [d1, i, true]
+        }
+        const p = todo.splice(best, 1)[0]
+        const q = rev ? [...p].reverse() : p
+        out.push(q)
+        cur = q[q.length - 1]
+    }
+    return out
+}
+
+// one Inkscape layer per pen
+const layers = (pathsByPen) =>
+    group(
+        { fill: 'none', weight: lineWeight },
+        palette.colors.map((col, i) =>
+            group(
+                { stroke: col.value, __inkscapeLayer: `${i + 1} ${col.name}` },
+                pathsByPen[i].map((pts) => polyline(pts))
+            )
+        )
     )
 
-    draw(
-        CTX,
-        group({ __inkscapeLayer: 'Composition' }, [
-            rect(SIZE, { fill: bgColor }),
-            drawing
-        ])
-    )
+// keep seed + folds in the address bar, so any state can be bookmarked
+const updateUrl = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('seed', seed)
+    url.searchParams.set('folds', folds)
+    window.history.replaceState(null, '', url)
+}
+
+const render = () => {
+    paths = palette.colors.map(() => [])
+    parts.forEach((part) => {
+        const pen = paths[part.attribs.pen]
+        hatchPart(part)
+            .filter((pts) => pts && pts.length > 1)
+            .forEach((pts) => pen.push(pts))
+    })
+    draw(CTX, group({}, [rect(SIZE, { fill: bgColor }), layers(paths)]))
+    updateUrl()
 }
 
 const sketch = {
-    // reset value and relaunch drawing
+    // new seed (or the one from the URL on first load) and redraw
     init: () => {
-        N = Math.ceil(SYSTEM.float(3)) || 1
+        let replayFolds = 0
+        if (firstRun && PARAMS.has('seed')) {
+            seed = PARAMS.get('seed')
+            replayFolds = parseInt(PARAMS.get('folds')) || 0
+        } else {
+            seed = getRandSeed()
+        }
+        firstRun = false
+        folds = 0
+        RND = new SFC32(seedFromHash(seed))
+        simplex = createNoise2D(() => RND.float())
+        // palette only sets ink colors, not geometry (not seeded)
+        palette = getColorCombination(2) || FALLBACK_PALETTE
+
+        N = 1 + (RND.int() % 3)
         const tileSize = [
             Math.round((SIZE[0] - MARGIN * 2) / N),
             Math.round((SIZE[1] - MARGIN * 2) / N)
@@ -190,31 +281,39 @@ const sketch = {
                             [x1, y1],
                             [x0, y1]
                         ],
-                        (x + y) % 2
+                        (x + y) % 2,
+                        (x + y) % 2 ? Math.PI / 2 : 0
                     )
                 )
             }
         }
         for (let i = 0; i < I; i++) cutTile()
+        for (; folds < replayFolds; folds++) cutTile()
         render()
+        console.log(
+            `seed: ${seed}\nfolds: ${folds}\npalette: ${palette.name}\n` +
+                palette.colors.map((c) => ` - 68/${c.id} ${c.name}`).join('\n')
+        )
     },
     // add one more cut
     fold: () => {
         cutTile()
+        folds++
         render()
     },
-    // export drawing as SVG file
+    // export drawing as SVG file, one layer per pen, paths sorted for plotting
     export: () => {
         downloadWithMime(
-            `Defragmentation - ${FMT_yyyyMMdd_HHmmss()}.svg`,
+            `Defragmentation-${seed}-${folds}.svg`,
             asSvg(
                 svgDoc(
                     {
-                        width: SIZE[0],
-                        height: SIZE[1],
+                        // physical size: Inkscape reads px at 96 dpi, SIZE is 72 dpi
+                        width: '35cm',
+                        height: '35cm',
                         viewBox: `0 0 ${SIZE[0]} ${SIZE[1]}`
                     },
-                    drawing
+                    layers(paths.map(sortPaths))
                 )
             )
         )
