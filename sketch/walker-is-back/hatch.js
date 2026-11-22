@@ -5,9 +5,9 @@ import { distSq2 } from '@thi.ng/vectors'
  * (concave included). Returns an array of [a, b] segments.
  */
 export const hatchLines = (pts, angle, step) => {
+    const stepAt = typeof step === 'function' ? step : () => step
     const d = [Math.cos(angle), Math.sin(angle)]
     const n = [-d[1], d[0]]
-    // rotated frame: u along the lines, v across them
     const q = pts.map(([x, y]) => [x * d[0] + y * d[1], x * n[0] + y * n[1]])
     const back = ([u, v]) => [u * d[0] + v * n[0], u * d[1] + v * n[1]]
 
@@ -17,10 +17,14 @@ export const hatchLines = (pts, angle, step) => {
         if (v < vMin) vMin = v
         if (v > vMax) vMax = v
     }
+    const span = vMax - vMin
 
     const segs = []
-    for (let c = vMin + step / 2; c < vMax; c += step) {
-        // crossings of the scanline v = c with every edge
+    for (
+        let c = vMin + stepAt(0) / 2;
+        c < vMax;
+        c += stepAt((c - vMin) / span)
+    ) {
         const us = []
         for (let i = 0; i < q.length; i++) {
             const a = q[i],
@@ -30,7 +34,6 @@ export const hatchLines = (pts, angle, step) => {
             }
         }
         us.sort((x, y) => x - y)
-        // pairs (0,1), (2,3)... are the inside spans
         for (let i = 0; i + 1 < us.length; i += 2) {
             if (us[i + 1] - us[i] > 1) {
                 segs.push([back([us[i], c]), back([us[i + 1], c])])
@@ -39,7 +42,6 @@ export const hatchLines = (pts, angle, step) => {
     }
     return segs
 }
-
 /**
  * Join segments into continuous back-and-forth paths (fewer pen lifts).
  * A new path is started when the next segment is too far away, which
