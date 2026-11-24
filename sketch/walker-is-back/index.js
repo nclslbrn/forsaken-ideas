@@ -27,19 +27,20 @@ import dashLine from './dashLine'
 import modularGrid from './modular-grid'
 
 const DPI = quantity(96, dpi), // default settings in inkscape
-    SIZE = mul(DIN_A3, DPI).deref(),
-    MARGIN = convert(mul(quantity(40, mm), DPI), NONE),
+    CSTM_FORMAT = quantity([297, 297], mm),
+    SIZE = mul(CSTM_FORMAT, DPI).deref(),
+    MARGIN = convert(mul(quantity(25, mm), DPI), NONE),
     ROOT = document.getElementById('windowFrame'),
     CANVAS = document.createElement('canvas'),
     CTX = CANVAS.getContext('2d'),
     PARAMS = new URLSearchParams(window.location.search),
-    PADDING = 3,
-    RADIUS = 12,
+    PADDING = 1,
+    RADIUS = 32,
     STYLES = 6,
-    LINE_STEP = 4,
-    LINE_WEIGHT = 1,
-    DENSITY = [0.6, 2],
-    OUTLINE = false
+    LINE_STEP = 2,
+    LINE_WEIGHT = 2.5,
+    DENSITY = [0.6, 12],
+    OUTLINE = true
 
 /* Live params (to compute) */
 let RND, seed, simplex, width, height, drawElems
@@ -91,7 +92,7 @@ const hatchPart = ({ pts, index, angle, style, dashSeed: s, s0, s1 }) => {
             return segs.flatMap((seg) => dashLine(seg, 360, 0, rnd))
         // random dash straight
         case 3:
-            return segs.flatMap((seg) => dashLine(seg, 480, 1, rnd))
+            return segs.flatMap((seg) => dashLine(seg, 512, 1, rnd))
         // empty
         case 4:
             return []
@@ -141,9 +142,11 @@ const init = () => {
         }
         pieces = next
     }
-    const padded = pieces.map((pts) => inset(pts, PADDING))
-    /*
-    const parts = pieces
+    const padded = pieces.map((pts) =>
+        inset(roundCorners(pts, RADIUS), PADDING)
+    )
+
+    const parts = padded
         .map((pts) => inset(pts, PADDING))
         .filter(Boolean)
         .map((pts, index) => {
@@ -151,16 +154,17 @@ const init = () => {
             // 1 part in 3 stays uniform, the others get a gradient
             const s1 = RND.float() < 1 / 3 ? s0 : randSpacing()
             return {
-                pts: roundCorners(pts, RADIUS),
+                pts,
                 index,
-                angle: RND.float(Math.PI),
-                style: RND.int() % STYLES,
+                angle: Math.PI / ((RND.int() % 4) / 4),
+                style: 3, //RND.int() % STYLES,
                 dashSeed: RND.int(),
                 s0,
                 s1
             }
         })
-
+    console.log(parts)
+    /*
     // Connectors -----------------------------------------------------
     // vertices of the pieces that lie on the base outline (pre-inset)
     const onOutline = (p) =>
@@ -261,22 +265,28 @@ const init = () => {
         }
     }
     // hatches ---------------------------------------------------------
-    const paths = []
     paths.push(...connectors)
+     */
+    const paths = []
 
     parts.forEach((part) => {
         const hatches = hatchPart(part).filter((pts) => pts.length > 1)
         if (hatches.length) paths.push(...hatches)
-        else paths.push([...part.pts, part.pts[0]])
+        else paths.push(part.pts)
     })
-     */
 
     // console.log(`seed: ${seed}\nshapes: ${parts.length}`)
     drawElems = [
         rect(SIZE, { fill: '#fbeef7' }),
         group(
-            { stroke: 'none', fill: '#666' },
-            padded.map((pts) => polygon(roundCorners(pts, RADIUS)))
+            {
+                stroke: '#978686',
+                fill: 'none',
+                weight: LINE_WEIGHT,
+                strokeLinejoin: 'round',
+                strokeLinecap: 'round'
+            },
+            paths.map((pts) => polygon(pts))
         )
     ]
 
