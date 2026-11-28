@@ -22,8 +22,7 @@ import { seedFromHash } from '../grid-on-grid/seed-from-hash'
 import { randomSplit } from './splitPoly'
 import { randPoly } from './randPoly'
 import { inset, roundCorners } from './polyShape'
-import { hatchLines, serpentine, sortPaths } from './hatch'
-import dashLine from './dashLine'
+import { buildWavyHatch } from './hatch'
 import modularGrid from './modular-grid'
 
 const DPI = quantity(96, dpi), // default settings in inkscape
@@ -36,14 +35,12 @@ const DPI = quantity(96, dpi), // default settings in inkscape
     PARAMS = new URLSearchParams(window.location.search),
     PADDING = 1,
     RADIUS = 32,
-    STYLES = 6,
     LINE_STEP = 2,
-    LINE_WEIGHT = 2.5,
-    DENSITY = [0.6, 12],
-    OUTLINE = true
+    LINE_WEIGHT = 1.5,
+    DENSITY = [0.6, 12]
 
 /* Live params (to compute) */
-let RND, seed, simplex, width, height, drawElems
+let RND, settings, seed, simplex, width, height, drawElems
 let firstRun = true
 
 document.querySelector('#windowFrame').style.overflowY = 'auto'
@@ -55,52 +52,8 @@ const updateUrl = () => {
     window.history.replaceState(null, '', url)
 }
 
-// apply noise deformation to points
-const noiseLine = (pts) => {
-    const freq = 0.0007,
-        turbulence = 15,
-        force = 3 // keep it below PADDING so lines stay inside the shape
-    return pts.map((pt) => {
-        const n = turbulence * simplex(pt[0] * freq, pt[1] * freq)
-        return [pt[0] + Math.cos(n) * force, pt[1] + Math.sin(n) * force]
-    })
-}
-
-// add points along the line so the noise actually bends it
-const wavy = (pts) => noiseLine(resample(polyline(pts), { dist: 4 }).points)
-
 const randSpacing = () =>
     LINE_STEP * DENSITY[0] * (DENSITY[1] / DENSITY[0]) ** RND.float()
-
-const hatchPart = ({ pts, index, angle, style, dashSeed: s, s0, s1 }) => {
-    const segs = hatchLines(pts, angle, (t) => s0 + (s1 - s0) * t)
-    if (!segs.length) return []
-    const rnd = new SFC32([s, s ^ 0xdecafbad, s ^ 0x2fa9d75b, s ^ 0xe41f67e3])
-    const join = () => serpentine(segs, Math.max(s0, s1) * 2.5)
-
-    switch (style) {
-        // dash noise
-        case 0:
-            return segs.flatMap((seg) =>
-                dashLine(seg, 512, index % 2, rnd).map(wavy)
-            )
-        // full noise, continuous paths
-        case 1:
-            return join().map(wavy)
-        // uniform dash straight
-        case 2:
-            return segs.flatMap((seg) => dashLine(seg, 360, 0, rnd))
-        // random dash straight
-        case 3:
-            return segs.flatMap((seg) => dashLine(seg, 512, 1, rnd))
-        // empty
-        case 4:
-            return []
-        // straight lines, continuous paths
-        default:
-            return join()
-    }
-}
 
 const init = () => {
     // URL seed only on first load, so the init button gives new drawings
@@ -113,10 +66,13 @@ const init = () => {
     CANVAS.width = SIZE[0]
     CANVAS.height = SIZE[1]
 
-    const settings = {
+    settings = {
         gridNumDivision: RND.minmaxInt(3, 6),
         basePolyNumPoints: RND.minmaxInt(12, 28),
-        sliceNumDivision: RND.minmaxInt(2, 4)
+        sliceNumDivision: RND.minmaxInt(2, 4),
+        hatchAngle: Array.from(Array(16)).map((_, i) => (i / 8) * Math.PI),
+        ptPerLine: [RND.minmaxInt(14, 32), RND.minmaxInt(48, 64)],
+        amplitude: [RND.minmax(5, 10), RND.minmaxInt(25, 50)]
     }
 
     const gridCells = modularGrid(
@@ -146,23 +102,8 @@ const init = () => {
         inset(roundCorners(pts, RADIUS), PADDING)
     )
 
-    const parts = padded
-        .map((pts) => inset(pts, PADDING))
-        .filter(Boolean)
-        .map((pts, index) => {
-            const s0 = randSpacing()
-            // 1 part in 3 stays uniform, the others get a gradient
-            const s1 = RND.float() < 1 / 3 ? s0 : randSpacing()
-            return {
-                pts,
-                index,
-                angle: Math.PI / ((RND.int() % 4) / 4),
-                style: 3, //RND.int() % STYLES,
-                dashSeed: RND.int(),
-                s0,
-                s1
-            }
-        })
+    const parts = padded.map((pts) => inset(pts, PADDING)).filter(Boolean)
+
     console.log(parts)
     /*
     // Connectors -----------------------------------------------------
@@ -270,22 +211,29 @@ const init = () => {
     const paths = []
 
     parts.forEach((part) => {
-        const hatches = hatchPart(part).filter((pts) => pts.length > 1)
+        const hatches = buildWavyHatch(part, 1, 24, 0.5, RND, settings)
+            .flat()
+            .filter((pts) => pts.length > 1)
         if (hatches.length) paths.push(...hatches)
         else paths.push(part.pts)
     })
 
     // console.log(`seed: ${seed}\nshapes: ${parts.length}`)
     drawElems = [
-        rect(SIZE, { fill: '#fbeef7' }),
+        rect(SIZE, { fill: '#ececec' }),
         group(
             {
-                stroke: '#978686',
+                stroke: '#ccc',
                 fill: 'none',
                 weight: LINE_WEIGHT,
                 strokeLinejoin: 'round',
                 strokeLinecap: 'round'
             },
+            parts.map((pts) => polygon(pts))
+        ),
+
+        group(
+            { stroke: '#333', fill: '#eee' },
             paths.map((pts) => polygon(pts))
         )
     ]
